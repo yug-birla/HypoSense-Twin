@@ -11,8 +11,9 @@ human to perform a capillary check.
 
 ## Status
 
-**PLANNING / S0.** No dataset has been loaded and no model has been trained. **No performance
-result exists.** See [docs/CURRENT_STATE.md](docs/CURRENT_STATE.md).
+**S1 complete.** The official dataset is acquired and verified (Gates G0 and G1 PASS). No model
+has been trained. **No performance result exists.** See
+[docs/CURRENT_STATE.md](docs/CURRENT_STATE.md).
 
 ## The one question this project tests (pre-specified, H1)
 
@@ -40,7 +41,8 @@ Requirements: Python 3.11, [uv](https://docs.astral.sh/uv/), and Node 20+ for th
 ```bash
 uv sync                 # creates .venv from uv.lock
 uv run pytest           # runs the test suite
-uv run hyposense        # CLI (subcommands are added stage by stage)
+uv run hyposense --help # CLI; data acquisition steps are in data/README.md
+uv run hyposense gates show
 ```
 
 ## Data

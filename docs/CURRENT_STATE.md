@@ -1,127 +1,135 @@
 # HypoSense Twin — Current Project State
 
-_Last updated: 2026-10-18 (S0 planning run). This file is the canonical snapshot. Read it
-first, then [NEXT_STEPS.md](NEXT_STEPS.md) and [PROGRESS.md](PROGRESS.md)._
+_Last updated: 2026-10-18 (end of S1). This is the canonical snapshot. Read it first, then
+[NEXT_STEPS.md](NEXT_STEPS.md) and [PROGRESS.md](PROGRESS.md)._
 
 ## Current Phase
-**S0 — Repository and environment** (engineering complete; human items open). The next phase
-is **S1 — data acquisition and structural audit**.
+**S1 — complete and reviewed.** Next: **S2** (schemas, label builder, event audit; G2/G3b). Per
+the owner's instruction, S2 has **not** been started.
 
 ## Overall Status
-**PLANNING** → ready to start IMPLEMENTATION once the P0 human decisions are made.
+**IMPLEMENTATION** — data foundation verified. No model work has started.
 
 ## Completed Components
 | Component | Status | Files | Tests |
 |---|---|---|---|
-| Blueprint understanding pass + searchable extraction | DONE | `docs/BLUEPRINT_DIGEST.md`, `docs/blueprint/…extracted.md`, `scripts/extract_blueprint.py` | — |
-| Git repository (branch `main`) | DONE | `.gitignore`, `.gitattributes` | — |
-| Python environment (3.11.9, uv, lockfile) | DONE | `pyproject.toml`, `uv.lock`, `.python-version` | `uv sync` OK |
-| Package skeleton (12 subpackages, responsibilities documented; no logic) | DONE | `src/hyposense/**/__init__.py`, `cli.py` (stub) | ruff + mypy strict clean |
-| Draft configuration | DONE (DRAFT, unfrozen) | `configs/default.yaml`, `configs/pharma.yaml` (ILLUSTRATIVE) | constant lock |
-| Protocol-constant lock | DONE | `tests/regression/test_protocol_constants.py` | 6/6 pass |
-| Import-boundary leakage guard | DONE | `tests/leakage/test_import_boundaries.py` | 10/10 pass |
-| Project control documents | DONE | `docs/*.md` | — |
+| S0 baseline (env, skeleton, control docs) | DONE | see PROGRESS 2026-10-18 (S0) | constant lock, import guard |
+| Official data acquisition (figshare v5; v1/v2 for reconciliation) | DONE | `src/hyposense/data/source.py`, `configs/dataset.yaml` | `test_allowed_member_*`, `test_wrapper_*`, `test_verify_archive_*` |
+| Manifest (111 files) | DONE | `data/MANIFEST.json`, `data/MANIFEST.sha256`, `data/manifest.py` | `test_manifest_*` |
+| Production loader + summary loader | DONE | `data/loader.py`, `columns.py`, `records.py`, `summary.py` | 16 loader + 15 identity/schema tests |
+| CGM quality flags | DONE | `data/quality.py` | `test_cgm_quality_flags` |
+| Scoped dataset access (sealed-partition safeguard) | DONE | `data/dataset.py` | integration + static confinement tests |
+| Official T/E partition (original, verified, hash-locked) | DONE | `configs/partition.csv`, `partition.provenance.json`, `data/partition.py` | `test_partition.py` (6) |
+| Structural audit + version/blueprint reconciliation | DONE | `src/hyposense/audit/` | `test_audit_structural.py`, `test_gates_and_reconcile.py`, integration |
+| Gates G0 / G1 | **PASS / PASS** | `artifacts/gates/G0.json`, `G1.json` | `test_g0_*`, `test_g1_*` |
+| CLI | DONE (S1 scope) | `src/hyposense/cli.py` | exercised end-to-end |
+| Analysis plan §1–3 (approved P-C1, P-C2, P-C3, P-C6) | DOCUMENTED (implementation S5/S7) | `docs/protocol/ANALYSIS_PLAN.md` | fixtures listed in §4 |
 
 ## In Progress
-None. The run ended at a clean boundary.
+None. S1 ended at a clean boundary.
 
 ## Pending Components (dependency order)
-1. S1: official data fetch, MANIFEST, adapter v0, structural audit (G0, G1)
-2. S2: schemas, label builder (test-first), event audit (G2, G3b), partition + guard
-3. S3: drug dictionary, parser, kernels, exposure, pharma sourcing (G3)
-4. S4: state engine, causal features, truncation-equality test
-5. S5: evaluation harness, metrics, bootstrap, M0, ANALYSIS_PLAN.md
-6. S6: M1 tuning, M2/M3r/M3 on T, calibration benchmark (G4)
-7. S7: policy, replay, API (parallel from S4)
-8. S8: frontend (parallel from S7)
-9. FREEZE → S9 confirmatory → S10 demo and submission
+1. **S2**: typed event schemas; label builder (test-first, ≥20 hand-labelled fixtures); event
+   audit (G2, G3b); re-check of the 2003/2029 has-L1 strata; blueprint event-count
+   reconciliation (episodes, prediction times)
+2. S3: drug dictionary, dose parser (incl. S1 findings), kernels, exposure; G3; treated-flag
+   re-check
+3. S4: state engine, causal features, truncation-equality test
+4. S5: evaluation harness implementing ANALYSIS_PLAN §2–3; M0 on T (expect exact Table A.2)
+5. S6: M1 tuning, M2/M3r/M3 on T, calibration benchmark, G4
+6. S7 (policy, replay, API) and S8 (frontend) in parallel
+7. FREEZE → S9 → S10
 
 ## Scientific Status
 | Item | Status |
 |---|---|
-| Dataset | **NOT PRESENT** in the repository; official copy not yet downloaded |
-| Labels | not implemented |
-| Partition | **not created.** The blueprint's `partition.csv` and audit scripts are missing (P-C4) |
-| Models | none implemented or trained |
-| Calibration | not implemented |
-| Evaluation | not implemented; operationalisation of the primary endpoint pending (P-C2, P-C3) |
-| Sealed evaluation (E) | **SEALED.** No E data accessed by this project; no freeze |
-| Blueprint audit numbers | VERIFIED by the blueprint author on a mirror; **NOT REPRODUCED here** |
+| Dataset | **Official figshare v5 acquired and verified** (MD5 = figshare; SHA-256 `59b5f5c4…`); manifest `5f9d65b4…` |
+| Published count | 112,475 **VERIFIED** on nature.com = v5 timepoint rows; 112,462 non-empty CGM; 13 documented device-change rows |
+| Blueprint numbers | Structural: 11 MATCH, 8 EXPECTED DIFFERENCE (documented v5 update), 0 UNEXPLAINED. The mirror = figshare v1–v4 (MEASURED) |
+| Labels | not implemented (S2) |
+| Partition | **v1.0.0 official, immutable**: the blueprint's original, reproduced exactly by its algorithm (100/100); T 30 / E 70 |
+| Models / calibration / evaluation | not implemented |
+| Sealed evaluation (E) | **SEALED.** Only aggregate structural checks (approved P-C5); no labels, traces or outputs of E examined |
+| Timezone | +08:00 local: ASSUMPTION, now strongly supported (meal entries peak 07/11/17 local; INFERRED) |
 
 ## Current Models
 | Model | Implemented | Trained | Validated | Artefact | Result |
 |---|---|---|---|---|---|
-| M0 trend | no | n/a | no | no | none |
-| M1 CGM-only | no | no | no | no | none |
-| M2 CGM + context | no | no | no | no | none |
-| M3r raw timing | no | no | no | no | none |
-| M3 exposure | no | no | no | no | none |
-| M4 (optional) | not planned (ADR-015) | — | — | — | — |
+| M0 | no | n/a | no | no | none |
+| M1 | no | no | no | no | none |
+| M2 | no | no | no | no | none |
+| M3r | no | no | no | no | none |
+| M3 | no | no | no | no | none |
+| M4 | not planned (ADR-015) | — | — | — | — |
 
 ## Data Status
-- Dataset available: **no**.
-- Official copy verified: **no** (Gate G0 PENDING).
-- Hashes: none yet (`data/MANIFEST.sha256` is created in S1).
-- Audit completed: **no** (the blueprint audit was on a third-party mirror and is not
-  reproducible here).
-- Known discrepancies: mirror 112,287 vs published 112,475 CGM readings (−188), per the
-  blueprint.
+- Dataset available: **yes** (local, git-ignored), `data/raw/ShanghaiT2DM/` (v5).
+- Official copy verified: **yes** (G0 PASS).
+- Hashes:
+  - archive v5 sha256 `59b5f5c4053a32bb6b7827844a0191597dc82228fe88ce332a189fdfc659c4cb`
+  - manifest files_sha256 `5f9d65b4e9233d4ecdd05438e80bb94314290cd5e2d9fdd21e353487cd3cc4ab`
+  - partition sha256 `ccdcbce02b049992b0ca09bd99a2a5b8c49bcf49940f3a68ed6ca69cd2449578`
+- Structural audit: **completed**. Runs `ALL-AGG-audit-structural-20261017T213548Z` and
+  `…213615Z` gave an identical results_sha256 `09e780bd…`.
+- Key numbers (MEASURED, v5):
+  - 109 recordings / 100 patients (92 × 1, 7 × 2, 1 × 3 recordings);
+  - 112,475 rows; 112,462 CGM readings; 1170.6 monitored days;
+  - CGM parse 100%; intervals ≤20 min 99.99%; 1 gap >60 min (212 min, device change);
+  - 329 floor readings; all values on the 1.8 mg/dL grid;
+  - doses: 828 insulin s.c. entries (54 recordings), 2,171 oral entries (92), CSII in 35, i.v.
+    in 6; 99.94% of medication entries sit on CGM rows;
+  - 3,808 diet entries (745 "data not available").
+- Known anomalies (all flagged, none deleted):
+  - sheet-name mismatch in 2014_0;
+  - 3 file-name dates that don't match the data (2017_0, 2094_0 [year typo], 2098_0);
+  - 2 patients whose period index is not chronological;
+  - 13 sub-second timestamps and 10 empty rows (2029_0 device change);
+  - pump-suspension text ×2 and a misplaced "acarbose 50 mg" in CSII columns;
+  - the i.v. column contains IV fluids (incl. 5% glucose) and one misplaced CSII basal entry.
 
 ## Testing Status
 | Category | Status |
 |---|---|
-| Unit | none yet |
-| Integration | none yet |
-| Leakage | import-boundary guard: 10/10 pass (truncation equality pending S4) |
-| Reproducibility | none yet |
-| Regression | protocol-constant lock: 6/6 pass |
+| Unit | 67/67 pass |
+| Integration (real data, aggregate) | 5/5 pass |
+| Leakage / static guards | 12/12 pass (truncation equality pending S4) |
+| Reproducibility | audit determinism verified (identical results hash, 2 runs) |
+| Regression | 9/9 pass |
 | E2E | none yet |
-| Lint / types | ruff clean; mypy --strict clean (14 files) |
+| Lint / format / types | ruff check + format clean; mypy --strict clean (34 files) |
 
-Last full run: `uv run pytest -q` → **16 passed** (2026-10-18).
+Last full run: `uv run pytest -q` → **93 passed** (2026-10-18).
 
 ## UI Status
-| View | Status |
-|---|---|
-| Ward Board | not started (S8) |
-| Patient Review | not started (S8) |
-| Evidence View | not started (S8) |
-| Replay | not started (S7) |
+Ward Board / Patient Review / Evidence View / Replay: not started (S7/S8).
 
 ## Open Issues
 | Issue | Severity | Proposed solution |
 |---|---|---|
-| Competition registration reportedly closes **18 Oct 2026 19:00 IST** (today); status unknown | **CRITICAL (delivery)** | Owner confirms or registers immediately |
-| Blueprint partition file and audit scripts missing from the repo | HIGH | P-C4: request the originals; else regenerate before any modelling |
-| Primary endpoint not computable unambiguously (cooldown non-monotonicity, threshold grid, isotonic ties) | HIGH | P-C2 + P-B1 |
-| Evaluation semantics for FA counting / policy replay unspecified | HIGH | P-C3 |
-| Sensor-floor lows shown as INSUFFICIENT DATA (safety) | MEDIUM | P-C1 |
-| Kernel parameters ILLUSTRATIVE; pharmacist availability unknown | MEDIUM | Source from product labels in S3; ask the owner about reviewer access |
-| Official dataset not downloaded | HIGH (blocking S1) | S1 task |
-| No remote repository or CI | LOW | Create once the owner chooses repo name and visibility |
-| CLAUDE.md §2 points to `docs/blueprint/…docx`; file is at `docs/…docx` | LOW | H-1 |
-| Machine git identity is "Yug Birla <2006yugb@gmail.com>"; commits are authored with it | LOW | Owner confirms or sets a repo-local identity |
+| Sensor replacement inside 2029_0 not treated as warm-up | LOW | P-C7 (awaiting approval; not blocking S2) |
+| i.v. column contains IV glucose and other fluids | MEDIUM (S3) | P-B5: a-priori decision in S3 |
+| Misplaced medication entries in CSII and i.v. columns; pump-suspension text | MEDIUM (S3) | S3 parser recovers them from `raw_*` columns (never fabricates times) |
+| "scilin m30" (premix human) missing from the blueprint regex; explains its 825/827 | LOW (S3) | Add to the drug dictionary |
+| Partition strata were computed on pre-v5 data (2003, 2029 are E patients) | LOW | Re-check has-L1 in S2; report, never re-split |
+| Kernel parameters ILLUSTRATIVE; pharmacist availability unknown | MEDIUM (S3) | Label-sourced values; record review status |
 
 ## Open Decisions
 | Decision | Options | Recommendation | Approval required? |
 |---|---|---|---|
-| P-C1 policy priority for current lows | blueprint order / LOW NOW first | LOW NOW first | **Yes** |
-| P-C2 operating-curve and τ rule | as written / first-crossing rule | first-crossing rule | **Yes** |
-| P-C3 evaluation semantics | unspecified / causal replay + follow-up exclusion | causal replay | **Yes** |
-| P-C4 partition provenance | A originals / B regenerate | A, else B | **Yes** |
-| P-C5 outcome-blind E access before freeze | none / aggregate-only scope | aggregate-only scope | **Yes** |
-| P-C6 τW definition | ambiguous / total notifications, first crossing | total notifications | **Yes** |
-| P-B1 calibration method | isotonic / Platt / interpolated isotonic | benchmark on T with a pre-written rule | No (experiment) |
-| P-B2 boosting rounds | early stopping / fixed tuned count | fixed tuned count | No (record before S6) |
-| P-B3 CSII basal in projections | literal / continue current rate | continue (a priori) | No (record in S3) |
+| P-C7 sensor-restart warm-up | keep / restart warm-up after gap >120 min | restart (tiny impact) | Yes (not blocking until S7) |
+| P-B1 calibration method | isotonic / Platt / interpolated isotonic | benchmark on T, pre-written rule | No |
+| P-B2 boosting rounds | fixed tuned count | fixed count | No |
+| P-B3 CSII basal continuation in projections | literal / continue | continue (a priori, S3) | No |
+| P-B5 i.v. dextrose | ignore + flag / separate feature | ignore + flag (a priori, S3) | No |
 
 ## Last Verified Commit
-- Commit: `5314ba9c8e64a06f672a9edbbd1b11b07c3b173c` (branch `main`)
-- Date: 2026-10-18
-- Summary: S0 baseline — scaffolding, environment, configs, control documents, 16 passing tests.
+- Code: `f68f98a` (S1 implementation + provenance fix; official audit runs reference it).
+- Documentation and evidence commit: see `git log -1` (S1 docs + audit outputs).
+- Date: 2026-10-18.
 
 ## Next Recommended Task
-**S1 — Acquire the official ShanghaiT2DM copy from figshare, pin it with
-`data/MANIFEST.sha256`, implement adapter v0 (column-variant mapping and timestamp parsing),
-and run the structural audit for Gates G0/G1.** Fetching and checksumming can start
-immediately. The audit pass over E files waits for approval of P-C5.
+**S2 — Label builder (test-first) and event audit:** write ≥20 hand-labelled SYNTHETIC
+fixtures for the Table 5.1 episode and eligibility rules, then implement `build_episodes` and
+`eligible_times` on `cgm_series()`. Run the aggregate event audit (G2, G3b) and reconcile
+episode, prediction-time and warnable counts against the blueprint. v1/v2 provide the exact
+mirror baseline, as in S1.

@@ -1,6 +1,7 @@
 # HypoSense Twin v2 — Architecture
 
-Status: **DESIGN — reviewed, not yet implemented** (2026-10-18).
+Status: **S1 data layer IMPLEMENTED (§4.1, §4.1a); remaining components DESIGN** (updated
+2026-10-18).
 Baseline: Blueprint v2.0 §9–§18 and §24–§25 ([digest](BLUEPRINT_DIGEST.md)). Engineering
 refinements are recorded as ADRs in [DECISION_LOG.md](DECISION_LOG.md). Open scientific
 clarifications are in [PROPOSALS.md](PROPOSALS.md). Where this document is more specific than
@@ -42,11 +43,17 @@ A static test enforces it ([tests/leakage/test_import_boundaries.py](../tests/le
 ## 2. Repository layout (ADR-002)
 
 ```
-configs/            default.yaml · pharma.yaml · drug_dictionary.csv (S3) · partition.csv (S2)
-data/               raw/ (git-ignored) · processed/ (git-ignored) · MANIFEST.sha256 (committed)
+configs/            default.yaml · dataset.yaml (pinned figshare source) · pharma.yaml ·
+                    partition.csv + partition.provenance.json (immutable, ADR-016) ·
+                    reference/blueprint_audit.yaml · drug_dictionary.csv (S3)
+data/               raw/downloads/ (archives + provenance sidecars) · raw/ShanghaiT2DM/ (canonical
+                    v5 extraction) · raw/reconciliation/v1|v2/ (never analysed) — all git-ignored ·
+                    MANIFEST.json + MANIFEST.sha256 (committed) · processed/ (git-ignored)
 src/hyposense/
-  common/           time, hashing, provenance, config loading (no scientific logic)
-  data/             adapter, validators, partition guard            → load_recording()
+  common/           hashing, config, provenance, timeconv (no scientific logic)
+  data/             source (fetch/extract), manifest, columns, records, loader, summary,
+                    quality flags, partition, dataset (scoped access)   → load_recording()
+  audit/            structural audit, version + blueprint reconciliation, gates G0/G1 (OFFLINE)
   labels/           episodes, eligibility (OFFLINE)                  → build_episodes(), eligible_times()
   medication/       dictionary, parse_dose(), kernels, exposure_at()
   state/            PatientState + sub-states, update()
@@ -96,6 +103,38 @@ docs/               project control documents + protocol/ANALYSIS_PLAN.md (pre-f
   `DataAccess(scope=TUNING_ONLY | AGGREGATE_AUDIT | ALL_AFTER_FREEZE)`.
   `ALL_AFTER_FREEZE` requires a freeze manifest whose hashes match the current code and config.
   `AGGREGATE_AUDIT` returns only aggregate reports for E (scope pending approval, P-C5).
+
+### 4.1a As implemented in S1 (2026-10-18)
+- **Source** (`data/source.py`, `configs/dataset.yaml`): figshare article 21600933. v5 is
+  canonical; v1/v2 serve reconciliation only (ADR-017). The download is checked against
+  figshare's MD5 and the pinned SHA-256, and a provenance sidecar records URL, DOI, retrieval
+  time, checksums and licence. Extraction is allow-listed (no `__MACOSX`, `.DS_Store` or T1DM)
+  and handles the `diabetes datasets/` wrapper of v2–v4. It refuses to overwrite existing raw
+  data.
+- **Manifest** (`data/manifest.py`): per-file SHA-256 and size. `files_sha256` is the identity
+  hash, independent of retrieval time. `load_dataset` verifies it on every call
+  (`ChecksumError`).
+- **Loader** (`data/loader.py`, `data/columns.py`, `data/records.py`):
+  - strict file-name identity `<pid>_<period>_<YYYYMMDD>.xls[x]`;
+  - an explicit table of the 5 observed header variants;
+  - raw-cell parsing, per-row flags (`ts_valid`, `ts_non_monotone`, `dup_ts`, `exact_dup`) and
+    typed `LoadIssue`s;
+  - `raw_<col>` preservation for non-clean numeric cells;
+  - +08:00 → int64 epoch seconds, with sub-second values rounded.
+
+  `cgm_series()` returns strictly increasing readings plus an exclusion account (ADR-019).
+- **Summary** (`data/summary.py`): one row per **recording** (33 columns, canonical names). The
+  "Hypoglycemia (yes/no)" field is tagged `FORBIDDEN_FEATURE_COLUMNS`.
+- **Quality flags** (`data/quality.py`): gap > 20 min, ≤ 40 floor, |rate| > 4 mg/dL/min,
+  warm-up < 120 min. They annotate only.
+- **Scoped access** (`data/dataset.py`, ADR-018): `TUNING_ONLY` | `AGGREGATE_AUDIT` |
+  `ALL_AFTER_FREEZE`.
+- **Audit** (`audit/`): `measure()` is deterministic. Its results hash is identical across runs.
+  The per-recording table is restricted to `PER_RECORDING_FIELDS`. Version reconciliation and
+  blueprint reconciliation are mechanical (MATCH / EXPECTED DIFFERENCE / UNEXPLAINED). The pure
+  `evaluate_g0`/`evaluate_g1` write `artifacts/gates/G*.json`.
+- **CLI**: `hyposense data fetch|extract|manifest|validate`, `partition verify`, `audit run`,
+  `gates show`.
 
 ### 4.2 Label Builder (`labels/`, offline)
 `build_episodes(obs, thr, min_run=2, max_step=1200, max_gap=1800)` and
@@ -271,5 +310,8 @@ Evidence exports serve as the G7 fallback (ADR-013).
 | Polling once per second | SSE stream + REST | A | ADR-008 |
 | (unspecified) artefact format | No pickle; LightGBM text + JSON | A | ADR-009 |
 | Analysis plan = sections of the .docx | Also a standalone `docs/protocol/ANALYSIS_PLAN.md` hashed at freeze | A | ADR-012 |
-| Policy priority 2 before 3 | LOW NOW for any current reading <70 | **C — pending approval** | P-C1 |
-| Operating-curve threshold grid, τ rule | Explicit first-crossing rule | **C — pending approval** | P-C2 |
+| Policy priority 2 before 3 | LOW NOW for any current reading <70 | **C — APPROVED** | P-C1, ANALYSIS_PLAN §1 |
+| Operating-curve threshold grid, τ rule | Exact first-crossing rule | **C — APPROVED** | P-C2, ANALYSIS_PLAN §3 |
+| FA counting unspecified at recording ends | OUTCOME-UNKNOWN class, reported separately | **C — APPROVED** | P-C3, ANALYSIS_PLAN §2 |
+| Mirror copy of the data | figshare v5 canonical, v1/v2 reconciliation | A | ADR-017 |
+| `config/partition.csv` from the audit | Same file, verified and hash-locked | C (delegated) | ADR-016 |

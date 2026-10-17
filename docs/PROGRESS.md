@@ -75,3 +75,110 @@ See NEXT_STEPS.md (P0: registration, Class C decisions, request originals, S1).
 
 ### Next Task
 S1: official data acquisition and structural audit (G0/G1).
+
+---
+
+## 2026-10-18 — S1: Official data acquisition, production loader, structural audit, G0/G1
+
+### Objective
+Establish a trustworthy data foundation: the official source with provenance, a production
+loader that later stages reuse, an aggregate structural audit, reconciliation against the
+blueprint, machine-readable G0/G1, and the P-C4 partition.
+
+### Work Completed
+- **Startup check**: HEAD `9617413` matched the documented S0 state, and the tree was clean.
+- **P-C4**: searched the repository, the E: drive and the user folders. The blueprint author's
+  source bundle (`HypoSense_v2_sources[.zip]` in Downloads) holds `partition.csv`, `audit.py`
+  and `audit2.py`. The scripts were read (not executed). An exact re-implementation of the
+  split reproduces the original 100/100. Imported as `configs/partition.csv` v1.0.0
+  (patient_id, partition only), SHA-256 pinned (ADR-016).
+  - Finding: the shipped `audit2.py` is not the exact version that produced
+    `audit2_summary.json` (its θ grid and output keys differ), so the bundle's provenance is
+    PARTIAL.
+- **Official data**: figshare article 21600933. Five versions exist, with three distinct
+  contents (v1; v2 = v3 = v4; v5). v5 (2023-10-30) is canonical; v1/v2 were downloaded for
+  reconciliation. All three are verified against figshare MD5, with SHA-256 pinned. v5's
+  `note.txt` documents +188 rows in 2003_0 and 2029_0, including a CGM device replacement.
+- **Manifest**: 111 files; files_sha256 `5f9d65b4…`; verified on every `load_dataset`.
+- **Loader**:
+  - strict identity and discovery;
+  - an explicit table for the 5 header variants;
+  - raw-cell parsing; per-row flags and typed issues; no deletion;
+  - +08:00 epoch seconds, with sub-second values rounded;
+  - an explicit CGM-series exclusion account;
+  - summary loader (one row per recording).
+- **Scoped access**: TUNING_ONLY / AGGREGATE_AUDIT / ALL_AFTER_FREEZE, with static
+  confinement tests (P-C5 safeguards).
+- **Structural audit** (aggregate-only), figshare version reconciliation, mechanical blueprint
+  reconciliation, and **G0/G1** gate JSON.
+- **Verification**: the published 112,475 was VERIFIED against the data descriptor's table on
+  nature.com.
+- **Timezone evidence**: local-hour histograms (meals peak at 07/11/17).
+- **CLI**: `data fetch|extract|manifest|validate`, `partition verify`, `audit run`,
+  `gates show`.
+- **Approved P-C1/2/3/5/6** recorded. `docs/protocol/ANALYSIS_PLAN.md` §1–3 written with the
+  exact first-crossing algorithm, edge cases, the OUTCOME-UNKNOWN class and the τW definition.
+
+### Files Changed
+- New:
+  - `configs/dataset.yaml`, `configs/partition.csv`, `configs/partition.provenance.json`,
+    `configs/reference/blueprint_audit.yaml`;
+  - `data/MANIFEST.json`, `data/MANIFEST.sha256`;
+  - `scripts/import_original_partition.py`;
+  - `src/hyposense/common/{hashing,config,provenance,timeconv}.py`;
+  - `src/hyposense/data/{source,manifest,columns,records,loader,summary,quality,partition,dataset}.py`;
+  - `src/hyposense/audit/{__init__,structural,versions,reconcile,gates,partition_check,run}.py`;
+  - `tests/conftest.py`, 6 unit test files, `tests/integration/test_real_data.py`;
+  - `docs/protocol/ANALYSIS_PLAN.md`;
+  - evidence: `experiments/runs/ALL-AGG-audit-structural-20261017T2135*/`,
+    `artifacts/gates/G0.json`, `artifacts/gates/G1.json`.
+- Modified: `configs/default.yaml` (partition pin, gate criteria), `pyproject.toml` (ruff
+  per-file ignore), `.gitignore` (evidence paths), `src/hyposense/cli.py`, test guards and
+  locks, `README.md`, `data/README.md`, all control docs.
+
+### Tests Executed
+- `uv run pytest -q` → **93 passed**: unit 67, leakage/static 12, regression 9,
+  integration 5 on real data.
+- `uv run ruff check src tests scripts` → clean. `uv run ruff format` → applied (ADR-021).
+- `uv run mypy src` (strict) → clean, 34 files.
+- `uv run hyposense audit run` twice on clean commit `f68f98a` → identical results_sha256
+  `09e780bd…`; G0 PASS, G1 PASS.
+- `uv run hyposense partition verify` → PASS.
+
+### Results (MEASURED, figshare v5)
+- 109 recordings / 100 patients; 112,475 rows (= published, VERIFIED); 112,462 CGM readings.
+- 1170.6 monitored days; CGM parse rate 1.0; 99.99% of intervals ≤20 min.
+- Blueprint structural values: 11 MATCH, 8 EXPECTED DIFFERENCE, 0 UNEXPLAINED. v1/v2
+  reproduce every blueprint structural value exactly, so the blueprint mirror = pre-2023-10-26
+  figshare content.
+
+### Problems Found (and handled)
+- YAML 1.1 parsed `2003_0_20210615` as an integer, which first produced false "UNEXPLAINED"
+  results. Fixed (quoted, plus a type guard and a regression test).
+- git "dirty" counted the audit's own output files. Fixed and tested.
+- Sub-second timestamps would have been truncated 1 s early. Now rounded and flagged.
+- Unparseable medication text was classed as an error. It is now a warning, with the raw text
+  preserved.
+- Data anomalies: see CURRENT_STATE "Known anomalies". All are flagged; none are deleted.
+
+### Decisions Made
+DEC-2026-10-18-A (owner approvals), ADR-016 to ADR-021. New proposals: P-C7 (sensor-restart
+warm-up) and P-B5 (IV dextrose).
+
+### Independent Self-Review (CLAUDE.md §46)
+| Concern | Finding |
+|---|---|
+| Silent data loss | None. Every row is kept, and CGM-series exclusions are counted by reason. 112,475 rows in = 112,475 out |
+| Identity | File name is authoritative, with a strict pattern. The sheet-name mismatch (2014_0) and file-name date mismatches are flagged; the two 2014 recordings differ by content hash. No overlapping recordings within a patient. Period index ≠ chronology for 2 patients, so downstream must order by timestamp |
+| Timestamps / timezone | Exact integer conversion; rounding is tested; +08:00 is supported by meal-hour histograms |
+| Non-determinism | None found: two full runs give an identical results hash, and the same holds before and after reformatting |
+| Parser assumptions | Header variants are explicit; unitless headers were checked against the mg/dL range |
+| Gate errors | Pure functions with boundary tests (0.99 inclusive). The G0.7 explanation requires that missing-CGM rows lie only in note-listed recordings |
+| Weak tests | One sloppy assertion and one wrong expectation were found during writing and corrected to exact values |
+| Contract divergence | None. Paths follow ADR-002/017 |
+
+### Remaining Work
+S2 onward (NEXT_STEPS.md). P-C7 awaits the owner.
+
+### Next Task
+S2: label builder (test-first) and event audit (G2, G3b).

@@ -15,16 +15,16 @@ Update this file whenever a requirement's status changes. Module paths are relat
 
 | ID | Requirement | Kind | Source | Implementation | Verification | Status |
 |---|---|---|---|---|---|---|
-| D-01 | Official figshare copy, SHA-256 manifest; loader refuses on mismatch | REQ | §10.1, G0 | `data/`, `data/MANIFEST.sha256` | `test_checksum_refusal` | PENDING |
-| D-02 | Reconcile CGM count to 112,475 or explain | REQ | G0, N8 | `hyposense audit --structural` | audit report | PENDING |
-| D-03 | Map 5 column variants; unmapped column = error | REQ | §10.1 | `data/adapter.py` | `test_column_variants` | PENDING |
-| D-04 | Units: mg/dL, IU, mg (g → mg), IU/h | REQ | §10.1, §25.1 | `data/adapter.py`, `medication/` | unit tests | PENDING |
-| D-05 | tz-aware +08:00, epoch seconds, sort, dedupe, quarantine non-monotone | REQ | §10.1, §25.1 | `data/adapter.py`, `common/time.py` | unit tests | PENDING |
-| D-06 | Quality flags (gap >20, ≤40, rate >4, warm-up); flags never delete | REQ | §10.1 | `data/validators.py` | unit tests | PENDING |
-| D-07 | Patient = file prefix; group by patient_key | REQ | N3, §25.1 | `data/`, `evaluation/folds.py` | `test_group_by_patient` | PENDING |
-| D-08 | Never use "Hypoglycemia (yes/no)" field | REQ | N2, App. D | `features/` allow-list | `test_summary_hypo_field_never_used` | PENDING |
-| D-09 | G1: ≥99% readings parse, ≥99% intervals ≤20 min | REQ | Table 21.1 | audit | audit report | PENDING |
-| D-10 | Data-quality report (App. G sections) | REQ | App. G | `hyposense audit --report` | audit determinism | PENDING |
+| D-01 | Official figshare copy, SHA-256 manifest; loader refuses on mismatch | REQ | §10.1, G0 | `data/source.py`, `data/manifest.py`, `data/MANIFEST.json` | `test_manifest_detects_tampering`, `test_verify_archive_rejects_mismatch`; G0.3/G0.4 | **PASS** |
+| D-02 | Reconcile CGM count to 112,475 or explain | REQ | G0, N8 | `audit/gates.py`, `audit/versions.py` | G0.7 PASS (rows = 112,475; 13 documented no-CGM rows) | **PASS** |
+| D-03 | Map 5 column variants; unmapped column = error | REQ | §10.1 | `data/columns.py` | `test_all_observed_header_variants_map`, `test_schema_errors` | **PASS** |
+| D-04 | Units: mg/dL, IU, mg (g → mg), IU/h | REQ | §10.1, §25.1 | `data/columns.py` (glucose units; unitless headers verified in mg/dL range), `medication/` (doses, S3) | audit `schema.unitless_header_cgm_in_mgdl_range` | PARTIAL (glucose done; dose units S3) |
+| D-05 | tz-aware +08:00, epoch seconds, sort, dedupe, quarantine non-monotone | REQ | §10.1, §25.1 | `data/loader.py`, `common/timeconv.py` | `test_clean_recording_contract_and_epoch`, `test_non_monotone_*`, `test_duplicate_timestamps`, `test_subsecond_*` | **PASS** (flags, no deletion; ADR-019) |
+| D-06 | Quality flags (gap >20, ≤40, rate >4, warm-up); flags never delete | REQ | §10.1 | `data/quality.py` | `test_cgm_quality_flags` | **PASS** |
+| D-07 | Patient = file prefix; group by patient_key | REQ | N3, §25.1 | `data/records.py` (identity); `evaluation/folds.py` (S5) | `test_parse_recording_name`, `test_multiple_recordings_share_patient_key`; fold test S5 | PARTIAL (identity PASS; folds S5) |
+| D-08 | Never use "Hypoglycemia (yes/no)" field | REQ | N2, App. D | `data/summary.py` FORBIDDEN_FEATURE_COLUMNS; `features/` allow-list (S4) | audit never reports its values; feature test S4 | PARTIAL |
+| D-09 | G1: ≥99% readings parse, ≥99% intervals ≤20 min | REQ | Table 21.1 | `audit/gates.py` | `test_g1_thresholds_*`; artifacts/gates/G1.json (1.0 / 0.999902) | **PASS** |
+| D-10 | Data-quality report (App. G sections) | REQ | App. G | `hyposense audit run` | `test_audit_is_deterministic`; two runs identical results_sha256 | PARTIAL (provenance, structure, CGM, medication/meal structure, partition done; events S2, med parse S3) |
 | D-11 | Logs never contain raw diet free text | REQ | Table 18.1 | `policy/`, `api/` | log content test | PENDING |
 
 ## Labels and partition
@@ -37,9 +37,9 @@ Update this file whenever a requirement's status changes. Module paths are relat
 | L-04 | Prediction-time eligibility (≥70, not in episode, refractory 60, 7/8, follow-up) | C | Table 5.1 | `labels/eligibility.py` | fixtures | PENDING |
 | L-05 | Readings <80 not excluded | C | Table 5.1 | `labels/` | fixture | PENDING |
 | L-06 | Treated definition = population only, never a feature | C | Table 5.1 | `evaluation/population.py` | feature-spec test | PENDING |
-| L-07 | Patient-level partition T 30% / E 70%, seed 2026, stratified | C | §8.6, §10.3 | `configs/partition.csv` | `test_group_by_patient`; constant lock | PARTIAL (constants locked; file pending P-C4) |
+| L-07 | Patient-level partition T 30% / E 70%, seed 2026, stratified | C | §8.6, §10.3 | `configs/partition.csv` (ADR-016), `data/partition.py` | `test_official_partition_is_pinned_and_immutable`, `test_split_*`, `partition verify` | **PASS** (stratum re-checks S2/S3 pending) |
 | L-08 | 5 grouped folds within E; training = T ∪ E∖k | C | §15 | `evaluation/folds.py` | fold tests | PENDING |
-| L-09 | E sealed until freeze; scripts refuse E access | C | §15, R8 | `data/access.py` (guard) | `test_freeze_guard` | PENDING |
+| L-09 | E sealed until freeze; scripts refuse E access | C | §15, R8 | `data/dataset.py` scopes (ADR-018) | `test_tuning_scope_never_opens_sealed_patients`, `test_all_scope_is_refused_before_freeze`, `test_aggregate_audit_scope_is_confined`; `test_freeze_guard` at Freeze | PARTIAL |
 | L-10 | G2 event sufficiency; G3b label validity | REQ | Table 21.1 | event audit | audit report | PENDING |
 
 ## Medication exposure
@@ -90,8 +90,8 @@ Update this file whenever a requirement's status changes. Module paths are relat
 
 | ID | Requirement | Kind | Source | Implementation | Verification | Status |
 |---|---|---|---|---|---|---|
-| P-01 | Table 14.1 states and priority | C | Table 14.1 | `policy/decide.py` | `test_policy_table` | PENDING (P-C1 open) |
-| P-02 | τA rule (dev FA ≤1.0), τW rule (≤3.0) | C | §14.3 | `evaluation/thresholds.py` | unit tests | PENDING (P-C2, P-C6) |
+| P-01 | Table 14.1 states and priority (+ approved P-C1) | C | Table 14.1, ANALYSIS_PLAN §1 | `policy/decide.py` | `test_policy_table` | PENDING (S7) |
+| P-02 | τA rule (dev FA ≤1.0), τW rule (≤3.0) | C | §14.3, ANALYSIS_PLAN §3.5–3.6 | `evaluation/thresholds.py` | unit tests | PENDING (S5; rules approved) |
 | P-03 | 60-min cooldown; ALERT persists | C | Table 5.1 | `policy/` | `test_cooldown` | PENDING |
 | P-04 | LOW CONFIDENCE / timing tags never downgrade ALERT | REQ | §14.3 | `policy/` | `test_uncertainty_never_silences` | PENDING |
 | P-05 | Gap → INSUFFICIENT DATA, no probability | REQ | §10.4 | `policy/` | `test_missing_abstains` | PENDING |
@@ -104,7 +104,7 @@ Update this file whenever a requirement's status changes. Module paths are relat
 
 | ID | Requirement | Kind | Source | Implementation | Verification | Status |
 |---|---|---|---|---|---|---|
-| E-01 | Primary endpoint Δ sens@1FA (M3 − M2), E-treated | C | §6.1, Table 20.1 | `evaluation/` | metric fixtures | PENDING (P-C2, P-C3) |
+| E-01 | Primary endpoint Δ sens@1FA (M3 − M2), E-treated | C | §6.1, Table 20.1, ANALYSIS_PLAN §2–3 | `evaluation/` | metric fixtures (ANALYSIS_PLAN §4 list) | PENDING (S5; rules approved) |
 | E-02 | Paired patient-cluster bootstrap, B=2000, seed 2027, percentile | C | Table 20.1 | `evaluation/bootstrap.py` | determinism test | PARTIAL (constants locked) |
 | E-03 | Decision rule: lower bound > 0 | C | Table 20.1 | `evaluation/report.py` | unit test | PENDING |
 | E-04 | Secondary metrics (Table 20.2) | REQ | §20.2 | `evaluation/metrics.py` | fixtures | PENDING |
@@ -119,7 +119,7 @@ Update this file whenever a requirement's status changes. Module paths are relat
 
 | ID | Requirement | Kind | Source | Implementation | Verification | Status |
 |---|---|---|---|---|---|---|
-| X-01 | Provenance on every artefact/result | REQ | Table 18.1, CLAUDE.md §13 | `common/provenance.py` | manifest completeness test | PENDING |
+| X-01 | Provenance on every artefact/result | REQ | Table 18.1, CLAUDE.md §13 | `common/provenance.py` | audit/gate JSON provenance blocks; `test_git_dirty_ignores_generated_outputs_only` | PARTIAL (audit + gates done) |
 | X-02 | Python 3.11, pinned lockfile | REQ | Table 18.1 | `pyproject.toml`, `uv.lock` | `uv sync` | **PASS** |
 | X-03 | Seeds as specified | C | Table 18.1, App. F | `configs/default.yaml` | `test_protocol_constants` | **PASS** (config level) |
 | X-04 | Freeze: hashes recorded; confirmatory refuses without | REQ | §15, H.2 | `hyposense freeze` | `test_freeze_guard` | PENDING |
@@ -127,7 +127,7 @@ Update this file whenever a requirement's status changes. Module paths are relat
 | X-06 | Latency p95 <200 ms per reading | REC | Table 18.1 | — | benchmark | PENDING |
 | X-07 | Docker image for demo | REC | Table 18.1 | `Dockerfile` | build test | PENDING |
 | X-08 | Centralised scientific constants | REQ | CLAUDE.md §42 | `configs/` | constant lock | **PASS** (initial) |
-| X-09 | Reproduce audit → freeze → confirm → demo by command | REQ | §23.2 | `hyposense` CLI | E2E | PENDING (stub) |
+| X-09 | Reproduce audit → freeze → confirm → demo by command | REQ | §23.2 | `hyposense` CLI | E2E | PARTIAL (`data fetch/extract/manifest`, `audit run` done) |
 
 ## Interface and demo
 
@@ -152,3 +152,12 @@ Update this file whenever a requirement's status changes. Module paths are relat
 | V-04 | Deck; video ≥20 min | REQ | §2.1 | PENDING |
 | V-05 | Folder named TeamName_CollegeName | REQ | §2.1 | PENDING (names unknown) |
 | V-06 | Competition registration | REQ | §2.1 | **UNKNOWN — urgent** |
+
+## S1 additions
+
+| ID | Requirement | Kind | Source | Implementation | Verification | Status |
+|---|---|---|---|---|---|---|
+| D-12 | Mirror-vs-official reconciliation of blueprint numbers | REQ | G0, README of source bundle | `audit/reconcile.py`, `audit/versions.py` | `test_reconcile_*`; 11 MATCH / 8 EXPECTED / 0 UNEXPLAINED | **PASS** |
+| D-13 | No silent row deletion; explicit exclusion accounting | REQ | CLAUDE.md §10, owner S1.2 | `data/loader.py` | loader tests | **PASS** |
+| D-14 | Aggregate-only outputs for E before freeze | C (P-C5) | owner S1, P-C5 | `audit/structural.py` PER_RECORDING_FIELDS | `test_per_recording_output_is_structural_only` | **PASS** |
+| D-15 | Published count source verified | REQ | G0 | `configs/dataset.yaml` published block | nature.com table (VERIFIED 2026-10-18) | **PASS** |

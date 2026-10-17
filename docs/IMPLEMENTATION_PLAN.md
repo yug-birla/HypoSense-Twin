@@ -52,9 +52,11 @@ The event reportedly ends **20 Nov 2026**. The Phase-1 deadline is unknown.
 - **Remaining**: competition registration (human, **deadline reportedly 18 Oct 19:00 IST**);
   remote repository and CI workflow (pytest + ruff + mypy) once a remote exists; LICENSE and
   DATA_LICENSES.md (when the team name and holder are known).
-- **Acceptance**: `uv sync && uv run pytest` passes on a clean checkout. **Status: MET** (16 tests).
+- **Acceptance**: `uv sync && uv run pytest` passes on a clean checkout. **Status: MET** (16 tests). **S0 COMPLETE** (remote/CI deferred).
 
 ## S1 · Data acquisition and structural audit (Gates G0, G1)
+**Status: COMPLETE (2026-10-18)** — G0 PASS, G1 PASS; official figshare v5; v1/v2 reconciliation reproduces every structural blueprint number; original partition imported and locked (ADR-016/017). Delivered via the `hyposense` CLI (not `scripts/fetch_official.py`). Evidence: `artifacts/gates/`, `experiments/runs/ALL-AGG-audit-structural-20261017T2135*`.
+
 - **Objective**: the official ShanghaiT2DM copy, pinned and structurally validated.
 - **Work**:
   1. `scripts/fetch_official.py`: download the ShanghaiT2DM files from figshare
@@ -78,6 +80,8 @@ The event reportedly ends **20 Nov 2026**. The Phase-1 deadline is unknown.
   audit over E files.
 
 ## S2 · Schemas, adapter completion, label builder, partition (Gates G2, G3b)
+**Status: NEXT.** The partition part is already done in S1 (ADR-016); the S2 partition work is reduced to re-checking the 2003/2029 strata. Use figshare v2 to reproduce the blueprint's event numbers exactly (as in S1) before measuring v5.
+
 - **Objective**: typed events for all recordings, verified labels and the frozen partition.
 - **Work**:
   1. `common/schema.py` → Pydantic/dataclass contracts (Blueprint Table 25.1): Observation,

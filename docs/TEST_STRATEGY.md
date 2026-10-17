@@ -96,13 +96,19 @@ Once a remote exists, a GitHub Actions workflow runs on every push: `uv sync --f
 mypy, pytest (no data, so `requires_data` tests skip), the frontend lint and build, and the
 E2E tests on the main branch.
 
-## 8. Current status (2026-10-18)
+## 8. Current status (updated 2026-10-18, end of S1)
 
-| Category | Implemented | Passing |
-|---|---|---|
-| Unit | 0 | — |
-| Integration | 0 | — |
-| Leakage | import boundaries (10 parametrised cases) | 10/10 |
-| Reproducibility | 0 | — |
-| Regression | protocol constants (6) | 6/6 |
-| E2E | 0 | — |
+Command: `uv run pytest -q` → **93 passed** (11 s). `ruff check` and `ruff format --check` are clean;
+`mypy --strict` is clean on 34 source files.
+
+| Category | Files | Tests | Passing |
+|---|---|---|---|
+| Unit | test_loader, test_identity_and_schema, test_integrity, test_partition, test_gates_and_reconcile, test_audit_structural | 67 | 67 |
+| Leakage / static guards | test_import_boundaries (live-path imports incl. `audit`; AGGREGATE_AUDIT confinement; partition-access confinement) | 12 | 12 |
+| Regression | test_protocol_constants (Class C constants, gate criteria, partition pin, canonical dataset pin) | 9 | 9 |
+| Integration (`requires_data`, real v5 copy, aggregate assertions only) | test_real_data | 5 | 5 |
+| Reproducibility | audit determinism (integration test + two CLI runs with identical results_sha256) | — | yes |
+| E2E | — | 0 | — |
+
+All synthetic fixtures are generated at test time (`tests/conftest.py`, labelled SYNTHETIC). No
+binary fixtures or real patient data are committed.

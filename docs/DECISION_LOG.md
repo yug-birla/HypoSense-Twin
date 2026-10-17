@@ -171,3 +171,96 @@ Commit. Pending scientific decisions are in [PROPOSALS.md](PROPOSALS.md) until a
   filters unless they solve a demonstrated problem.
 - **Reason**: G6 is unlikely to pass with these data, and the event ends 20 Nov 2026.
 - **Class**: B (scope) · **Date**: 2026-10-18 · **Commit**: initial
+
+---
+
+## DEC-2026-10-18-A · Owner approvals of Class C proposals
+- **Decision**: The project owner approved **P-C1** (current CGM < 70 → LOW NOW, including floor
+  readings), **P-C2** (deterministic first-crossing operating-curve / budget / τA method),
+  **P-C3** (causal policy replay; OUTCOME-UNKNOWN notifications excluded from TRUE/FALSE and
+  reported separately), **P-C5** (aggregate-only integrity access to E before freeze, with
+  safeguards) and **P-C6** (τW by the same framework on total notifications). **P-C4** was
+  delegated: use the originals if found, else regenerate deterministically. They were found
+  (ADR-016).
+- **Recorded in**: [protocol/ANALYSIS_PLAN.md](protocol/ANALYSIS_PLAN.md) §1–3 (exact
+  algorithms and edge cases).
+- **Class**: C (approved) · **Date**: 2026-10-18 · **Commit**: this S1 documentation commit
+
+## ADR-016 · Official T/E partition = the blueprint author's original, verified and hash-locked
+- **Decision**: Import `audit_outputs/partition.csv` from the blueprint source bundle as
+  `configs/partition.csv` v1.0.0, with columns (patient_id, partition) only. SHA-256
+  `ccdcbce0…2449578` is pinned in configs/default.yaml and checked on every load. Provenance is
+  in `configs/partition.provenance.json`.
+- **Context**: P-C4. The originals were found at
+  `C:\Users\Lenovo\Downloads\HypoSense_v2_sources\` (zip sha256 `0f361a10…`; bundle
+  partition.csv hashed in the provenance file).
+- **Alternatives**: regenerate with seed 2026 (option B).
+- **Evidence (MEASURED)**: `reproduce_audit2_split` (an exact re-implementation of audit2.py
+  lines 14–20) reproduces the original assignment for **100/100 patients** from the file's own
+  stratum column (numpy 2.4.x). T/E = 30/70; stratum sizes 9/18/30/43; T per stratum 3/5/9/13.
+  These match the blueprint (22 treated T, 51 treated E).
+- **Reason**: It preserves the blueprint's pre-registered split exactly. Before any modelling,
+  its assignment is identical to option B with the original algorithm anyway.
+- **Consequences**: Per-patient episode counts and strata of E patients were deliberately not
+  copied into the repository (P-C5). Two verifications are pending: the has-L1 stratum of 2003
+  and 2029 under v5 (S2), and the treated flag against the production parser (S3). A stratum
+  change would be reported, not "fixed", because stratification only balances the split. The
+  partition **must never be regenerated or edited**; changing the pin needs a Class C decision.
+- **Class**: C (approved delegation) · **Date**: 2026-10-18 · **Commit**: 4c1eaad
+
+## ADR-017 · Canonical dataset = figshare article 21600933 **v5**; v1/v2 used only to reconcile
+- **Decision**: Analyse only v5 (2023-10-30, MD5 `4bfb61cf…`, SHA-256 `59b5f5c4…`). Download
+  v1 and v2 (v2 = v3 = v4 by MD5) solely to explain differences from the blueprint's mirror
+  audit. They are extracted to `data/raw/reconciliation/` and never analysed.
+- **Evidence (MEASURED)**: v1 and v2 reproduce **every** structural blueprint number exactly
+  (112,287 CGM; interval histogram; 827/2166 dose entries; 3802/742 diet; 3262 CBG; …). v5
+  differs only in 2003_0 and 2029_0, exactly the files named in the publisher's v5 note. The data
+  descriptor's published "Total CGM measurements 112,475" (VERIFIED from nature.com) equals the
+  v5 timepoint-row count. The 13 rows without CGM are the documented device-change rows in
+  2029_0.
+- **Consequences**: Blueprint mirror numbers are superseded by the v5 measurements. Event and
+  medication-parse counts are re-derived in S2/S3. The blueprint's mirror was pre-2023-10-26
+  figshare content.
+- **Class**: A (data-source pinning; implements G0) · **Date**: 2026-10-18 · **Commit**: 4c1eaad
+
+## ADR-018 · Scoped dataset access as the sealed-partition safeguard
+- **Decision**: `load_dataset(scope)` has three scopes:
+  - `TUNING_ONLY` opens T files only. It is the only scope for modelling and design.
+  - `AGGREGATE_AUDIT` is confined by a static test to `hyposense.audit` and the CLI validate
+    command; its outputs are aggregate-only, with an allow-listed per-recording table.
+  - `ALL_AFTER_FREEZE` refuses until the freeze machinery exists.
+
+  Direct `load_partition` use is confined to `data/` and `audit/`.
+- **Context**: Approved P-C5 ("implement technical safeguards where practical").
+- **Alternatives**: convention only; OS-level separation of E files (rejected: heavy and brittle
+  on Windows).
+- **Consequences**: Every S2+ modelling entry point must call `load_dataset(TUNING_ONLY)`. The
+  static tests fail otherwise.
+- **Class**: A (implements a C requirement) · **Date**: 2026-10-18 · **Commit**: 4c1eaad
+
+## ADR-019 · Loader conventions
+- **Decision**:
+  - Cells are read raw (`dtype=object`) and parsed explicitly.
+  - Rows are never deleted. Problems become per-row flags plus `LoadIssue` records. Exclusions
+    happen only in `cgm_series()`, which counts every exclusion by reason.
+  - Sub-second timestamps are **rounded** to the nearest second, not truncated, and flagged.
+  - Unparseable text in medication columns is a warning, with the raw text preserved for the S3
+    parser. Unparseable CGM/CBG is an error.
+  - The header table is explicit; an unknown column is an error.
+  - File names are authoritative for identity. Sheet names and file-name dates are only checked.
+- **Evidence**: S1 audit. 13 sub-second timestamps (float drift in the 2029_0 device-change
+  rows) would otherwise shift 1 s earlier. Pump-suspension text and a misplaced oral agent sit
+  in CSII columns. pandas type inference turns empty dose columns into float64.
+- **Class**: A · **Date**: 2026-10-18 · **Commit**: 4c1eaad
+
+## ADR-020 · Aggregate-only audit evidence and gate results are committed
+- **Decision**: Commit `experiments/runs/ALL-AGG-*/` and `artifacts/gates/` (aggregate-only,
+  provenance-stamped). Raw and derived patient-level data stay git-ignored.
+- **Reason**: The repository is the project memory (CLAUDE.md §13), so gate evidence must
+  survive outside the working copy.
+- **Class**: A · **Date**: 2026-10-18 · **Commit**: this S1 documentation commit
+
+## ADR-021 · `ruff format` adopted repository-wide
+- **Decision**: Use `ruff format` (black-compatible, line length 100). One per-file E501
+  exception covers the Markdown report template.
+- **Class**: A · **Date**: 2026-10-18 · **Commit**: 4c1eaad

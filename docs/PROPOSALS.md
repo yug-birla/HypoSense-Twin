@@ -17,7 +17,7 @@ Status values: **AWAITING APPROVAL** · **APPROVED** · **REJECTED** · **EXPERI
 ## Class C — require human approval
 
 ### P-C1 · LOW NOW must take precedence over sensor-flag INSUFFICIENT DATA for a current low reading
-**Status: AWAITING APPROVAL** · raised 2026-10-18
+**Status: APPROVED 2026-10-18** (owner) → [protocol/ANALYSIS_PLAN.md §1](protocol/ANALYSIS_PLAN.md); implementation S7 · raised 2026-10-18
 
 1. **Current specification.** Table 14.1 evaluates priority 2 (INSUFFICIENT DATA: gap >20 min,
    <7/8 readings, warm-up <2 h, reading ≤40 mg/dL, |rate| >4 mg/dL/min) **before** priority 3
@@ -43,7 +43,7 @@ Status values: **AWAITING APPROVAL** · **APPROVED** · **REJECTED** · **EXPERI
 8. **Recommendation.** Approve.
 
 ### P-C2 · Exact operationalisation of the operating curve, sens@1FA and τ selection
-**Status: AWAITING APPROVAL** · raised 2026-10-18
+**Status: APPROVED 2026-10-18** (owner) → [protocol/ANALYSIS_PLAN.md §3](protocol/ANALYSIS_PLAN.md) (exact algorithm + edge cases); implementation S5 · raised 2026-10-18
 
 1. **Current specification.** "Episode sensitivity at exactly 1.0 FA/patient-day, read from
    each model's operating curve by linear interpolation between adjacent thresholds" (Table
@@ -84,7 +84,7 @@ Status values: **AWAITING APPROVAL** · **APPROVED** · **REJECTED** · **EXPERI
 8. **Recommendation.** Approve, and record the rule in `docs/protocol/ANALYSIS_PLAN.md`.
 
 ### P-C3 · Evaluation semantics: causal policy replay and false-alert accounting
-**Status: AWAITING APPROVAL** · raised 2026-10-18
+**Status: APPROVED 2026-10-18** (owner; OUTCOME-UNKNOWN class reported separately) → [protocol/ANALYSIS_PLAN.md §2](protocol/ANALYSIS_PLAN.md); implementation S5 · raised 2026-10-18
 
 1. **Current specification.** Prediction-time eligibility (Table 5.1) uses hindsight:
    episode membership, refractory period and ≥60 min of follow-up. Hits are ALERT states at
@@ -119,7 +119,7 @@ Status values: **AWAITING APPROVAL** · **APPROVED** · **REJECTED** · **EXPERI
 8. **Recommendation.** Approve, and record the semantics in `docs/protocol/ANALYSIS_PLAN.md`.
 
 ### P-C4 · Partition provenance: the original `partition.csv` and audit scripts are not in the repository
-**Status: AWAITING DECISION** · raised 2026-10-18
+**Status: RESOLVED 2026-10-18 — Option A.** Originals were found in the blueprint author's source bundle (`HypoSense_v2_sources.zip`). The documented algorithm (seed 2026) reproduces the original assignment exactly (0/100 mismatches). It was imported as `configs/partition.csv` v1.0.0, SHA-256 pinned and immutable (ADR-016) · raised 2026-10-18
 
 1. **Current specification.** The patient-level partition T/E (seed 2026, stratified by
    treated × has-L1, frac_T 0.30) was created by the blueprint audit (`scripts/audit2.py`) and
@@ -151,7 +151,7 @@ Status values: **AWAITING APPROVAL** · **APPROVED** · **REJECTED** · **EXPERI
 8. **Recommendation.** Ask for the originals today. Fall back to B at the start of S2.
 
 ### P-C5 · Permitted outcome-blind access to the sealed partition E before freeze
-**Status: AWAITING APPROVAL** · raised 2026-10-18
+**Status: APPROVED 2026-10-18** (owner); safeguards implemented in S1 (ADR-018) · raised 2026-10-18
 
 1. **Current specification.** E "influences nothing except the final numbers" (§15;
    CLAUDE.md §12). Yet the blueprint's own stage criteria need all files: "All 109 recordings
@@ -180,7 +180,7 @@ Status values: **AWAITING APPROVAL** · **APPROVED** · **REJECTED** · **EXPERI
 8. **Recommendation.** Approve.
 
 ### P-C6 · Definition of τW ("notification-equivalent rate ≤3.0 per patient-day")
-**Status: AWAITING APPROVAL** · raised 2026-10-18
+**Status: APPROVED 2026-10-18** (owner) → [protocol/ANALYSIS_PLAN.md §3.6](protocol/ANALYSIS_PLAN.md) · raised 2026-10-18
 
 1. **Current.** §14.3: τW is the lowest threshold whose development "notification-equivalent"
    rate is ≤3.0 per patient-day.
@@ -195,6 +195,27 @@ Status values: **AWAITING APPROVAL** · **APPROVED** · **REJECTED** · **EXPERI
 6. **Comparability.** Not applicable.
 7. **Bias.** None.
 8. **Recommendation.** Approve.
+
+### P-C7 · Sensor replacement within a recording should restart the warm-up period
+**Status: AWAITING APPROVAL (low impact, not blocking S2)** · raised 2026-10-18 (S1 audit)
+
+1. **Current specification.** Warm-up = "first 2 hours of a recording" (§10.1; policy priority 2).
+2. **Problem.** Recording 2029_0_20210526 contains a documented CGM device replacement (the
+   publisher's v5 note): a 212-min gap, then readings from a new sensor starting 2021-06-03
+   12:46. Under the current rule, the new sensor's first readings are not flagged as warm-up,
+   although sensor day-1 inaccuracy applies to them as well (SA2 exists for exactly this reason).
+3. **Evidence.** S1 audit: 1 gap > 60 min in the whole dataset, at the device change (the only
+   one). Publisher note.txt.
+4. **Proposed modification.** Warm-up = the first 2 h after the recording start **or** after any
+   CGM gap > 120 min (a gap that long implies a sensor restart or replacement in this data). SA2
+   ("exclude first 24 h") should likewise restart after such a gap.
+5. **Scientific consequences.** Very small. The 7-of-8-readings rule already blocks prediction
+   times for 105 min after the gap, so at most a few readings change state. It affects one
+   recording.
+6. **Comparability.** Identical for all models.
+7. **Bias/leakage.** None; the rule is causal (the gap is known at t).
+8. **Recommendation.** Approve before S7 (policy). It may also be left as is, since the impact
+   is negligible.
 
 ---
 
@@ -251,6 +272,22 @@ Status values: **AWAITING APPROVAL** · **APPROVED** · **REJECTED** · **EXPERI
 - **Recommendation**: settle each with product-label sources before any M3 development result
   exists, and record them in `pharma.yaml`.
 
+### P-B5 · Intravenous column carries IV fluids, including 5% glucose (S1 finding)
+**Status: OPEN (S3 a-priori decision)**
+- **Finding (MEASURED, S1 vocabulary)**: the "Insulin dose - i.v." column contains Novolin R
+  infusions (9 components), **5% glucose** (2), 5% glucose + sodium chloride (1), 10% potassium
+  chloride (9), 0.9% sodium chloride (6), and one misplaced CSII-basal entry. These come from 10
+  entries in 6 recordings.
+- **Problem**: the blueprint treats this column as "i.v. insulin flag only". Glucose infusions
+  raise glucose and are a plausible confounder (or a treatment response). They must not be
+  counted as insulin.
+- **Options**: (a) i.v. insulin flag only, with dextrose ignored; (b) add a separate "i.v.
+  dextrose in last 4 h" flag to M3/M3r context (and to M2 if it is regarded as context, not
+  medication exposure).
+- **Recommendation**: decide a priori in S3 before any model result. Because only 3 entries are
+  dextrose, prefer (a) plus a data-quality flag, to keep M2 vs M3 clean.
+- **Classification**: B.
+
 ---
 
 ## Class A — engineering (implemented or scheduled; see DECISION_LOG)
@@ -260,16 +297,22 @@ Status values: **AWAITING APPROVAL** · **APPROVED** · **REJECTED** · **EXPERI
 | ADR-002 | `src/` layout, `configs/`, `artifacts/` | IMPLEMENTED |
 | ADR-003 | uv + lockfile, Python 3.11 | IMPLEMENTED |
 | ADR-004 | Single causal feature implementation for training and replay | SCHEDULED S4 |
-| ADR-005 | Audit built on production modules; audit split across S1–S3 | SCHEDULED S1–S3 |
-| ADR-006 | `hyposense` CLI instead of Makefile | STUB IMPLEMENTED |
+| ADR-005 | Audit built on production modules; audit split across S1–S3 | IMPLEMENTED for S1 (structural); S2/S3 parts pending |
+| ADR-006 | `hyposense` CLI instead of Makefile | IMPLEMENTED (data/partition/audit/gates) |
 | ADR-007 | Next.js + TS + Tailwind + shadcn/ui + ECharts; static export served by FastAPI | SCHEDULED S8 |
 | ADR-008 | REST + SSE; TS types generated from OpenAPI | SCHEDULED S7 |
 | ADR-009 | No pickle in artefacts | SCHEDULED S6 |
-| ADR-010 | File-based run manifests (no MLflow) | SCHEDULED S5 |
-| ADR-011 | Partition guard + freeze manifest | SCHEDULED S2 / Freeze |
+| ADR-010 | File-based run manifests (no MLflow) | IMPLEMENTED (audit runs) |
+| ADR-011 | Partition guard + freeze manifest | PARTIAL: scoped access implemented (ADR-018); freeze manifest at Freeze |
 | ADR-012 | Standalone `docs/protocol/ANALYSIS_PLAN.md` hashed at freeze | SCHEDULED S5 |
 | ADR-013 | Demo fallback = recorded video + static exports (no Streamlit) | ACCEPTED |
 | ADR-014 | Protocol-constant lock + import-boundary tests | IMPLEMENTED |
+| ADR-016 | Original partition imported, verified, hash-locked | IMPLEMENTED |
+| ADR-017 | Canonical data = figshare v5; v1/v2 for reconciliation only | IMPLEMENTED |
+| ADR-018 | Scoped dataset access (sealed-partition safeguard) | IMPLEMENTED |
+| ADR-019 | Loader conventions (raw cells, flags not deletion, rounding, severities) | IMPLEMENTED |
+| ADR-020 | Aggregate-only audit evidence committed to git | IMPLEMENTED |
+| ADR-021 | `ruff format` adopted repository-wide | IMPLEMENTED |
 
 ---
 
