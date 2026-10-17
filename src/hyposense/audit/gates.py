@@ -264,3 +264,188 @@ def write_gate(
     doc = {**result, "evaluated_utc": evaluated_utc, "evidence": evidence, "provenance": provenance}
     out.write_text(json.dumps(doc, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
     return out
+
+
+# ---------------------------------------------------------------------------------------------
+# G2 · Event sufficiency (Blueprint Table 21.1, §8.6, Table 8.4)
+# ---------------------------------------------------------------------------------------------
+
+Z_975 = 1.959964  # two-sided 95 %
+Z_80 = 0.841621  # 80 % power
+
+
+def precision_table(
+    episodes: int, m_w: float, p: float, icc_grid: list[float]
+) -> list[dict[str, Any]]:
+    """Design effect 1 + (m_w - 1) * ICC; effective n = episodes / DE; 95 % CI half-width of a
+    sensitivity p (normal approximation); minimum detectable paired difference at 80 % power for
+    discordance 15 % / 25 % (sqrt(d / n_eff) * (z_.975 + z_.80)). Reproduces Blueprint Table 8.4."""
+    rows = []
+    for icc in icc_grid:
+        de = 1 + (m_w - 1) * icc
+        n_eff = episodes / de
+        rows.append(
+            {
+                "icc": icc,
+                "design_effect": round(de, 2),
+                "effective_n": round(n_eff, 1),
+                "ci_half_width": round(Z_975 * (p * (1 - p) / n_eff) ** 0.5, 3),
+                "mdd_discordance_15": round((Z_975 + Z_80) * (0.15 / n_eff) ** 0.5, 3),
+                "mdd_discordance_25": round((Z_975 + Z_80) * (0.25 / n_eff) ** 0.5, 3),
+            }
+        )
+    return rows
+
+
+def evaluate_g2(
+    *, measured: dict[str, Any], criteria: dict[str, Any], provisional_reasons: list[str]
+) -> dict[str, Any]:
+    eps, pts, mw = (
+        measured["E_treated_L1"],
+        measured["E_treated_with_L1"],
+        measured["E_treated_m_w"],
+    )
+    table = precision_table(eps, mw, criteria["p_ref"], list(criteria["icc_grid"]))
+    ref = next(r for r in table if abs(r["icc"] - criteria["icc_ref"]) < 1e-12)
+    checks = [
+        _check(
+            "G2.1-episodes",
+            PASS if eps >= criteria["min_episodes"] else FAIL,
+            f"{eps} L1 episodes in E-treated patients",
+            eps,
+            f">= {criteria['min_episodes']}",
+        ),
+        _check(
+            "G2.2-patients",
+            PASS if pts >= criteria["min_patients_with_episode"] else FAIL,
+            f"{pts} E-treated patients with >= 1 L1 episode",
+            pts,
+            f">= {criteria['min_patients_with_episode']}",
+        ),
+        _check(
+            "G2.3-precision",
+            PASS if ref["ci_half_width"] <= criteria["max_ci_half_width"] else FAIL,
+            f"95% CI half-width {ref['ci_half_width']} at ICC {criteria['icc_ref']}, "
+            f"p = {criteria['p_ref']}, m_w = {mw}",
+            ref["ci_half_width"],
+            f"<= {criteria['max_ci_half_width']}",
+        ),
+        _check(
+            "G2.4-precision-table",
+            INFO,
+            "Blueprint Table 8.4 reproduced from measured values",
+            table,
+        ),
+        _check(
+            "G2.5-all-patient-fallback",
+            INFO,
+            "E all patients (fallback population if G2 fails)",
+            measured.get("E_all"),
+        ),
+    ]
+    gating = [c for c in checks if c["status"] != INFO]
+    status = FAIL if any(c["status"] == FAIL for c in gating) else PASS
+    return {
+        "gate": "G2",
+        "title": "Event sufficiency",
+        "status": status,
+        "checks": checks,
+        "discrepancies": [c["id"] for c in gating if c["status"] != PASS],
+        "conditions": provisional_reasons,
+        "assumptions": [
+            "ICC of the warned/missed outcome is unknown; Blueprint uses 0.05-0.30 "
+            "(reference 0.15)",
+            "normal approximation; confirmatory intervals use the patient-cluster bootstrap",
+        ],
+        "consequence_if_not_pass": "All patients as primary population; else descriptive claim "
+        "only (Blueprint Table 21.1)",
+    }
+
+
+# ---------------------------------------------------------------------------------------------
+# G3b · Label validity (Blueprint Table 21.1, §8.4)
+# ---------------------------------------------------------------------------------------------
+
+TRIGGERED = "TRIGGERED"
+
+
+def evaluate_g3b(*, measured: dict[str, Any], criteria: dict[str, Any]) -> dict[str, Any]:
+    with_cbg, confirmed = measured["L1_with_cbg_during"], measured["L1_cbg_during_confirmed"]
+    if with_cbg == 0:
+        status, msg = (
+            FAIL,
+            "no L1 episode has a concurrent capillary value; validity not assessable",
+        )
+        share = None
+    else:
+        share = round(1 - confirmed / with_cbg, 3)
+        status = TRIGGERED if share > criteria["max_unconfirmed_share"] else PASS
+        msg = (
+            f"{with_cbg - confirmed}/{with_cbg} L1 episodes with a concurrent CBG were not "
+            f"confirmed < 70 mg/dL (unconfirmed share {share})"
+        )
+    checks = [
+        _check(
+            "G3b.1-episode-confirmation",
+            status,
+            msg,
+            share,
+            f"unconfirmed share <= {criteria['max_unconfirmed_share']} -> PASS; above -> TRIGGERED",
+        ),
+        _check(
+            "G3b.2-agreement",
+            INFO,
+            "CGM vs CBG pairs within +/- 8 min",
+            {
+                k: measured.get(k)
+                for k in (
+                    "pairs",
+                    "cgm_minus_cbg_mean",
+                    "cgm_minus_cbg_median",
+                    "cgm_minus_cbg_sd",
+                    "mard_pct",
+                    "cgm_minus_cbg_mean_cbg_lt100",
+                )
+            },
+        ),
+        _check(
+            "G3b.3-low-range-discordance",
+            INFO,
+            "agreement around 70 mg/dL (both directions)",
+            {
+                k: measured.get(k)
+                for k in (
+                    "pairs_cgm_lt70",
+                    "pairs_cgm_lt70_cbg_lt70",
+                    "pairs_cbg_lt70",
+                    "pairs_cbg_lt70_cgm_lt70",
+                )
+            },
+        ),
+        _check(
+            "G3b.4-sensor-artefacts",
+            INFO,
+            "episodes overlapping >= 2 h at the sensor floor (P-C8 candidate flag)",
+            measured.get("sensor_floor_run"),
+        ),
+    ]
+    consequences = (
+        [
+            "target named 'CGM-detected L1 episode' (never 'hypoglycaemia' without qualification)",
+            "SA5: primary comparison repeated excluding episodes contradicted by a concurrent CBG",
+            "clinical action = capillary glucose check, not treatment",
+            "L2 reported as a secondary endpoint",
+        ]
+        if status == TRIGGERED
+        else []
+    )
+    return {
+        "gate": "G3b",
+        "title": "Label validity",
+        "status": status,
+        "checks": checks,
+        "consequences_applied": consequences,
+        "discrepancies": [c["id"] for c in checks if c["status"] not in (PASS, INFO)],
+        "consequence_if_not_pass": "Rename label, run SA5, capillary-check action "
+        "(Blueprint Table 21.1)",
+    }

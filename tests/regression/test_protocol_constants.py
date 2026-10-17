@@ -46,6 +46,8 @@ def test_eligibility_matches_blueprint(cfg: dict[str, Any]) -> None:
         "history_min": 120,
         "min_readings_in_history": 7,
         "follow_up_min": 60,
+        "min_time_since_start_min": 120,  # executable spec = policy warm-up (ANALYSIS_PLAN §0)
+        "warmup_restart_after_gap_min": None,  # P-C7 PENDING; must stay None until approved
     }
 
 
@@ -65,6 +67,19 @@ def test_gate_criteria_match_blueprint_table_21_1(cfg: dict[str, Any]) -> None:
         "expected_recording_files": 109,
         "expected_patients": 100,
         "published_cgm_readings": 112475,
+    }
+    assert cfg["gates"]["g2"] == {
+        "min_episodes": 100,
+        "min_patients_with_episode": 20,
+        "max_ci_half_width": 0.15,
+        "icc_ref": 0.15,
+        "p_ref": 0.65,
+        "icc_grid": [0.05, 0.15, 0.30],
+    }
+    assert cfg["gates"]["g3b"] == {
+        "max_unconfirmed_share": 0.50,
+        "pair_window_min": 8,
+        "episode_cbg_tail_min": 15,
     }
     assert cfg["gates"]["g1"] == {
         "min_cgm_parse_rate": 0.99,

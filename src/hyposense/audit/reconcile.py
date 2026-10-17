@@ -15,12 +15,12 @@ from typing import Any
 MATCH, EXPECTED, UNEXPLAINED = "MATCH", "EXPECTED DIFFERENCE", "UNEXPLAINED DIFFERENCE"
 
 
-def _equal(a: Any, b: Any) -> bool:
+def equal_values(a: Any, b: Any) -> bool:
     if isinstance(a, dict) and isinstance(b, dict):
         keys = set(a) | set(b)
-        return all(_equal(a.get(k, 0), b.get(k, 0)) for k in keys)
+        return all(equal_values(a.get(k, 0), b.get(k, 0)) for k in keys)
     if isinstance(a, list | tuple) and isinstance(b, list | tuple):
-        return len(a) == len(b) and all(_equal(x, y) for x, y in zip(a, b, strict=True))
+        return len(a) == len(b) and all(equal_values(x, y) for x, y in zip(a, b, strict=True))
     if isinstance(a, int | float) and isinstance(b, int | float):
         return abs(float(a) - float(b)) < 1e-9
     return bool(a == b)
@@ -42,13 +42,13 @@ def reconcile(
             "measured_v5": measured,
             "source": ref["section"],
         }
-        if _equal(measured, bp_value):
+        if equal_values(measured, bp_value):
             row.update(status=MATCH, explanation=None)
         else:
             reproducing = [
                 v
                 for v, d in versions.items()
-                if _equal(d["blueprint_definitions"].get(key), bp_value)
+                if equal_values(d["blueprint_definitions"].get(key), bp_value)
                 and set(d["files_differing_from_canonical"]) <= set(noted_recordings)
                 and not d["only_in_canonical"]
                 and not d["only_in_this_version"]

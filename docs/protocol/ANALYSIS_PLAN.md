@@ -1,7 +1,7 @@
 # HypoSense Twin v2 — Statistical Analysis Plan (pre-registration)
 
-**Status: DRAFT v0.1 — sections 1–4 APPROVED by the project owner (2026-10-18); sections 5–6
-pending (S5).** This file is hashed into the freeze manifest (ADR-012). After freeze it may not
+**Status: DRAFT v0.2 — §0 ADOPTED (= executable spec, S2); §1–4 APPROVED by the project owner
+(2026-10-18); §5–6 pending (S5).** This file is hashed into the freeze manifest (ADR-012). After freeze it may not
 change. Before freeze, a change to an APPROVED section requires a new owner approval recorded
 in [../DECISION_LOG.md](../DECISION_LOG.md).
 
@@ -10,6 +10,54 @@ those of Blueprint v2.0 Table 5.1 and are not restated here. This plan fixes the
 details the blueprint left open.
 
 ---
+
+## 0. Label protocol, operational form (S2, 2026-10-18)
+
+Status: **ADOPTED. Identical to the blueprint's executable specification** (audit.py /
+audit2.py, which produced every number in Blueprint §8). The production label builder reproduces
+all 48 blueprint event values exactly on the mirror-equivalent figshare v1/v2 data (EXPERIMENT_LOG
+S2). The items below only make Table 5.1's wording precise; they change no number.
+Implementation: `src/hyposense/labels/`. Fixtures: `tests/unit/label_fixtures.py`.
+
+1. **Low**: value < threshold (70 for L1, 54 for L2). A value equal to the threshold is not low.
+   All values lie on the 1.8 mg/dL grid (§1 note).
+2. **Onset**: the first reading i with low(i) and low(i+1), where t(i+1) − t(i) ≤ 20 min.
+3. **End** (scan j = i+1, …; the first rule that applies wins):
+   - (a) **GAP** if t(j) − t(j−1) > 30 min. A gap of exactly 30 min does not end an episode.
+   - (b) **RECOVERED** if ¬low(j), ¬low(j+1) and t(j+1) − t(j) ≤ 20 min. "Consecutive" recovery
+     readings therefore obey the same 20-min spacing as onset readings.
+   - (c) **RECORD_END** otherwise. A final lone ≥ 70 reading cannot confirm recovery.
+
+   The episode covers readings [onset, end) by index. Its end time is the time of the reading
+   at the end index: the first recovery reading, or the first reading after the gap.
+4. **Refractory**: readings with t ∈ [end time, end time + 60 min). For GAP endings, the
+   refractory period therefore starts at the first post-gap reading.
+5. **History** (prediction time t):
+   - **t − recording start ≥ 120 min.** This equals the policy's warm-up rule (Table 14.1,
+     priority 2), so no label-eligible time can fall in a period where the policy cannot alert.
+   - **≥ 7 readings in the half-open window (t − 120 min, t].**
+   - The warm-up anchor can be re-set after long gaps through
+     `eligibility.warmup_restart_after_gap_min`. This is the P-C7 hook, currently `null`
+     (PENDING).
+6. **Follow-up**: last reading − t ≥ 60 min, OR an L1 onset in (t, t + 60 min].
+7. **Label**: y(t) = 1 iff an L1 onset lies in (t, t + 60 min]. y is undefined (−1) at
+   non-eligible readings. Every reading carries the first failing eligibility rule, in the
+   order LOW_CGM, IN_EPISODE, REFRACTORY, INSUFFICIENT_HISTORY, INSUFFICIENT_FOLLOW_UP.
+8. **Warnable episode** (the ceiling on sensitivity): some label-eligible t lies in
+   [onset − 60, onset − 15] min, closed at both ends. The executable spec's variant (first onset
+   after an eligible positive t, with no 15-min lead check) gives the same count on this data
+   (306). The production definition is the Table 5.1 one.
+9. **Single-reading rule** (SA1): as rules 2–3 with min_run = 1.
+10. **Recording independence**: episodes, refractory periods, warm-up and labels are computed
+    per recording and never cross recording boundaries. Recording order is irrelevant.
+11. **Label validity** (G3b, SA5): a CBG is paired with the nearest CGM reading within ± 8 min,
+    with ties going to the earlier reading. A CBG falls "during" an episode if it lies in
+    [onset, last in-episode reading + 15 min]. The episode is confirmed if any such CBG < 70.
+    CBG never changes an episode.
+
+**Two distinct time concepts.** **Policy decision time** is every CGM reading; the live policy
+is causal (§2). **Label-eligible time** is the subset defined above, used for training rows and
+for counting hits. Labels may use the future; the policy and features may not.
 
 ## 1. Decision policy: current lows (approved P-C1)
 

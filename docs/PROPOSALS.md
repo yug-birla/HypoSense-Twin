@@ -217,6 +217,40 @@ Status values: **AWAITING APPROVAL** · **APPROVED** · **REJECTED** · **EXPERI
 8. **Recommendation.** Approve before S7 (policy). It may also be left as is, since the impact
    is negligible.
 
+### P-C8 · Sensor-failure handling: a rule-based flag, a policy tag and sensitivity analysis SA9
+**Status: AWAITING APPROVAL (not blocking S3; needed before S6 tuning and S7 policy)** · raised 2026-10-18 (S2)
+
+1. **Current specification.** Labels come from CGM only. Sensor floor readings (≤ 40 mg/dL) are
+   valid lows. Under P-C1 a current reading < 70 is LOW NOW. SA4 (compression) and SA5
+   (CBG-contradicted episodes) are the only artefact-oriented analyses.
+2. **Problem (MEASURED, S2).** Two tuning-partition recordings carry gross sensor artefacts:
+   - **2075_0**: the CGM is stuck at the 39.6 mg/dL floor for the final 33.5 h. All 5 CBG values
+     paired with CGM < 70 are normal (97–155 mg/dL).
+   - **2077_0**: systematic negative bias. Median CGM is 56 mg/dL on 10 of 11 days, 67 % of
+     readings are < 70, and 18/18 CBG values paired with CGM < 70 are ≥ 75 mg/dL.
+
+   Together they hold **43 of the 117 T L1 episodes (37 %)** and most of T's L2 episodes (one
+   patient = 69 % of T's L2). The live system would show LOW NOW for 33 h on a failed sensor.
+   **None of this reaches the confirmatory population.** Both patients are untreated and in T.
+   The floor-run rule flags **0 episodes and 0 recordings in E**.
+3. **Evidence.** Event audit `ALL-AGG-audit-events-*`: `sensor_floor_runs`,
+   `by_partition.*.L1_overlapping_sensor_floor_run`, and the T-only trace review (permitted).
+4. **Proposed modification.**
+   - (a) A CGM-only rule, defined on T and applied uniformly: a **sensor-floor run** is ≥ 8
+     consecutive readings ≤ 40 mg/dL (≥ 2 h).
+   - (b) Policy: during such a run the state stays LOW NOW (P-C1) and gains the tag
+     **SENSOR FAULT SUSPECTED — check sensor and capillary glucose**.
+   - (c) A new sensitivity analysis **SA9**: the primary comparison excluding episodes that
+     overlap a sensor-floor run.
+   - (d) The primary endpoint, labels and population are **unchanged**.
+5. **Scientific consequences.** None for H1 as specified, because E has no flagged episodes and
+   SA9 = primary on current data. The demo becomes safer and more realistic.
+6. **Comparability.** Identical for all models.
+7. **Bias/leakage.** The rule was designed after inspecting T only. It uses CGM at or before t,
+   so it is causal for the policy. Not tuned on E.
+8. **Recommendation.** Approve (a)–(c). The systematic-bias case (2077) is not catchable by a
+   CGM-only rule; it is handled by P-B6 and by SA5.
+
 ---
 
 ## Class B — experiments or a-priori decisions on development data (T) before freeze
@@ -288,6 +322,26 @@ Status values: **AWAITING APPROVAL** · **APPROVED** · **REJECTED** · **EXPERI
   dextrose, prefer (a) plus a data-quality flag, to keep M2 vs M3 clean.
 - **Classification**: B.
 
+### P-B6 · Development-stage handling of sensor-artefact recordings in T (S6)
+**Status: EXPERIMENT PLANNED (S6; decision rule to be written before any model is run)**
+- **Problem**: T development metrics (M1 tuning objective, ladder on T, the M0 Table A.2
+  reproduction) are dominated by two artefact recordings: 37 % of T's L1 episodes, with T's
+  largest single-patient share 24 % for L1 and 69 % for L2.
+- **Options**:
+  - (a) Keep everything (the blueprint);
+  - (b) also report patient-weighted development metrics (Blueprint S7 already does this for
+    E);
+  - (c) in addition, run a pre-specified training/tuning variant that excludes episodes and
+    windows overlapping sensor-floor runs (P-C8a) and recordings meeting an objective
+    CBG-contradiction rule. The rule must be written before running, e.g. ≥ 5 CGM < 70 readings
+    paired with CBG, all with CBG ≥ 70.
+- **Constraint**: the confirmatory evaluation population and labels never change. This
+  concerns only what the learner sees in training and which development summary steers
+  tuning.
+- **Recommendation**: (b) always. (c) as a controlled comparison; adopt for training only if it
+  improves development held-out log-loss on the unaffected T patients by a pre-set margin.
+- **Classification**: B.
+
 ---
 
 ## Class A — engineering (implemented or scheduled; see DECISION_LOG)
@@ -313,6 +367,8 @@ Status values: **AWAITING APPROVAL** · **APPROVED** · **REJECTED** · **EXPERI
 | ADR-019 | Loader conventions (raw cells, flags not deletion, rounding, severities) | IMPLEMENTED |
 | ADR-020 | Aggregate-only audit evidence committed to git | IMPLEMENTED |
 | ADR-021 | `ruff format` adopted repository-wide | IMPLEMENTED |
+| ADR-022 | Label package: explicit state machine, typed outputs, differential tests vs executable spec | IMPLEMENTED |
+| ADR-023 | Legacy treated definition isolated in `audit/legacy.py` (reproduction + provisional G2 only) | IMPLEMENTED |
 
 ---
 

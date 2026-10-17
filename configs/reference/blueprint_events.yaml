@@ -1,0 +1,54 @@
+# Event-level values reported by Blueprint v2.0 (§8.2, §8.4, §8.6, App. A) and its audit outputs
+# (audit_summary.json, audit2_summary.json; GitHub mirror = figshare v1–v4 content, ADR-017).
+# Used ONLY for reconciliation (S2.6). Keys are `blueprint_definitions` keys of the event audit.
+# Treated-related values use the blueprint audit's (legacy) treated definition.
+source: Blueprint v2.0 + HypoSense_v2_sources/audit_outputs/audit_summary.json, audit2_summary.json
+values:
+  L1_episodes:                 {value: 348,   section: "§8.2 Table 8.2"}
+  L2_episodes:                 {value: 96,    section: "§8.2 Table 8.2"}
+  L1_single_reading:           {value: 430,   section: "§8.2 Table 8.2"}
+  patients_with_L1:            {value: 61,    section: "§8.2 Table 8.2"}
+  patients_with_L2:            {value: 26,    section: "§8.2 Table 8.2"}
+  patients_with_L1_single:     {value: 67,    section: "§8.2 Table 8.2"}
+  L1_top5_counts:              {value: [28, 18, 17, 17, 15], section: "audit_summary.json"}
+  L1_top5_patients_share:      {value: 0.273, section: "§8.2 Table 8.2 (top 5 hold 27 %)"}
+  L1_end_reason:               {value: {recovered: 346, record_end: 2}, section: "App. A Table A.1"}
+  L1_duration_min_median:      {value: 60.0,  section: "§8.2 Table 8.2"}
+  L1_nadir_median:             {value: 60.3,  section: "§8.2 Table 8.2"}
+  L1_nocturnal_00_06:          {value: 115,   section: "§8.2 Table 8.2"}
+  L1_within_first_24h:         {value: 69,    section: "§8.2 Table 8.2"}
+  L1_prior_reading_lt80:       {value: 307,   section: "§8.2 Table 8.2"}
+  L1_warnable_h60:             {value: 306,   section: "§8.2 Table 8.2 (warnable ceiling)"}
+  episodes_suspect_artefact:   {value: 9,     section: "§20.3 SA4 / App. A"}
+  eligible_points_h60:         {value: 107041, section: "§8.2 Table 8.2 prediction times"}
+  positive_points_h60:         {value: 1188,  section: "§8.2 Table 8.2"}
+  patients_insulin_or_secretagogue: {value: 73, section: "App. A Table A.1"}
+  L1_in_insulin_or_secretagogue_recordings: {value: 210, section: "§8.2 Table 8.2"}
+  L1_in_insulin_recordings:    {value: 121,   section: "§8.2 Table 8.2"}
+  L1_in_secretagogue_recordings: {value: 94,  section: "§8.2 Table 8.2"}
+  L1_in_neither:               {value: 138,   section: "§8.2 Table 8.2"}
+  T_treated:                   {value: 22,    section: "§8.6"}
+  E_treated:                   {value: 51,    section: "§8.6"}
+  T_L1:                        {value: 117,   section: "App. A Table A.2 (all T episodes)"}
+  T_L1_treated:                {value: 56,    section: "§8.6"}
+  T_treated_with_L1:           {value: 13,    section: "audit2_summary.json"}
+  T_treated_m_w:               {value: 6.79,  section: "audit2_summary.json"}
+  E_L1:                        {value: 231,   section: "§8.6 Table 8.4 (all patients)"}
+  E_L1_treated:                {value: 154,   section: "§8.6 / G2"}
+  E_treated_with_L1:           {value: 30,    section: "§8.6 / G2"}
+  E_treated_m_w:               {value: 9.23,  section: "§8.6"}
+  treated_m_w_all:             {value: 8.58,  section: "audit2_summary.json"}
+  cbg_cgm_pairs:               {value: 3262,  section: "§8.4"}
+  cgm_minus_cbg_mean:          {value: -12.5, section: "§8.4"}
+  cgm_minus_cbg_median:        {value: -9.0,  section: "App. A Table A.1"}
+  mard_pct:                    {value: 12.9,  section: "§8.4"}
+  pairs_cbg_lt100:             {value: 321,   section: "App. A Table A.1"}
+  cgm_minus_cbg_mean_cbg_lt100: {value: 1.9,  section: "§8.4"}
+  pairs_cgm_lt70:              {value: 64,    section: "§8.4"}
+  pairs_cgm_lt70_cbg_lt70:     {value: 8,     section: "§8.4"}
+  pairs_cbg_lt70:              {value: 18,    section: "§8.4"}
+  episodes_with_cbg_during:    {value: 65,    section: "§8.4"}
+  episodes_cbg_during_lt70:    {value: 11,    section: "§8.4"}
+  L1_cbg_confirmed:            {value: 13,    section: "audit_summary.json (onset window)"}
+  L1_cbg_unconfirmed:          {value: 51,    section: "audit_summary.json (onset window)"}
+  L1_no_cbg_nearby:            {value: 284,   section: "audit_summary.json (onset window)"}

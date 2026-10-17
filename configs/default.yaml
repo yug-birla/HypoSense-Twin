@@ -17,7 +17,8 @@ event:                              # [CLASS C] Table 5.1
   threshold_mgdl: 70                # L1 episode threshold
   l2_threshold_mgdl: 54             # L2 (secondary)
   min_run: 2                        # >=2 consecutive readings below threshold
-  max_step_min: 20                  # spacing between the onset readings
+  max_step_min: 20                  # max spacing between the two onset readings AND between the two
+                                    # recovery readings ("consecutive"; ANALYSIS_PLAN §0, executable spec)
   max_gap_min: 30                   # a gap > 30 min ends an episode
   horizon_min: 60                   # positive window (t, t + 60 min]
   min_lead_min: 15                  # correct warning in [onset - 60, onset - 15]
@@ -27,6 +28,8 @@ eligibility:                        # [CLASS C] Table 5.1 "Prediction time t"
   history_min: 120                  # window (t - 120 min, t]
   min_readings_in_history: 7        # >= 7 of the last 8 readings
   follow_up_min: 60                 # evaluation-only (label side): >= 60 min follow-up or onset within it
+  min_time_since_start_min: 120     # t >= recording start + 120 min (= policy warm-up; executable spec)
+  warmup_restart_after_gap_min: null  # P-C7 hook (PENDING approval); null = blueprint rule
 
 population:                         # [CLASS C] Table 5.1 "Treated patient"
   primary: treated
@@ -49,8 +52,19 @@ gates:                              # [CLASS C] Blueprint Table 21.1 acceptance 
     min_cgm_parse_rate: 0.99        # >= 99% of readings parse
     min_interval_le_rate: 0.99      # >= 99% of intervals <= max_interval_min
     max_interval_min: 20
+  g2:                               # event sufficiency (E-treated, L1)
+    min_episodes: 100
+    min_patients_with_episode: 20
+    max_ci_half_width: 0.15         # 95% CI half-width of sensitivity at p_ref and icc_ref
+    icc_ref: 0.15
+    p_ref: 0.65
+    icc_grid: [0.05, 0.15, 0.30]    # reported (Blueprint Table 8.4)
+  g3b:                              # label validity (CGM vs capillary)
+    max_unconfirmed_share: 0.50     # > 50 % unconfirmed among episodes with a concurrent CBG -> TRIGGERED
+    pair_window_min: 8              # CBG paired to the nearest CGM within +/- 8 min
+    episode_cbg_tail_min: 15        # CBG "during" an episode: [onset, last in-episode reading + 15 min]
 
-data_quality:                       # loader invariants (Class A)
+data_quality:                      # loader invariants (Class A)
   cgm_plausible_range_mgdl: [20, 600]
 
 cv:                                 # [CLASS C] Section 15 / 20.1
