@@ -1,0 +1,101 @@
+# HypoSense Twin v2 — default configuration
+# Source: Blueprint v2.0 Appendix F (+ Table 5.1, Section 11.1, Table 18.1, Section 20.1).
+#
+# STATUS: DRAFT — NOT FROZEN.
+# This file is hashed into the freeze manifest at protocol freeze (docs/IMPLEMENTATION_PLAN.md, "Freeze").
+#
+# CHANGE CONTROL
+#   Keys marked [CLASS C] are scientific-protocol constants. They are pinned by
+#   tests/regression/test_protocol_constants.py. Changing one requires an approved
+#   proposal in docs/PROPOSALS.md and a DECISION_LOG entry — never a silent edit.
+#   Keys marked [CLASS B] may change only through a documented development-data experiment.
+#   Unmarked keys are engineering settings (Class A).
+
+protocol_version: "2.0-draft"
+
+event:                              # [CLASS C] Table 5.1
+  threshold_mgdl: 70                # L1 episode threshold
+  l2_threshold_mgdl: 54             # L2 (secondary)
+  min_run: 2                        # >=2 consecutive readings below threshold
+  max_step_min: 20                  # spacing between the onset readings
+  max_gap_min: 30                   # a gap > 30 min ends an episode
+  horizon_min: 60                   # positive window (t, t + 60 min]
+  min_lead_min: 15                  # correct warning in [onset - 60, onset - 15]
+  refractory_min: 60                # no prediction time within 60 min after an episode ends
+
+eligibility:                        # [CLASS C] Table 5.1 "Prediction time t"
+  history_min: 120                  # window (t - 120 min, t]
+  min_readings_in_history: 7        # >= 7 of the last 8 readings
+  follow_up_min: 60                 # evaluation-only (label side): >= 60 min follow-up or onset within it
+
+population:                         # [CLASS C] Table 5.1 "Treated patient"
+  primary: treated
+  treated_def: [insulin_any, sulfonylurea, glinide]   # analysis population only, never a model input
+
+partition:                          # [CLASS C] Section 8.6 / 10.3
+  file: configs/partition.csv       # not yet created — see docs/PROPOSALS.md P-C4
+  seed: 2026
+  frac_T: 0.30
+  strata: [treated, has_l1_episode]
+
+cv:                                 # [CLASS C] Section 15 / 20.1
+  folds: 5
+  seed: 2026
+  inner_folds: 4
+
+model:                              # [CLASS B] Section 11.1 (learner choice and search space)
+  learner: lightgbm
+  objective: binary
+  class_weighting: none
+  deterministic: true
+  num_threads: 1
+  seed: 2026
+  tuned_on: M1
+  optuna_trials: 30
+  search_space:
+    learning_rate: [0.02, 0.1]
+    num_leaves: [7, 31]
+    min_data_in_leaf: [100, 800]
+    feature_fraction: [0.6, 1.0]
+    bagging_fraction: [0.7, 1.0]
+    lambda_l2: [0.0, 10.0]
+  max_rounds: 2000
+
+calibration:                        # [CLASS B] Section 11.1 (method); band rule fixed before E is opened
+  method: isotonic
+  band_rule: {slope_min: 0.8, slope_max: 1.25}
+
+policy:                             # [CLASS C] budgets and cooldown (Table 5.1, Section 14)
+  fa_budget_alert: 1.0              # false alerts per patient-day -> tau_A
+  fa_budget_watch: 3.0              # -> tau_W (definition ambiguity: docs/PROPOSALS.md P-C6)
+  cooldown_min: 60
+  # data-sufficiency rules (Table 14.1 priority 2)
+  max_gap_min: 20
+  floor_mgdl: 40
+  max_rate_mgdl_per_min: 4
+  warmup_min: 120
+  range_pct: [0.5, 99.5]
+
+exposure:                           # [CLASS B] Section 12; kernel parameters live in pharma.yaml
+  pharma: configs/pharma.yaml
+  dictionary: configs/drug_dictionary.csv   # not yet created (S3)
+  timing_unknown_after_h: 36
+  iv_flag_h: 4
+  projections_min: [30, 60]
+
+bootstrap:                          # [CLASS C] Section 20.1
+  resamples: 2000
+  seed: 2027
+  unit: patient
+  interval: percentile_95
+
+sensitivity:
+  fold_seeds_sa7: [2028, 2029, 2030, 2031, 2032]
+
+time:
+  assumed_utc_offset: "+08:00"      # ASSUMPTION (Section 8.8)
+
+replay:
+  speed: 120
+  source: E_out_of_fold             # before freeze, replay is restricted to T patients
+  cases: demo/cases.json

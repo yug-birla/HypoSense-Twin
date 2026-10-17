@@ -1,0 +1,85 @@
+# HypoSense Twin v2 — exposure kernel parameters
+# Source: Blueprint v2.0 Section 12.2 and Appendix C.
+#
+# STATUS: ILLUSTRATIVE — NOT FOR USE IN ANY REPORTED RESULT.
+# Every value below is the blueprint's illustrative value (Appendix C, used for Figure 12.1).
+# Before the protocol freeze, each kernel needs a production value taken from the current
+# product label, with `source` and `source_date` filled and `status: SOURCED`, then a
+# clinical-pharmacist review (`reviewed_by`). The freeze script must refuse to freeze while any
+# kernel has `status: ILLUSTRATIVE`
+# (enforced by tests/regression/test_protocol_constants.py::test_pharma_not_freezable_while_illustrative).
+#
+# Constraints the kernel code will validate:
+#   exponential insulin kernel: 0 < t_peak_min < t_dur_min / 2  (denominator of Eq. 3 must be > 0)
+#   Bateman kernel: t_max_min < t_half_min / ln(2), so that k_a > k_e solves the t_max equation
+
+version: "0.0.0-illustrative"
+
+insulin:
+  rapid_analogue:
+    family: exponential          # Eq. 3-4 (OpenAPS-style activity curve)
+    t_peak_min: 75
+    t_dur_min: 300
+    products: [insulin aspart, insulin glulisine, insulin lispro]
+    status: ILLUSTRATIVE
+    source: null
+    source_date: null
+    reviewed_by: null
+  regular_human:
+    family: exponential
+    t_peak_min: 150
+    t_dur_min: 480
+    products: [Novolin R, Gansulin R, Humulin R]
+    status: ILLUSTRATIVE
+    source: null
+    source_date: null
+    reviewed_by: null
+  intermediate_nph:
+    family: exponential
+    t_peak_min: 360
+    t_dur_min: 900
+    products: [Novolin N, Humulin N]
+    status: ILLUSTRATIVE
+    source: null
+    source_date: null
+    reviewed_by: null
+  basal_analogue:
+    family: flat                 # flat after a lag; window definition to confirm (docs/PROPOSALS.md P-B4)
+    lag_min: 60
+    t_dur_min: 1440
+    products: [insulin glargine, insulin detemir, insulin degludec]
+    status: ILLUSTRATIVE
+    source: null
+    source_date: null
+    reviewed_by: null
+
+# Premixes are dose-weighted sums of component kernels (Section 12.2; Appendix B)
+premix:
+  premix_analogue_30_70: {rapid_analogue: 0.30, intermediate_nph: 0.70}
+  premix_analogue_50_50: {rapid_analogue: 0.50, intermediate_nph: 0.50}
+  premix_human_30_70:    {regular_human: 0.30, intermediate_nph: 0.70}
+  premix_human_40_60:    {regular_human: 0.40, intermediate_nph: 0.60}
+
+csii:
+  kernel: regular_human
+  basal_microbolus_min: 15       # rate r (IU/h) -> r/4 IU every 15 min until the next rate entry
+
+secretagogue:                    # Eq. 5-6 (Bateman, peak-normalised); dose expressed as d / D_max
+  sulfonylurea_default:
+    family: bateman
+    t_half_min: 720
+    t_max_min: 240
+    d_max_mg: null               # per drug and formulation, from labels (App. C)
+    status: ILLUSTRATIVE
+    source: null
+    source_date: null
+    reviewed_by: null
+  glinide_default:
+    family: bateman
+    t_half_min: 60
+    t_max_min: 60
+    d_max_mg: null
+    status: ILLUSTRATIVE
+    source: null
+    source_date: null
+    reviewed_by: null

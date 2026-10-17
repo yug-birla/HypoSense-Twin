@@ -1,0 +1,280 @@
+# Improvement Proposals and Clarification Requests
+
+This file holds every proposal that deviates from, or makes more specific, the blueprint.
+
+Status values: **AWAITING APPROVAL** · **APPROVED** · **REJECTED** · **EXPERIMENT PLANNED** ·
+**IMPLEMENTED**.
+
+- **Class C** (scientific protocol / safety): nothing is implemented until a human approves it.
+  The approval is then recorded in [DECISION_LOG.md](DECISION_LOG.md).
+- **Class B** (model and research engineering): resolved by a controlled experiment on
+  development data (T) or by an a-priori decision recorded before freeze.
+- **Class A** (engineering): implemented directly. The full list is in DECISION_LOG.md and is
+  only summarised here.
+
+---
+
+## Class C — require human approval
+
+### P-C1 · LOW NOW must take precedence over sensor-flag INSUFFICIENT DATA for a current low reading
+**Status: AWAITING APPROVAL** · raised 2026-10-18
+
+1. **Current specification.** Table 14.1 evaluates priority 2 (INSUFFICIENT DATA: gap >20 min,
+   <7/8 readings, warm-up <2 h, reading ≤40 mg/dL, |rate| >4 mg/dL/min) **before** priority 3
+   (LOW NOW: CGM <70, in an episode, or <60 min after one). Fig. 14.2 adds: "any state →
+   INSUFFICIENT DATA when a gap or artefact occurs".
+2. **Problem.** A current reading at the sensor floor (≤40 mg/dL) is shown as **INSUFFICIENT
+   DATA**, not LOW NOW. These are the deepest CGM lows in the data. The same happens to a
+   reading <70 that arrives after a gap, during warm-up, or with a fast rate of change. Hiding a
+   current low behind "insufficient data" conflicts with the safety principle that low risk,
+   insufficient information and a current low are distinct states (CLAUDE.md §17).
+3. **Evidence.** The audit found 329 readings ≤40 mg/dL (§8.1). Table 14.1 rule order. Fig. 14.2
+   caption.
+4. **Proposed modification.** If a CGM reading exists at t and CGM(t) <70 mg/dL, return
+   **LOW NOW** whatever the sufficiency flags. Add tags (SENSOR_FLOOR, RAPID_CHANGE, AFTER_GAP,
+   WARM_UP) and the text "verify with capillary glucose". INSUFFICIENT DATA keeps every other
+   case: no reading at t, or a reading ≥70 that fails sufficiency.
+5. **Scientific consequences.** None for the primary endpoint. Prediction times require
+   CGM(t) ≥70, so LOW NOW times produce no forecast under either order. Hits are ALERT states
+   at eligible times, and notifications come only from ALERT. The secondary "abstention
+   coverage" metric falls slightly; both versions can be reported.
+6. **Effect on comparability.** None. The same policy applies to all models.
+7. **Risk of bias or leakage.** None. The rule uses only the current reading.
+8. **Recommendation.** Approve.
+
+### P-C2 · Exact operationalisation of the operating curve, sens@1FA and τ selection
+**Status: AWAITING APPROVAL** · raised 2026-10-18
+
+1. **Current specification.** "Episode sensitivity at exactly 1.0 FA/patient-day, read from
+   each model's operating curve by linear interpolation between adjacent thresholds" (Table
+   5.1). "τA = the lowest threshold whose development false-alert rate is ≤1.0 per patient-day".
+2. **Problem.** The primary endpoint cannot be computed reproducibly from this wording.
+   (a) **FA/day is not guaranteed monotone in the threshold.** Because of the 60-min cooldown,
+   a lower threshold can start a notification earlier, and the cooldown can then absorb
+   notifications that a higher threshold would have produced separately. The curve can
+   therefore cross 1.0 FA/day more than once. "Adjacent thresholds" and "lowest threshold with
+   FA ≤1.0" then pick different points. Sensitivity *is* monotone, because the ALERT state does
+   not depend on cooldown.
+   (b) **The threshold grid is unspecified.** Isotonic calibration outputs a step function
+   with many tied values, so a curve over calibrated probabilities is coarse and the
+   interpolated value depends on the grid.
+   (c) For M0, the score is projected glucose (alert if *below* θ), so the sweep runs the other
+   way.
+3. **Evidence.** (a) and (c) follow from the definitions. (b) is a mathematical property of
+   isotonic regression. The size of both effects will be **measured on T** in S5–S6: the count
+   of unique calibrated values and the number of non-monotone FA steps.
+4. **Proposed modification.** Fix the following rule *before any model is run*:
+   - **Grid**: all unique pooled scores of the model (plus a sentinel above the maximum),
+     ordered from strictest to most lenient. M0 sweeps θ ascending in 0.5 mg/dL steps over
+     [30, 120].
+   - **Curve**: at each grid point, (FA/day, sensitivity) from the causal policy replay (P-C3).
+   - **sens@1FA**: scan from the strict end. At the **first** grid step where FA/day passes
+     1.0, interpolate sensitivity linearly in FA between the two points that bracket the
+     crossing.
+   - **τA**: the most lenient grid threshold *before* the first crossing of the budget, on
+     development (inner OOF) predictions. **τW** uses the same rule with its own budget (P-C6).
+   - Report the number of non-monotone steps alongside each curve.
+5. **Scientific consequences.** The pre-specified intent (sensitivity at a 1.0 FA/day budget)
+   is unchanged; the rule only removes the ambiguity. Taking the first crossing is
+   conservative: it never benefits from a later dip in FA.
+6. **Effect on comparability.** The same rule applies to every model and every bootstrap
+   resample.
+7. **Risk of bias or leakage.** Low, provided the rule is fixed before results exist, which is
+   the case now. The calibration method's effect on resolution is handled separately in P-B1.
+8. **Recommendation.** Approve, and record the rule in `docs/protocol/ANALYSIS_PLAN.md`.
+
+### P-C3 · Evaluation semantics: causal policy replay and false-alert accounting
+**Status: AWAITING APPROVAL** · raised 2026-10-18
+
+1. **Current specification.** Prediction-time eligibility (Table 5.1) uses hindsight:
+   episode membership, refractory period and ≥60 min of follow-up. Hits are ALERT states at
+   eligible times. A false alert is a notification with no onset in (t, t+60].
+2. **Problem.** Three things are not specified:
+   (i) at which readings the policy runs during evaluation (only eligible times, or every
+   reading);
+   (ii) how a notification at a time *without* 60 min of follow-up is counted (for example at
+   the end of a recording, where its truth is unknowable);
+   (iii) whether the cooldown clock runs across ineligible readings.
+   Different reasonable answers give different FA/day values, and so a different sens@1FA.
+3. **Evidence.** The definitions in Table 5.1 and Appendix E. Analysis shows that the runtime
+   LOW NOW/refractory logic, applied causally with one-reading confirmation lag, agrees with the
+   hindsight eligibility at every reading. Every boundary case either has CGM <70 or falls
+   inside the refractory period in both views. The **follow-up condition** is the only real
+   hindsight element. Fixture tests in S2/S7 will verify this.
+4. **Proposed modification.**
+   - The policy runs causally at **every CGM reading** with the live `decide()`. The cooldown
+     clock runs continuously.
+   - The model is queried wherever the policy requests a probability (sufficient data,
+     CGM ≥70, not LOW NOW). The model is **trained** on label-eligible times only, as in the
+     blueprint.
+   - **Hits** follow the blueprint exactly.
+   - **False alerts** are notifications at times with ≥60 min follow-up (or an onset within it)
+     and no onset in (t, t+60]. Notifications without determinable follow-up are excluded from
+     the FA count and **reported separately**.
+5. **Scientific consequences.** This makes the endpoint computable and makes the evaluated
+   system identical to the deployed one. The blueprint's intent is unchanged.
+6. **Effect on comparability.** The same semantics apply to every model, including M0.
+7. **Risk of bias or leakage.** Excluding unknowable-outcome notifications removes a handful
+   of events at recording ends. They are reported, so nothing is hidden.
+8. **Recommendation.** Approve, and record the semantics in `docs/protocol/ANALYSIS_PLAN.md`.
+
+### P-C4 · Partition provenance: the original `partition.csv` and audit scripts are not in the repository
+**Status: AWAITING DECISION** · raised 2026-10-18
+
+1. **Current specification.** The patient-level partition T/E (seed 2026, stratified by
+   treated × has-L1, frac_T 0.30) was created by the blueprint audit (`scripts/audit2.py`) and
+   stored in `config/partition.csv`. T/E counts: 30/70 patients; 22/51 treated; 56/154 treated
+   episodes.
+2. **Problem.** Neither the partition file nor `audit.py`/`audit2.py` exists in this
+   repository. A re-implemented stratified split with seed 2026 will almost certainly **not**
+   reproduce the same patient assignment, because the RNG call sequence and algorithm differ.
+   The sealed partition is a Class C element.
+3. **Evidence.** A repository inventory on 2026-10-18 shows only `CLAUDE.md` and the blueprint
+   .docx.
+4. **Proposed modification.**
+   - **Option A (preferred):** obtain the original `partition.csv`, `audit.py` and
+     `audit2.py` from the blueprint author and adopt the partition verbatim, after checking
+     that its patient keys and stratum counts reproduce on the official copy.
+   - **Option B:** if A is unavailable within ~1 day, regenerate the partition with a
+     documented deterministic algorithm and seed 2026 **before any modelling**. Record it as
+     partition v1 and mark the blueprint's E counts as superseded. The has-L1 stratum needs L1
+     labels for all patients. That is a single, automated, aggregate-only use of E labels
+     (covered by P-C5), with no human inspection of per-patient output.
+5. **Scientific consequences.** A: none. B: the T/E numbers change. The blueprint author's
+   exploratory M0 run on the *old* T influenced no frozen design parameter (horizon, budgets,
+   definitions and ladder were all fixed on a-priori grounds), so re-partitioning before any
+   modelling does not bias H1.
+6. **Effect on comparability.** None within this project. Blueprint numbers are not
+   comparable under B.
+7. **Risk of bias or leakage.** B risks nothing, provided the partition is generated before
+   any feature, model or threshold work.
+8. **Recommendation.** Ask for the originals today. Fall back to B at the start of S2.
+
+### P-C5 · Permitted outcome-blind access to the sealed partition E before freeze
+**Status: AWAITING APPROVAL** · raised 2026-10-18
+
+1. **Current specification.** E "influences nothing except the final numbers" (§15;
+   CLAUDE.md §12). Yet the blueprint's own stage criteria need all files: "All 109 recordings
+   load; episode counts reproduce the audit" (S2) and "≥99% entries parse" (S3). The audit
+   itself reports aggregate counts over all 100 patients.
+2. **Problem.** The boundary between data engineering on all files and E influencing design is
+   undefined. Without a rule, either the adapter and parser cannot be validated, or E is
+   touched informally.
+3. **Evidence.** Blueprint §26 completion criteria, §8 aggregates, and Gate G0/G1 definitions.
+4. **Proposed modification.** Before freeze, the following are permitted on E, **only through
+   automated scripts behind the partition guard that emit aggregate reports**:
+   (i) structural validation (checksums, column variants, timestamp monotonicity, interval
+   distribution, parse success, unit sanity);
+   (ii) medication and meal **text vocabulary** for dictionary coverage, which is outcome-blind;
+   (iii) aggregate label counts for gates G0–G3b and the episode-count regression test;
+   (iv) the partition stratum indicator (P-C4).
+   **Forbidden** on E before freeze: viewing CGM traces, per-patient episode or label listings,
+   computing any feature or model output, any tuning, kernel or threshold choice, and any demo
+   or UI case selection.
+5. **Scientific consequences.** This writes down how the blueprint was already designed to
+   work.
+6. **Effect on comparability.** None.
+7. **Risk of bias or leakage.** Minimal. Item (ii) lets E's drug vocabulary shape the
+   dictionary, but that is outcome-blind normalisation, the same as a pharmacist reading a
+   product list.
+8. **Recommendation.** Approve.
+
+### P-C6 · Definition of τW ("notification-equivalent rate ≤3.0 per patient-day")
+**Status: AWAITING APPROVAL** · raised 2026-10-18
+
+1. **Current.** §14.3: τW is the lowest threshold whose development "notification-equivalent"
+   rate is ≤3.0 per patient-day.
+2. **Problem.** It is ambiguous whether the rate counts all notifications or only false ones,
+   and whether cooldown applies.
+3. **Evidence.** The wording of §14.3.
+4. **Proposed.** τW is chosen with the P-C2 first-crossing rule, applied to the **total**
+   notification rate (true + false). That rate is computed with the same 60-min cooldown, as if
+   τW were the alert threshold, on inner OOF development predictions.
+5. **Consequences.** It affects only the WATCH display state. It has no effect on the primary
+   or secondary endpoints.
+6. **Comparability.** Not applicable.
+7. **Bias.** None.
+8. **Recommendation.** Approve.
+
+---
+
+## Class B — experiments or a-priori decisions on development data (T) before freeze
+
+### P-B1 · Calibration method benchmark (isotonic vs Platt vs smoothed isotonic)
+**Status: EXPERIMENT PLANNED (S6)**
+- **Current approach**: isotonic regression on inner OOF predictions (§11.1).
+- **Problem**: isotonic output is piecewise constant. The resulting ties coarsen the operating
+  curve (P-C2), and the fit can be unstable with few positives per fold (~1.1% prevalence). The
+  band rule (calibration slope outside 0.8–1.25) is trivially ≈1 if computed on the data used
+  to fit the calibrator.
+- **Alternatives**: Platt (logistic) scaling; isotonic with linear interpolation between knots
+  (strictly monotone, so it keeps resolution).
+- **Protocol**: T only, inner grouped CV. Calibrators are fitted on inner-train OOF predictions
+  and evaluated on inner-held-out patients: log-loss, Brier, ECE, calibration slope and
+  intercept, and the number of unique values. A **decision rule is written before running**:
+  keep isotonic unless a challenger improves held-out log-loss without worsening ECE. Ties go to
+  the blueprint default. One method then applies to all models.
+- **Classification**: B · **Action**: EXPERIMENT.
+
+### P-B2 · Number of boosting rounds in nested and confirmatory training
+**Status: A-PRIORI DECISION PROPOSED**
+- **Current**: "2,000 rounds with early stopping on inner grouped log-loss" (§11.1).
+- **Problem**: early stopping in the confirmatory run needs a validation split carved from
+  T ∪ (E∖k). The blueprint leaves this undefined, and different choices change the models.
+- **Proposed**: treat `num_boost_round` as a tuned hyperparameter. During M1 tuning on T,
+  record the best iteration of each inner fold for the winning trial and freeze
+  `num_boost_round` = their median. Every nested and confirmatory fit then uses that fixed
+  count with **no** early stopping. This keeps the fits deterministic and removes the need for
+  a validation split.
+- **Classification**: B (hyperparameter procedure) · **Action**: decide before S6 tuning;
+  record in DECISION_LOG.
+
+### P-B3 · CSII basal infusion in exposure projections
+**Status: OPEN (S3)**
+- **Current**: projections to t+30 and t+60 "assume no further doses" (§10.2, §12.2). The
+  basal rate is modelled as 15-min micro-boluses "until the next rate entry".
+- **Problem**: a running CSII basal rate is a known, ongoing administration at t. Projecting
+  zero future micro-boluses understates future exposure for 35 pump recordings.
+- **Options**: (a) the literal blueprint; (b) continue the current basal rate through the
+  projection horizon, because the rate is known at t and so stays causal.
+- **Recommendation**: choose (b) **a priori on mechanistic grounds, not by metric**, and adjust
+  the UI caption to "assumes no further boluses; current pump basal rate continues". This needs
+  confirmation of how basal entries appear in the data (S3).
+- **Classification**: B · **Action**: a-priori decision at S3, before any M3 result exists.
+
+### P-B4 · Kernel specification details to pin with the pharmacist
+**Status: OPEN (S3)**
+- Basal-analogue flat window: does "flat after a 1-h lag over 24 h" mean active on [60, 1440)
+  or on [60, 1500) min? Normalisation must integrate to 1 either way.
+- Bateman D_max per drug and formulation (gliclazide IR vs MR, glimepiride, gliquidone,
+  repaglinide).
+- **Recommendation**: settle each with product-label sources before any M3 development result
+  exists, and record them in `pharma.yaml`.
+
+---
+
+## Class A — engineering (implemented or scheduled; see DECISION_LOG)
+
+| ID | Summary | Status |
+|---|---|---|
+| ADR-002 | `src/` layout, `configs/`, `artifacts/` | IMPLEMENTED |
+| ADR-003 | uv + lockfile, Python 3.11 | IMPLEMENTED |
+| ADR-004 | Single causal feature implementation for training and replay | SCHEDULED S4 |
+| ADR-005 | Audit built on production modules; audit split across S1–S3 | SCHEDULED S1–S3 |
+| ADR-006 | `hyposense` CLI instead of Makefile | STUB IMPLEMENTED |
+| ADR-007 | Next.js + TS + Tailwind + shadcn/ui + ECharts; static export served by FastAPI | SCHEDULED S8 |
+| ADR-008 | REST + SSE; TS types generated from OpenAPI | SCHEDULED S7 |
+| ADR-009 | No pickle in artefacts | SCHEDULED S6 |
+| ADR-010 | File-based run manifests (no MLflow) | SCHEDULED S5 |
+| ADR-011 | Partition guard + freeze manifest | SCHEDULED S2 / Freeze |
+| ADR-012 | Standalone `docs/protocol/ANALYSIS_PLAN.md` hashed at freeze | SCHEDULED S5 |
+| ADR-013 | Demo fallback = recorded video + static exports (no Streamlit) | ACCEPTED |
+| ADR-014 | Protocol-constant lock + import-boundary tests | IMPLEMENTED |
+
+---
+
+## Housekeeping (low severity, owner decision)
+
+- **H-1** · CLAUDE.md §2 gives the blueprint path as `docs/blueprint/HypoSense_Twin_v2_Blueprint.docx`.
+  The file is at `docs/HypoSense_Twin_v2_Blueprint.docx`. Proposal: update CLAUDE.md §2. This
+  was left unedited because CLAUDE.md is the owner's instruction file.

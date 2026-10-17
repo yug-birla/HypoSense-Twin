@@ -1,0 +1,49 @@
+# --- Data: never commit patient-level records (CC BY 4.0 data is fetched, not vendored) ---
+data/raw/*
+data/processed/*
+!data/raw/.gitkeep
+!data/processed/.gitkeep
+# data/MANIFEST.sha256 IS committed (pins the official copy)
+
+# --- Generated artefacts: committed selectively at freeze (see docs/ARCHITECTURE.md §9) ---
+artifacts/*
+!artifacts/.gitkeep
+experiments/runs/*
+!experiments/runs/.gitkeep
+logs/
+
+# --- Python ---
+.venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.hypothesis/
+.coverage
+htmlcov/
+dist/
+build/
+
+# --- Frontend ---
+frontend/node_modules/
+frontend/.next/
+frontend/out/
+frontend/playwright-report/
+frontend/test-results/
+
+# --- Secrets / local ---
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# --- OS / editors ---
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/*
+!.vscode/settings.json
+~$*.docx
