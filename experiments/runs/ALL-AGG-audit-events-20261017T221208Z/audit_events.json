@@ -1,0 +1,937 @@
+{
+  "run_id": "ALL-AGG-audit-events-20261017T221208Z",
+  "results_sha256": "2f92a0c993224cb24b59bce6f09e1b9e414f89406c8327ca567558e3d091c7ee",
+  "provenance": {
+    "run_started_utc": "2026-10-17T22:11:45+00:00",
+    "git": {
+      "commit": "32f3245780f5fee9461b37ddbd805819d65efff9",
+      "dirty": false,
+      "dirty_paths": []
+    },
+    "config_sha256": "eb499fbbf9666cd5d77b7b4c62753e19c02f321b9b41a5b5035f1f8a2b64e765",
+    "label_config_sha256": "92e24a777897ab727c410433f5c218bf45b9819d322d940678084918e7284f7f",
+    "dataset_config_sha256": "8bb83c1b6d50b0264d1a4c7d18cc6a59f569c90f8fcfb1de97924336305658e5",
+    "manifest_files_sha256": "5f9d65b4e9233d4ecdd05438e80bb94314290cd5e2d9fdd21e353487cd3cc4ab",
+    "partition_sha256": "ccdcbce02b049992b0ca09bd99a2a5b8c49bcf49940f3a68ed6ca69cd2449578",
+    "environment": {
+      "hyposense": "0.0.1",
+      "python": "3.11.9",
+      "platform": "Windows-10-10.0.26200-SP0",
+      "packages": {
+        "numpy": "2.4.6",
+        "pandas": "3.0.6",
+        "openpyxl": "3.1.5",
+        "xlrd": "2.0.2",
+        "pyyaml": "6.0.3",
+        "pydantic": "2.14.1",
+        "scikit-learn": "1.9.1",
+        "lightgbm": "4.7.0"
+      },
+      "uv_lock_sha256": "82ba7f45dbb87e3a3c1e25ece7687cbcd14387f8fa7ef04ea6955c251dcfe7da"
+    },
+    "access_scope": "aggregate_audit"
+  },
+  "results": {
+    "label_config": {
+      "l1_threshold_mgdl": 70.0,
+      "l2_threshold_mgdl": 54.0,
+      "min_run": 2,
+      "max_step_s": 1200,
+      "max_gap_s": 1800,
+      "horizon_s": 3600,
+      "min_lead_s": 900,
+      "refractory_s": 3600,
+      "history_s": 7200,
+      "min_readings_in_history": 7,
+      "follow_up_s": 3600,
+      "min_time_since_start_s": 7200,
+      "warmup_restart_after_gap_s": null
+    },
+    "label_config_sha256": "92e24a777897ab727c410433f5c218bf45b9819d322d940678084918e7284f7f",
+    "recordings": 109,
+    "patients": 100,
+    "episodes": {
+      "L1": {
+        "episodes": 348,
+        "patients_with": 61,
+        "patients_without": 39,
+        "per_affected_patient_q1_median_q3_max": [
+          2.0,
+          3.0,
+          8.0,
+          28
+        ],
+        "top5_counts": [
+          28,
+          18,
+          17,
+          17,
+          15
+        ],
+        "top5_share": 0.273,
+        "top1_share": 0.08,
+        "m_w": 10.92,
+        "end_reasons": {
+          "record_end": 2,
+          "recovered": 346
+        },
+        "duration_min_q1_median_q3": [
+          30.0,
+          60.0,
+          120.0
+        ],
+        "duration_min_min_max": [
+          30.0,
+          2010.0
+        ],
+        "nadir_median": 60.3
+      },
+      "L2": {
+        "episodes": 96,
+        "patients_with": 26,
+        "patients_without": 74,
+        "per_affected_patient_q1_median_q3_max": [
+          1.0,
+          2.0,
+          3.0,
+          34
+        ],
+        "top5_counts": [
+          34,
+          9,
+          7,
+          6,
+          5
+        ],
+        "top5_share": 0.635,
+        "top1_share": 0.354,
+        "m_w": 14.81,
+        "end_reasons": {
+          "record_end": 2,
+          "recovered": 94
+        },
+        "duration_min_q1_median_q3": [
+          30.0,
+          75.0,
+          120.0
+        ],
+        "duration_min_min_max": [
+          30.0,
+          1995.0
+        ],
+        "nadir_median": 41.4
+      },
+      "L1_single": {
+        "episodes": 430,
+        "patients_with": 67,
+        "patients_without": 33,
+        "per_affected_patient_q1_median_q3_max": [
+          1.5,
+          4.0,
+          9.5,
+          28
+        ],
+        "top5_counts": [
+          28,
+          23,
+          21,
+          21,
+          19
+        ],
+        "top5_share": 0.26,
+        "top1_share": 0.065,
+        "m_w": 12.81,
+        "end_reasons": {
+          "record_end": 2,
+          "recovered": 428
+        },
+        "duration_min_q1_median_q3": [
+          30.0,
+          45.0,
+          90.0
+        ],
+        "duration_min_min_max": [
+          15.0,
+          2010.0
+        ],
+        "nadir_median": 63.0
+      }
+    },
+    "single_to_L1_ratio": 1.236,
+    "L1_annotations": {
+      "compression_candidates": 9,
+      "nocturnal_00_06": 115,
+      "prior_reading_lt80": 307,
+      "sensor_floor_run": 6,
+      "within_first_24h": 69
+    },
+    "sensor_floor_runs": {
+      "recordings_with_run": 3,
+      "recordings_with_run_E": 0,
+      "recordings_with_run_T": 3
+    },
+    "L1_onset_local_hour": {
+      "0": 26,
+      "1": 25,
+      "2": 21,
+      "3": 16,
+      "4": 20,
+      "5": 7,
+      "6": 3,
+      "7": 5,
+      "8": 3,
+      "9": 12,
+      "10": 34,
+      "11": 21,
+      "12": 12,
+      "13": 13,
+      "14": 14,
+      "15": 13,
+      "16": 13,
+      "17": 16,
+      "18": 10,
+      "19": 4,
+      "20": 15,
+      "21": 11,
+      "22": 18,
+      "23": 16
+    },
+    "L1_boundaries": {
+      "onset_within_first_2h": 11,
+      "onset_within_last_60min": 0
+    },
+    "L1_spacing": {
+      "inter_onset_min_q1_median_q3": [
+        330.0,
+        765.0,
+        1575.0
+      ],
+      "inter_onset_lt_120min": 19,
+      "end_to_next_onset_min_min_median": [
+        30.0,
+        615.0
+      ],
+      "next_onset_within_refractory": 22
+    },
+    "L1_warnable": {
+      "blueprint_definition": 306,
+      "legacy_definition": 306,
+      "warnable_share": 0.879
+    },
+    "prediction_times": {
+      "readings": 112462,
+      "eligible": 107210,
+      "positive": 1188,
+      "prevalence": 0.0111,
+      "eligible_share_of_readings": 0.9533,
+      "ineligibility_reasons": {
+        "ELIGIBLE": 107210,
+        "INSUFFICIENT_FOLLOW_UP": 424,
+        "INSUFFICIENT_HISTORY": 837,
+        "IN_EPISODE": 20,
+        "LOW_CGM": 2635,
+        "REFRACTORY": 1336
+      },
+      "per_recording_eligible_share_min_median_max": [
+        0.21,
+        0.98,
+        0.99
+      ]
+    },
+    "treatment_legacy_provisional": {
+      "definition": "Blueprint audit.py rule (any matched s.c. insulin class, any CSII cell, any i.v. cell, or an oral SU/glinide); PROVISIONAL until the S3 parser",
+      "patients_treated": 73,
+      "patients_treated_strict_iv": 73,
+      "patients_status_depends_on_non_insulin_iv": 0,
+      "L1_in_treated_recordings": 210,
+      "L1_in_insulin_recordings": 121,
+      "L1_in_secretagogue_recordings": 94,
+      "L1_in_neither": 138,
+      "treated_m_w_all": 8.58
+    },
+    "by_partition": {
+      "T": {
+        "patients": 30,
+        "patients_with_L1": 18,
+        "L1": 117,
+        "treated_patients": 22,
+        "treated_L1": 56,
+        "treated_with_L1": 13,
+        "treated_m_w": 6.79,
+        "L1_concentration": {
+          "top5_share": 0.658,
+          "top1_share": 0.239,
+          "m_w": 13.46
+        },
+        "L2": {
+          "episodes": 49,
+          "patients_with": 8,
+          "top5_share": 0.918,
+          "top1_share": 0.694,
+          "m_w": 24.39
+        },
+        "L1_overlapping_sensor_floor_run": 6,
+        "treated_L1_overlapping_sensor_floor_run": 1
+      },
+      "E": {
+        "patients": 70,
+        "patients_with_L1": 43,
+        "L1": 231,
+        "treated_patients": 51,
+        "treated_L1": 154,
+        "treated_with_L1": 30,
+        "treated_m_w": 9.23,
+        "L1_concentration": {
+          "top5_share": 0.346,
+          "top1_share": 0.078,
+          "m_w": 9.63
+        },
+        "L2": {
+          "episodes": 47,
+          "patients_with": 18,
+          "top5_share": 0.638,
+          "top1_share": 0.191,
+          "m_w": 4.83
+        },
+        "L1_overlapping_sensor_floor_run": 0,
+        "treated_L1_overlapping_sensor_floor_run": 0
+      }
+    },
+    "strata_counts": {
+      "E:0": 6,
+      "E:1": 13,
+      "E:2": 21,
+      "E:3": 30,
+      "T:0": 3,
+      "T:1": 5,
+      "T:2": 9,
+      "T:3": 13
+    },
+    "patients_missing_from_partition": 0,
+    "label_validity": {
+      "pairs": 3269,
+      "cgm_minus_cbg_mean": -12.5,
+      "cgm_minus_cbg_median": -9.0,
+      "cgm_minus_cbg_sd": 40.9,
+      "mard_pct": 12.9,
+      "pairs_cbg_lt100": 321,
+      "cgm_minus_cbg_mean_cbg_lt100": 1.9,
+      "pairs_cgm_lt70": 64,
+      "pairs_cgm_lt70_cbg_lt70": 8,
+      "pairs_cbg_lt70": 18,
+      "pairs_cbg_lt70_cgm_lt70": 8,
+      "L1_with_cbg_during": 65,
+      "L1_cbg_during_confirmed": 11,
+      "L1_cbg_during_contradicted": 54,
+      "unconfirmed_share": 0.831,
+      "legacy_onset_window": {
+        "confirmed": 13,
+        "no_cbg": 284,
+        "unconfirmed": 51
+      }
+    },
+    "blueprint_definitions": {
+      "L1_episodes": 348,
+      "L2_episodes": 96,
+      "L1_single_reading": 430,
+      "patients_with_L1": 61,
+      "patients_with_L2": 26,
+      "patients_with_L1_single": 67,
+      "L1_top5_counts": [
+        28,
+        18,
+        17,
+        17,
+        15
+      ],
+      "L1_top5_patients_share": 0.273,
+      "L1_end_reason": {
+        "record_end": 2,
+        "recovered": 346
+      },
+      "L1_duration_min_median": 60.0,
+      "L1_nadir_median": 60.3,
+      "L1_nocturnal_00_06": 115,
+      "L1_within_first_24h": 69,
+      "L1_prior_reading_lt80": 307,
+      "L1_warnable_h60": 306,
+      "episodes_suspect_artefact": 9,
+      "eligible_points_h60": 107210,
+      "positive_points_h60": 1188,
+      "patients_insulin_or_secretagogue": 73,
+      "L1_in_insulin_or_secretagogue_recordings": 210,
+      "L1_in_insulin_recordings": 121,
+      "L1_in_secretagogue_recordings": 94,
+      "L1_in_neither": 138,
+      "T_L1": 117,
+      "T_L1_treated": 56,
+      "T_treated_with_L1": 13,
+      "T_treated_m_w": 6.79,
+      "E_L1": 231,
+      "E_L1_treated": 154,
+      "E_treated_with_L1": 30,
+      "E_treated_m_w": 9.23,
+      "T_treated": 22,
+      "E_treated": 51,
+      "treated_m_w_all": 8.58,
+      "cbg_cgm_pairs": 3269,
+      "cgm_minus_cbg_mean": -12.5,
+      "cgm_minus_cbg_median": -9.0,
+      "mard_pct": 12.9,
+      "pairs_cbg_lt100": 321,
+      "cgm_minus_cbg_mean_cbg_lt100": 1.9,
+      "pairs_cgm_lt70": 64,
+      "pairs_cgm_lt70_cbg_lt70": 8,
+      "pairs_cbg_lt70": 18,
+      "episodes_with_cbg_during": 65,
+      "episodes_cbg_during_lt70": 11,
+      "L1_cbg_confirmed": 13,
+      "L1_cbg_unconfirmed": 51,
+      "L1_no_cbg_nearby": 284
+    }
+  },
+  "version_reproduction": {
+    "v2": {
+      "blueprint_definitions": {
+        "L1_episodes": 348,
+        "L2_episodes": 96,
+        "L1_single_reading": 430,
+        "patients_with_L1": 61,
+        "patients_with_L2": 26,
+        "patients_with_L1_single": 67,
+        "L1_top5_counts": [
+          28,
+          18,
+          17,
+          17,
+          15
+        ],
+        "L1_top5_patients_share": 0.273,
+        "L1_end_reason": {
+          "record_end": 2,
+          "recovered": 346
+        },
+        "L1_duration_min_median": 60.0,
+        "L1_nadir_median": 60.3,
+        "L1_nocturnal_00_06": 115,
+        "L1_within_first_24h": 69,
+        "L1_prior_reading_lt80": 307,
+        "L1_warnable_h60": 306,
+        "episodes_suspect_artefact": 9,
+        "eligible_points_h60": 107041,
+        "positive_points_h60": 1188,
+        "patients_insulin_or_secretagogue": 73,
+        "L1_in_insulin_or_secretagogue_recordings": 210,
+        "L1_in_insulin_recordings": 121,
+        "L1_in_secretagogue_recordings": 94,
+        "L1_in_neither": 138,
+        "T_L1": 117,
+        "T_L1_treated": 56,
+        "T_treated_with_L1": 13,
+        "T_treated_m_w": 6.79,
+        "E_L1": 231,
+        "E_L1_treated": 154,
+        "E_treated_with_L1": 30,
+        "E_treated_m_w": 9.23,
+        "T_treated": 22,
+        "E_treated": 51,
+        "treated_m_w_all": 8.58,
+        "cbg_cgm_pairs": 3262,
+        "cgm_minus_cbg_mean": -12.5,
+        "cgm_minus_cbg_median": -9.0,
+        "mard_pct": 12.9,
+        "pairs_cbg_lt100": 321,
+        "cgm_minus_cbg_mean_cbg_lt100": 1.9,
+        "pairs_cgm_lt70": 64,
+        "pairs_cgm_lt70_cbg_lt70": 8,
+        "pairs_cbg_lt70": 18,
+        "episodes_with_cbg_during": 65,
+        "episodes_cbg_during_lt70": 11,
+        "L1_cbg_confirmed": 13,
+        "L1_cbg_unconfirmed": 51,
+        "L1_no_cbg_nearby": 284
+      },
+      "files_differing_from_canonical": {
+        "2003_0_20210615": true,
+        "2029_0_20210526": true
+      },
+      "only_in_canonical": [],
+      "only_in_this_version": []
+    },
+    "v1": {
+      "blueprint_definitions": {
+        "L1_episodes": 348,
+        "L2_episodes": 96,
+        "L1_single_reading": 430,
+        "patients_with_L1": 61,
+        "patients_with_L2": 26,
+        "patients_with_L1_single": 67,
+        "L1_top5_counts": [
+          28,
+          18,
+          17,
+          17,
+          15
+        ],
+        "L1_top5_patients_share": 0.273,
+        "L1_end_reason": {
+          "record_end": 2,
+          "recovered": 346
+        },
+        "L1_duration_min_median": 60.0,
+        "L1_nadir_median": 60.3,
+        "L1_nocturnal_00_06": 115,
+        "L1_within_first_24h": 69,
+        "L1_prior_reading_lt80": 307,
+        "L1_warnable_h60": 306,
+        "episodes_suspect_artefact": 9,
+        "eligible_points_h60": 107041,
+        "positive_points_h60": 1188,
+        "patients_insulin_or_secretagogue": 73,
+        "L1_in_insulin_or_secretagogue_recordings": 210,
+        "L1_in_insulin_recordings": 121,
+        "L1_in_secretagogue_recordings": 94,
+        "L1_in_neither": 138,
+        "T_L1": 117,
+        "T_L1_treated": 56,
+        "T_treated_with_L1": 13,
+        "T_treated_m_w": 6.79,
+        "E_L1": 231,
+        "E_L1_treated": 154,
+        "E_treated_with_L1": 30,
+        "E_treated_m_w": 9.23,
+        "T_treated": 22,
+        "E_treated": 51,
+        "treated_m_w_all": 8.58,
+        "cbg_cgm_pairs": 3262,
+        "cgm_minus_cbg_mean": -12.5,
+        "cgm_minus_cbg_median": -9.0,
+        "mard_pct": 12.9,
+        "pairs_cbg_lt100": 321,
+        "cgm_minus_cbg_mean_cbg_lt100": 1.9,
+        "pairs_cgm_lt70": 64,
+        "pairs_cgm_lt70_cbg_lt70": 8,
+        "pairs_cbg_lt70": 18,
+        "episodes_with_cbg_during": 65,
+        "episodes_cbg_during_lt70": 11,
+        "L1_cbg_confirmed": 13,
+        "L1_cbg_unconfirmed": 51,
+        "L1_no_cbg_nearby": 284
+      },
+      "files_differing_from_canonical": {
+        "2003_0_20210615": true,
+        "2029_0_20210526": true
+      },
+      "only_in_canonical": [],
+      "only_in_this_version": []
+    },
+    "exact_reproduction_counts": {
+      "v2": "48/48",
+      "v1": "48/48"
+    }
+  },
+  "blueprint_reconciliation": [
+    {
+      "metric": "L1_episodes",
+      "blueprint_value": 348,
+      "measured_v5": 348,
+      "source": "§8.2 Table 8.2",
+      "status": "MATCH",
+      "explanation": null
+    },
+    {
+      "metric": "L2_episodes",
+      "blueprint_value": 96,
+      "measured_v5": 96,
+      "source": "§8.2 Table 8.2",
+      "status": "MATCH",
+      "explanation": null
+    },
+    {
+      "metric": "L1_single_reading",
+      "blueprint_value": 430,
+      "measured_v5": 430,
+      "source": "§8.2 Table 8.2",
+      "status": "MATCH",
+      "explanation": null
+    },
+    {
+      "metric": "patients_with_L1",
+      "blueprint_value": 61,
+      "measured_v5": 61,
+      "source": "§8.2 Table 8.2",
+      "status": "MATCH",
+      "explanation": null
+    },
+    {
+      "metric": "patients_with_L2",
+      "blueprint_value": 26,
+      "measured_v5": 26,
+      "source": "§8.2 Table 8.2",
+      "status": "MATCH",
+      "explanation": null
+    },
+    {
+      "metric": "patients_with_L1_single",
+      "blueprint_value": 67,
+      "measured_v5": 67,
+      "source": "§8.2 Table 8.2",
+      "status": "MATCH",
+      "explanation": null
+    },
+    {
+      "metric": "L1_top5_counts",
+      "blueprint_value": [
+        28,
+        18,
+        17,
+        17,
+        15
+      ],
+      "measured_v5": [
+        28,
+        18,
+        17,
+        17,
+        15
+      ],
+      "source": "audit_summary.json",
+      "status": "MATCH",
+      "explanation": null
+    },
+    {
+      "metric": "L1_top5_patients_share",
+      "blueprint_value": 0.273,
+      "measured_v5": 0.273,
+      "source": "§8.2 Table 8.2 (top 5 hold 27 %)",
+      "status": "MATCH",
+      "explanation": null
+    },
+    {
+      "metric": "L1_end_reason",
+      "blueprint_value": {
+        "recovered": 346,
+        "record_end": 2
+      },
+      "measured_v5": {
+        "record_end": 2,
+        "recovered": 346
+      },
+      "source": "App. A Table A.1",
+      "status": "MATCH",
+      "explanation": null
+    },
+    {
+      "metric": "L1_duration_min_median",
+      "blueprint_value": 60.0,
+      "measured_v5": 60.0,
+      "source": "§8.2 Table 8.2",
+      "status": "MATCH",
+      "explanation": null
+    },
+    {
+      "metric": "L1_nadir_median",
+      "blueprint_value": 60.3,
+      "measured_v5": 60.3,
+      "source": "§8.2 Table 8.2",
+      "status": "MATCH",
+      "explanation": null
+    },
+    {
+      "metric": "L1_nocturnal_00_06",
+      "blueprint_value": 115,
+      "measured_v5": 115,
+      "source": "§8.2 Table 8.2",
+      "status": "MATCH",
+      "explanation": null
+    },
+    {
+      "metric": "L1_within_first_24h",
+      "blueprint_value": 69,
+      "measured_v5": 69,
+      "source": "§8.2 Table 8.2",
+      "status": "MATCH",
+      "explanation": null
+    },
+    {
+      "metric": "L1_prior_reading_lt80",
+      "blueprint_value": 307,
+      "measured_v5": 307,
+      "source": "§8.2 Table 8.2",
+      "status": "MATCH",
+      "explanation": null
+    },
+    {
+      "metric": "L1_warnable_h60",
+      "blueprint_value": 306,
+      "measured_v5": 306,
+      "source": "§8.2 Table 8.2 (warnable ceiling)",
+      "status": "MATCH",
+      "explanation": null
+    },
+    {
+      "metric": "episodes_suspect_artefact",
+      "blueprint_value": 9,
+      "measured_v5": 9,
+      "source": "§20.3 SA4 / App. A",
+      "status": "MATCH",
+      "explanation": null
+    },
+    {
+      "metric": "eligible_points_h60",
+      "blueprint_value": 107041,
+      "measured_v5": 107210,
+      "source": "§8.2 Table 8.2 prediction times",
+      "status": "EXPECTED DIFFERENCE",
+      "explanation": "figshare v2, v1 reproduces the blueprint value exactly; v5 differs only in ['2003_0_20210615', '2029_0_20210526'], all listed in the publisher's v5 note"
+    },
+    {
+      "metric": "positive_points_h60",
+      "blueprint_value": 1188,
+      "measured_v5": 1188,
+      "source": "§8.2 Table 8.2",
+      "status": "MATCH",
+      "explanation": null
+    },
+    {
+      "metric": "patients_insulin_or_secretagogue",
+      "blueprint_value": 73,
+      "measured_v5": 73,
+      "source": "App. A Table A.1",
+      "status": "MATCH",
+      "explanation": null
+    },
+    {
+      "metric": "L1_in_insulin_or_secretagogue_recordings",
+      "blueprint_value": 210,
+      "measured_v5": 210,
+      "source": "§8.2 Table 8.2",
+      "status": "MATCH",
+      "explanation": null
+    },
+    {
+      "metric": "L1_in_insulin_recordings",
+      "blueprint_value": 121,
+      "measured_v5": 121,
+      "source": "§8.2 Table 8.2",
+      "status": "MATCH",
+      "explanation": null
+    },
+    {
+      "metric": "L1_in_secretagogue_recordings",
+      "blueprint_value": 94,
+      "measured_v5": 94,
+      "source": "§8.2 Table 8.2",
+      "status": "MATCH",
+      "explanation": null
+    },
+    {
+      "metric": "L1_in_neither",
+      "blueprint_value": 138,
+      "measured_v5": 138,
+      "source": "§8.2 Table 8.2",
+      "status": "MATCH",
+      "explanation": null
+    },
+    {
+      "metric": "T_treated",
+      "blueprint_value": 22,
+      "measured_v5": 22,
+      "source": "§8.6",
+      "status": "MATCH",
+      "explanation": null
+    },
+    {
+      "metric": "E_treated",
+      "blueprint_value": 51,
+      "measured_v5": 51,
+      "source": "§8.6",
+      "status": "MATCH",
+      "explanation": null
+    },
+    {
+      "metric": "T_L1",
+      "blueprint_value": 117,
+      "measured_v5": 117,
+      "source": "App. A Table A.2 (all T episodes)",
+      "status": "MATCH",
+      "explanation": null
+    },
+    {
+      "metric": "T_L1_treated",
+      "blueprint_value": 56,
+      "measured_v5": 56,
+      "source": "§8.6",
+      "status": "MATCH",
+      "explanation": null
+    },
+    {
+      "metric": "T_treated_with_L1",
+      "blueprint_value": 13,
+      "measured_v5": 13,
+      "source": "audit2_summary.json",
+      "status": "MATCH",
+      "explanation": null
+    },
+    {
+      "metric": "T_treated_m_w",
+      "blueprint_value": 6.79,
+      "measured_v5": 6.79,
+      "source": "audit2_summary.json",
+      "status": "MATCH",
+      "explanation": null
+    },
+    {
+      "metric": "E_L1",
+      "blueprint_value": 231,
+      "measured_v5": 231,
+      "source": "§8.6 Table 8.4 (all patients)",
+      "status": "MATCH",
+      "explanation": null
+    },
+    {
+      "metric": "E_L1_treated",
+      "blueprint_value": 154,
+      "measured_v5": 154,
+      "source": "§8.6 / G2",
+      "status": "MATCH",
+      "explanation": null
+    },
+    {
+      "metric": "E_treated_with_L1",
+      "blueprint_value": 30,
+      "measured_v5": 30,
+      "source": "§8.6 / G2",
+      "status": "MATCH",
+      "explanation": null
+    },
+    {
+      "metric": "E_treated_m_w",
+      "blueprint_value": 9.23,
+      "measured_v5": 9.23,
+      "source": "§8.6",
+      "status": "MATCH",
+      "explanation": null
+    },
+    {
+      "metric": "treated_m_w_all",
+      "blueprint_value": 8.58,
+      "measured_v5": 8.58,
+      "source": "audit2_summary.json",
+      "status": "MATCH",
+      "explanation": null
+    },
+    {
+      "metric": "cbg_cgm_pairs",
+      "blueprint_value": 3262,
+      "measured_v5": 3269,
+      "source": "§8.4",
+      "status": "EXPECTED DIFFERENCE",
+      "explanation": "figshare v2, v1 reproduces the blueprint value exactly; v5 differs only in ['2003_0_20210615', '2029_0_20210526'], all listed in the publisher's v5 note"
+    },
+    {
+      "metric": "cgm_minus_cbg_mean",
+      "blueprint_value": -12.5,
+      "measured_v5": -12.5,
+      "source": "§8.4",
+      "status": "MATCH",
+      "explanation": null
+    },
+    {
+      "metric": "cgm_minus_cbg_median",
+      "blueprint_value": -9.0,
+      "measured_v5": -9.0,
+      "source": "App. A Table A.1",
+      "status": "MATCH",
+      "explanation": null
+    },
+    {
+      "metric": "mard_pct",
+      "blueprint_value": 12.9,
+      "measured_v5": 12.9,
+      "source": "§8.4",
+      "status": "MATCH",
+      "explanation": null
+    },
+    {
+      "metric": "pairs_cbg_lt100",
+      "blueprint_value": 321,
+      "measured_v5": 321,
+      "source": "App. A Table A.1",
+      "status": "MATCH",
+      "explanation": null
+    },
+    {
+      "metric": "cgm_minus_cbg_mean_cbg_lt100",
+      "blueprint_value": 1.9,
+      "measured_v5": 1.9,
+      "source": "§8.4",
+      "status": "MATCH",
+      "explanation": null
+    },
+    {
+      "metric": "pairs_cgm_lt70",
+      "blueprint_value": 64,
+      "measured_v5": 64,
+      "source": "§8.4",
+      "status": "MATCH",
+      "explanation": null
+    },
+    {
+      "metric": "pairs_cgm_lt70_cbg_lt70",
+      "blueprint_value": 8,
+      "measured_v5": 8,
+      "source": "§8.4",
+      "status": "MATCH",
+      "explanation": null
+    },
+    {
+      "metric": "pairs_cbg_lt70",
+      "blueprint_value": 18,
+      "measured_v5": 18,
+      "source": "§8.4",
+      "status": "MATCH",
+      "explanation": null
+    },
+    {
+      "metric": "episodes_with_cbg_during",
+      "blueprint_value": 65,
+      "measured_v5": 65,
+      "source": "§8.4",
+      "status": "MATCH",
+      "explanation": null
+    },
+    {
+      "metric": "episodes_cbg_during_lt70",
+      "blueprint_value": 11,
+      "measured_v5": 11,
+      "source": "§8.4",
+      "status": "MATCH",
+      "explanation": null
+    },
+    {
+      "metric": "L1_cbg_confirmed",
+      "blueprint_value": 13,
+      "measured_v5": 13,
+      "source": "audit_summary.json (onset window)",
+      "status": "MATCH",
+      "explanation": null
+    },
+    {
+      "metric": "L1_cbg_unconfirmed",
+      "blueprint_value": 51,
+      "measured_v5": 51,
+      "source": "audit_summary.json (onset window)",
+      "status": "MATCH",
+      "explanation": null
+    },
+    {
+      "metric": "L1_no_cbg_nearby",
+      "blueprint_value": 284,
+      "measured_v5": 284,
+      "source": "audit_summary.json (onset window)",
+      "status": "MATCH",
+      "explanation": null
+    }
+  ]
+}

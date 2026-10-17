@@ -96,19 +96,24 @@ Once a remote exists, a GitHub Actions workflow runs on every push: `uv sync --f
 mypy, pytest (no data, so `requires_data` tests skip), the frontend lint and build, and the
 E2E tests on the main branch.
 
-## 8. Current status (updated 2026-10-18, end of S1)
+## 8. Current status (updated 2026-10-18, end of S2)
 
-Command: `uv run pytest -q` → **93 passed** (11 s). `ruff check` and `ruff format --check` are clean;
-`mypy --strict` is clean on 34 source files.
+Command: `uv run pytest -q` → **194 passed**. `ruff check` + `ruff format` clean; `mypy --strict` clean
+(43 source files).
 
 | Category | Files | Tests | Passing |
 |---|---|---|---|
-| Unit | test_loader, test_identity_and_schema, test_integrity, test_partition, test_gates_and_reconcile, test_audit_structural | 67 | 67 |
-| Leakage / static guards | test_import_boundaries (live-path imports incl. `audit`; AGGREGATE_AUDIT confinement; partition-access confinement) | 12 | 12 |
-| Regression | test_protocol_constants (Class C constants, gate criteria, partition pin, canonical dataset pin) | 9 | 9 |
-| Integration (`requires_data`, real v5 copy, aggregate assertions only) | test_real_data | 5 | 5 |
-| Reproducibility | audit determinism (integration test + two CLI runs with identical results_sha256) | — | yes |
-| E2E | — | 0 | — |
+| Unit | loader, identity/schema, integrity, partition, gates/reconcile, structural audit, **labels (34 trace fixtures + 4 loader-path cases + invariants + differential), label validity/events/G2/G3b** | 165 | 165 |
+| Leakage / static guards | test_import_boundaries | 12 | 12 |
+| Regression | test_protocol_constants (now also locks label eligibility keys, G2, G3b) | 9 | 9 |
+| Integration (`requires_data`) | test_real_data (+ v5 event counts, event determinism, v2 48/48 reproduction) | 8 | 8 |
 
+Label-specific evidence:
+- Test-first: 74 failures against stubs before implementation.
+- Mutation check: 7/7 injected boundary errors killed (gap ≥30, onset spacing ≥20, low ≤70,
+  closed refractory, closed history window, open horizon at +60, warnable lead ignored).
+- Hypothesis differential tests against a verbatim transcription of the executable spec: 400
+  random traces each, with irregular intervals 5–130 min and values on the 1.8 grid around both
+  thresholds.
 All synthetic fixtures are generated at test time (`tests/conftest.py`, labelled SYNTHETIC). No
 binary fixtures or real patient data are committed.

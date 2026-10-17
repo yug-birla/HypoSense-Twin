@@ -182,3 +182,99 @@ S2 onward (NEXT_STEPS.md). P-C7 awaits the owner.
 
 ### Next Task
 S2: label builder (test-first) and event audit (G2, G3b).
+
+---
+
+## 2026-10-18 — S2: Label builder, eligibility, event audit, G2 / G3b
+
+### Objective
+Make the target event, prediction eligibility, patient-level event accounting and label validity
+precise, tested and reproducible. No model work.
+
+### Work Completed
+- Startup check: HEAD `267046b`, clean tree, manifest and partition hashes confirmed.
+- **Test-first**: 34 hand-labelled trace fixtures and 4 loader-path cases cover all 30 brief
+  items. They were written against stubs; 74 tests failed before implementation.
+- **Label package** (`src/hyposense/labels/`):
+  - typed `LabelConfig`;
+  - an explicit episode state machine (L1, L2, single-reading);
+  - eligibility with first-failing reason codes;
+  - future-onset labels; warnable onsets;
+  - the recording-level builder;
+  - CBG validity; annotations (nocturnal, first-24h, SA4, sensor-floor runs);
+  - the P-C7 warm-up hook (off).
+- **Verification beyond tests**:
+  - Hypothesis differential tests against a verbatim transcription of the blueprint's
+    executable spec: 800 random traces, identical.
+  - 7/7 boundary mutants killed.
+  - **All 48 blueprint event values reproduced exactly on figshare v1 and v2** (348 L1,
+    107,041 prediction times, 1,188 positives, 154/30 E-treated, label-validity statistics,
+    m_w).
+- **Event audit on v5**, G2 and G3b gate JSON, and the CLI `hyposense audit events`.
+- **Scientific sanity review**: diagnosed the long-episode and low-coverage outliers as sensor
+  artefacts in two T-untreated recordings, and quantified their extent per partition
+  (aggregate for E).
+- **Documentation**: ANALYSIS_PLAN §0 (operational protocol); proposals P-C8 and P-B6.
+
+### Files Changed
+- New:
+  - `src/hyposense/labels/{config,episodes,eligibility,build,validity,annotations}.py`;
+  - `src/hyposense/audit/{events,event_run,legacy}.py`;
+  - `configs/reference/blueprint_events.yaml`;
+  - `tests/unit/{label_fixtures,test_labels,test_label_validity_and_events}.py`;
+  - evidence `experiments/runs/ALL-AGG-audit-events-20261017T2212*/`,
+    `artifacts/gates/G2.json`, `G3b.json`.
+- Modified: `configs/default.yaml` (eligibility keys, G2/G3b criteria), `audit/gates.py`,
+  `audit/reconcile.py` (public `equal_values`), `cli.py`, `pyproject.toml`,
+  `tests/integration/test_real_data.py`, `tests/regression/test_protocol_constants.py`, docs.
+
+### Tests Executed
+- `uv run pytest -q` → **194 passed** (unit 165, leakage 12, regression 9, integration 8).
+- `ruff check` / `ruff format` clean; `mypy --strict` clean (43 files).
+- `hyposense audit events` ×2 at clean commit `32f3245` → identical results_sha256 `2f92a0c9…`.
+
+### Results (MEASURED)
+- Legacy (v1/v2): 48/48 exact.
+- v5:
+  - L1 348 in 61 patients; L2 96 in 26; single-reading 430 in 67;
+  - duration median 60 min (IQR 30–120);
+  - end reasons: 346 recovered, 2 record end, 0 gap;
+  - nocturnal 115; prediction times 107,210; positives 1,188; warnable 306.
+- **G2 PASS** (provisional): 154/30; half-width 0.113.
+- **G3b TRIGGERED** (0.831 unconfirmed).
+
+### Problems Found and Fixed
+- A text-patch edit broke the per-level loop in `events.py`: end reasons, durations and nadirs
+  became empty and legacy reproduction fell to 45/48. **Caught by the reconciliation**, fixed,
+  and covered by a new unit test (`test_measure_events_populates_every_section`).
+- mypy: one variable name reused for prediction labels and patient ids (renamed); an untyped
+  comparison.
+- Fixture count was overstated as "38 fixtures" in places; corrected to 34 + 4.
+
+### Problems Found (open)
+- **Sensor artefacts**: two T-untreated recordings hold 37 % of T's L1 episodes → P-C8, P-B6.
+- Treated status is provisional until S3.
+
+### Decisions Made
+ADR-022, DEC-2026-10-18-B (operational protocol = executable spec), ADR-023. Proposals P-C8
+(approval needed), P-B6.
+
+### Independent Review (fresh eyes)
+| Concern | Finding |
+|---|---|
+| Off-by-one / interval boundaries | Pinned by fixtures and killed mutants |
+| Gap handling | 30 min exactly does not end an episode; > 30 does; refractory after a gap starts at the first post-gap reading (spec) |
+| Refractory | [end, end + 60) |
+| Cross-recording contamination | None; per-recording, order-independent; tested |
+| Patient ids | Patient-level aggregates use `patient_id`; partition lookup has 0 missing |
+| Timestamps | Integer epoch seconds from `cgm_series` |
+| Leakage | Labels are offline-only (import guard). Labels use the future by design; they are never features |
+| E policy | Only aggregate E statistics; trace inspection limited to T |
+| Discrepancy masking | None. Expected differences are mechanical (pre-v5 reproduces exactly; diffs confined to note-listed files) |
+| Conclusion | No outstanding defects |
+
+### Remaining Work
+S3 onward. P-C8 and P-C7 await the owner.
+
+### Next Task
+S3: medication normalisation and exposure engine (G3; production treated status; G2 re-check).

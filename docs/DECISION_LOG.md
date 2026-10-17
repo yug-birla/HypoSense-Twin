@@ -264,3 +264,48 @@ Commit. Pending scientific decisions are in [PROPOSALS.md](PROPOSALS.md) until a
 - **Decision**: Use `ruff format` (black-compatible, line length 100). One per-file E501
   exception covers the Markdown report template.
 - **Class**: A · **Date**: 2026-10-18 · **Commit**: 4c1eaad
+
+---
+
+## ADR-022 · Label package design: explicit state machine, typed outputs, differential testing
+- **Decision**: `src/hyposense/labels/` has four distinct layers:
+  - episodes: an explicit index-based state machine;
+  - eligibility: masks plus a first-failing reason code per reading;
+  - labels: y ∈ {1, 0, −1};
+  - recording-level assembly.
+
+  Validity and annotations are separate modules that never alter episodes. All constants come
+  from `LabelConfig.from_config` (Class C keys locked by test).
+- **Alternatives**: vectorised run-length logic (harder to audit); reusing the original
+  audit.py code (untyped, no reason codes).
+- **Evidence (MEASURED)**:
+  - 34 hand-labelled trace fixtures + 4 loader-path cases (38) were written first; 74 tests failed before implementation.
+  - Hypothesis differential tests compare against a verbatim transcription of the executable
+    spec: 400 random traces each for episodes and eligibility, all identical.
+  - 7/7 injected boundary mutants were killed.
+  - Exact reproduction of all 48 blueprint event values on figshare v1/v2.
+- **Consequences**: S4 features and S5 evaluation consume `RecordingLabels`. The live path may
+  not import `labels` (import guard).
+- **Class**: A · **Date**: 2026-10-18 · **Commit**: 32f3245
+
+## DEC-2026-10-18-B · Operational label protocol adopted = blueprint executable specification
+- **Decision**: ANALYSIS_PLAN §0 makes three Table 5.1 wordings precise exactly as the
+  blueprint's own audit code did. All 48 reported numbers depend on these readings:
+  - (1) the recovery pair must be ≤ 20 min apart, like the onset pair;
+  - (2) a prediction time needs t − recording start ≥ 120 min, which equals the policy
+    warm-up;
+  - (3) after a GAP ending, refractory starts at the first post-gap reading.
+- **Why not Class C approval first**: nothing changes relative to the blueprint. The blueprint's
+  numbers were produced under exactly these semantics, and 48/48 exact reproduction proves the
+  equivalence. Recorded transparently; the owner may object.
+- **Class**: C-clarification (no change) · **Date**: 2026-10-18 · **Commit**: 32f3245
+
+## ADR-023 · Legacy treated definition isolated; G2 provisional until S3
+- **Decision**: The blueprint audit's treated rule lives only in `audit/legacy.py`. It is used
+  for reproduction and the provisional G2. The production treated status comes from the S3
+  medication parser.
+- **Evidence (MEASURED)**: the legacy rule gives 73 treated patients. A stricter variant (an
+  i.v. cell counts only if it names an insulin) also gives 73, so 0 patients depend on non-insulin
+  i.v. fluids. Partition strata on v5 equal the provenance counts exactly (9/18/30/43; T
+  3/5/9/13), so the 2003/2029 re-check passes.
+- **Class**: A · **Date**: 2026-10-18 · **Commit**: 32f3245

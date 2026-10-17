@@ -31,16 +31,16 @@ Update this file whenever a requirement's status changes. Module paths are relat
 
 | ID | Requirement | Kind | Source | Implementation | Verification | Status |
 |---|---|---|---|---|---|---|
-| L-01 | L1 episode rule (2 consecutive <70, spacing ≤20; end 2 ≥70 / gap >30 / record end) | C | Table 5.1 | `labels/episodes.py` | `test_labels_fixtures` (≥20) | PENDING |
-| L-02 | L2 (54 mg/dL) secondary label | C | Table 5.1 | `labels/episodes.py` | fixtures | PENDING |
-| L-03 | Single-reading rule (SA1 only) | REQ | Table 5.1 | `labels/episodes.py` | fixtures | PENDING |
-| L-04 | Prediction-time eligibility (≥70, not in episode, refractory 60, 7/8, follow-up) | C | Table 5.1 | `labels/eligibility.py` | fixtures | PENDING |
-| L-05 | Readings <80 not excluded | C | Table 5.1 | `labels/` | fixture | PENDING |
-| L-06 | Treated definition = population only, never a feature | C | Table 5.1 | `evaluation/population.py` | feature-spec test | PENDING |
+| L-01 | L1 episode rule (2 consecutive <70, spacing ≤20; end 2 ≥70 / gap >30 / record end) | C | Table 5.1, ANALYSIS_PLAN §0 | `labels/episodes.py` | 34 trace + 4 loader-path fixtures (`test_labels.py`), differential test vs executable spec, mutants, v2 48/48 | **PASS** |
+| L-02 | L2 (54 mg/dL) secondary label | C | Table 5.1 | `labels/episodes.py`, `labels/build.py` | F02, F14, F15; differential test; v2 96/26 exact | **PASS** |
+| L-03 | Single-reading rule (SA1 only) | REQ | Table 5.1 | `labels/episodes.py` (min_run=1) | F01, F04, F05, F09, F13a; v2 430/67 exact | **PASS** |
+| L-04 | Prediction-time eligibility (≥70, not in episode, refractory 60, 7/8, follow-up) | C | Table 5.1, ANALYSIS_PLAN §0 | `labels/eligibility.py` | E01–E11 fixtures (incl. half-open window, +60 boundary, refractory edges); differential test; v2 107,041/1,188 exact | **PASS** |
+| L-05 | Readings <80 not excluded | C | Table 5.1 | `labels/eligibility.py` (no such rule) | `prior_reading_lt80` 307 episodes retained (v2/v5) | **PASS** |
+| L-06 | Treated definition = population only, never a feature | C | Table 5.1 | provisional: `audit/legacy.py` (ADR-023); production: S3 parser | v2 73 treated exact; feature test S4 | PARTIAL |
 | L-07 | Patient-level partition T 30% / E 70%, seed 2026, stratified | C | §8.6, §10.3 | `configs/partition.csv` (ADR-016), `data/partition.py` | `test_official_partition_is_pinned_and_immutable`, `test_split_*`, `partition verify` | **PASS** (stratum re-checks S2/S3 pending) |
 | L-08 | 5 grouped folds within E; training = T ∪ E∖k | C | §15 | `evaluation/folds.py` | fold tests | PENDING |
 | L-09 | E sealed until freeze; scripts refuse E access | C | §15, R8 | `data/dataset.py` scopes (ADR-018) | `test_tuning_scope_never_opens_sealed_patients`, `test_all_scope_is_refused_before_freeze`, `test_aggregate_audit_scope_is_confined`; `test_freeze_guard` at Freeze | PARTIAL |
-| L-10 | G2 event sufficiency; G3b label validity | REQ | Table 21.1 | event audit | audit report | PENDING |
+| L-10 | G2 event sufficiency; G3b label validity | REQ | Table 21.1 | `audit/gates.py`, `audit/event_run.py` | `test_g2`, `test_g3b`, `test_precision_table_reproduces_blueprint_table_8_4`; artifacts/gates/G2.json (PASS, provisional), G3b.json (TRIGGERED) | **PASS** (G2 re-check in S3) |
 
 ## Medication exposure
 
@@ -161,3 +161,14 @@ Update this file whenever a requirement's status changes. Module paths are relat
 | D-13 | No silent row deletion; explicit exclusion accounting | REQ | CLAUDE.md §10, owner S1.2 | `data/loader.py` | loader tests | **PASS** |
 | D-14 | Aggregate-only outputs for E before freeze | C (P-C5) | owner S1, P-C5 | `audit/structural.py` PER_RECORDING_FIELDS | `test_per_recording_output_is_structural_only` | **PASS** |
 | D-15 | Published count source verified | REQ | G0 | `configs/dataset.yaml` published block | nature.com table (VERIFIED 2026-10-18) | **PASS** |
+
+## S2 additions
+
+| ID | Requirement | Kind | Source | Implementation | Verification | Status |
+|---|---|---|---|---|---|---|
+| L-11 | Policy decision time vs label-eligible time kept distinct | C (P-C3) | ANALYSIS_PLAN §0, §2 | `labels/eligibility.py` docstring; policy S7 | design review | **PASS** (labels side) |
+| L-12 | Current low (LOW NOW, incl. floor) never a forecasting target | C (P-C1) | owner S2.10 | `labels/eligibility.py` LOW_CGM rule | E06 fixture; `test_label_invariants` | **PASS** |
+| L-13 | Legacy blueprint event numbers reproduced on pre-v5 content | REQ | owner S2.6 | `audit/event_run.py` | `test_legacy_blueprint_event_numbers_reproduce_exactly_on_v2` (48/48) | **PASS** |
+| L-14 | P-C7 warm-up restart hook without rewriting labels | REQ | owner S2.11 | `LabelConfig.warmup_restart_after_gap_s` | E10/E10b fixtures | **PASS** (hook off) |
+| L-15 | Episode annotations for SA2/SA4/SA5 (+ SA9 candidate) | REQ | Table 20.3 | `labels/annotations.py`, `labels/validity.py` | unit tests; v2 counts exact (115/69/9/65/11) | **PASS** |
+| L-16 | Event audit reproducible | REQ | owner S2.12 | `hyposense audit events` | two runs identical results_sha256; `test_event_audit_is_deterministic` | **PASS** |

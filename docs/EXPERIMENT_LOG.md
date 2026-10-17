@@ -34,11 +34,38 @@ Run-ID convention: `<partition>-<model|task>-<seq>`, e.g. `T-M0-001`, `T-M1-tune
 - Artefacts: `experiments/runs/ALL-AGG-audit-structural-20261017T2135*/audit_structural.{json,md}`,
   `artifacts/gates/G0.json`, `artifacts/gates/G1.json`
 
+## ALL-AGG-audit-events-20261017T221208Z and -20261017T221232Z — S2 labels and event audit
+- Date (UTC): 2026-10-17 22:12 (two identical runs; determinism evidence)
+- Partition / patients: ALL-AGG (P-C5) / 100 patients; plus legacy reproduction on figshare v1, v2
+- Git commit (clean?): `32f3245780` (dirty=False)
+- Dataset manifest hash: `5f9d65b4…`; partition `ccdcbce0…`; label_config_sha256 is in provenance
+- Seeds: none (deterministic)
+- Purpose: build canonical labels; reproduce blueprint event numbers; G2, G3b
+- Pre-specified decision rules: Blueprint Table 21.1 (G2: ≥100 E-treated L1 episodes in ≥20
+  patients and CI half-width ≤0.15 at ICC 0.15, p 0.65; G3b: unconfirmed share >0.5 → TRIGGERED).
+  Mechanical reconciliation rule (`audit/reconcile.py`).
+- Result (MEASURED): results_sha256 `2f92a0c993224cb24b59bce6f09e1b9e414f89406c8327ca567558e3d091c7ee`
+  in both runs.
+  - **Legacy reproduction 48/48 exact on v2 and on v1**.
+  - v5: 46 MATCH, 2 EXPECTED DIFFERENCE (eligible 107,210 vs 107,041; CBG pairs 3,269 vs
+    3,262; both from the documented v5 rows), 0 UNEXPLAINED.
+  - v5 L1 348 / L2 96 / single 430; prediction times 107,210 (positive 1,188, prevalence
+    1.11 %).
+  - **G2 PASS** (provisional treated definition): 154 E-treated L1 episodes in 30 patients;
+    m_w 9.23; half-width 0.113 at ICC 0.15.
+  - **G3b TRIGGERED**: 54/65 episodes with a concurrent CBG were unconfirmed (0.831).
+- Diagnosis: sensor artefacts in two T-untreated recordings (2075 floor-stuck 33.5 h; 2077
+  systematic negative bias) hold 37 % of T's L1 episodes. Zero floor-run artefacts in E.
+  → P-C8, P-B6.
+- Decision: labels accepted as protocol-exact; S3 may proceed; P-C8 awaits approval.
+- Artefacts: `experiments/runs/ALL-AGG-audit-events-20261017T2212*/`,
+  `artifacts/gates/G2.json`, `artifacts/gates/G3b.json`
+
 ## Evidence inherited from the blueprint (not reproduced here)
 
 | Item | Source | Status in this repo |
 |---|---|---|
-| Audit counts (Section 8, App. A) | Blueprint author's `audit.py`/`audit2.py` on a GitHub mirror (scripts found in the source bundle, ADR-016) | **Structural numbers REPRODUCED exactly on figshare v1/v2** (ADR-017); v5 differences explained. Event and medication-parse numbers: S2/S3 |
+| Audit counts (Section 8, App. A) | Blueprint author's `audit.py`/`audit2.py` on a GitHub mirror (scripts found in the source bundle, ADR-016) | **Structural (S1) and all 48 event / label-validity / partition numbers (S2) REPRODUCED exactly on figshare v1/v2**; v5 differences explained. Medication-parse numbers: S3 |
 | Exploratory M0 on T (Table A.2: 0.64 sens at 1.07 FA/day, θ=55) | `audit2.py` on mirror, original partition | **NOT YET REPRODUCED** — S5 target. The original partition is kept (ADR-016), and both v5-changed recordings (2003_0, 2029_0) belong to E patients, so all T data are identical to the mirror. Table A.2 should therefore reproduce **exactly** if S5's definitions match; any difference must be explained |
 
 ## Planned runs (Blueprint App. H, Table H.1)
@@ -46,7 +73,7 @@ Run-ID convention: `<partition>-<model|task>-<seq>`, e.g. `T-M0-001`, `T-M1-tune
 | Run ID | Partition | Model | Purpose | Stage | Status |
 |---|---|---|---|---|---|
 | ALL-AGG-audit-structural-20261017T2135* | ALL-AGG | — | G0/G1 structural audit | S1 | **DONE** (G0 PASS, G1 PASS) |
-| ALL-AGG-audit-events-001 | ALL-AGG | — | G2/G3b event audit | S2 | PENDING |
+| ALL-AGG-audit-events-20261017T2212* | ALL-AGG | — | G2/G3b event audit + legacy reproduction | S2 | **DONE** (G2 PASS provisional, G3b TRIGGERED, 48/48) |
 | ALL-AGG-audit-meds-001 | ALL-AGG | — | G3 medication audit | S3 | PENDING |
 | T-M0-001 | T | M0 | exploratory operating curve (compare Table A.2) | S5 | PENDING |
 | T-M1-tune-001 | T | M1 | Optuna ≤30 trials, inner log-loss; num_boost_round rule (P-B2) | S6 | PENDING |

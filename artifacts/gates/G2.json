@@ -1,0 +1,116 @@
+{
+  "gate": "G2",
+  "title": "Event sufficiency",
+  "status": "PASS",
+  "checks": [
+    {
+      "id": "G2.1-episodes",
+      "status": "PASS",
+      "summary": "154 L1 episodes in E-treated patients",
+      "measured": 154,
+      "criterion": ">= 100"
+    },
+    {
+      "id": "G2.2-patients",
+      "status": "PASS",
+      "summary": "30 E-treated patients with >= 1 L1 episode",
+      "measured": 30,
+      "criterion": ">= 20"
+    },
+    {
+      "id": "G2.3-precision",
+      "status": "PASS",
+      "summary": "95% CI half-width 0.113 at ICC 0.15, p = 0.65, m_w = 9.23",
+      "measured": 0.113,
+      "criterion": "<= 0.15"
+    },
+    {
+      "id": "G2.4-precision-table",
+      "status": "INFO",
+      "summary": "Blueprint Table 8.4 reproduced from measured values",
+      "measured": [
+        {
+          "icc": 0.05,
+          "design_effect": 1.41,
+          "effective_n": 109.1,
+          "ci_half_width": 0.089,
+          "mdd_discordance_15": 0.104,
+          "mdd_discordance_25": 0.134
+        },
+        {
+          "icc": 0.15,
+          "design_effect": 2.23,
+          "effective_n": 68.9,
+          "ci_half_width": 0.113,
+          "mdd_discordance_15": 0.131,
+          "mdd_discordance_25": 0.169
+        },
+        {
+          "icc": 0.3,
+          "design_effect": 3.47,
+          "effective_n": 44.4,
+          "ci_half_width": 0.14,
+          "mdd_discordance_15": 0.163,
+          "mdd_discordance_25": 0.21
+        }
+      ],
+      "criterion": null
+    },
+    {
+      "id": "G2.5-all-patient-fallback",
+      "status": "INFO",
+      "summary": "E all patients (fallback population if G2 fails)",
+      "measured": {
+        "L1": 231,
+        "patients_with_L1": 43
+      },
+      "criterion": null
+    }
+  ],
+  "discrepancies": [],
+  "conditions": [
+    "Treated status uses the blueprint audit's (legacy) definition until the S3 medication parser exists; G2 is re-evaluated in S3."
+  ],
+  "assumptions": [
+    "ICC of the warned/missed outcome is unknown; Blueprint uses 0.05-0.30 (reference 0.15)",
+    "normal approximation; confirmatory intervals use the patient-cluster bootstrap"
+  ],
+  "consequence_if_not_pass": "All patients as primary population; else descriptive claim only (Blueprint Table 21.1)",
+  "evaluated_utc": "2026-10-17T22:12:32+00:00",
+  "evidence": {
+    "event_audit": "experiments/runs/ALL-AGG-audit-events-20261017T221232Z/audit_events.json",
+    "label_config_sha256": "92e24a777897ab727c410433f5c218bf45b9819d322d940678084918e7284f7f"
+  },
+  "provenance": {
+    "run_started_utc": "2026-10-17T22:12:09+00:00",
+    "git": {
+      "commit": "32f3245780f5fee9461b37ddbd805819d65efff9",
+      "dirty": false,
+      "dirty_paths": []
+    },
+    "config_sha256": "eb499fbbf9666cd5d77b7b4c62753e19c02f321b9b41a5b5035f1f8a2b64e765",
+    "label_config_sha256": "92e24a777897ab727c410433f5c218bf45b9819d322d940678084918e7284f7f",
+    "dataset_config_sha256": "8bb83c1b6d50b0264d1a4c7d18cc6a59f569c90f8fcfb1de97924336305658e5",
+    "manifest_files_sha256": "5f9d65b4e9233d4ecdd05438e80bb94314290cd5e2d9fdd21e353487cd3cc4ab",
+    "partition_sha256": "ccdcbce02b049992b0ca09bd99a2a5b8c49bcf49940f3a68ed6ca69cd2449578",
+    "environment": {
+      "hyposense": "0.0.1",
+      "python": "3.11.9",
+      "platform": "Windows-10-10.0.26200-SP0",
+      "packages": {
+        "numpy": "2.4.6",
+        "pandas": "3.0.6",
+        "openpyxl": "3.1.5",
+        "xlrd": "2.0.2",
+        "pyyaml": "6.0.3",
+        "pydantic": "2.14.1",
+        "scikit-learn": "1.9.1",
+        "lightgbm": "4.7.0"
+      },
+      "uv_lock_sha256": "82ba7f45dbb87e3a3c1e25ece7687cbcd14387f8fa7ef04ea6955c251dcfe7da"
+    },
+    "access_scope": "aggregate_audit",
+    "audit_run_id": "ALL-AGG-audit-events-20261017T221232Z",
+    "audit_results_sha256": "2f92a0c993224cb24b59bce6f09e1b9e414f89406c8327ca567558e3d091c7ee"
+  }
+}

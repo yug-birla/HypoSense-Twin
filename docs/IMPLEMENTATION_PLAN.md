@@ -80,7 +80,7 @@ The event reportedly ends **20 Nov 2026**. The Phase-1 deadline is unknown.
   audit over E files.
 
 ## S2 · Schemas, adapter completion, label builder, partition (Gates G2, G3b)
-**Status: NEXT.** The partition part is already done in S1 (ADR-016); the S2 partition work is reduced to re-checking the 2003/2029 strata. Use figshare v2 to reproduce the blueprint's event numbers exactly (as in S1) before measuring v5.
+**Status: COMPLETE (2026-10-18).** Labels implemented test-first. 48/48 blueprint event values reproduced exactly on figshare v1/v2. G2 PASS (provisional treated definition), G3b TRIGGERED. Strata re-check passed. Evidence: `experiments/runs/ALL-AGG-audit-events-20261017T2212*`, `artifacts/gates/G2.json`, `G3b.json`. Open: P-C8 (sensor failure).
 
 - **Objective**: typed events for all recordings, verified labels and the frozen partition.
 - **Work**:
@@ -103,6 +103,8 @@ The event reportedly ends **20 Nov 2026**. The Phase-1 deadline is unknown.
 - **Approval needed**: P-C4 decision.
 
 ## S3 · Medication normalisation and exposure engine (Gate G3)
+**Status: NEXT.** It also delivers the production treated status and a G2 re-check (ADR-023).
+
 - **Work**: `configs/drug_dictionary.csv` (versioned); `parse_dose` (multi-component text,
   units, plausible ranges, gliclazide formulation rule, unknown → class `unknown`); CSII
   bolus/basal and the i.v. flag; prescribed-vs-logged conflict flags; kernels (Eq. 1–6);

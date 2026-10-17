@@ -137,6 +137,19 @@ docs/               project control documents + protocol/ANALYSIS_PLAN.md (pre-f
   `gates show`.
 
 ### 4.2 Label Builder (`labels/`, offline)
+**IMPLEMENTED (S2).** Modules:
+- `config` (`LabelConfig`, all constants in integer seconds);
+- `episodes` (explicit state machine; `Episode` records onset, end and last-in-episode times,
+  end reason, nadir and n);
+- `eligibility` (reason code per reading; y ∈ {1, 0, −1}; seconds to next onset; warnable
+  onsets; P-C7 warm-up hook);
+- `build` (`label_recording` → `RecordingLabels`);
+- `validity` (CBG pairing and confirmation; never alters episodes);
+- `annotations` (nocturnal, first-24h, SA4 compression, sensor-floor run).
+
+The operational protocol is ANALYSIS_PLAN §0. The event audit (`audit/events.py`,
+`audit/event_run.py`) produces G2/G3b.
+
 `build_episodes(obs, thr, min_run=2, max_step=1200, max_gap=1800)` and
 `eligible_times(obs, episodes)` implement Table 5.1 exactly. Hand-labelled fixtures are written
 **before** the code (test-first, CLAUDE.md §23). Labels come from CGM only.
