@@ -64,6 +64,10 @@ src = ["src", "tests", "scripts"]
 [tool.ruff.lint]
 select = ["E", "F", "W", "I", "B", "UP", "SIM", "NPY", "PD", "RUF"]
 
+[tool.ruff.lint.per-file-ignores]
+# Markdown report template: table rows are long string literals; wrapping hurts readability.
+"src/hyposense/audit/run.py" = ["E501"]
+
 [tool.mypy]
 python_version = "3.11"
 mypy_path = "src"

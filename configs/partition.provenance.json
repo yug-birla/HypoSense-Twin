@@ -1,0 +1,60 @@
+{
+  "partition_version": "1.0.0",
+  "status": "OFFICIAL PROJECT SPLIT \u2014 immutable (ADR-016)",
+  "imported_utc": "2026-10-17T21:13:30+00:00",
+  "origin": "Blueprint v2.0 feasibility audit (audit2.py), run by the blueprint author on a GitHub mirror of ShanghaiT2DM (pre-2023-10-26 content)",
+  "source_file": {
+    "name": "audit_outputs/partition.csv",
+    "sha256": "18a41192507655973ea4531fb014a67f7235793604843313c4203d4708c3b3a2"
+  },
+  "source_bundle": {
+    "name": "HypoSense_v2_sources.zip",
+    "sha256": "0f361a10e1b940522f9c64d8c7a98b78a60df423ddce6448c1b2c20555a26e6e"
+  },
+  "algorithm": {
+    "description": "stratify by treated*2 + has_L1; within ascending stratum, sort patient ids as strings, shuffle with one shared numpy Generator, first int(round(frac_T*n)) -> T",
+    "implementation": "hyposense.data.partition.reproduce_audit2_split",
+    "seed": 2026,
+    "frac_T": 0.3,
+    "strata_definition": {
+      "0": "untreated, no L1",
+      "1": "untreated, >=1 L1",
+      "2": "treated, no L1",
+      "3": "treated, >=1 L1"
+    }
+  },
+  "verification": {
+    "algorithm_reproduces_source": true,
+    "mismatches": 0,
+    "numpy_version_used_for_verification": "2.4.6"
+  },
+  "counts": {
+    "patients": 100,
+    "T": 30,
+    "E": 70,
+    "stratum_sizes": {
+      "0": 9,
+      "1": 18,
+      "2": 30,
+      "3": 43
+    },
+    "T_per_stratum": {
+      "0": 3,
+      "1": 5,
+      "2": 9,
+      "3": 13
+    }
+  },
+  "known_caveats": [
+    "Strata (treated, has-L1) were computed by the original audit on mirror data. figshare v5 adds rows to recordings 2003_0 and 2029_0, so the has-L1 stratum of patients 2003 and 2029 must be re-checked in S2. A stratum change would not invalidate the split (stratification only balances the partition), but it must be reported.",
+    "The treated flag is re-verified against the production medication parser in S3."
+  ],
+  "output": {
+    "file": "configs/partition.csv",
+    "sha256": "ccdcbce02b049992b0ca09bd99a2a5b8c49bcf49940f3a68ed6ca69cd2449578",
+    "columns": [
+      "patient_id",
+      "partition"
+    ]
+  }
+}

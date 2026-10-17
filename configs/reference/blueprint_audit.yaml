@@ -1,0 +1,26 @@
+# Values reported by Blueprint v2.0 (§8, App. A) and its audit outputs (audit_summary.json),
+# produced by the blueprint author on a GitHub mirror. Used ONLY for reconciliation (S1.4).
+# Keys refer to `blueprint_definitions` in the structural audit, which re-implements the original
+# audit's definitions on the production loader. Event and medication-parse values are reconciled
+# in S2/S3, not here.
+source: Blueprint v2.0 (sha256 c052df91…) + HypoSense_v2_sources/audit_outputs/audit_summary.json
+values:
+  recordings:         {value: 109,     section: "§8.1 Table 8.1"}
+  patients:           {value: 100,     section: "§8.1 Table 8.1"}
+  n_header_variants:  {value: 5,       section: "§8.1 Table 8.1 (five column-name variants)"}
+  cgm_rows:           {value: 112287,  section: "§8.1 Table 8.1"}
+  monitor_days:       {value: 1168.8,  section: "§8.1 Table 8.1"}
+  days_per_recording: {value: [2.56, 12.68, 13.94], section: "§8.1 Table 8.1 (min, median, max)"}
+  interval_hist:      {value: {"<=16": 112168, "16-30": 7, "30-60": 3}, section: "§8.1 Table 8.1 sampling gaps"}
+  readings_le40:      {value: 329,     section: "§8.1 Table 8.1 sensor floor"}
+  min_cgm:            {value: 39.6,    section: "§8.1 Table 8.1"}
+  ins_sc_entries:     {value: 827,     section: "§8.3 Table 8.3"}
+  recs_ins_sc:        {value: 54,      section: "§8.3 Table 8.3"}
+  oral_entries:       {value: 2166,    section: "§8.3 Table 8.3"}
+  recs_oral:          {value: 92,      section: "§8.3 Table 8.3"}
+  recs_csii:          {value: 35,      section: "§8.3 Table 8.3"}
+  recs_iv:            {value: 6,       section: "§8.3 Table 8.3"}
+  diet_entries:       {value: 3802,    section: "§8.3 Table 8.3 meal timing"}
+  diet_not_available: {value: 742,     section: "§8.3 Table 8.3"}
+  cbg_values:         {value: 3262,    section: "§8.4 / App. A"}
+  recs_with_cbg:      {value: 94,      section: "App. A Table A.1"}

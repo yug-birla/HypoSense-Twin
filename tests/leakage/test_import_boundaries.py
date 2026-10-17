@@ -16,9 +16,18 @@ import pytest
 
 PKG = Path(__file__).resolve().parents[2] / "src" / "hyposense"
 
-LIVE_PATH = ["data", "medication", "state", "features", "models", "calibration", "policy",
-             "replay", "api"]
-FORBIDDEN_FOR_LIVE = {"hyposense.labels", "hyposense.evaluation"}
+LIVE_PATH = [
+    "data",
+    "medication",
+    "state",
+    "features",
+    "models",
+    "calibration",
+    "policy",
+    "replay",
+    "api",
+]
+FORBIDDEN_FOR_LIVE = {"hyposense.labels", "hyposense.evaluation", "hyposense.audit"}
 FORBIDDEN_EXTRA = {"policy": {"hyposense.models", "hyposense.calibration"}}
 
 
@@ -45,5 +54,34 @@ def test_live_path_does_not_import_offline_modules(subpkg: str) -> None:
 
 
 def test_all_planned_subpackages_exist() -> None:
-    for sub in [*LIVE_PATH, "labels", "evaluation", "common"]:
+    for sub in [*LIVE_PATH, "labels", "evaluation", "common", "audit"]:
         assert (PKG / sub / "__init__.py").is_file(), sub
+
+
+# Sealed-partition safeguard (approved P-C5): the aggregate-audit scope, which can read E files,
+# may be used only by the audit package, the CLI's validate command and its own definition.
+AGGREGATE_SCOPE_ALLOWED = {"audit", "cli.py", "data/dataset.py"}
+
+
+def test_aggregate_audit_scope_is_confined() -> None:
+    offenders = []
+    for py in sorted(PKG.rglob("*.py")):
+        rel = py.relative_to(PKG).as_posix()
+        if rel.split("/")[0] in AGGREGATE_SCOPE_ALLOWED or rel in AGGREGATE_SCOPE_ALLOWED:
+            continue
+        if "AGGREGATE_AUDIT" in py.read_text(encoding="utf-8"):
+            offenders.append(rel)
+    assert not offenders, f"AGGREGATE_AUDIT used outside the audit: {offenders}"
+
+
+def test_raw_partition_access_is_confined() -> None:
+    """Only data/, audit/ and the partition import script may read the partition directly;
+    modelling code must go through load_dataset(AccessScope.TUNING_ONLY)."""
+    offenders = []
+    for py in sorted(PKG.rglob("*.py")):
+        rel = py.relative_to(PKG).as_posix()
+        if rel.split("/")[0] in {"data", "audit"}:
+            continue
+        if "load_partition" in py.read_text(encoding="utf-8"):
+            offenders.append(rel)
+    assert not offenders, offenders

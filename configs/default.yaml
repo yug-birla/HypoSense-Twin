@@ -32,11 +32,26 @@ population:                         # [CLASS C] Table 5.1 "Treated patient"
   primary: treated
   treated_def: [insulin_any, sulfonylurea, glinide]   # analysis population only, never a model input
 
-partition:                          # [CLASS C] Section 8.6 / 10.3
-  file: configs/partition.csv       # not yet created — see docs/PROPOSALS.md P-C4
+partition:                          # [CLASS C] Section 8.6 / 10.3 — IMMUTABLE (ADR-016)
+  file: configs/partition.csv       # imported from the blueprint audit; provenance: configs/partition.provenance.json
+  sha256: ccdcbce02b049992b0ca09bd99a2a5b8c49bcf49940f3a68ed6ca69cd2449578
+  version: "1.0.0"
   seed: 2026
   frac_T: 0.30
   strata: [treated, has_l1_episode]
+
+gates:                              # [CLASS C] Blueprint Table 21.1 acceptance criteria
+  g0:
+    expected_recording_files: 109
+    expected_patients: 100
+    published_cgm_readings: 112475
+  g1:
+    min_cgm_parse_rate: 0.99        # >= 99% of readings parse
+    min_interval_le_rate: 0.99      # >= 99% of intervals <= max_interval_min
+    max_interval_min: 20
+
+data_quality:                       # loader invariants (Class A)
+  cgm_plausible_range_mgdl: [20, 600]
 
 cv:                                 # [CLASS C] Section 15 / 20.1
   folds: 5

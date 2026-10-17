@@ -8,8 +8,12 @@ data/processed/*
 # --- Generated artefacts: committed selectively at freeze (see docs/ARCHITECTURE.md §9) ---
 artifacts/*
 !artifacts/.gitkeep
+# gate evaluations are aggregate-only evidence and ARE committed
+!artifacts/gates/
 experiments/runs/*
 !experiments/runs/.gitkeep
+# aggregate-only audit runs are committed as evidence (P-C5: no patient-level values inside)
+!experiments/runs/ALL-AGG-*/
 logs/
 
 # --- Python ---

@@ -1,0 +1,578 @@
+{
+  "schema": 1,
+  "root": "data/raw/ShanghaiT2DM",
+  "archive": {
+    "dataset": "ShanghaiT2DM",
+    "source": "figshare",
+    "collection_doi": "10.6084/m9.figshare.c.6310860",
+    "article_id": 21600933,
+    "version": 5,
+    "version_doi": "10.6084/m9.figshare.21600933.v5",
+    "file_id": 42966622,
+    "url": "https://ndownloader.figshare.com/files/42966622",
+    "retrieved_utc": "2026-10-17T21:14:54+00:00",
+    "size": 3738354,
+    "md5": "4bfb61cfa506b48155fd9e841ee48e21",
+    "sha256": "59b5f5c4053a32bb6b7827844a0191597dc82228fe88ce332a189fdfc659c4cb",
+    "licence": "CC BY 4.0"
+  },
+  "n_files": 111,
+  "files_sha256": "5f9d65b4e9233d4ecdd05438e80bb94314290cd5e2d9fdd21e353487cd3cc4ab",
+  "files": [
+    {
+      "path": "Shanghai_T2DM/2000_0_20201230.xlsx",
+      "size": 36010,
+      "sha256": "86497dc6bbeb6c0ed5c61edd656d49ed89c9400395c57e2767625e294b6af75c"
+    },
+    {
+      "path": "Shanghai_T2DM/2001_0_20201102.xlsx",
+      "size": 39352,
+      "sha256": "945ea4794bb0975d80ed223850eaa6ff882338d3f4d2fbb31d7d46c29384cd35"
+    },
+    {
+      "path": "Shanghai_T2DM/2001_1_20201117.xlsx",
+      "size": 36900,
+      "sha256": "fdf639f9c6b2066e21f57ce62646d275d050fdf7f7e995bc364882cb6d38cd41"
+    },
+    {
+      "path": "Shanghai_T2DM/2002_0_20210513.xlsx",
+      "size": 24343,
+      "sha256": "792658714b9caf2b5207ffc54685ffac8dae071197db8ffbad4a42828e3a2337"
+    },
+    {
+      "path": "Shanghai_T2DM/2003_0_20210615.xlsx",
+      "size": 26977,
+      "sha256": "a246d2c5c5d673a62d3520ebdeaefc1251b4947887ee10194ffd3db0eac8c28a"
+    },
+    {
+      "path": "Shanghai_T2DM/2004_0_20211028.xlsx",
+      "size": 22651,
+      "sha256": "5075026dd88056ea1a826cc7374411dbd003dcafd68717614d3c6a51071f2792"
+    },
+    {
+      "path": "Shanghai_T2DM/2005_0_20211201.xlsx",
+      "size": 26009,
+      "sha256": "9997a805ed1b657b6d84d1c487acf2ed3f08f15843925bfe3bbd99ad26a679aa"
+    },
+    {
+      "path": "Shanghai_T2DM/2006_0_20211112.xlsx",
+      "size": 21029,
+      "sha256": "4dcdc3471ebd3dab2511a801e41f8f949996160913f03feaa0b27d75465d2017"
+    },
+    {
+      "path": "Shanghai_T2DM/2007_0_20220108.xlsx",
+      "size": 32277,
+      "sha256": "1aaffa0793d4116b5a6c76122e44eff4c0c31ec4b58dd731a4e50b12bc83956c"
+    },
+    {
+      "path": "Shanghai_T2DM/2008_0_20220118.xlsx",
+      "size": 22023,
+      "sha256": "84c247c49c874c0b8b4a523103b390150344c2f6c5d6b89f705036b59a0f3332"
+    },
+    {
+      "path": "Shanghai_T2DM/2009_0_20211103.xlsx",
+      "size": 22477,
+      "sha256": "933d7aaad602eac84c6ed1e939a6b16516a06e3d4e7cf30b99bc60f11e59e23b"
+    },
+    {
+      "path": "Shanghai_T2DM/2010_0_20220111.xlsx",
+      "size": 23224,
+      "sha256": "0114d68d5c5bff23dd6541e52303b45036e52f86f59f3a32ce4c8b12a78fe568"
+    },
+    {
+      "path": "Shanghai_T2DM/2011_0_20220123.xlsx",
+      "size": 21544,
+      "sha256": "21975c06f28d8c3ae4c3a2ee9fe1311d2010af2785392df84c2ff5f5c6df8a21"
+    },
+    {
+      "path": "Shanghai_T2DM/2012_0_20220126.xlsx",
+      "size": 16451,
+      "sha256": "2e0ef3c4dbf94ce3b33d236625540f3d7dce16f861d87a0791d5608e643cdf70"
+    },
+    {
+      "path": "Shanghai_T2DM/2013_0_20220123.xlsx",
+      "size": 18095,
+      "sha256": "ddab6f87c87280699bcf278725898e92abfa50bc1759d98af93bbb9e0d813557"
+    },
+    {
+      "path": "Shanghai_T2DM/2014_0_20201224.xlsx",
+      "size": 42505,
+      "sha256": "a7ebd760db5942e8b8b420b4476541fa0b9b6771756dce976d460f026c1247e5"
+    },
+    {
+      "path": "Shanghai_T2DM/2014_1_20210317.xlsx",
+      "size": 36020,
+      "sha256": "5f88f424f788f093fa81af6739653fd3f814a2775bd8985896fe2d9205c4bfbc"
+    },
+    {
+      "path": "Shanghai_T2DM/2015_0_20210203.xlsx",
+      "size": 45686,
+      "sha256": "363641d4dfc904ad163b55deee97da822a7672e881857abc65210972ffb11cab"
+    },
+    {
+      "path": "Shanghai_T2DM/2015_1_20210219.xlsx",
+      "size": 37229,
+      "sha256": "681392217ebeed40b2856e1083bceabc7791bc6348178a85432bf204058fc0b3"
+    },
+    {
+      "path": "Shanghai_T2DM/2016_0_20201224.xls",
+      "size": 130560,
+      "sha256": "d569ff6f4b2fe69e514790c6275a9a2385c4846c54d568e07084497a8f87b758"
+    },
+    {
+      "path": "Shanghai_T2DM/2017_0_20210102.xlsx",
+      "size": 37910,
+      "sha256": "4f0351ad9a6d29d2a60172e8a3462358f7e5ec1e1d2862ad8e6f05051d5da12e"
+    },
+    {
+      "path": "Shanghai_T2DM/2017_1_20201118.xls",
+      "size": 115200,
+      "sha256": "1c2a1f5ea6a60af72099ccde3e118edd0f3a8c9767097e8250890f79537d6883"
+    },
+    {
+      "path": "Shanghai_T2DM/2018_0_20210420.xls",
+      "size": 109056,
+      "sha256": "bd1aaff59945211c6f27a867c01ed4567e80096d6642a45633813feee19054fa"
+    },
+    {
+      "path": "Shanghai_T2DM/2019_0_20210513.xls",
+      "size": 83456,
+      "sha256": "46612343c9477363021e0fb6e70812807a92097a9be23762c6d53fd3cb803eba"
+    },
+    {
+      "path": "Shanghai_T2DM/2020_0_20210423.xls",
+      "size": 58368,
+      "sha256": "1175a57180dab5a1d94810fa9b7bac1c713ce0c6cdca7584b058420b2a6d7f03"
+    },
+    {
+      "path": "Shanghai_T2DM/2021_0_20211013.xls",
+      "size": 106496,
+      "sha256": "94e07895f91624cd39b6eb80083f57b87b3c99869141450207ce54212e7d5a16"
+    },
+    {
+      "path": "Shanghai_T2DM/2022_0_20210419.xls",
+      "size": 96256,
+      "sha256": "1f9462e26f896d00be57c4ceaed55fbf95aaffd9b4adbd1c84a7824d414a3646"
+    },
+    {
+      "path": "Shanghai_T2DM/2023_0_20210812.xls",
+      "size": 70144,
+      "sha256": "abc3a0648c92861e140f145bd7dcbf3d378abf11153db82e57fd2c891495a6d4"
+    },
+    {
+      "path": "Shanghai_T2DM/2024_0_20210429.xls",
+      "size": 77824,
+      "sha256": "59fb84015f40e449ad38d2f7021d3dab5728dec94f81e7dc9af9ebc048a1bfbd"
+    },
+    {
+      "path": "Shanghai_T2DM/2025_0_20210506.xls",
+      "size": 89600,
+      "sha256": "ad0637193e5b66ec7b73c5947498d7badfa78732f35efd4d0a5995abb010b483"
+    },
+    {
+      "path": "Shanghai_T2DM/2026_0_20210916.xls",
+      "size": 102400,
+      "sha256": "6fcd4d6a933ce4f04bc5024e1937f74b3f3d1aa8e4d5fe2ed9041a858dd25b14"
+    },
+    {
+      "path": "Shanghai_T2DM/2027_0_20210521.xls",
+      "size": 118784,
+      "sha256": "2d99bc4151036d4f5c09658aec851d203f9c348bc35bb394bcaacc8ab0250cbe"
+    },
+    {
+      "path": "Shanghai_T2DM/2028_0_20210426.xls",
+      "size": 91136,
+      "sha256": "cdae0cea2997ed3e1eddb172906e743876bb0183456c423697e7e65bacdde29d"
+    },
+    {
+      "path": "Shanghai_T2DM/2029_0_20210526.xls",
+      "size": 90112,
+      "sha256": "0c8fc976c515847c5784dba5936f34ea382f2e8336d1c495c63b7604119595f0"
+    },
+    {
+      "path": "Shanghai_T2DM/2030_0_20210531.xls",
+      "size": 105984,
+      "sha256": "39f503b28b46c611d30c88b45401def92d4301ffbad24f1609172a14ec213e07"
+    },
+    {
+      "path": "Shanghai_T2DM/2031_0_20210601.xls",
+      "size": 95744,
+      "sha256": "ae95a523c40ad73243f897407f5a105354c46eafcaa84936641a87ccf6f48815"
+    },
+    {
+      "path": "Shanghai_T2DM/2032_0_20210727.xls",
+      "size": 52736,
+      "sha256": "c046cf66bf496eafe3712383c5eaa46b6356d2c2df061ada2b7b2f18d76e6b37"
+    },
+    {
+      "path": "Shanghai_T2DM/2033_0_20210615.xls",
+      "size": 82944,
+      "sha256": "150739487b5894f064257f0f3804d758cbf3bd44f63a526edfe23e7e606ea98f"
+    },
+    {
+      "path": "Shanghai_T2DM/2034_0_20210624.xls",
+      "size": 56832,
+      "sha256": "de8d8cbec9d8ee8fc02c92a2acb483db78655c4eaa091700bbc34ff80e0094d6"
+    },
+    {
+      "path": "Shanghai_T2DM/2035_0_20210629.xls",
+      "size": 48128,
+      "sha256": "43f961a88e0cac8f601f0b4885837448bf2fb67b207b3d2d6eb1da04efebaa89"
+    },
+    {
+      "path": "Shanghai_T2DM/2036_0_20210803.xls",
+      "size": 68096,
+      "sha256": "be75e0a6eb2d6d9f139e93e89e7fc189ca185df82bbcf0e765af02cf780a02a0"
+    },
+    {
+      "path": "Shanghai_T2DM/2037_0_20201221.xls",
+      "size": 109568,
+      "sha256": "ccfb153fe3b83a08c334c812e7c56f4486e4381151381850096f175a027bfeec"
+    },
+    {
+      "path": "Shanghai_T2DM/2038_0_20210608.xls",
+      "size": 68096,
+      "sha256": "bd192b8ce40d65f9d560ce13ec4855a81591ddbb0ba2e84fcca8ada0cbdefa22"
+    },
+    {
+      "path": "Shanghai_T2DM/2039_0_20210615.xls",
+      "size": 80384,
+      "sha256": "0bf6421ac3858c7c6d0cac01702b00415f4c5a39e90643756bd5e2e9e109d7df"
+    },
+    {
+      "path": "Shanghai_T2DM/2040_0_20210729.xls",
+      "size": 100864,
+      "sha256": "66ed782b6db94c3a09207f0b413a9b92f681cdf82af3be83fa9a5aca515e3967"
+    },
+    {
+      "path": "Shanghai_T2DM/2041_0_20210813.xls",
+      "size": 58880,
+      "sha256": "be129603f18872bc8a9690dab03f25c3bf427252c8e1aa218322c70b47fe491e"
+    },
+    {
+      "path": "Shanghai_T2DM/2042_0_20211019.xls",
+      "size": 63488,
+      "sha256": "74bd96e9312671d304450b4fe00149af6ea6613e1d710c20084fa60c72c26e0e"
+    },
+    {
+      "path": "Shanghai_T2DM/2043_0_20210513.xls",
+      "size": 88576,
+      "sha256": "14f882cfc4f09856be372cd6a9ebccbd2f0ee16e9494170707d3b51a1b803121"
+    },
+    {
+      "path": "Shanghai_T2DM/2044_0_20211101.xls",
+      "size": 81920,
+      "sha256": "3827e93e0b316662bc0fbb9f07b8332517daf89ea89bbbd52e8dad56d49e84ca"
+    },
+    {
+      "path": "Shanghai_T2DM/2045_0_20201216.xls",
+      "size": 110080,
+      "sha256": "c725e166f5416ae1299f9be4413055c64a6673d9595f93ddc451a2fb67923545"
+    },
+    {
+      "path": "Shanghai_T2DM/2046_0_20201216.xls",
+      "size": 96768,
+      "sha256": "565614280860f15867d2111520aa96f3f99ce3054053f5bfe5f6b61f4f56cbc3"
+    },
+    {
+      "path": "Shanghai_T2DM/2047_0_20210420.xls",
+      "size": 105984,
+      "sha256": "0af3f1ae19723301587558c65bff055e551149ab2d9088c0e0d5e68d928f054c"
+    },
+    {
+      "path": "Shanghai_T2DM/2048_0_20210426.xls",
+      "size": 106496,
+      "sha256": "77940e8a1fd53eb228b2ceedc2dc39422dedf55b02b4b3af9095af850b5fac53"
+    },
+    {
+      "path": "Shanghai_T2DM/2049_0_20210426.xls",
+      "size": 93184,
+      "sha256": "9efc8e69e8efc2dc26d53c467f706cd9498efe76e033437379b0db01c4a7ff80"
+    },
+    {
+      "path": "Shanghai_T2DM/2050_0_20210510.xls",
+      "size": 104960,
+      "sha256": "ee4c7339a1b7f49d99ee3c63b1277b19cdb76f5cc9dd2d403ce7d7b081744b66"
+    },
+    {
+      "path": "Shanghai_T2DM/2051_0_20210512.xls",
+      "size": 119296,
+      "sha256": "aeebb9b7e680096779a4c0cbb9c7c3d94f39c8e488d18e1aebdf8e628c2f56f1"
+    },
+    {
+      "path": "Shanghai_T2DM/2052_0_20210511.xls",
+      "size": 101888,
+      "sha256": "566c4d56dcb647f78d269f2db3311f38dc2ce60ddb11a8d61173144ee56a39cf"
+    },
+    {
+      "path": "Shanghai_T2DM/2053_0_20210518.xls",
+      "size": 104960,
+      "sha256": "b9b434a440c5d799587286dc83ed089eced962a4e178a15d35a0818223c47222"
+    },
+    {
+      "path": "Shanghai_T2DM/2054_0_20210524.xls",
+      "size": 60928,
+      "sha256": "07bce960558f1354a52f5ddf53b588b5d96992371be63dee6d189875169c5a58"
+    },
+    {
+      "path": "Shanghai_T2DM/2055_0_20210524.xls",
+      "size": 97792,
+      "sha256": "f49f7917f9918a64b4db83f48ec70ce337f8c6dda68004d873316c73dadc1aef"
+    },
+    {
+      "path": "Shanghai_T2DM/2055_1_20201207.xls",
+      "size": 113152,
+      "sha256": "5d02966fd739544d3cba62829a2889266d2a45a9f4e56da43ee41be6a16093a0"
+    },
+    {
+      "path": "Shanghai_T2DM/2056_0_20210524.xls",
+      "size": 62464,
+      "sha256": "1685718e024808f21f8bb705ee319863a40ca4aa85189112c0de24369b8ba00d"
+    },
+    {
+      "path": "Shanghai_T2DM/2057_0_20210525.xls",
+      "size": 109056,
+      "sha256": "3a0e16cd2fee462666ecc2bb27ed12c1370b27dbc9668951d8fb1d7f3a17dad8"
+    },
+    {
+      "path": "Shanghai_T2DM/2058_0_20210524.xls",
+      "size": 118272,
+      "sha256": "b8f5a55c132f293d401ccf6ddd9e00bc0f4389bfc4e3df11df9e8ab6f5f01505"
+    },
+    {
+      "path": "Shanghai_T2DM/2059_0_20210525.xls",
+      "size": 103424,
+      "sha256": "7d44779ab43098c6bd92eb810ee0505cc922935613e7084c6cbf3f3b1c674808"
+    },
+    {
+      "path": "Shanghai_T2DM/2060_0_20201214.xls",
+      "size": 108032,
+      "sha256": "5f1d75598748da36a469a389c829de4c9fefad9c1fd92f26b3a794fb0cf834bf"
+    },
+    {
+      "path": "Shanghai_T2DM/2061_0_20210601.xls",
+      "size": 97280,
+      "sha256": "2ef1b4a191cfab5301f900af88243ff05cc3239ff0e0cfe4092ad77236b0a8ee"
+    },
+    {
+      "path": "Shanghai_T2DM/2062_0_20210601.xls",
+      "size": 100352,
+      "sha256": "c55b7672c2a7f29cffae90a6233b7ec6a68c8ef821e6c0af6a88b1dcb80f57ef"
+    },
+    {
+      "path": "Shanghai_T2DM/2063_0_20210608.xls",
+      "size": 116736,
+      "sha256": "f6277d83c7f9ea131c55e0fb608a60b78c848e6a20a8fea3a2960ee85de642f9"
+    },
+    {
+      "path": "Shanghai_T2DM/2064_0_20210608.xls",
+      "size": 104448,
+      "sha256": "d9941c16d6c6412660a6c8eb9b84e43f71e397b890173d5e277b0a5f3f7240f6"
+    },
+    {
+      "path": "Shanghai_T2DM/2065_0_20210615.xls",
+      "size": 80896,
+      "sha256": "7fb19eb15e063940ca88470e7c93337a5d4ce4587c7619f5c8885cf618b5deb4"
+    },
+    {
+      "path": "Shanghai_T2DM/2066_0_20210615.xls",
+      "size": 107008,
+      "sha256": "88ec3d4636aa0a331799d9fe6f8b9c27955fbf066be83204379496564cbdf293"
+    },
+    {
+      "path": "Shanghai_T2DM/2067_0_20210615.xls",
+      "size": 101888,
+      "sha256": "448c455fb225b23f26e5f3842cd669e9d87d3086f6d0544ab4ca2bd24fd308eb"
+    },
+    {
+      "path": "Shanghai_T2DM/2068_0_20210616.xls",
+      "size": 109568,
+      "sha256": "c2249f50db3fd043acd780dd7f4259b67a84472a6dcd79f6ee9551b981d27ecb"
+    },
+    {
+      "path": "Shanghai_T2DM/2069_0_20210621.xls",
+      "size": 120832,
+      "sha256": "95347ab667c8e10ad002cf64237aa5c08e4803af64afa14ec8500b940b54f634"
+    },
+    {
+      "path": "Shanghai_T2DM/2069_1_20210705.xls",
+      "size": 103424,
+      "sha256": "9ce95e7321116c0c653ad89fecb56a4afdd95f3e2e0547bb2019f1b71386dc0f"
+    },
+    {
+      "path": "Shanghai_T2DM/2069_2_20210825.xls",
+      "size": 119296,
+      "sha256": "dc71805b3e45650c3a476841b12f56acb6e397ed90dd1bf44939fd13aff26cfa"
+    },
+    {
+      "path": "Shanghai_T2DM/2070_0_20210629.xls",
+      "size": 98816,
+      "sha256": "bbf6266984452051ba2dfc0632baf3579638bdc5dfed90ba41c9810edfc28013"
+    },
+    {
+      "path": "Shanghai_T2DM/2071_0_20210705.xls",
+      "size": 105472,
+      "sha256": "fe9c45689552c648226e4ebdcd7398c95697baf892946064cee663e46cb90c8e"
+    },
+    {
+      "path": "Shanghai_T2DM/2072_0_20210706.xls",
+      "size": 103936,
+      "sha256": "e44ef8fb00af8d5e6e72f79a5b6be0e44dbd31bad47be1758423d00a212c5af0"
+    },
+    {
+      "path": "Shanghai_T2DM/2073_0_20210703.xls",
+      "size": 123392,
+      "sha256": "cc3b13a8d1f3ae17393eb8735e28c24215e92f6c97e9e56d1d7794bab5fb63cc"
+    },
+    {
+      "path": "Shanghai_T2DM/2074_0_20210707.xls",
+      "size": 98304,
+      "sha256": "0118bd39d9f23852bfc53ea55aac239a7a8f03ad632b641d9c4667e4295d8c42"
+    },
+    {
+      "path": "Shanghai_T2DM/2074_1_20210720.xls",
+      "size": 94720,
+      "sha256": "2c7accea541756e989e223f44c9910ce49c01991d83961449746d259df1f3510"
+    },
+    {
+      "path": "Shanghai_T2DM/2075_0_20210720.xls",
+      "size": 93184,
+      "sha256": "474a615dd1c8231cd7914458fed5ced792dcc7482b2c4b8e22647f792140032c"
+    },
+    {
+      "path": "Shanghai_T2DM/2076_0_20210720.xls",
+      "size": 111104,
+      "sha256": "3582cf947381b3911be56d675ab2e07353e14693abad8eab986000ae6096216b"
+    },
+    {
+      "path": "Shanghai_T2DM/2077_0_20210803.xls",
+      "size": 89088,
+      "sha256": "6f1beb7771ea07ad46b4e55400521d8b388507e4a54e94a3019cd55e9f06f049"
+    },
+    {
+      "path": "Shanghai_T2DM/2078_0_20210803.xls",
+      "size": 106496,
+      "sha256": "f666f7b35021f949f04659272d568e48313db3b80b7962710f22c9cca022083e"
+    },
+    {
+      "path": "Shanghai_T2DM/2078_1_20210817.xls",
+      "size": 106496,
+      "sha256": "d81748d38b50f352b338681bee48eb197ecf54f42cc6f7efda9f2591328c7bf0"
+    },
+    {
+      "path": "Shanghai_T2DM/2079_0_20210809.xls",
+      "size": 103424,
+      "sha256": "d9fa71ae55eb7e043624b4fef0d89dd53a4496586a30ff0ee7892d3e0238c8d8"
+    },
+    {
+      "path": "Shanghai_T2DM/2080_0_20210816.xls",
+      "size": 109056,
+      "sha256": "75f22b8c95595d169a11ff1aa03118cda2ce72ab1ebe8f7a0096e40868f4c85f"
+    },
+    {
+      "path": "Shanghai_T2DM/2081_0_20210817.xls",
+      "size": 118272,
+      "sha256": "6197ccdf5467f24568aeaf677ff717888c7c7bbd516c6a90a3fb6beabc1c1b3b"
+    },
+    {
+      "path": "Shanghai_T2DM/2082_0_20210907.xls",
+      "size": 91648,
+      "sha256": "dd3d6ae4836c9a3d600dcfb966bae62df08559cfc8cd3dbdb70eb6038c2ae9ee"
+    },
+    {
+      "path": "Shanghai_T2DM/2083_0_20201214.xls",
+      "size": 128000,
+      "sha256": "181d76f976c48e40a59d36f12d1732d51ebce6229d433fbf606aec42928943e5"
+    },
+    {
+      "path": "Shanghai_T2DM/2084_0_20211013.xls",
+      "size": 66048,
+      "sha256": "4850ead6101bc913e15d9418ea1fae7761f0d775c4a1595a2451746ae2d6afe0"
+    },
+    {
+      "path": "Shanghai_T2DM/2085_0_20200907.xls",
+      "size": 128000,
+      "sha256": "d36710cf617656c04e954c7793532e278e30d93018ce3974c67a7bf48d75f29c"
+    },
+    {
+      "path": "Shanghai_T2DM/2086_0_20200914.xls",
+      "size": 133632,
+      "sha256": "66a14b599c5208d3e0a07b74ed9c35bc8b75ea90dbf1b537316dd6538d9cdbd6"
+    },
+    {
+      "path": "Shanghai_T2DM/2087_0_20201012.xls",
+      "size": 123904,
+      "sha256": "ee13d1daddf223945ceac3d22f4e488fa2787a58ddade93bc4a2b88d16d713a7"
+    },
+    {
+      "path": "Shanghai_T2DM/2088_0_20201123.xls",
+      "size": 112640,
+      "sha256": "970bec227c005fb7a680c3d035e792b3402190c74459d58c72eedfe99f982303"
+    },
+    {
+      "path": "Shanghai_T2DM/2089_0_20201019.xls",
+      "size": 109056,
+      "sha256": "49a389b591e6ec1f7cb6b79138e411dbd2a20b9e74b9002cd195093c4d49ce69"
+    },
+    {
+      "path": "Shanghai_T2DM/2090_0_20201130.xls",
+      "size": 135680,
+      "sha256": "83dc93152542f859461b9f5fd260663b39ee83cef4ecd3ad10369342e0caacd3"
+    },
+    {
+      "path": "Shanghai_T2DM/2091_0_20201029.xls",
+      "size": 111616,
+      "sha256": "46f0dc6c94c04237b513c35a3d7fb74f18d6d0a86293a82a50f7ed2b5e91157a"
+    },
+    {
+      "path": "Shanghai_T2DM/2092_0_20201109.xls",
+      "size": 126976,
+      "sha256": "533304f0f35e9e381755b8ce2996b7021f45d7f984759e5b4a3fcbb0e1100106"
+    },
+    {
+      "path": "Shanghai_T2DM/2093_0_20201109.xls",
+      "size": 112640,
+      "sha256": "be35b880f2244c153a8b25918ad16bdb30c11202422f9d7ce582cf35c8b29918"
+    },
+    {
+      "path": "Shanghai_T2DM/2094_0_20211109.xls",
+      "size": 111616,
+      "sha256": "e19dbec5995b46f2c53b3af8fff5858a1619b0968d386708c4df26269afd091d"
+    },
+    {
+      "path": "Shanghai_T2DM/2095_0_20201116.xls",
+      "size": 107520,
+      "sha256": "fb6621b65d3f041e4f04478004d158a0f5b0d3b0852fa0b071c6ec812c840763"
+    },
+    {
+      "path": "Shanghai_T2DM/2096_0_20201116.xls",
+      "size": 114176,
+      "sha256": "f28f42f8b28a959932ae6f84953d2c508714ca72ab12019e749807da95ca5861"
+    },
+    {
+      "path": "Shanghai_T2DM/2097_0_20201116.xls",
+      "size": 109568,
+      "sha256": "da972faf2c62e0d6439e51356d7933dc7b8218932c7ca34483743b08ff9605e2"
+    },
+    {
+      "path": "Shanghai_T2DM/2098_0_20201106.xls",
+      "size": 113152,
+      "sha256": "35917da82e3f208a478aed94ac80110c3d922b27148316d12b3725898b6aef82"
+    },
+    {
+      "path": "Shanghai_T2DM/2099_0_20201116.xls",
+      "size": 116736,
+      "sha256": "3e50ea82dde911bb10fa5fbced409a96adb20ffda09b3b4c4b79aa1fd4477096"
+    },
+    {
+      "path": "Shanghai_T2DM_Summary.xlsx",
+      "size": 38688,
+      "sha256": "5d2c8cc9ab5477910d69bf1ada30db12effb542d536706345fe3a74468a2fa16"
+    },
+    {
+      "path": "note.txt",
+      "size": 742,
+      "sha256": "8894f1bd061bd9d539181281fe5404c7e3be9a94dea0d8b7a072affa225f657a"
+    }
+  ]
+}

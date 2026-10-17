@@ -60,6 +60,37 @@ def test_population_partition_cv_bootstrap(cfg: dict[str, Any]) -> None:
     assert cfg["bootstrap"]["unit"] == "patient"
 
 
+def test_gate_criteria_match_blueprint_table_21_1(cfg: dict[str, Any]) -> None:
+    assert cfg["gates"]["g0"] == {
+        "expected_recording_files": 109,
+        "expected_patients": 100,
+        "published_cgm_readings": 112475,
+    }
+    assert cfg["gates"]["g1"] == {
+        "min_cgm_parse_rate": 0.99,
+        "min_interval_le_rate": 0.99,
+        "max_interval_min": 20,
+    }
+
+
+def test_partition_is_pinned(cfg: dict[str, Any]) -> None:
+    """ADR-016: the official split is immutable. Changing this pin requires an approved
+    Class C decision; never regenerate the partition because results are inconvenient."""
+    assert cfg["partition"]["sha256"] == (
+        "ccdcbce02b049992b0ca09bd99a2a5b8c49bcf49940f3a68ed6ca69cd2449578"
+    )
+    assert cfg["partition"]["version"] == "1.0.0"
+
+
+def test_canonical_dataset_version_is_pinned() -> None:
+    ds = _load("dataset.yaml")
+    assert ds["canonical_version"] == 5
+    v5 = ds["versions"][5]
+    assert v5["md5"] == "4bfb61cfa506b48155fd9e841ee48e21"
+    assert v5["sha256"] == "59b5f5c4053a32bb6b7827844a0191597dc82228fe88ce332a189fdfc659c4cb"
+    assert all(isinstance(k, str) for k in ds["version_notes"][5]["changed_recordings"])
+
+
 def test_policy_budgets(cfg: dict[str, Any]) -> None:
     pol = cfg["policy"]
     assert pol["fa_budget_alert"] == 1.0
@@ -75,9 +106,7 @@ def test_pharma_not_freezable_while_illustrative() -> None:
     """
     pharma = _load("pharma.yaml")
     statuses = [
-        k["status"]
-        for group in ("insulin", "secretagogue")
-        for k in pharma[group].values()
+        k["status"] for group in ("insulin", "secretagogue") for k in pharma[group].values()
     ]
     if any(s == "ILLUSTRATIVE" for s in statuses):
         assert "illustrative" in pharma["version"], (

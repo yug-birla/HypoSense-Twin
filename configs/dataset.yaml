@@ -1,0 +1,82 @@
+# ShanghaiT2DM — pinned source (Gate G0)
+# Every value below was read from the figshare API (api.figshare.com/v2) on 2026-10-18.
+# `sha256` values are filled from the first verified download (figshare publishes MD5 only).
+
+dataset: ShanghaiT2DM
+licence: CC BY 4.0
+citation: >-
+  Zhao Q, et al. Chinese diabetes datasets for data-driven machine learning.
+  Scientific Data 2023;10. doi:10.1038/s41597-023-01940-7
+collection:
+  doi: 10.6084/m9.figshare.c.6310860
+  id: 6310860
+article:
+  id: 21600933
+  title: diabetes_datasets.zip
+api: https://api.figshare.com/v2
+
+canonical_version: 5          # the latest published version; the only one used for analysis
+
+versions:
+  5:
+    doi: 10.6084/m9.figshare.21600933.v5
+    published: "2023-10-30T02:11:23Z"
+    file_id: 42966622
+    file_name: diabetes_datasets.zip
+    size: 3738354
+    md5: 4bfb61cfa506b48155fd9e841ee48e21
+    sha256: 59b5f5c4053a32bb6b7827844a0191597dc82228fe88ce332a189fdfc659c4cb
+    role: canonical
+  2:
+    doi: 10.6084/m9.figshare.21600933.v2
+    published: "2022-12-21T01:59:01Z"
+    file_id: 38617298
+    file_name: diabetes datasets.zip
+    size: 3745592
+    md5: b492aa8f709e715d81f674b3f932bade     # identical content in v2, v3 and v4
+    sha256: 7d84b146e6df90ba0315be03a48d3de46fd257f71b59ddf493eb58a6c026aa2d
+    role: reconciliation-only (pre-2023-10-26 content; candidate source of the blueprint's mirror)
+  1:
+    doi: 10.6084/m9.figshare.21600933.v1
+    published: "2022-11-22T06:21:07Z"
+    file_id: 38283708
+    file_name: diabetes_datasets.zip
+    size: 3720780
+    md5: 01fd2deaf16a41aa095ff46f8d900b67
+    sha256: 5192256321befdaf901f1eba616417290945734772832e9df43b92d611b16bd9
+    role: reconciliation-only
+
+download_url_template: https://ndownloader.figshare.com/files/{file_id}
+
+# Changes documented by the publisher (v5 note.txt, dated 2023/10/26).
+version_notes:
+  5:
+    note_file: note.txt
+    summary: "adds 188 CGM measurements: rows appended to 2003_0_20210615 (rows 587-670) and
+      2029_0_20210526 (rows 743-846; CGM missing in rows 743-755 because the CGM device was
+      replaced, new device readings from 2021/6/3 12:46)"
+    # quoted: unquoted 2003_0_20210615 is an integer in YAML 1.1 (underscore digit separators)
+    changed_recordings: ["2003_0_20210615", "2029_0_20210526"]
+reconciliation_versions: [2, 1]   # v2 == v3 == v4 content (identical MD5)
+
+extract:
+  recordings_dir: Shanghai_T2DM               # 109 recording workbooks (.xls and .xlsx)
+  summary_file: Shanghai_T2DM_Summary.xlsx    # one row per recording
+  extra_files: [note.txt]                     # version note (v5 explains +188 rows)
+
+paths:
+  downloads: data/raw/downloads
+  extracted: data/raw/ShanghaiT2DM
+  manifest_json: data/MANIFEST.json
+  manifest_sha256: data/MANIFEST.sha256
+
+# Values published by the data descriptor. VERIFIED 2026-10-18 against the primary source:
+# https://www.nature.com/articles/s41597-023-01940-7/tables/4 (dataset comparison table):
+# "ShanghaiT2DM | T2DM | 3–14 days | 15 min | 100 patients | 109 recording files |
+#  Total CGM measurements 112,475". The descriptor (Jan 2023) predates figshare v5 (Oct 2023).
+published:
+  recordings: 109
+  patients: 100
+  cgm_readings: 112475
+  source_url: https://www.nature.com/articles/s41597-023-01940-7/tables/4
+  verified_utc: "2026-10-17T21:59:00Z"
