@@ -38,10 +38,18 @@ def _git(*args: str) -> str | None:
     return out.stdout.strip()
 
 
+# Generated outputs do not make the source tree dirty; any other change (tracked or untracked) does.
+OUTPUT_DIRS = ("experiments/runs/", "artifacts/")
+
+
 def git_state() -> dict[str, Any]:
     commit = _git("rev-parse", "HEAD")
-    status = _git("status", "--porcelain")
-    return {"commit": commit, "dirty": bool(status) if status is not None else None}
+    status = _git("status", "--porcelain", "--untracked-files=all")
+    if status is None:
+        return {"commit": commit, "dirty": None}
+    changed = [ln[3:].strip('"') for ln in status.splitlines() if ln.strip()]
+    relevant = [p for p in changed if not p.startswith(OUTPUT_DIRS)]
+    return {"commit": commit, "dirty": bool(relevant), "dirty_paths": relevant[:20]}
 
 
 def package_versions() -> dict[str, str | None]:

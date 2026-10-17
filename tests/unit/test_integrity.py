@@ -172,3 +172,26 @@ def test_cgm_quality_flags() -> None:
     # 120->180 in 15 min = 4.0 mg/dL/min is NOT > 4; 180->245 = 4.33 is
     assert f.rapid_change.tolist() == [False, False, False, False, False, True, False]
     assert f.warmup.tolist() == [True, True, True, True, True, True, False]
+
+
+# ---------- provenance ----------
+
+
+def test_git_dirty_ignores_generated_outputs_only(monkeypatch: pytest.MonkeyPatch) -> None:
+    from hyposense.common import provenance
+
+    def fake(status: str):  # type: ignore[no-untyped-def]
+        return lambda *a: "abc123" if a[0] == "rev-parse" else status
+
+    monkeypatch.setattr(
+        provenance, "_git", fake("?? experiments/runs/X/a.json\n?? artifacts/gates/G0.json")
+    )
+    assert provenance.git_state()["dirty"] is False
+    monkeypatch.setattr(
+        provenance, "_git", fake("?? experiments/runs/X/a.json\n?? src/hyposense/new.py")
+    )
+    assert provenance.git_state()["dirty"] is True
+    monkeypatch.setattr(provenance, "_git", fake(" M configs/default.yaml"))
+    assert provenance.git_state()["dirty"] is True
+    monkeypatch.setattr(provenance, "_git", fake(""))
+    assert provenance.git_state()["dirty"] is False
