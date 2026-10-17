@@ -70,5 +70,8 @@ ADR-001 to ADR-015 (DECISION_LOG.md). Class A items that took effect now: ADR-00
 ### Remaining Work
 See NEXT_STEPS.md (P0: registration, Class C decisions, request originals, S1).
 
+### Commit
+`5314ba9` — S0 baseline (authored with the machine's git identity; see CURRENT_STATE open issues).
+
 ### Next Task
 S1: official data acquisition and structural audit (G0/G1).

@@ -116,7 +116,7 @@ Last full run: `uv run pytest -q` → **16 passed** (2026-10-18).
 | P-B3 CSII basal in projections | literal / continue current rate | continue (a priori) | No (record in S3) |
 
 ## Last Verified Commit
-- Commit: _see PROGRESS.md entry for 2026-10-18 (baseline commit)_
+- Commit: `5314ba9c8e64a06f672a9edbbd1b11b07c3b173c` (branch `main`)
 - Date: 2026-10-18
 - Summary: S0 baseline — scaffolding, environment, configs, control documents, 16 passing tests.
 
