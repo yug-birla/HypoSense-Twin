@@ -134,6 +134,47 @@ def test_level_and_feature_list_must_match_the_specification(bundle: Path, tmp_p
         load_artifact(d, CFG, PHARMA)
 
 
+def test_pinned_manifest_and_confirmatory_label(bundle: Path, tmp_path: Path) -> None:
+    sha = sha256_bytes((bundle / "manifest.json").read_bytes())
+    assert load_artifact(bundle, CFG, PHARMA, sha).manifest_sha256 == sha
+    with pytest.raises(ArtifactHashMismatch):
+        load_artifact(bundle, CFG, PHARMA, "0" * 64)
+    d = _copy(bundle, tmp_path)
+    m = _manifest(d)
+    m["status"] = "CONFIRMATORY"  # relabelling an unpinned artefact is refused
+    _write_manifest(d, m)
+    with pytest.raises(ArtifactIncompatible):
+        load_artifact(d, CFG, PHARMA)
+    with pytest.raises(ArtifactHashMismatch):  # and a pin of the original does not match
+        load_artifact(d, CFG, PHARMA, sha)
+
+
+@pytest.mark.parametrize(
+    "policy",
+    [
+        {"tau_alert": 7.5, "tau_watch": 5.0, "strict": False},
+        {"tau_alert": 0.5, "tau_watch": -0.1, "strict": False},
+        {"tau_alert": 0.5, "tau_watch": 0.2, "strict": True},
+        {"tau_alert": 0.2, "tau_watch": 0.5, "strict": False},
+    ],
+)
+def test_invalid_thresholds_are_refused(
+    bundle: Path,
+    tmp_path: Path,
+    policy: dict,  # type: ignore[type-arg]
+) -> None:
+    d = _copy(bundle, tmp_path)
+    pol = json.loads((d / "policy.json").read_text("utf-8"))
+    pol.update(policy)
+    data = json.dumps(pol).encode("utf-8")
+    (d / "policy.json").write_bytes(data)
+    m = _manifest(d)
+    m["files"]["policy.json"] = sha256_bytes(data)
+    _write_manifest(d, m)
+    with pytest.raises(ArtifactIncompatible):
+        load_artifact(d, CFG, PHARMA)
+
+
 def test_unreadable_manifest_and_wrong_status(bundle: Path, tmp_path: Path) -> None:
     d = _copy(bundle, tmp_path)
     (d / "manifest.json").write_text("{not json", "utf-8")

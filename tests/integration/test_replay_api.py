@@ -190,6 +190,55 @@ def test_api_contract_and_acknowledgement(client: Any, streams: list[RecordingSt
     assert len(acks) == 1 and json.loads(acks[0])["decision_id"] == nid
 
 
+def test_stale_bed_becomes_insufficient_and_is_streamed(
+    client: Any, streams: list[RecordingStream]
+) -> None:
+    """Two recordings of different length: after the shorter one ends, its bed must not keep
+    showing its last decision (Table 14.1 'no reading at t'), and the stream says so."""
+    import asyncio
+
+    c, svc = client
+    by_len = sorted(streams, key=lambda s: s.events[-1].ts - s.events[0].ts)
+    short, long_ = by_len[0], by_len[-1]
+    c.post(
+        "/api/replay/select",
+        json={"recording_keys": [short.identity.recording_key, long_.identity.recording_key]},
+    )
+    q: asyncio.Queue[Any] = asyncio.Queue(100_000)
+    svc.subscribers.add(q)
+    end = short.events[-1].ts - short.events[0].ts
+    for _ in range(end // (6 * 3600) + 2):
+        c.post("/api/replay/advance", json={"seconds": 6 * 3600})
+    svc.subscribers.discard(q)
+    bed = next(
+        b
+        for b in c.get("/api/ward").json()["beds"]
+        if b["recording_key"] == short.identity.recording_key
+    )
+    assert bed["decision"]["state"] == "INSUFFICIENT_DATA" and bed["decision"]["p"] is None
+    assert (
+        bed["decision"]["reasons"] == ["NO_RECENT_READING"]
+        and bed["decision"]["decision_id"] is None
+    )
+    pv = c.get(f"/api/patients/{short.identity.recording_key}").json()
+    assert pv["factor_groups"] == []  # no explanation next to a non-current state
+    assert pv["last_forecast"] is None or pv["last_forecast"]["is_current"] is False
+    msgs = []
+    while not q.empty():
+        msgs.append(q.get_nowait())
+    last = [
+        m
+        for m in msgs
+        if m["type"] == "bed_state" and m["recording_key"] == short.identity.recording_key
+    ][-1]
+    assert last["state"] == "INSUFFICIENT_DATA" and last["p"] is None and last["v"] == 1
+    lv = c.get(f"/api/patients/{long_.identity.recording_key}").json()
+    if lv["current"]["p"] is not None:  # a current forecast is explained and marked current
+        assert lv["last_forecast"]["is_current"] is True
+        assert lv["last_forecast"]["decision_id"] == lv["current"]["decision_id"]
+        assert lv["factor_groups"]
+
+
 def test_api_bounds_and_safe_errors(client: Any, monkeypatch: pytest.MonkeyPatch) -> None:
     c, svc = client
     assert (

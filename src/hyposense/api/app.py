@@ -14,24 +14,50 @@ import json
 import logging
 import time
 import uuid
-from collections.abc import AsyncIterator
+from collections.abc import AsyncIterator, Callable
 from contextlib import asynccontextmanager
-from typing import Any
+from typing import Any, ParamSpec, TypeVar
 
 from fastapi import FastAPI, Query, Request
 from fastapi.responses import JSONResponse, StreamingResponse
 
 from hyposense.api import schemas as S
-from hyposense.api.service import Conflict, NotFound, Service
+from hyposense.api.service import Busy, Conflict, InvalidRequest, NotFound, Service
+from hyposense.replay.session import InvalidSelection
 
 log = logging.getLogger("hyposense.api")
 TICK_S = 0.25
+MAX_TICK_S = 1.0
+P = ParamSpec("P")
+T = TypeVar("T")  # a stalled loop never turns into one huge clock jump
+
+
+class Gate:
+    """Serialises ALL access to the service. Mutations run in a worker thread so a long seek
+    never blocks the event loop (health / meta / stream stay responsive); reads are fast and run
+    in the loop, but only between mutations."""
+
+    def __init__(self, svc: Service) -> None:
+        self.svc = svc
+        self.lock = asyncio.Lock()
+
+    async def mutate(self, fn: Callable[P, T], *args: P.args, **kw: P.kwargs) -> T:
+        self.svc.bind_loop(asyncio.get_running_loop())
+        async with self.lock:
+            return await asyncio.to_thread(fn, *args, **kw)
+
+    async def read(self, fn: Callable[P, T], *args: P.args, **kw: P.kwargs) -> T:
+        self.svc.bind_loop(asyncio.get_running_loop())
+        async with self.lock:
+            return fn(*args, **kw)
 
 
 def create_app(svc: Service, clock: bool = True) -> FastAPI:
+    g = Gate(svc)
+
     @asynccontextmanager
     async def lifespan(_: FastAPI) -> AsyncIterator[None]:
-        task = asyncio.create_task(_ticker(svc)) if clock else None
+        task = asyncio.create_task(_ticker(g)) if clock else None
         yield
         if task is not None:
             task.cancel()
@@ -46,9 +72,17 @@ def create_app(svc: Service, clock: bool = True) -> FastAPI:
     async def _cf(_: Request, exc: Conflict) -> JSONResponse:
         return JSONResponse({"error": "conflict", "detail": str(exc)}, status_code=409)
 
-    @app.exception_handler(ValueError)
-    async def _ve(_: Request, exc: ValueError) -> JSONResponse:
+    @app.exception_handler(InvalidRequest)
+    async def _ir(_: Request, exc: InvalidRequest) -> JSONResponse:
         return JSONResponse({"error": "invalid", "detail": str(exc)}, status_code=422)
+
+    @app.exception_handler(InvalidSelection)
+    async def _is(_: Request, exc: InvalidSelection) -> JSONResponse:
+        return JSONResponse({"error": "invalid", "detail": str(exc)}, status_code=422)
+
+    @app.exception_handler(Busy)
+    async def _busy(_: Request, exc: Busy) -> JSONResponse:
+        return JSONResponse({"error": "busy", "detail": str(exc)}, status_code=503)
 
     @app.exception_handler(Exception)
     async def _ie(_: Request, exc: Exception) -> JSONResponse:
@@ -71,61 +105,70 @@ def create_app(svc: Service, clock: bool = True) -> FastAPI:
 
     @app.get("/api/evidence")
     async def evidence() -> dict[str, Any]:
-        return svc.evidence()
+        return await g.read(svc.evidence)
 
     @app.get("/api/replay/cases", response_model=list[S.Case])
     async def cases() -> list[S.Case]:
-        return svc.cases()
+        return await g.read(svc.cases)
 
     @app.get("/api/replay/status", response_model=S.ReplayStatus)
     async def status() -> S.ReplayStatus:
-        return svc.status()
+        return await g.read(svc.status)
 
     @app.post("/api/replay/select", response_model=S.ReplayStatus)
     async def select(req: S.SelectRequest) -> S.ReplayStatus:
-        svc.select(req.recording_keys)
-        return svc.status()
+        await g.mutate(svc.select, req.recording_keys)
+        return await g.read(svc.status)
 
     @app.post("/api/replay/play", response_model=S.ReplayStatus)
     async def play() -> S.ReplayStatus:
-        if svc.session is None:
-            raise Conflict("no replay selected")
-        svc.playing = not svc.session.finished
-        return svc.status()
+        def _play() -> None:
+            if svc.session is None:
+                raise Conflict("no replay selected")
+            svc.playing = not svc.session.finished
+
+        await g.read(_play)
+        return await g.read(svc.status)
 
     @app.post("/api/replay/pause", response_model=S.ReplayStatus)
     async def pause() -> S.ReplayStatus:
-        svc.playing = False
-        return svc.status()
+        def _pause() -> None:
+            svc.playing = False
+
+        await g.read(_pause)
+        return await g.read(svc.status)
 
     @app.post("/api/replay/speed", response_model=S.ReplayStatus)
     async def speed(req: S.SpeedRequest) -> S.ReplayStatus:
-        svc.speed = req.speed
-        return svc.status()
+        def _speed() -> None:
+            svc.speed = req.speed
+
+        await g.read(_speed)
+        return await g.read(svc.status)
 
     @app.post("/api/replay/step", response_model=S.ReplayStatus)
     async def step(req: S.StepRequest) -> S.ReplayStatus:
-        svc.step(req.n)
-        return svc.status()
+        await g.mutate(svc.step, req.n)
+        return await g.read(svc.status)
 
     @app.post("/api/replay/advance", response_model=S.ReplayStatus)
     async def advance(req: S.AdvanceRequest) -> S.ReplayStatus:
-        svc.advance(req.seconds)
-        return svc.status()
+        await g.mutate(svc.advance, req.seconds)
+        return await g.read(svc.status)
 
     @app.post("/api/replay/seek", response_model=S.ReplayStatus)
     async def seek(req: S.SeekRequest) -> S.ReplayStatus:
-        svc.seek(req.offset_s)
-        return svc.status()
+        await g.mutate(svc.seek, req.offset_s)
+        return await g.read(svc.status)
 
     @app.post("/api/replay/reset", response_model=S.ReplayStatus)
     async def reset() -> S.ReplayStatus:
-        svc.reset()
-        return svc.status()
+        await g.mutate(svc.reset)
+        return await g.read(svc.status)
 
     @app.get("/api/ward", response_model=S.Ward)
     async def ward() -> S.Ward:
-        return svc.ward()
+        return await g.read(svc.ward)
 
     @app.get("/api/patients/{recording_key}", response_model=S.PatientView)
     async def patient(recording_key: str) -> S.PatientView:
@@ -133,20 +176,22 @@ def create_app(svc: Service, clock: bool = True) -> FastAPI:
 
         if not re.fullmatch(S.RECORDING_KEY, recording_key):
             raise NotFound("unknown recording")
-        return svc.patient(recording_key)
+        return await g.read(svc.patient, recording_key)
 
     @app.post("/api/acknowledgements", status_code=201)
     async def acknowledge(req: S.AckRequest) -> dict[str, Any]:
-        return svc.acknowledge(req)
+        return await g.read(svc.acknowledge, req)
 
     @app.get("/api/stream")
     async def stream(max_events: int | None = Query(default=None, ge=1, le=10_000)) -> Any:
-        q = svc.subscribe()
+        svc.bind_loop(asyncio.get_running_loop())
+        q = await g.read(svc.subscribe)
 
         async def gen() -> AsyncIterator[str]:
             n = 0
             try:
-                hello = {"v": S.STREAM_VERSION, "type": "session", **svc.status().model_dump()}
+                st = await g.read(svc.status)
+                hello = {"v": S.STREAM_VERSION, "type": "session", **st.model_dump()}
                 yield _sse(hello)
                 n += 1
                 while max_events is None or n < max_events:
@@ -167,16 +212,18 @@ def _sse(msg: dict[str, Any]) -> str:
     return f"event: {msg['type']}\ndata: {json.dumps(msg, separators=(',', ':'))}\n\n"
 
 
-async def _ticker(svc: Service) -> None:
-    """Replay clock: advances by wall time x speed while playing. Pacing only, never order."""
+async def _ticker(g: Gate) -> None:
+    """Replay clock: advances by wall time x speed while playing (dt capped at MAX_TICK_S).
+    Pacing only, never order."""
+    svc = g.svc
     last = time.monotonic()
     while True:
         await asyncio.sleep(TICK_S)
         now = time.monotonic()
-        dt, last = now - last, now
+        dt, last = min(now - last, MAX_TICK_S), now
         if svc.playing and svc.session is not None:
             try:
-                svc.advance(dt * svc.speed)
+                await g.mutate(svc.advance, dt * svc.speed)
             except Exception:  # never kill the clock; the runner already logged the error
                 log.exception("replay clock tick failed")
                 svc.playing = False

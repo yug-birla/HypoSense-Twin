@@ -1,6 +1,9 @@
 """Deterministic decision policy core (Blueprint Table 14.1; approved P-C1, ANALYSIS_PLAN §1;
-P-C8b). The SAME functions run live (S7) and in the offline policy replay that defines every
-endpoint (ANALYSIS_PLAN §2). The policy never imports model code.
+P-C8b). `gate` is shared verbatim by the live service (S7) and the offline policy replay that
+defines every endpoint (ANALYSIS_PLAN §2). The offline harness applies `passes` and the cooldown
+in vectorised form (`evaluation.metrics.passes`, `notification_indices`); their equivalence with
+`classify` / `should_notify` is asserted by tests and by the measured S7 live/offline parity.
+The policy never imports model code.
 
 Rules, evaluated top to bottom at a CGM reading t (the state must be at that reading):
 1. SYSTEM ERROR: the state carries an error tag.
@@ -64,6 +67,8 @@ class Thresholds:
     def __post_init__(self) -> None:
         if not math.isfinite(self.tau_alert):
             raise ValueError("tau_alert must be finite")
+        if self.tau_watch is not None and not self.tau_watch >= 0.0:
+            raise ValueError("tau_watch must be >= 0")
         if self.tau_watch is not None and not self.tau_watch <= self.tau_alert:
             raise ValueError("tau_watch must be <= tau_alert (ANALYSIS_PLAN §3.6)")
 

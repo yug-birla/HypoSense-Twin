@@ -115,6 +115,9 @@ def build_dev_artifact(level: str = "M3", out_root: Path = MODELS_DIR) -> dict[s
             "pb6_applied": False,
             "dev_sens_at_1fa_oof": sel_a.value,
             "dev_fa_at_tau_alert": sel_a.f_a,
+            "tau_alert_budget_not_reached": sel_a.budget_not_reached,
+            "tau_watch_budget_not_reached": sel_w.budget_not_reached,
+            "tau_watch_capped_at_tau_alert": sel_w.tau_a > sel_a.tau_a,
             "created_utc": started,
         }
     )

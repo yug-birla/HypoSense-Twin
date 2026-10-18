@@ -238,6 +238,7 @@ class TwinRunner:
             self.state = s
         except Exception as exc:  # ledger failure must not hide the decision
             d = system_error(t, "LEDGER_ERROR")
+            raw = None
             error = type(exc).__name__
         return self._record(seq, d, raw=raw, input_digest=digest, quality=q, error=error)
 

@@ -189,10 +189,23 @@ def _read(directory: Path, name: str) -> bytes:
     return path.read_bytes()
 
 
-def load_artifact(directory: Path, cfg: dict[str, Any], pharma: dict[str, Any]) -> RuntimeModel:
+def load_artifact(
+    directory: Path,
+    cfg: dict[str, Any],
+    pharma: dict[str, Any],
+    expected_manifest_sha256: str | None = None,
+) -> RuntimeModel:
+    """Verify and load. `expected_manifest_sha256` pins the whole bundle (the manifest lists the
+    hash of every other file). A CONFIRMATORY artefact is refused unless it is pinned (the pin
+    comes from the freeze record), so an edited manifest cannot relabel a DEVELOPMENT model."""
     import lightgbm as lgb
 
     raw_manifest = _read(directory, "manifest.json")
+    if (
+        expected_manifest_sha256 is not None
+        and sha256_bytes(raw_manifest) != expected_manifest_sha256
+    ):
+        raise ArtifactHashMismatch("manifest.json differs from the pinned SHA-256")
     try:
         manifest = json.loads(raw_manifest)
         files: dict[str, str] = manifest["files"]
@@ -206,6 +219,8 @@ def load_artifact(directory: Path, cfg: dict[str, Any], pharma: dict[str, Any]) 
         raise ArtifactIncompatible(f"manifest lists {sorted(files)}, expected {sorted(FILES)}")
     if status not in STATUSES:
         raise ArtifactIncompatible(f"unknown status {status!r}")
+    if status == "CONFIRMATORY" and expected_manifest_sha256 is None:
+        raise ArtifactIncompatible("a CONFIRMATORY artefact must be pinned by its manifest SHA-256")
     data = {}
     for name in FILES:
         data[name] = _read(directory, name)
@@ -236,9 +251,19 @@ def load_artifact(directory: Path, cfg: dict[str, Any], pharma: dict[str, Any]) 
     rules = PolicyRules(**pol["rules"])
     if rules != PolicyRules.from_config(cfg):
         raise ArtifactIncompatible("policy rules differ from the configuration")
-    thresholds = Thresholds(float(pol["tau_alert"]), pol["tau_watch"], bool(pol["strict"]))
-    probe = calibrator.apply(np.array([0.0, 0.5, 1.0]))
-    if not np.all(np.isfinite(probe)) or np.any(np.diff(probe) < 0):
+    try:
+        thresholds = Thresholds(float(pol["tau_alert"]), pol["tau_watch"], bool(pol["strict"]))
+    except (ValueError, TypeError) as exc:
+        raise ArtifactIncompatible(f"invalid thresholds: {exc}") from exc
+    if not 0.0 <= thresholds.tau_alert <= 1.0 or thresholds.strict:
+        raise ArtifactIncompatible("learned models need 0 <= tau <= 1 and the >= comparator")
+    probe = calibrator.apply(np.linspace(0.0, 1.0, 101))
+    if (
+        not np.all(np.isfinite(probe))
+        or np.any(np.diff(probe) < 0)
+        or probe.min() < 0.0
+        or probe.max() > 1.0
+    ):
         raise ArtifactIncompatible("calibrator is not a monotone map into [0, 1]")
     idx = [i for i, f in enumerate(names) if BY_NAME[f].dtype in RANGE_DTYPES and f in ranges]
     return RuntimeModel(

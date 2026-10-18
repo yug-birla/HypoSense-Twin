@@ -4,6 +4,7 @@ Responses carry the model status (DEVELOPMENT / CONFIRMATORY) wherever a probabi
 from __future__ import annotations
 
 from enum import StrEnum
+from typing import Annotated
 
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -35,7 +36,7 @@ RECORDING_KEY = r"^[0-9]{4}_[0-9]+_[0-9]{8}$"
 
 # ---------------------------------------------------------------- requests
 class SelectRequest(Strict):
-    recording_keys: list[str] = Field(min_length=1, max_length=12)
+    recording_keys: list[Annotated[str, Field(max_length=32)]] = Field(min_length=1, max_length=12)
 
 
 class SpeedRequest(Strict):
@@ -141,9 +142,10 @@ class PatientView(Strict):
     meals: list[int]
     doses: list[Dose]
     exposure: dict[str, float]
+    exposure_ts: int | None  # evaluated at the latest processed event
     medication_quality: dict[str, str]
     data_quality: list[str]
-    factor_groups: list[FactorGroup]
+    factor_groups: list[FactorGroup]  # of the current forecast only; [] otherwise
     notifications: list[Notification]
     ledger: dict[str, int]
     rejected_events: int

@@ -33,6 +33,10 @@ from hyposense.state.stream import RecordingStream
 MAX_RECORDINGS = 12  # one ward
 
 
+class InvalidSelection(ValueError):
+    pass
+
+
 @dataclass(frozen=True)
 class Emitted:
     """One processed event: which runner, its clock offset, and the decision it produced."""
@@ -73,10 +77,10 @@ class ReplaySession:
         self, streams: Sequence[RecordingStream], pipe: Pipeline, log: DecisionLog | None = None
     ) -> None:
         if not 1 <= len(streams) <= MAX_RECORDINGS:
-            raise ValueError(f"select 1..{MAX_RECORDINGS} recordings")
+            raise InvalidSelection(f"select 1..{MAX_RECORDINGS} recordings")
         keys = [s.identity.recording_key for s in streams]
         if len(set(keys)) != len(keys):
-            raise ValueError("a recording may be selected once")
+            raise InvalidSelection("a recording may be selected once")
         self.streams = tuple(sorted(streams, key=lambda s: s.identity.recording_key))
         self.pipe = pipe
         self.log = log
@@ -142,7 +146,7 @@ class ReplaySession:
         """Deterministic seek: rebuild from the recording start, then replay to `offset` into a
         NEW log segment `log` (the previous segment stays as written)."""
         if not 0 <= offset <= self.duration:
-            raise ValueError(f"seek offset must be within [0, {self.duration}]")
+            raise InvalidSelection(f"seek offset must be within [0, {self.duration}]")
         if self.log is not None:
             self.log.close()
         self.log = log

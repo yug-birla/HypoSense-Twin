@@ -97,18 +97,29 @@ def _inject(pipe: Pipeline, st: RecordingStream) -> dict[str, Any]:
         clean.feed(j, e)
     evs = list(st.events)
     cg = [k for k, e in enumerate(evs) if isinstance(e, CGMReading)]
-    k = cg[len(cg) // 2]
-    e0 = evs[k]
-    assert isinstance(e0, CGMReading)
-    bad = [
-        dataclasses.replace(e0, ts=e0.ts + 7, value_mgdl=math.nan),
-        dataclasses.replace(e0, ts=e0.ts + 8, value_mgdl=5000.0),
-        dataclasses.replace(e0, source_row=10**9),  # duplicate reading time
-        dataclasses.replace(e0, ts=evs[0].ts),  # out of order
-        dataclasses.replace(e0, recording_key="0000_0_20000101", ts=e0.ts + 9),
-    ]
+    # one bad event after each of five well-separated readings (never consecutive, so the
+    # circuit breaker, which is tested separately, does not trip)
+    at = [cg[(m + 1) * len(cg) // 7] for m in range(5)]
+    first = evs[0].ts
+    inject: dict[int, Any] = {}
+    for m, k in enumerate(at):
+        e0 = evs[k]
+        assert isinstance(e0, CGMReading)
+        inject[k] = [
+            dataclasses.replace(e0, ts=e0.ts + 7, value_mgdl=math.nan),
+            dataclasses.replace(e0, ts=e0.ts + 8, value_mgdl=5000.0),
+            dataclasses.replace(e0, source_row=10**9),  # duplicate reading time
+            dataclasses.replace(e0, ts=first),  # out of order
+            dataclasses.replace(e0, recording_key="0000_0_20000101", ts=e0.ts + 9),
+        ][m]
+    seq = []
+    for k, e in enumerate(evs):
+        seq.append(e)
+        if k in inject:
+            seq.append(inject[k])
+    bad = list(inject.values())
     r = TwinRunner(st, pipe)
-    for j, e in enumerate([*evs[: k + 1], *bad, *evs[k + 1 :]]):
+    for j, e in enumerate(seq):
         r.feed(j, e)
     return {
         "injected": len(bad),

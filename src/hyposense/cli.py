@@ -215,7 +215,7 @@ def cmd_serve(args: argparse.Namespace) -> int:
     from hyposense.models.artifact import ArtifactError
 
     try:
-        svc = Service(_latest_model(args.model))
+        svc = Service(_latest_model(args.model), expected_manifest_sha256=args.expect_sha)
     except ArtifactError as exc:
         print(f"REFUSING TO START: {exc}")
         return 3
@@ -339,6 +339,7 @@ def build_parser() -> argparse.ArgumentParser:
     sv.add_argument("--model", default=None)
     sv.add_argument("--host", default="127.0.0.1")
     sv.add_argument("--port", type=int, default=8000)
+    sv.add_argument("--expect-sha", default=None, help="pin the artefact manifest SHA-256")
     sv.set_defaults(func=cmd_serve)
 
     gates = sub.add_parser("gates", help="gate results").add_subparsers(dest="cmd", required=True)

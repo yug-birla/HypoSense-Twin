@@ -11,6 +11,8 @@ from __future__ import annotations
 import asyncio
 import json
 import math
+import re
+import threading
 from collections.abc import Sequence
 from pathlib import Path
 from typing import Any
@@ -40,6 +42,8 @@ STATE_ORDER = {
 }
 TRACE_S = 24 * 3600
 SUBSCRIBER_QUEUE = 1000
+MAX_SUBSCRIBERS = 16
+S6_RUN_ID = re.compile(r"^T-AGG-dev-s6-\d{8}T\d{6}Z$")
 MAX_CONSECUTIVE_ERRORS = 5
 
 
@@ -48,6 +52,14 @@ class NotFound(LookupError):
 
 
 class Conflict(RuntimeError):
+    pass
+
+
+class InvalidRequest(ValueError):
+    """A request that is well-formed but not applicable (422). Other ValueErrors are internal."""
+
+
+class Busy(RuntimeError):
     pass
 
 
@@ -82,9 +94,12 @@ class Service:
         model_dir: Path,
         streams: Sequence[RecordingStream] | None = None,
         log_root: Path = LOG_ROOT,
+        expected_manifest_sha256: str | None = None,
     ) -> None:
         self.cfg, self.pharma = load_config(), load_config("pharma.yaml")
-        self.model: RuntimeModel = load_artifact(model_dir, self.cfg, self.pharma)  # refuses
+        self.model: RuntimeModel = load_artifact(  # refuses on any mismatch
+            model_dir, self.cfg, self.pharma, expected_manifest_sha256
+        )
         self.pipe = Pipeline(
             EngineConfig.from_config(self.cfg, self.pharma),
             FeatureBuilder(self.cfg),
@@ -105,13 +120,13 @@ class Service:
         self.acks: dict[str, dict[str, Any]] = {}
         self.decisions_logged = 0
         self.subscribers: set[asyncio.Queue[dict[str, Any] | None]] = set()
+        self._shown_last: dict[str, tuple[str, float | None, str | None]] = {}
 
     # ------------------------------------------------------------------ session lifecycle
     def _new_log(self) -> DecisionLog:
         self._segments += 1
         self.session_id = f"{make_run_id('replay')}-{self._segments:03d}"
         self.decisions_logged = 0
-        self.acks = {}
         header = {
             "session_id": self.session_id,
             "created_utc": utc_now_iso(),
@@ -126,8 +141,12 @@ class Service:
     def select(self, keys: Sequence[str]) -> None:
         unknown = [k for k in keys if k not in self.catalog]
         if unknown:
-            raise NotFound(f"unknown or non-permitted recording(s): {unknown}")
+            raise NotFound(f"{len(unknown)} unknown or non-permitted recording key(s)")
+        if len(set(keys)) != len(keys):
+            raise InvalidRequest("a recording may be selected once")
         self._streams = [self.catalog[k] for k in keys]
+        self.acks = {}  # acknowledgements persist across seek within one selection
+        self._shown_last = {}
         if self.session is not None and self.session.log is not None:
             self.session.log.close()
         log = self._new_log()
@@ -168,6 +187,26 @@ class Service:
                 self.publish({**msg, "type": "notification"})
         if s.finished:
             self.playing = False
+        self._publish_bed_states()
+
+    def _publish_bed_states(self) -> None:
+        """Push every change of the DISPLAYED state (incl. staleness via policy.current), so a
+        stream client never shows an expired decision as current (no UI-side policy logic)."""
+        s = self._require()
+        for i, r in enumerate(s.runners):
+            rec, d = self._shown(i, r)
+            did = rec.decision_id if rec is not None and rec.decision is d else None
+            key = (d.state.value, d.p, did)
+            if self._shown_last.get(r.recording_key) != key:
+                self._shown_last[r.recording_key] = key
+                self.publish(
+                    {
+                        "type": "bed_state",
+                        "recording_key": r.recording_key,
+                        "now_ts": s.now(i),
+                        **decision_view(rec, d, self.model.status).model_dump(),
+                    }
+                )
 
     def step(self, n: int) -> None:
         self._emit(self._require().step(n))
@@ -181,12 +220,14 @@ class Service:
     def seek(self, offset: int) -> None:
         s = self._require()
         if offset > s.duration:
-            raise ValueError(f"offset beyond the replay duration ({s.duration} s)")
+            raise InvalidRequest(f"offset beyond the replay duration ({s.duration} s)")
         s.seek(offset, self._new_log())
         self.decisions_logged = sum(len(r.decisions) for r in s.runners)
         self._clock = float(s.offset)
         self.playing = False
+        self._shown_last = {}
         self.publish({"type": "session", **self.status().model_dump()})
+        self._publish_bed_states()
 
     def reset(self) -> None:
         self.seek(0)
@@ -285,10 +326,13 @@ class Service:
                 return i, r
         raise NotFound(f"recording {key} is not in the current replay")
 
-    def _factor_groups(self, r: TwinRunner) -> list[S.FactorGroup]:
+    def _factor_groups(self, r: TwinRunner, shown: PolicyDecision) -> list[S.FactorGroup]:
+        """Explanation of the CURRENT forecast only; none for a non-forecast or stale state."""
         lf = r.last_forecast
         snap = r.last_snapshot
-        if lf is None or snap is None or snap.digest != lf.input_digest:
+        if lf is None or lf.decision is not shown:
+            return []
+        if snap is None or snap.digest != lf.input_digest:
             return []
         sums: dict[str, float] = {}
         for f, c in self.model.contributions(snap).items():
@@ -354,9 +398,10 @@ class Service:
                 if e.ts >= lo
             ],
             exposure=exposure,
+            exposure_ts=st.ts,
             medication_quality=med_q,
             data_quality=list(st.quality.reasons) if st.quality is not None else [],
-            factor_groups=self._factor_groups(r),
+            factor_groups=self._factor_groups(r, d),
             notifications=self._notifications(r),
             ledger={
                 "pending": sum(1 for f in led.pending if f.p is not None),
@@ -431,11 +476,19 @@ class Service:
 
     def evidence(self) -> dict[str, Any]:
         """DEVELOPMENT evidence (T inner CV, S6). Confirmatory evidence: PENDING (E sealed)."""
-        run = self.model.manifest["provenance"].get("s6_run")
-        path = REPO_ROOT / "experiments" / "runs" / str(run) / "results.json"
+        run = str(self.model.manifest["provenance"].get("s6_run"))
+        if not S6_RUN_ID.fullmatch(run):
+            raise NotFound("no development evidence is linked to this model")
+        path = REPO_ROOT / "experiments" / "runs" / run / "results.json"
         doc = json.loads(path.read_text("utf-8"))
         res = doc["results"]
         lad = res["ladder"]
+        comps = lad["treated"].get("comparisons", {})
+        ladder_keys = ("C1_", "C2a_", "C2b_", "preview_")
+        sens = {
+            k: v for k, v in comps.items() if k.endswith(":sens1") and k.startswith(ladder_keys)
+        }
+        separate = sorted(k for k, v in sens.items() if not v["ci95"][0] <= 0.0 <= v["ci95"][1])
         return {
             "status": "DEVELOPMENT",
             "confirmatory": "PENDING (sealed evaluation partition not opened)",
@@ -452,15 +505,22 @@ class Service:
                 }
                 for pop in lad
             },
-            "comparisons": lad["treated"].get("comparisons", {}),
+            "comparisons": comps,
             "interpretation": (
-                "Development only. M2/M3r/M3 do not separate on T (all intervals include 0); "
-                "ordering among them is uninformative (DEC-2026-10-18-I)."
+                "Development only (T). "
+                + (
+                    "No C1/C2a/C2b/M3-M2 sens@1FA interval excludes 0; the ordering among "
+                    "M1-M3 is uninformative on T."
+                    if not separate
+                    else f"Intervals excluding 0 on T: {separate} (development only)."
+                )
             ),
         }
 
     # ------------------------------------------------------------------ stream
     def subscribe(self) -> asyncio.Queue[dict[str, Any] | None]:
+        if len(self.subscribers) >= MAX_SUBSCRIBERS:
+            raise Busy("too many stream subscribers")
         q: asyncio.Queue[dict[str, Any] | None] = asyncio.Queue(SUBSCRIBER_QUEUE)
         self.subscribers.add(q)
         return q
@@ -468,10 +528,25 @@ class Service:
     def unsubscribe(self, q: asyncio.Queue[dict[str, Any] | None]) -> None:
         self.subscribers.discard(q)
 
+    def bind_loop(self, loop: asyncio.AbstractEventLoop) -> None:
+        """Called from the event-loop thread before any service access."""
+        self._loop = loop
+        self._loop_thread = threading.get_ident()
+
     def publish(self, msg: dict[str, Any]) -> None:
-        """Typed, versioned stream message. A subscriber that falls behind is disconnected (it
-        reconnects and re-reads the snapshot endpoints); the replay never blocks on a client."""
+        """Typed, versioned stream message. Thread-safe: mutations run in a worker thread, and
+        delivery is handed to the event loop in FIFO order. A subscriber that falls behind is
+        disconnected (it reconnects and re-reads the snapshot endpoints); the replay never blocks
+        on a client."""
         full = {"v": S.STREAM_VERSION, **msg}
+        loop = getattr(self, "_loop", None)
+        off_loop = threading.get_ident() != getattr(self, "_loop_thread", None)
+        if loop is not None and off_loop and loop.is_running():
+            loop.call_soon_threadsafe(self._deliver, full)
+        else:
+            self._deliver(full)
+
+    def _deliver(self, full: dict[str, Any]) -> None:
         for q in list(self.subscribers):
             try:
                 q.put_nowait(full)

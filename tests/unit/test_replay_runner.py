@@ -200,6 +200,14 @@ def test_session_log_is_deterministic_and_seek_equals_fresh_replay(
         hashes.append(log.sha256())
         log.close()
     assert hashes[0] == hashes[1]
+    # a seek back to 0 into a new segment reproduces the uninterrupted log exactly
+    s = ReplaySession(streams, pipe, DecisionLog(tmp_path / "seg1", {}))
+    s.advance_to(900 * 60)
+    seg2 = DecisionLog(tmp_path / "seg2", {})
+    s.seek(0, seg2)
+    s.step(10**6)
+    assert seg2.sha256() == hashes[0]
+    seg2.close()
     s = ReplaySession(streams, pipe, None)
     s.advance_to(800 * 60)
     s.advance_to(1300 * 60)
