@@ -627,3 +627,90 @@ Commit. Pending scientific decisions are in [PROPOSALS.md](PROPOSALS.md) until a
   per recording; exact ties; partial area as a signed clipped path integral; window metrics only
   for probabilities; operationalised abstention coverage. None changes a number on T.
 - **Class**: C-clarification (pending owner approval; not blocking S6) · **Date**: 2026-10-18 · **Commit**: 671a7ca
+
+## DEC-2026-10-18-G · S6 development protocol (PRE-REGISTERED before any model is fitted)
+Written and committed before the first LightGBM fit. Development (T) only. E stays sealed.
+Status of every result: DEVELOPMENT.
+
+1. **Data.**
+   - Rows and features: the v1.0.1 tuning feature table (`data/processed/features/v1.0.1/`,
+     table `acb1be1f…`, clean 3487373).
+   - Labels: joined offline (S2 builder).
+   - Training rows: label-eligible prediction times of the training patients (all T patients:
+     treated and untreated; ANALYSIS_PLAN §2.2).
+   - Predictions are made at EVERY reading, because the S5 policy replay needs scores wherever
+     the policy queries.
+   - Feature sets: exactly `level_names(M1/M2/M3r/M3)` (38 / 72 / 95 / 100).
+2. **Folds** (patient-grouped, stratified by treated × has-L1, deterministic, seed 2026):
+   - 5 outer folds over T (`cv.folds`);
+   - 4 inner folds within each outer training set (`cv.inner_folds`);
+   - 4 folds over all T for M1 tuning.
+3. **M1 tuning** (Blueprint §11.1):
+   - Optuna TPE, seed 2026, 30 trials.
+   - Search space = `configs/default.yaml model.search_space`.
+   - Fixed: objective binary, metric binary_logloss, no class weighting, seed 2026,
+     deterministic, num_threads 1, bagging_freq 1 (so that bagging_fraction acts),
+     max 2,000 rounds.
+   - Early stopping: 100 rounds on the held-out fold.
+   - Trial objective = mean held-out log-loss at each fold's best iteration. Every trial is
+     recorded.
+4. **P-B2 adopted as proposed:** `num_boost_round` = the median per-fold best iteration of the
+   winning trial. Every later fit uses that fixed count with no early stopping.
+5. **Shared hyperparameters** for M2, M3r and M3, with the same folds, seeds, calibration and
+   threshold procedure.
+   - **P-B9 adopted a priori:** `quality_*` are declared categorical (they appear only in
+     M3-family sets). All canonical columns are kept; the number of inert columns is reported.
+6. **Calibration** (canonical = isotonic):
+   - Per outer fold, the calibrator is fitted on the 4-fold inner out-of-fold RAW predictions of
+     the outer-training patients (eligible rows) and applied to the held-out fold.
+   - **P-B1 challengers:** Platt (logistic on logit p) and isotonic with linear interpolation
+     between knots.
+   - **Rule (on M1 pooled held-out eligible rows):** adopt a challenger only if its log-loss is
+     lower than isotonic's by ≥ 1 % relative AND its ECE is not higher. Ties go to isotonic. One
+     method then applies to all models.
+   - **Band rule (§11.1):** M1 held-out calibration slope outside [0.8, 1.25] → risk bands in the UI.
+7. **Ladder evaluation** (S5 harness, unchanged): pooled outer-OOF calibrated predictions per
+   model; M0 scores unchanged.
+   - Populations: treated T (primary-analogue) and all T.
+   - Event metrics: sens@1FA (first crossing) and partial area, each with a 2,000-resample paired
+     patient-cluster bootstrap (seed 2027); operating point at the first-crossing τ.
+   - Window metrics on eligible rows: log-loss, Brier, AUPRC, ECE, slope / intercept.
+   - Paired differences (sens@1FA, partial area, window log-loss):
+     - C0 M1−M0 (event metrics only; M0 has no probabilities);
+     - C1 M2−M1;
+     - C2a M3r−M2;
+     - C2b M3−M3r;
+     - M3−M2 (development preview, NOT H1).
+   - Patient-weighted sensitivity is reported (P-B6 b).
+8. **P-B6 (c) variant**, applied to training only (labels and evaluation unchanged). Exclude
+   from training:
+   - (i) eligible rows whose label window (t, t+60] overlaps a sensor-floor run;
+   - (ii) every row of recordings with ≥ 5 CGM < 70 readings paired to a CBG (± 8 min), all of
+     those CBG ≥ 70.
+
+   **Rule:** adopt for training only if M1 held-out log-loss on the UNAFFECTED T patients
+   improves by ≥ 1 % relative. Rankings, sens@1FA and calibration are reported both ways.
+9. **P-B8 (a) M3_compact** = M3 minus {insulin_p30, insulin_p60, su_p30, su_p60, glinide_p30,
+   glinide_p60, act_insulin_total_per_kg}. It keeps the activities, IOB, Δ60 terms,
+   minutes-since, quality codes and flags (S4 evidence).
+   - **Rule:** recorded as "candidate preferred" only if its held-out log-loss is ≥ 1 % relative
+     lower than M3's AND its sens@1FA is not lower.
+   - M3_baseline stays canonical unless the owner approves a change before freeze.
+   - **P-B8 (b) detemir duration:** not run on T; it is a kernel sensitivity that belongs to SA6.
+10. **P-B7:** NOT RUN. T has 0 glinide patients, so combining SU and glinide is identical to
+    the baseline on T by construction (uninformative). M3_baseline remains.
+11. **Explanation:** grouped TreeSHAP (LightGBM `pred_contrib`), mean |contribution| per
+    feature group on held-out eligible rows. Descriptive only, never causal.
+12. **Overfitting checks:** train vs held-out log-loss per fold, per-fold best iterations, and
+    prediction concentration.
+13. **G4** (Table 21.1 = IMPLEMENTATION_PLAN S6): PASS iff all tests pass, the pipeline runs
+    end-to-end on T, and the M1 operating curve is computed. M1 vs M0 is reported with its
+    paired interval. On failure, M0 becomes the operational baseline.
+14. **Reproducibility:** the full workflow runs twice on one clean commit; trials, OOF
+    predictions and metric hashes must be identical.
+
+- **Known limitation, accepted:** the hyperparameters are tuned on all of T and then reused in
+  T's outer CV. The learned models' T results are therefore optimistic relative to M0 (which has
+  no tuning) and are not out-of-sample for tuning. This is why T results are DEVELOPMENT only;
+  the confirmatory run on E has no such overlap.
+- **Class**: B (development procedures; pre-registered) · **Date**: 2026-10-18 · **Commit**: this commit
