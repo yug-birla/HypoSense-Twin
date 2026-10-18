@@ -46,6 +46,8 @@ from hyposense.state.patient import EngineConfig, PatientState
 from hyposense.state.stream import RecordingStream
 
 PLAUSIBLE_MGDL = (20.0, 600.0)  # Blueprint Table 25.1 Observation invariant
+# exposure values kept per reading for display (deterministic S3 engine outputs; never re-derived)
+EXPOSURE_DISPLAY = ("act_insulin_total", "iob_insulin", "act_su", "act_glinide")
 
 
 class ImplausibleInputError(ValueError):
@@ -58,6 +60,10 @@ class Pipeline:
     builder: FeatureBuilder
     model: RuntimeModel
     max_consecutive_errors: int = 5
+    # P-C10 (PENDING owner decision): True = current behaviour, a rejected non-CGM event is a
+    # SYSTEM_ERROR record (option a). False = development setting for option (b): the clinical
+    # state is kept and the rejection is shown as a badge (the EVENT_REJECTED tag still applies).
+    reject_non_cgm_as_error: bool = True
 
     @property
     def rejected_tag_s(self) -> int:
@@ -75,6 +81,10 @@ class DecisionRecord:
     input_digest: str | None = None
     quality: tuple[str, ...] = ()
     error: str | None = None  # exception type for SYSTEM_ERROR (never a stack trace)
+    # display trace (not logged: the decision log keeps its S7 content)
+    cgm_mgdl: float | None = None
+    in_episode: bool = False
+    exposure: tuple[tuple[str, float], ...] = ()
 
     def log(self, model: RuntimeModel) -> dict[str, Any]:
         """The decisions.jsonl record (Blueprint §14.3). Deterministic: no wall-clock field."""
@@ -126,6 +136,7 @@ class TwinRunner:
     rejected_until: int | None = field(default=None, init=False)
     last_snapshot: Any = field(default=None, init=False)
     unknown_outcomes: int | None = field(default=None, init=False)
+    unknown_forecasts: tuple[Forecast, ...] = field(default=(), init=False)
 
     def __post_init__(self) -> None:
         self.state = PatientState.start(self.stream.context, self.pipe.engine)
@@ -183,9 +194,17 @@ class TwinRunner:
             return None
         return self._decide(seq, e)
 
-    def _reject(self, seq: int, e: StateEvent, error: str) -> DecisionRecord:
+    def _reject(self, seq: int, e: StateEvent, error: str) -> DecisionRecord | None:
         kind = error.split(":", 1)[0]
-        self.rejected.append({"seq": seq, "ts": e.ts, "event": type(e).__name__, "error": kind})
+        self.rejected.append(
+            {
+                "seq": seq,
+                "ts": e.ts,
+                "at": self.state.ts,
+                "event": type(e).__name__,
+                "error": kind,
+            }
+        )
         self.consecutive_errors += 1
         if isinstance(e, MedicationEvent | MealEvent | CBGReading):
             # window from the processing time (a rejected late event carries an old ts)
@@ -195,6 +214,8 @@ class TwinRunner:
         if self.consecutive_errors >= self.pipe.max_consecutive_errors:
             self.halted = True
             reason = "RUNNER_HALTED"
+        elif not self.pipe.reject_non_cgm_as_error and not isinstance(e, CGMReading):
+            return None  # P-C10 option (b): state kept, rejection shown as a badge
         ts = e.ts if isinstance(e.ts, int) else (self.state.ts or 0)
         return self._record(seq, system_error(ts, reason), error=kind)
 
@@ -231,6 +252,14 @@ class TwinRunner:
         if d.p is None:
             raw = None
         q = s.quality.reasons if s.quality is not None else ()
+        exposure: tuple[tuple[str, float], ...] = ()
+        try:  # display only; a failure here never changes the decision
+            ex = s.medication.at(t).exposure
+            exposure = tuple(
+                (k, float(ex[k])) for k in EXPOSURE_DISPLAY if k in ex and math.isfinite(ex[k])
+            )
+        except Exception:
+            exposure = ()
         try:
             s = s.record_forecast(Forecast(t, m.level, m.model_version, d.p))
             if d.notify:
@@ -240,7 +269,17 @@ class TwinRunner:
             d = system_error(t, "LEDGER_ERROR")
             raw = None
             error = type(exc).__name__
-        return self._record(seq, d, raw=raw, input_digest=digest, quality=q, error=error)
+        return self._record(
+            seq,
+            d,
+            raw=raw,
+            input_digest=digest,
+            quality=q,
+            error=error,
+            cgm_mgdl=e.value_mgdl,
+            in_episode=s.cgm.tracker.in_episode,
+            exposure=exposure,
+        )
 
     def finish(self) -> None:
         """Recording end: pending forecasts are reconciled or OUTCOME-UNKNOWN (§2 item 4)."""
@@ -251,3 +290,4 @@ class TwinRunner:
 
         self.state = replace(self.state, ledger=ledger)
         self.unknown_outcomes = len(unknown)
+        self.unknown_forecasts = unknown

@@ -40,6 +40,7 @@ dev = [
     "pandas-stubs",
     "types-PyYAML",
     "httpx==0.28.1",
+    "playwright==1.55.0",
 ]
 
 [build-system]
@@ -55,6 +56,7 @@ addopts = "-ra --strict-markers"
 markers = [
     "requires_data: needs the official ShanghaiT2DM copy under data/raw (skipped otherwise)",
     "slow: long-running (full-dataset or full-training) test",
+    "e2e: browser end-to-end test (built frontend + DEVELOPMENT artefact + Edge)",
 ]
 
 [tool.ruff]

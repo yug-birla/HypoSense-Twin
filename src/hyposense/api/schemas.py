@@ -91,14 +91,26 @@ class ForecastView(Strict):
     is_current: bool  # False: older than the current decision; never shown as current
 
 
+class Trend(Strict):
+    rate_mgdl_per_min: float | None  # canonical cgm_slope30 at the latest reading
+    category: str | None  # steady | rising | rising_fast | falling | falling_fast
+
+
 class Bed(Strict):
     rank: int
     recording_key: str
     patient_key: str
     now_ts: int
     last_reading_ts: int | None
+    data_age_s: int | None
+    cgm_mgdl: float | None  # latest observed reading (measured, never forecast)
+    trend: Trend
     decision: DecisionView
+    summary: str
+    reason: str  # one line: policy reason or top associated factor groups
+    # critical quality badges: SENSOR_FAULT_SUSPECTED, RUNNER_HALTED, INPUT_REJECTED
     badges: list[str]
+    info_tags: list[str]  # informational uncertainty tags (LOW_CONFIDENCE, MED_TIMING_UNKNOWN:*)
     unacknowledged_notifications: int
 
 
@@ -110,6 +122,7 @@ class Ward(Strict):
 
 class FactorGroup(Strict):
     group: str
+    label: str
     contribution: float  # raw-margin TreeSHAP sum (pre-calibration; associations, not causes)
     direction: str  # raises_risk | lowers_risk
 
@@ -121,6 +134,28 @@ class Dose(Strict):
     route: str | None
     dose: float | None
     dose_unit: str | None
+
+
+class TimelinePoint(Strict):
+    decision_id: str
+    ts: int
+    cgm_mgdl: float
+    state: str
+    p: float | None
+    notify: bool
+    in_episode: bool  # causal episode tracker at this reading
+    sensor_fault: bool
+    exposure: dict[str, float]
+
+
+class LedgerEntry(Strict):
+    forecast_ts: int
+    p: float
+    p_text: str
+    state: str | None
+    notified: bool
+    outcome: str  # LOW_FOLLOWED | NO_LOW | PENDING | OUTCOME_UNKNOWN
+    resolved_ts: int | None
 
 
 class Notification(Strict):
@@ -136,6 +171,10 @@ class PatientView(Strict):
     now_ts: int
     model_status: str
     current: DecisionView
+    summary: str
+    trend: Trend
+    cgm_mgdl: float | None
+    data_age_s: int | None
     last_forecast: ForecastView | None
     cgm: list[tuple[int, float]]  # last 24 h
     cbg: list[tuple[int, float]]
@@ -143,6 +182,10 @@ class PatientView(Strict):
     doses: list[Dose]
     exposure: dict[str, float]
     exposure_ts: int | None  # evaluated at the latest processed event
+    exposure_units: dict[str, str]
+    timeline: list[TimelinePoint]  # last 24 h of decisions at CGM readings
+    ledger_entries: list[LedgerEntry]  # most recent first
+    input_rejected: bool
     medication_quality: dict[str, str]
     data_quality: list[str]
     factor_groups: list[FactorGroup]  # of the current forecast only; [] otherwise
@@ -171,3 +214,181 @@ class ReplayStatus(Strict):
     finished: bool
     decisions_logged: int
     source: str
+
+
+# ---------------------------------------------------------------- meta / evidence (artefact views)
+class Loose(BaseModel):
+    """Views of canonical artefacts: fields not listed here are dropped, never invented."""
+
+    model_config = ConfigDict(extra="ignore", frozen=True)
+
+
+class Pc10Mode(Loose):
+    value: str
+    status: str
+
+
+class Meta(Loose):
+    api_version: str
+    stream_version: int
+    model_version: str
+    model_status: str
+    level: str
+    artifact_manifest_sha256: str
+    compatibility: dict[str, str]
+    provenance: dict[str, object]
+    thresholds: dict[str, float | None]
+    policy: dict[str, float]
+    freeze_status: str
+    data_utc_offset_s: int
+    pc10_mode: Pc10Mode
+    source: str
+    caveat: str
+
+
+class LeadTime(Loose):
+    median: float | None = None
+    q25: float | None = None
+    q75: float | None = None
+    share_ge_30: float | None = None
+
+
+class NotificationCounts(Loose):
+    true: int = 0
+    false: int = 0
+    outcome_unknown: int = 0
+
+
+class OperatingPoint(Loose):
+    tau: float | None = None
+    episodes: int | None = None
+    hits: int | None = None
+    sensitivity: float | None = None
+    warnable_ceiling: float | None = None
+    fa_per_day: float | None = None
+    alert_precision: float | None = None
+    monitored_days: float | None = None
+    lead_min: LeadTime | None = None
+    notifications: NotificationCounts | None = None
+
+
+class Calibration(Loose):
+    ece: float | None = None
+    slope: float | None = None
+    intercept: float | None = None
+
+
+class ReliabilityBin(Loose):
+    n: int
+    mean_p: float
+    mean_y: float
+
+
+class LadderModel(Loose):
+    sens_at_1fa: float | None
+    sens_at_1fa_ci95: list[float] | None = None
+    partial_area: float | None = None
+    partial_area_ci95: list[float] | None = None
+    operating_point: OperatingPoint | None = None
+    calibration: Calibration | None = None
+    reliability: list[ReliabilityBin] | None = None
+    log_loss: float | None = None
+
+
+class LadderPopulation(Loose):
+    patients: int | None = None
+    episodes: int | None = None
+    models: dict[str, LadderModel]
+
+
+class Comparison(Loose):
+    point: float | None
+    ci95: list[float] | None = None
+
+
+class CurveData(Loose):
+    fa_per_day: list[float]
+    sensitivity: list[float]
+    episodes: float | None = None
+
+
+class Curves(Loose):
+    run_id: str
+    results_sha256: str
+    treated: dict[str, CurveData]
+    all: dict[str, CurveData]
+
+
+class GateView(Loose):
+    gate: str | None
+    title: str | None
+    status: str | None
+    evaluated_utc: str | None
+    summary: list[str]
+    consequences: list[str]
+
+
+class Engineering(Loose):
+    run_id: str
+    results_sha256: str
+    commit: str | None
+    parity: dict[str, int]
+    determinism_identical: bool
+    error_injection: dict[str, int]
+    long_run: dict[str, float | int | bool]
+    latency_ms: dict[str, float]
+
+
+class Task(Loose):
+    target: str
+    horizon_min: int
+    warning_window_min: list[int]
+    fa_budget_per_day: float
+    primary_comparison: str
+    population_development: str
+
+
+class ModelInfo(Loose):
+    model_version: str
+    status: str
+    manifest_sha256: str
+    compatibility: dict[str, str]
+    tau_alert: float
+    tau_watch: float | None
+
+
+class Safeguard(Loose):
+    label: str
+    value: str
+    source: str
+
+
+class Evidence(Loose):
+    status: str
+    confirmatory: str
+    task: Task
+    run_id: str
+    results_sha256: str
+    commit: str | None
+    ladder: dict[str, LadderPopulation]
+    comparisons: dict[str, Comparison]
+    curves: Curves | None
+    calibration_decision: str | None
+    gates: list[GateView]
+    engineering: Engineering | None
+    model: ModelInfo
+    interpretation: str
+    limitations: list[str]
+    safeguards: list[Safeguard]
+    caveat: str
+
+
+class AckRecord(Loose):
+    decision_id: str
+    recording_key: str
+    decision_ts: int
+    ack_offset_s: int
+    reason: str
+    user_role: str
+    model_version: str
+    received_utc: str

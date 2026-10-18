@@ -1,0 +1,2643 @@
+{
+ "components": {
+  "schemas": {
+   "AckReason": {
+    "description": "Blueprint \u00a716.4 / Table 25.1: exactly four reason codes.",
+    "enum": [
+     "checked_glucose",
+     "known",
+     "sensor_issue",
+     "not_relevant"
+    ],
+    "title": "AckReason",
+    "type": "string"
+   },
+   "AckRecord": {
+    "properties": {
+     "ack_offset_s": {
+      "title": "Ack Offset S",
+      "type": "integer"
+     },
+     "decision_id": {
+      "title": "Decision Id",
+      "type": "string"
+     },
+     "decision_ts": {
+      "title": "Decision Ts",
+      "type": "integer"
+     },
+     "model_version": {
+      "title": "Model Version",
+      "type": "string"
+     },
+     "reason": {
+      "title": "Reason",
+      "type": "string"
+     },
+     "received_utc": {
+      "title": "Received Utc",
+      "type": "string"
+     },
+     "recording_key": {
+      "title": "Recording Key",
+      "type": "string"
+     },
+     "user_role": {
+      "title": "User Role",
+      "type": "string"
+     }
+    },
+    "required": [
+     "decision_id",
+     "recording_key",
+     "decision_ts",
+     "ack_offset_s",
+     "reason",
+     "user_role",
+     "model_version",
+     "received_utc"
+    ],
+    "title": "AckRecord",
+    "type": "object"
+   },
+   "AckRequest": {
+    "additionalProperties": false,
+    "properties": {
+     "decision_id": {
+      "maxLength": 64,
+      "minLength": 1,
+      "pattern": "^[0-9_]+@[0-9]+(#e[0-9]+)?$",
+      "title": "Decision Id",
+      "type": "string"
+     },
+     "reason": {
+      "$ref": "#/components/schemas/AckReason"
+     },
+     "user_role": {
+      "$ref": "#/components/schemas/UserRole"
+     }
+    },
+    "required": [
+     "decision_id",
+     "reason",
+     "user_role"
+    ],
+    "title": "AckRequest",
+    "type": "object"
+   },
+   "AdvanceRequest": {
+    "additionalProperties": false,
+    "properties": {
+     "seconds": {
+      "maximum": 21600.0,
+      "minimum": 0.0,
+      "title": "Seconds",
+      "type": "integer"
+     }
+    },
+    "required": [
+     "seconds"
+    ],
+    "title": "AdvanceRequest",
+    "type": "object"
+   },
+   "Bed": {
+    "additionalProperties": false,
+    "properties": {
+     "badges": {
+      "items": {
+       "type": "string"
+      },
+      "title": "Badges",
+      "type": "array"
+     },
+     "cgm_mgdl": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Cgm Mgdl"
+     },
+     "data_age_s": {
+      "anyOf": [
+       {
+        "type": "integer"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Data Age S"
+     },
+     "decision": {
+      "$ref": "#/components/schemas/DecisionView"
+     },
+     "info_tags": {
+      "items": {
+       "type": "string"
+      },
+      "title": "Info Tags",
+      "type": "array"
+     },
+     "last_reading_ts": {
+      "anyOf": [
+       {
+        "type": "integer"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Last Reading Ts"
+     },
+     "now_ts": {
+      "title": "Now Ts",
+      "type": "integer"
+     },
+     "patient_key": {
+      "title": "Patient Key",
+      "type": "string"
+     },
+     "rank": {
+      "title": "Rank",
+      "type": "integer"
+     },
+     "reason": {
+      "title": "Reason",
+      "type": "string"
+     },
+     "recording_key": {
+      "title": "Recording Key",
+      "type": "string"
+     },
+     "summary": {
+      "title": "Summary",
+      "type": "string"
+     },
+     "trend": {
+      "$ref": "#/components/schemas/Trend"
+     },
+     "unacknowledged_notifications": {
+      "title": "Unacknowledged Notifications",
+      "type": "integer"
+     }
+    },
+    "required": [
+     "rank",
+     "recording_key",
+     "patient_key",
+     "now_ts",
+     "last_reading_ts",
+     "data_age_s",
+     "cgm_mgdl",
+     "trend",
+     "decision",
+     "summary",
+     "reason",
+     "badges",
+     "info_tags",
+     "unacknowledged_notifications"
+    ],
+    "title": "Bed",
+    "type": "object"
+   },
+   "Calibration": {
+    "properties": {
+     "ece": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Ece"
+     },
+     "intercept": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Intercept"
+     },
+     "slope": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Slope"
+     }
+    },
+    "title": "Calibration",
+    "type": "object"
+   },
+   "Case": {
+    "additionalProperties": false,
+    "properties": {
+     "cgm_readings": {
+      "title": "Cgm Readings",
+      "type": "integer"
+     },
+     "days": {
+      "title": "Days",
+      "type": "number"
+     },
+     "partition": {
+      "title": "Partition",
+      "type": "string"
+     },
+     "patient_key": {
+      "title": "Patient Key",
+      "type": "string"
+     },
+     "recording_key": {
+      "title": "Recording Key",
+      "type": "string"
+     }
+    },
+    "required": [
+     "recording_key",
+     "patient_key",
+     "days",
+     "cgm_readings",
+     "partition"
+    ],
+    "title": "Case",
+    "type": "object"
+   },
+   "Comparison": {
+    "properties": {
+     "ci95": {
+      "anyOf": [
+       {
+        "items": {
+         "type": "number"
+        },
+        "type": "array"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Ci95"
+     },
+     "point": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Point"
+     }
+    },
+    "required": [
+     "point"
+    ],
+    "title": "Comparison",
+    "type": "object"
+   },
+   "CurveData": {
+    "properties": {
+     "episodes": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Episodes"
+     },
+     "fa_per_day": {
+      "items": {
+       "type": "number"
+      },
+      "title": "Fa Per Day",
+      "type": "array"
+     },
+     "sensitivity": {
+      "items": {
+       "type": "number"
+      },
+      "title": "Sensitivity",
+      "type": "array"
+     }
+    },
+    "required": [
+     "fa_per_day",
+     "sensitivity"
+    ],
+    "title": "CurveData",
+    "type": "object"
+   },
+   "Curves": {
+    "properties": {
+     "all": {
+      "additionalProperties": {
+       "$ref": "#/components/schemas/CurveData"
+      },
+      "title": "All",
+      "type": "object"
+     },
+     "results_sha256": {
+      "title": "Results Sha256",
+      "type": "string"
+     },
+     "run_id": {
+      "title": "Run Id",
+      "type": "string"
+     },
+     "treated": {
+      "additionalProperties": {
+       "$ref": "#/components/schemas/CurveData"
+      },
+      "title": "Treated",
+      "type": "object"
+     }
+    },
+    "required": [
+     "run_id",
+     "results_sha256",
+     "treated",
+     "all"
+    ],
+    "title": "Curves",
+    "type": "object"
+   },
+   "DecisionView": {
+    "additionalProperties": false,
+    "properties": {
+     "decision_id": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Decision Id"
+     },
+     "model_status": {
+      "title": "Model Status",
+      "type": "string"
+     },
+     "notify": {
+      "title": "Notify",
+      "type": "boolean"
+     },
+     "p": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "P"
+     },
+     "p_text": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "P Text"
+     },
+     "reasons": {
+      "items": {
+       "type": "string"
+      },
+      "title": "Reasons",
+      "type": "array"
+     },
+     "state": {
+      "title": "State",
+      "type": "string"
+     },
+     "tags": {
+      "items": {
+       "type": "string"
+      },
+      "title": "Tags",
+      "type": "array"
+     },
+     "texts": {
+      "items": {
+       "type": "string"
+      },
+      "title": "Texts",
+      "type": "array"
+     },
+     "ts": {
+      "title": "Ts",
+      "type": "integer"
+     }
+    },
+    "required": [
+     "decision_id",
+     "ts",
+     "state",
+     "p",
+     "p_text",
+     "reasons",
+     "tags",
+     "notify",
+     "texts",
+     "model_status"
+    ],
+    "title": "DecisionView",
+    "type": "object"
+   },
+   "Dose": {
+    "additionalProperties": false,
+    "properties": {
+     "canonical": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Canonical"
+     },
+     "dose": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Dose"
+     },
+     "dose_unit": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Dose Unit"
+     },
+     "drug_class": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Drug Class"
+     },
+     "route": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Route"
+     },
+     "ts": {
+      "title": "Ts",
+      "type": "integer"
+     }
+    },
+    "required": [
+     "ts",
+     "drug_class",
+     "canonical",
+     "route",
+     "dose",
+     "dose_unit"
+    ],
+    "title": "Dose",
+    "type": "object"
+   },
+   "Engineering": {
+    "properties": {
+     "commit": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Commit"
+     },
+     "determinism_identical": {
+      "title": "Determinism Identical",
+      "type": "boolean"
+     },
+     "error_injection": {
+      "additionalProperties": {
+       "type": "integer"
+      },
+      "title": "Error Injection",
+      "type": "object"
+     },
+     "latency_ms": {
+      "additionalProperties": {
+       "type": "number"
+      },
+      "title": "Latency Ms",
+      "type": "object"
+     },
+     "long_run": {
+      "additionalProperties": {
+       "anyOf": [
+        {
+         "type": "number"
+        },
+        {
+         "type": "integer"
+        },
+        {
+         "type": "boolean"
+        }
+       ]
+      },
+      "title": "Long Run",
+      "type": "object"
+     },
+     "parity": {
+      "additionalProperties": {
+       "type": "integer"
+      },
+      "title": "Parity",
+      "type": "object"
+     },
+     "results_sha256": {
+      "title": "Results Sha256",
+      "type": "string"
+     },
+     "run_id": {
+      "title": "Run Id",
+      "type": "string"
+     }
+    },
+    "required": [
+     "run_id",
+     "results_sha256",
+     "commit",
+     "parity",
+     "determinism_identical",
+     "error_injection",
+     "long_run",
+     "latency_ms"
+    ],
+    "title": "Engineering",
+    "type": "object"
+   },
+   "Evidence": {
+    "properties": {
+     "calibration_decision": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Calibration Decision"
+     },
+     "caveat": {
+      "title": "Caveat",
+      "type": "string"
+     },
+     "commit": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Commit"
+     },
+     "comparisons": {
+      "additionalProperties": {
+       "$ref": "#/components/schemas/Comparison"
+      },
+      "title": "Comparisons",
+      "type": "object"
+     },
+     "confirmatory": {
+      "title": "Confirmatory",
+      "type": "string"
+     },
+     "curves": {
+      "anyOf": [
+       {
+        "$ref": "#/components/schemas/Curves"
+       },
+       {
+        "type": "null"
+       }
+      ]
+     },
+     "engineering": {
+      "anyOf": [
+       {
+        "$ref": "#/components/schemas/Engineering"
+       },
+       {
+        "type": "null"
+       }
+      ]
+     },
+     "gates": {
+      "items": {
+       "$ref": "#/components/schemas/GateView"
+      },
+      "title": "Gates",
+      "type": "array"
+     },
+     "interpretation": {
+      "title": "Interpretation",
+      "type": "string"
+     },
+     "ladder": {
+      "additionalProperties": {
+       "$ref": "#/components/schemas/LadderPopulation"
+      },
+      "title": "Ladder",
+      "type": "object"
+     },
+     "limitations": {
+      "items": {
+       "type": "string"
+      },
+      "title": "Limitations",
+      "type": "array"
+     },
+     "model": {
+      "$ref": "#/components/schemas/ModelInfo"
+     },
+     "results_sha256": {
+      "title": "Results Sha256",
+      "type": "string"
+     },
+     "run_id": {
+      "title": "Run Id",
+      "type": "string"
+     },
+     "safeguards": {
+      "items": {
+       "$ref": "#/components/schemas/Safeguard"
+      },
+      "title": "Safeguards",
+      "type": "array"
+     },
+     "status": {
+      "title": "Status",
+      "type": "string"
+     },
+     "task": {
+      "$ref": "#/components/schemas/Task"
+     }
+    },
+    "required": [
+     "status",
+     "confirmatory",
+     "task",
+     "run_id",
+     "results_sha256",
+     "commit",
+     "ladder",
+     "comparisons",
+     "curves",
+     "calibration_decision",
+     "gates",
+     "engineering",
+     "model",
+     "interpretation",
+     "limitations",
+     "safeguards",
+     "caveat"
+    ],
+    "title": "Evidence",
+    "type": "object"
+   },
+   "FactorGroup": {
+    "additionalProperties": false,
+    "properties": {
+     "contribution": {
+      "title": "Contribution",
+      "type": "number"
+     },
+     "direction": {
+      "title": "Direction",
+      "type": "string"
+     },
+     "group": {
+      "title": "Group",
+      "type": "string"
+     },
+     "label": {
+      "title": "Label",
+      "type": "string"
+     }
+    },
+    "required": [
+     "group",
+     "label",
+     "contribution",
+     "direction"
+    ],
+    "title": "FactorGroup",
+    "type": "object"
+   },
+   "ForecastView": {
+    "additionalProperties": false,
+    "properties": {
+     "decision_id": {
+      "title": "Decision Id",
+      "type": "string"
+     },
+     "is_current": {
+      "title": "Is Current",
+      "type": "boolean"
+     },
+     "p": {
+      "title": "P",
+      "type": "number"
+     },
+     "p_text": {
+      "title": "P Text",
+      "type": "string"
+     },
+     "state": {
+      "title": "State",
+      "type": "string"
+     },
+     "ts": {
+      "title": "Ts",
+      "type": "integer"
+     }
+    },
+    "required": [
+     "decision_id",
+     "ts",
+     "p",
+     "p_text",
+     "state",
+     "is_current"
+    ],
+    "title": "ForecastView",
+    "type": "object"
+   },
+   "GateView": {
+    "properties": {
+     "consequences": {
+      "items": {
+       "type": "string"
+      },
+      "title": "Consequences",
+      "type": "array"
+     },
+     "evaluated_utc": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Evaluated Utc"
+     },
+     "gate": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Gate"
+     },
+     "status": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Status"
+     },
+     "summary": {
+      "items": {
+       "type": "string"
+      },
+      "title": "Summary",
+      "type": "array"
+     },
+     "title": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Title"
+     }
+    },
+    "required": [
+     "gate",
+     "title",
+     "status",
+     "evaluated_utc",
+     "summary",
+     "consequences"
+    ],
+    "title": "GateView",
+    "type": "object"
+   },
+   "HTTPValidationError": {
+    "properties": {
+     "detail": {
+      "items": {
+       "$ref": "#/components/schemas/ValidationError"
+      },
+      "title": "Detail",
+      "type": "array"
+     }
+    },
+    "title": "HTTPValidationError",
+    "type": "object"
+   },
+   "Health": {
+    "additionalProperties": false,
+    "properties": {
+     "artifact_verified": {
+      "title": "Artifact Verified",
+      "type": "boolean"
+     },
+     "model_status": {
+      "title": "Model Status",
+      "type": "string"
+     },
+     "model_version": {
+      "title": "Model Version",
+      "type": "string"
+     },
+     "status": {
+      "title": "Status",
+      "type": "string"
+     }
+    },
+    "required": [
+     "status",
+     "artifact_verified",
+     "model_version",
+     "model_status"
+    ],
+    "title": "Health",
+    "type": "object"
+   },
+   "LadderModel": {
+    "properties": {
+     "calibration": {
+      "anyOf": [
+       {
+        "$ref": "#/components/schemas/Calibration"
+       },
+       {
+        "type": "null"
+       }
+      ]
+     },
+     "log_loss": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Log Loss"
+     },
+     "operating_point": {
+      "anyOf": [
+       {
+        "$ref": "#/components/schemas/OperatingPoint"
+       },
+       {
+        "type": "null"
+       }
+      ]
+     },
+     "partial_area": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Partial Area"
+     },
+     "partial_area_ci95": {
+      "anyOf": [
+       {
+        "items": {
+         "type": "number"
+        },
+        "type": "array"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Partial Area Ci95"
+     },
+     "reliability": {
+      "anyOf": [
+       {
+        "items": {
+         "$ref": "#/components/schemas/ReliabilityBin"
+        },
+        "type": "array"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Reliability"
+     },
+     "sens_at_1fa": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Sens At 1Fa"
+     },
+     "sens_at_1fa_ci95": {
+      "anyOf": [
+       {
+        "items": {
+         "type": "number"
+        },
+        "type": "array"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Sens At 1Fa Ci95"
+     }
+    },
+    "required": [
+     "sens_at_1fa"
+    ],
+    "title": "LadderModel",
+    "type": "object"
+   },
+   "LadderPopulation": {
+    "properties": {
+     "episodes": {
+      "anyOf": [
+       {
+        "type": "integer"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Episodes"
+     },
+     "models": {
+      "additionalProperties": {
+       "$ref": "#/components/schemas/LadderModel"
+      },
+      "title": "Models",
+      "type": "object"
+     },
+     "patients": {
+      "anyOf": [
+       {
+        "type": "integer"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Patients"
+     }
+    },
+    "required": [
+     "models"
+    ],
+    "title": "LadderPopulation",
+    "type": "object"
+   },
+   "LeadTime": {
+    "properties": {
+     "median": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Median"
+     },
+     "q25": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Q25"
+     },
+     "q75": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Q75"
+     },
+     "share_ge_30": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Share Ge 30"
+     }
+    },
+    "title": "LeadTime",
+    "type": "object"
+   },
+   "LedgerEntry": {
+    "additionalProperties": false,
+    "properties": {
+     "forecast_ts": {
+      "title": "Forecast Ts",
+      "type": "integer"
+     },
+     "notified": {
+      "title": "Notified",
+      "type": "boolean"
+     },
+     "outcome": {
+      "title": "Outcome",
+      "type": "string"
+     },
+     "p": {
+      "title": "P",
+      "type": "number"
+     },
+     "p_text": {
+      "title": "P Text",
+      "type": "string"
+     },
+     "resolved_ts": {
+      "anyOf": [
+       {
+        "type": "integer"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Resolved Ts"
+     },
+     "state": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "State"
+     }
+    },
+    "required": [
+     "forecast_ts",
+     "p",
+     "p_text",
+     "state",
+     "notified",
+     "outcome",
+     "resolved_ts"
+    ],
+    "title": "LedgerEntry",
+    "type": "object"
+   },
+   "Meta": {
+    "properties": {
+     "api_version": {
+      "title": "Api Version",
+      "type": "string"
+     },
+     "artifact_manifest_sha256": {
+      "title": "Artifact Manifest Sha256",
+      "type": "string"
+     },
+     "caveat": {
+      "title": "Caveat",
+      "type": "string"
+     },
+     "compatibility": {
+      "additionalProperties": {
+       "type": "string"
+      },
+      "title": "Compatibility",
+      "type": "object"
+     },
+     "data_utc_offset_s": {
+      "title": "Data Utc Offset S",
+      "type": "integer"
+     },
+     "freeze_status": {
+      "title": "Freeze Status",
+      "type": "string"
+     },
+     "level": {
+      "title": "Level",
+      "type": "string"
+     },
+     "model_status": {
+      "title": "Model Status",
+      "type": "string"
+     },
+     "model_version": {
+      "title": "Model Version",
+      "type": "string"
+     },
+     "pc10_mode": {
+      "$ref": "#/components/schemas/Pc10Mode"
+     },
+     "policy": {
+      "additionalProperties": {
+       "type": "number"
+      },
+      "title": "Policy",
+      "type": "object"
+     },
+     "provenance": {
+      "additionalProperties": true,
+      "title": "Provenance",
+      "type": "object"
+     },
+     "source": {
+      "title": "Source",
+      "type": "string"
+     },
+     "stream_version": {
+      "title": "Stream Version",
+      "type": "integer"
+     },
+     "thresholds": {
+      "additionalProperties": {
+       "anyOf": [
+        {
+         "type": "number"
+        },
+        {
+         "type": "null"
+        }
+       ]
+      },
+      "title": "Thresholds",
+      "type": "object"
+     }
+    },
+    "required": [
+     "api_version",
+     "stream_version",
+     "model_version",
+     "model_status",
+     "level",
+     "artifact_manifest_sha256",
+     "compatibility",
+     "provenance",
+     "thresholds",
+     "policy",
+     "freeze_status",
+     "data_utc_offset_s",
+     "pc10_mode",
+     "source",
+     "caveat"
+    ],
+    "title": "Meta",
+    "type": "object"
+   },
+   "ModelInfo": {
+    "properties": {
+     "compatibility": {
+      "additionalProperties": {
+       "type": "string"
+      },
+      "title": "Compatibility",
+      "type": "object"
+     },
+     "manifest_sha256": {
+      "title": "Manifest Sha256",
+      "type": "string"
+     },
+     "model_version": {
+      "title": "Model Version",
+      "type": "string"
+     },
+     "status": {
+      "title": "Status",
+      "type": "string"
+     },
+     "tau_alert": {
+      "title": "Tau Alert",
+      "type": "number"
+     },
+     "tau_watch": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Tau Watch"
+     }
+    },
+    "required": [
+     "model_version",
+     "status",
+     "manifest_sha256",
+     "compatibility",
+     "tau_alert",
+     "tau_watch"
+    ],
+    "title": "ModelInfo",
+    "type": "object"
+   },
+   "Notification": {
+    "additionalProperties": false,
+    "properties": {
+     "acknowledged": {
+      "title": "Acknowledged",
+      "type": "boolean"
+     },
+     "decision_id": {
+      "title": "Decision Id",
+      "type": "string"
+     },
+     "reason": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Reason"
+     },
+     "ts": {
+      "title": "Ts",
+      "type": "integer"
+     }
+    },
+    "required": [
+     "decision_id",
+     "ts",
+     "acknowledged",
+     "reason"
+    ],
+    "title": "Notification",
+    "type": "object"
+   },
+   "NotificationCounts": {
+    "properties": {
+     "false": {
+      "default": 0,
+      "title": "False",
+      "type": "integer"
+     },
+     "outcome_unknown": {
+      "default": 0,
+      "title": "Outcome Unknown",
+      "type": "integer"
+     },
+     "true": {
+      "default": 0,
+      "title": "True",
+      "type": "integer"
+     }
+    },
+    "title": "NotificationCounts",
+    "type": "object"
+   },
+   "OperatingPoint": {
+    "properties": {
+     "alert_precision": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Alert Precision"
+     },
+     "episodes": {
+      "anyOf": [
+       {
+        "type": "integer"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Episodes"
+     },
+     "fa_per_day": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Fa Per Day"
+     },
+     "hits": {
+      "anyOf": [
+       {
+        "type": "integer"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Hits"
+     },
+     "lead_min": {
+      "anyOf": [
+       {
+        "$ref": "#/components/schemas/LeadTime"
+       },
+       {
+        "type": "null"
+       }
+      ]
+     },
+     "monitored_days": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Monitored Days"
+     },
+     "notifications": {
+      "anyOf": [
+       {
+        "$ref": "#/components/schemas/NotificationCounts"
+       },
+       {
+        "type": "null"
+       }
+      ]
+     },
+     "sensitivity": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Sensitivity"
+     },
+     "tau": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Tau"
+     },
+     "warnable_ceiling": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Warnable Ceiling"
+     }
+    },
+    "title": "OperatingPoint",
+    "type": "object"
+   },
+   "PatientView": {
+    "additionalProperties": false,
+    "properties": {
+     "caveat": {
+      "title": "Caveat",
+      "type": "string"
+     },
+     "cbg": {
+      "items": {
+       "maxItems": 2,
+       "minItems": 2,
+       "prefixItems": [
+        {
+         "type": "integer"
+        },
+        {
+         "type": "number"
+        }
+       ],
+       "type": "array"
+      },
+      "title": "Cbg",
+      "type": "array"
+     },
+     "cgm": {
+      "items": {
+       "maxItems": 2,
+       "minItems": 2,
+       "prefixItems": [
+        {
+         "type": "integer"
+        },
+        {
+         "type": "number"
+        }
+       ],
+       "type": "array"
+      },
+      "title": "Cgm",
+      "type": "array"
+     },
+     "cgm_mgdl": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Cgm Mgdl"
+     },
+     "current": {
+      "$ref": "#/components/schemas/DecisionView"
+     },
+     "data_age_s": {
+      "anyOf": [
+       {
+        "type": "integer"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Data Age S"
+     },
+     "data_quality": {
+      "items": {
+       "type": "string"
+      },
+      "title": "Data Quality",
+      "type": "array"
+     },
+     "doses": {
+      "items": {
+       "$ref": "#/components/schemas/Dose"
+      },
+      "title": "Doses",
+      "type": "array"
+     },
+     "exposure": {
+      "additionalProperties": {
+       "type": "number"
+      },
+      "title": "Exposure",
+      "type": "object"
+     },
+     "exposure_ts": {
+      "anyOf": [
+       {
+        "type": "integer"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Exposure Ts"
+     },
+     "exposure_units": {
+      "additionalProperties": {
+       "type": "string"
+      },
+      "title": "Exposure Units",
+      "type": "object"
+     },
+     "factor_groups": {
+      "items": {
+       "$ref": "#/components/schemas/FactorGroup"
+      },
+      "title": "Factor Groups",
+      "type": "array"
+     },
+     "halted": {
+      "title": "Halted",
+      "type": "boolean"
+     },
+     "input_rejected": {
+      "title": "Input Rejected",
+      "type": "boolean"
+     },
+     "last_forecast": {
+      "anyOf": [
+       {
+        "$ref": "#/components/schemas/ForecastView"
+       },
+       {
+        "type": "null"
+       }
+      ]
+     },
+     "ledger": {
+      "additionalProperties": {
+       "type": "integer"
+      },
+      "title": "Ledger",
+      "type": "object"
+     },
+     "ledger_entries": {
+      "items": {
+       "$ref": "#/components/schemas/LedgerEntry"
+      },
+      "title": "Ledger Entries",
+      "type": "array"
+     },
+     "meals": {
+      "items": {
+       "type": "integer"
+      },
+      "title": "Meals",
+      "type": "array"
+     },
+     "medication_quality": {
+      "additionalProperties": {
+       "type": "string"
+      },
+      "title": "Medication Quality",
+      "type": "object"
+     },
+     "model_status": {
+      "title": "Model Status",
+      "type": "string"
+     },
+     "notifications": {
+      "items": {
+       "$ref": "#/components/schemas/Notification"
+      },
+      "title": "Notifications",
+      "type": "array"
+     },
+     "now_ts": {
+      "title": "Now Ts",
+      "type": "integer"
+     },
+     "patient_key": {
+      "title": "Patient Key",
+      "type": "string"
+     },
+     "recording_key": {
+      "title": "Recording Key",
+      "type": "string"
+     },
+     "rejected_events": {
+      "title": "Rejected Events",
+      "type": "integer"
+     },
+     "summary": {
+      "title": "Summary",
+      "type": "string"
+     },
+     "timeline": {
+      "items": {
+       "$ref": "#/components/schemas/TimelinePoint"
+      },
+      "title": "Timeline",
+      "type": "array"
+     },
+     "trend": {
+      "$ref": "#/components/schemas/Trend"
+     }
+    },
+    "required": [
+     "recording_key",
+     "patient_key",
+     "now_ts",
+     "model_status",
+     "current",
+     "summary",
+     "trend",
+     "cgm_mgdl",
+     "data_age_s",
+     "last_forecast",
+     "cgm",
+     "cbg",
+     "meals",
+     "doses",
+     "exposure",
+     "exposure_ts",
+     "exposure_units",
+     "timeline",
+     "ledger_entries",
+     "input_rejected",
+     "medication_quality",
+     "data_quality",
+     "factor_groups",
+     "notifications",
+     "ledger",
+     "rejected_events",
+     "halted",
+     "caveat"
+    ],
+    "title": "PatientView",
+    "type": "object"
+   },
+   "Pc10Mode": {
+    "properties": {
+     "status": {
+      "title": "Status",
+      "type": "string"
+     },
+     "value": {
+      "title": "Value",
+      "type": "string"
+     }
+    },
+    "required": [
+     "value",
+     "status"
+    ],
+    "title": "Pc10Mode",
+    "type": "object"
+   },
+   "ReliabilityBin": {
+    "properties": {
+     "mean_p": {
+      "title": "Mean P",
+      "type": "number"
+     },
+     "mean_y": {
+      "title": "Mean Y",
+      "type": "number"
+     },
+     "n": {
+      "title": "N",
+      "type": "integer"
+     }
+    },
+    "required": [
+     "n",
+     "mean_p",
+     "mean_y"
+    ],
+    "title": "ReliabilityBin",
+    "type": "object"
+   },
+   "ReplayStatus": {
+    "additionalProperties": false,
+    "properties": {
+     "decisions_logged": {
+      "title": "Decisions Logged",
+      "type": "integer"
+     },
+     "duration_s": {
+      "title": "Duration S",
+      "type": "integer"
+     },
+     "finished": {
+      "title": "Finished",
+      "type": "boolean"
+     },
+     "offset_s": {
+      "title": "Offset S",
+      "type": "integer"
+     },
+     "playing": {
+      "title": "Playing",
+      "type": "boolean"
+     },
+     "recordings": {
+      "items": {
+       "type": "string"
+      },
+      "title": "Recordings",
+      "type": "array"
+     },
+     "session_id": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Session Id"
+     },
+     "source": {
+      "title": "Source",
+      "type": "string"
+     },
+     "speed": {
+      "title": "Speed",
+      "type": "number"
+     }
+    },
+    "required": [
+     "session_id",
+     "recordings",
+     "playing",
+     "speed",
+     "offset_s",
+     "duration_s",
+     "finished",
+     "decisions_logged",
+     "source"
+    ],
+    "title": "ReplayStatus",
+    "type": "object"
+   },
+   "Safeguard": {
+    "properties": {
+     "label": {
+      "title": "Label",
+      "type": "string"
+     },
+     "source": {
+      "title": "Source",
+      "type": "string"
+     },
+     "value": {
+      "title": "Value",
+      "type": "string"
+     }
+    },
+    "required": [
+     "label",
+     "value",
+     "source"
+    ],
+    "title": "Safeguard",
+    "type": "object"
+   },
+   "SeekRequest": {
+    "additionalProperties": false,
+    "properties": {
+     "offset_s": {
+      "minimum": 0.0,
+      "title": "Offset S",
+      "type": "integer"
+     }
+    },
+    "required": [
+     "offset_s"
+    ],
+    "title": "SeekRequest",
+    "type": "object"
+   },
+   "SelectRequest": {
+    "additionalProperties": false,
+    "properties": {
+     "recording_keys": {
+      "items": {
+       "maxLength": 32,
+       "type": "string"
+      },
+      "maxItems": 12,
+      "minItems": 1,
+      "title": "Recording Keys",
+      "type": "array"
+     }
+    },
+    "required": [
+     "recording_keys"
+    ],
+    "title": "SelectRequest",
+    "type": "object"
+   },
+   "SpeedRequest": {
+    "additionalProperties": false,
+    "properties": {
+     "speed": {
+      "maximum": 3600.0,
+      "minimum": 1.0,
+      "title": "Speed",
+      "type": "number"
+     }
+    },
+    "required": [
+     "speed"
+    ],
+    "title": "SpeedRequest",
+    "type": "object"
+   },
+   "StepRequest": {
+    "additionalProperties": false,
+    "properties": {
+     "n": {
+      "default": 1,
+      "maximum": 2000.0,
+      "minimum": 1.0,
+      "title": "N",
+      "type": "integer"
+     }
+    },
+    "title": "StepRequest",
+    "type": "object"
+   },
+   "Task": {
+    "properties": {
+     "fa_budget_per_day": {
+      "title": "Fa Budget Per Day",
+      "type": "number"
+     },
+     "horizon_min": {
+      "title": "Horizon Min",
+      "type": "integer"
+     },
+     "population_development": {
+      "title": "Population Development",
+      "type": "string"
+     },
+     "primary_comparison": {
+      "title": "Primary Comparison",
+      "type": "string"
+     },
+     "target": {
+      "title": "Target",
+      "type": "string"
+     },
+     "warning_window_min": {
+      "items": {
+       "type": "integer"
+      },
+      "title": "Warning Window Min",
+      "type": "array"
+     }
+    },
+    "required": [
+     "target",
+     "horizon_min",
+     "warning_window_min",
+     "fa_budget_per_day",
+     "primary_comparison",
+     "population_development"
+    ],
+    "title": "Task",
+    "type": "object"
+   },
+   "TimelinePoint": {
+    "additionalProperties": false,
+    "properties": {
+     "cgm_mgdl": {
+      "title": "Cgm Mgdl",
+      "type": "number"
+     },
+     "decision_id": {
+      "title": "Decision Id",
+      "type": "string"
+     },
+     "exposure": {
+      "additionalProperties": {
+       "type": "number"
+      },
+      "title": "Exposure",
+      "type": "object"
+     },
+     "in_episode": {
+      "title": "In Episode",
+      "type": "boolean"
+     },
+     "notify": {
+      "title": "Notify",
+      "type": "boolean"
+     },
+     "p": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "P"
+     },
+     "sensor_fault": {
+      "title": "Sensor Fault",
+      "type": "boolean"
+     },
+     "state": {
+      "title": "State",
+      "type": "string"
+     },
+     "ts": {
+      "title": "Ts",
+      "type": "integer"
+     }
+    },
+    "required": [
+     "decision_id",
+     "ts",
+     "cgm_mgdl",
+     "state",
+     "p",
+     "notify",
+     "in_episode",
+     "sensor_fault",
+     "exposure"
+    ],
+    "title": "TimelinePoint",
+    "type": "object"
+   },
+   "Trend": {
+    "additionalProperties": false,
+    "properties": {
+     "category": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Category"
+     },
+     "rate_mgdl_per_min": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Rate Mgdl Per Min"
+     }
+    },
+    "required": [
+     "rate_mgdl_per_min",
+     "category"
+    ],
+    "title": "Trend",
+    "type": "object"
+   },
+   "UserRole": {
+    "enum": [
+     "nurse",
+     "physician",
+     "researcher"
+    ],
+    "title": "UserRole",
+    "type": "string"
+   },
+   "ValidationError": {
+    "properties": {
+     "ctx": {
+      "title": "Context",
+      "type": "object"
+     },
+     "input": {
+      "title": "Input"
+     },
+     "loc": {
+      "items": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "integer"
+        }
+       ]
+      },
+      "title": "Location",
+      "type": "array"
+     },
+     "msg": {
+      "title": "Message",
+      "type": "string"
+     },
+     "type": {
+      "title": "Error Type",
+      "type": "string"
+     }
+    },
+    "required": [
+     "loc",
+     "msg",
+     "type"
+    ],
+    "title": "ValidationError",
+    "type": "object"
+   },
+   "Ward": {
+    "additionalProperties": false,
+    "properties": {
+     "beds": {
+      "items": {
+       "$ref": "#/components/schemas/Bed"
+      },
+      "title": "Beds",
+      "type": "array"
+     },
+     "offset_s": {
+      "title": "Offset S",
+      "type": "integer"
+     },
+     "session_id": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Session Id"
+     }
+    },
+    "required": [
+     "session_id",
+     "offset_s",
+     "beds"
+    ],
+    "title": "Ward",
+    "type": "object"
+   }
+  }
+ },
+ "info": {
+  "title": "HypoSense Twin API",
+  "version": "1.0.0"
+ },
+ "openapi": "3.1.0",
+ "paths": {
+  "/api/acknowledgements": {
+   "post": {
+    "operationId": "acknowledge_api_acknowledgements_post",
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/AckRequest"
+       }
+      }
+     },
+     "required": true
+    },
+    "responses": {
+     "201": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/AckRecord"
+        }
+       }
+      },
+      "description": "Successful Response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      },
+      "description": "Validation Error"
+     }
+    },
+    "summary": "Acknowledge"
+   }
+  },
+  "/api/evidence": {
+   "get": {
+    "operationId": "evidence_api_evidence_get",
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Evidence"
+        }
+       }
+      },
+      "description": "Successful Response"
+     }
+    },
+    "summary": "Evidence"
+   }
+  },
+  "/api/health": {
+   "get": {
+    "operationId": "health_api_health_get",
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Health"
+        }
+       }
+      },
+      "description": "Successful Response"
+     }
+    },
+    "summary": "Health"
+   }
+  },
+  "/api/meta": {
+   "get": {
+    "operationId": "meta_api_meta_get",
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Meta"
+        }
+       }
+      },
+      "description": "Successful Response"
+     }
+    },
+    "summary": "Meta"
+   }
+  },
+  "/api/patients/{recording_key}": {
+   "get": {
+    "operationId": "patient_api_patients__recording_key__get",
+    "parameters": [
+     {
+      "in": "path",
+      "name": "recording_key",
+      "required": true,
+      "schema": {
+       "title": "Recording Key",
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/PatientView"
+        }
+       }
+      },
+      "description": "Successful Response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      },
+      "description": "Validation Error"
+     }
+    },
+    "summary": "Patient"
+   }
+  },
+  "/api/replay/advance": {
+   "post": {
+    "operationId": "advance_api_replay_advance_post",
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/AdvanceRequest"
+       }
+      }
+     },
+     "required": true
+    },
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ReplayStatus"
+        }
+       }
+      },
+      "description": "Successful Response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      },
+      "description": "Validation Error"
+     }
+    },
+    "summary": "Advance"
+   }
+  },
+  "/api/replay/cases": {
+   "get": {
+    "operationId": "cases_api_replay_cases_get",
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "items": {
+          "$ref": "#/components/schemas/Case"
+         },
+         "title": "Response Cases Api Replay Cases Get",
+         "type": "array"
+        }
+       }
+      },
+      "description": "Successful Response"
+     }
+    },
+    "summary": "Cases"
+   }
+  },
+  "/api/replay/pause": {
+   "post": {
+    "operationId": "pause_api_replay_pause_post",
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ReplayStatus"
+        }
+       }
+      },
+      "description": "Successful Response"
+     }
+    },
+    "summary": "Pause"
+   }
+  },
+  "/api/replay/play": {
+   "post": {
+    "operationId": "play_api_replay_play_post",
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ReplayStatus"
+        }
+       }
+      },
+      "description": "Successful Response"
+     }
+    },
+    "summary": "Play"
+   }
+  },
+  "/api/replay/reset": {
+   "post": {
+    "operationId": "reset_api_replay_reset_post",
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ReplayStatus"
+        }
+       }
+      },
+      "description": "Successful Response"
+     }
+    },
+    "summary": "Reset"
+   }
+  },
+  "/api/replay/seek": {
+   "post": {
+    "operationId": "seek_api_replay_seek_post",
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/SeekRequest"
+       }
+      }
+     },
+     "required": true
+    },
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ReplayStatus"
+        }
+       }
+      },
+      "description": "Successful Response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      },
+      "description": "Validation Error"
+     }
+    },
+    "summary": "Seek"
+   }
+  },
+  "/api/replay/select": {
+   "post": {
+    "operationId": "select_api_replay_select_post",
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/SelectRequest"
+       }
+      }
+     },
+     "required": true
+    },
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ReplayStatus"
+        }
+       }
+      },
+      "description": "Successful Response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      },
+      "description": "Validation Error"
+     }
+    },
+    "summary": "Select"
+   }
+  },
+  "/api/replay/speed": {
+   "post": {
+    "operationId": "speed_api_replay_speed_post",
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/SpeedRequest"
+       }
+      }
+     },
+     "required": true
+    },
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ReplayStatus"
+        }
+       }
+      },
+      "description": "Successful Response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      },
+      "description": "Validation Error"
+     }
+    },
+    "summary": "Speed"
+   }
+  },
+  "/api/replay/status": {
+   "get": {
+    "operationId": "status_api_replay_status_get",
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ReplayStatus"
+        }
+       }
+      },
+      "description": "Successful Response"
+     }
+    },
+    "summary": "Status"
+   }
+  },
+  "/api/replay/step": {
+   "post": {
+    "operationId": "step_api_replay_step_post",
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/StepRequest"
+       }
+      }
+     },
+     "required": true
+    },
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ReplayStatus"
+        }
+       }
+      },
+      "description": "Successful Response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      },
+      "description": "Validation Error"
+     }
+    },
+    "summary": "Step"
+   }
+  },
+  "/api/stream": {
+   "get": {
+    "operationId": "stream_api_stream_get",
+    "parameters": [
+     {
+      "in": "query",
+      "name": "max_events",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "maximum": 10000,
+         "minimum": 1,
+         "type": "integer"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Max Events"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "title": "Response Stream Api Stream Get"
+        }
+       }
+      },
+      "description": "Successful Response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      },
+      "description": "Validation Error"
+     }
+    },
+    "summary": "Stream"
+   }
+  },
+  "/api/ward": {
+   "get": {
+    "operationId": "ward_api_ward_get",
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Ward"
+        }
+       }
+      },
+      "description": "Successful Response"
+     }
+    },
+    "summary": "Ward"
+   }
+  }
+ }
+}

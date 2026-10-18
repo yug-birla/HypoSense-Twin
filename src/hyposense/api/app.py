@@ -20,12 +20,16 @@ from typing import Any, ParamSpec, TypeVar
 
 from fastapi import FastAPI, Query, Request
 from fastapi.responses import JSONResponse, StreamingResponse
+from fastapi.staticfiles import StaticFiles
+from starlette.exceptions import HTTPException
 
 from hyposense.api import schemas as S
 from hyposense.api.service import Busy, Conflict, InvalidRequest, NotFound, Service
+from hyposense.common.config import REPO_ROOT
 from hyposense.replay.session import InvalidSelection
 
 log = logging.getLogger("hyposense.api")
+FRONTEND_DIR = REPO_ROOT / "frontend" / "out"
 TICK_S = 0.25
 MAX_TICK_S = 1.0
 P = ParamSpec("P")
@@ -99,11 +103,11 @@ def create_app(svc: Service, clock: bool = True) -> FastAPI:
             model_status=svc.model.status,
         )
 
-    @app.get("/api/meta")
+    @app.get("/api/meta", response_model=S.Meta)
     async def meta() -> dict[str, Any]:
         return svc.meta()
 
-    @app.get("/api/evidence")
+    @app.get("/api/evidence", response_model=S.Evidence)
     async def evidence() -> dict[str, Any]:
         return await g.read(svc.evidence)
 
@@ -178,7 +182,7 @@ def create_app(svc: Service, clock: bool = True) -> FastAPI:
             raise NotFound("unknown recording")
         return await g.read(svc.patient, recording_key)
 
-    @app.post("/api/acknowledgements", status_code=201)
+    @app.post("/api/acknowledgements", status_code=201, response_model=S.AckRecord)
     async def acknowledge(req: S.AckRequest) -> dict[str, Any]:
         return await g.read(svc.acknowledge, req)
 
@@ -205,7 +209,41 @@ def create_app(svc: Service, clock: bool = True) -> FastAPI:
 
         return StreamingResponse(gen(), media_type="text/event-stream")
 
+    if FRONTEND_DIR.is_dir():  # static export (ADR-007); mounted after the API routes
+        app.mount("/", ExportFiles(directory=FRONTEND_DIR, html=True), name="ui")
     return app
+
+
+def rsc_segment_path(path: str) -> str | None:
+    """Next.js static export writes route-segment payloads as `__next.<seg>/__PAGE__.txt` while
+    the client requests `__next.<seg>.__PAGE__.txt`. Map the request name onto the exported file
+    (one level of segments; anything else is not mapped). Starlette passes an OS-normalised path,
+    so both separators are accepted."""
+    norm = path.replace("\\", "/")
+    head, _, name = norm.rpartition("/")
+    if not (name.startswith("__next.") and name.endswith(".txt")):
+        return None
+    parts = name[len("__next.") : -len(".txt")].split(".")
+    if len(parts) != 2 or any(x in ("", "..") for x in parts):
+        return None
+    if any(x in ("", "..") for x in head.split("/")) and head:
+        return None
+    mapped = f"__next.{parts[0]}/{parts[1]}.txt"
+    return f"{head}/{mapped}" if head else mapped
+
+
+class ExportFiles(StaticFiles):
+    async def get_response(self, path: str, scope: Any) -> Any:
+        alt = rsc_segment_path(path)
+        try:
+            res = await super().get_response(path, scope)
+        except HTTPException as exc:
+            if exc.status_code != 404 or alt is None:
+                raise
+            return await super().get_response(alt, scope)
+        if res.status_code == 404 and alt is not None:  # html=True serves 404.html instead
+            return await super().get_response(alt, scope)
+        return res
 
 
 def _sse(msg: dict[str, Any]) -> str:

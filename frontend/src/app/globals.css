@@ -1,0 +1,80 @@
+@import "tailwindcss";
+
+/* HypoSense design system (docs/FRONTEND.md §3). Light clinical theme; colour encodes state only.
+   Every component uses these tokens; no component defines its own palette. */
+@theme {
+  --font-sans: "Inter Variable", ui-sans-serif, system-ui, "Segoe UI", sans-serif;
+  --font-mono: "JetBrains Mono Variable", ui-monospace, "Cascadia Mono", monospace;
+
+  /* type scale: size / line height */
+  --text-display: 1.375rem;   --text-display--line-height: 1.75rem;
+  --text-title: 1.0625rem;    --text-title--line-height: 1.5rem;
+  --text-section: 0.8125rem;  --text-section--line-height: 1.25rem;
+  --text-body: 0.8125rem;     --text-body--line-height: 1.25rem;
+  --text-small: 0.75rem;      --text-small--line-height: 1rem;
+  --text-label: 0.6875rem;    --text-label--line-height: 1rem;
+  --text-metric: 1.75rem;     --text-metric--line-height: 2rem;
+
+  /* radii: restrained */
+  --radius-xs: 3px;
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+
+  /* surfaces and text */
+  --color-canvas: #f5f6f8;
+  --color-surface: #ffffff;
+  --color-sunken: #f0f2f5;
+  --color-line: #e3e6eb;
+  --color-line-strong: #cbd1d9;
+  --color-ink: #121826;
+  --color-ink-2: #3f4857;
+  --color-ink-3: #555e6e;   /* >= 5.5:1 on every surface (WCAG AA) */
+  --color-ink-4: #666f81;   /* >= 4.5:1 on white and canvas */
+  --color-accent: #0e6e6a;      /* HypoSense teal: navigation, links, focus. Never a state. */
+  --color-accent-soft: #e6f2f1;
+
+  /* semantic policy states: solid / ink-on-tint / tint / border */
+  --color-low: #b42318;   --color-low-ink: #8f1d14;   --color-low-tint: #fdeceb;   --color-low-line: #f5c2bd;
+  --color-alert: #c2410c; --color-alert-ink: #9a3412; --color-alert-tint: #fff3eb; --color-alert-line: #fbcfae;
+  --color-watch: #a16207; --color-watch-ink: #854d0e; --color-watch-tint: #fef8e7; --color-watch-line: #f6dd96;
+  --color-calm: #4b5565;  --color-calm-ink: #3f4857;  --color-calm-tint: #f4f5f7;  --color-calm-line: #dde1e7;
+  --color-nodata: #687284; --color-nodata-ink: #4b5565; --color-nodata-tint: #f3f4f6; --color-nodata-line: #c9ced6;
+  --color-error: #6d28d9; --color-error-ink: #5b21b6; --color-error-tint: #f4f0fe; --color-error-line: #d9cdfb;
+  --color-fault: #7c4a03; --color-fault-tint: #fbf3e4; --color-fault-line: #ecd3a5;
+
+  /* data visualisation */
+  --color-viz-cgm: #1f2937;
+  --color-viz-range: #eef4f2;
+  --color-viz-insulin: #2f6fd6;
+  --color-viz-iob: #93b4ea;
+  --color-viz-su: #8b5cc7;
+  --color-viz-risk: #0e6e6a;
+  --color-viz-grid: #eceff3;
+}
+
+@layer base {
+  html { font-family: var(--font-sans); font-feature-settings: "cv11", "ss01"; }
+  body {
+    background: var(--color-canvas);
+    color: var(--color-ink);
+    font-size: var(--text-body);
+    line-height: var(--text-body--line-height);
+    -webkit-font-smoothing: antialiased;
+  }
+  :focus-visible { outline: 2px solid var(--color-accent); outline-offset: 2px; border-radius: 3px; }
+  ::selection { background: var(--color-accent-soft); }
+}
+
+@layer utilities {
+  .tnum { font-variant-numeric: tabular-nums; }
+  .label-caps { font-size: var(--text-label); line-height: var(--text-label--line-height); letter-spacing: 0.05em; text-transform: uppercase; font-weight: 600; color: var(--color-ink-3); }
+  .hatch-fault { background-image: repeating-linear-gradient(135deg, var(--color-fault-line) 0 4px, transparent 4px 8px); }
+}
+
+@keyframes hs-pulse-in { from { background-color: var(--color-accent-soft); } to { background-color: transparent; } }
+.state-changed { animation: hs-pulse-in 1.2s ease-out; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.001ms !important; transition-duration: 0.001ms !important; }
+}

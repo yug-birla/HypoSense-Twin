@@ -20,12 +20,21 @@ from typing import Any
 from hyposense.api import schemas as S
 from hyposense.common.config import REPO_ROOT, load_config
 from hyposense.common.provenance import make_run_id, utc_now_iso
+from hyposense.features.cgm import CGMFeatureConfig, trend_slope
 from hyposense.features.snapshot import FeatureBuilder
 from hyposense.features.spec import BY_NAME
 from hyposense.models.artifact import RuntimeModel, load_artifact
 from hyposense.policy.decide import PolicyDecision, PolicyState, current
-from hyposense.policy.messages import LABEL_CAVEAT, probability_text, texts
-from hyposense.replay.runner import DecisionRecord, Pipeline, TwinRunner
+from hyposense.policy.messages import (
+    GROUP_LABEL,
+    LABEL_CAVEAT,
+    probability_text,
+    reason_line,
+    summary,
+    texts,
+    trend_category,
+)
+from hyposense.replay.runner import EXPOSURE_DISPLAY, DecisionRecord, Pipeline, TwinRunner
 from hyposense.replay.session import DecisionLog, Emitted, ReplaySession
 from hyposense.state.patient import EngineConfig
 from hyposense.state.stream import RecordingStream
@@ -43,6 +52,9 @@ STATE_ORDER = {
 TRACE_S = 24 * 3600
 SUBSCRIBER_QUEUE = 1000
 MAX_SUBSCRIBERS = 16
+PC10_MODES = ("system_error", "badge")  # P-C10 PENDING: system_error = current behaviour
+INFO_TAG_PREFIXES = ("LOW_CONFIDENCE", "MED_TIMING_UNKNOWN", "EVENT_REJECTED")
+LEDGER_ROWS = 50
 S6_RUN_ID = re.compile(r"^T-AGG-dev-s6-\d{8}T\d{6}Z$")
 MAX_CONSECUTIVE_ERRORS = 5
 
@@ -95,7 +107,11 @@ class Service:
         streams: Sequence[RecordingStream] | None = None,
         log_root: Path = LOG_ROOT,
         expected_manifest_sha256: str | None = None,
+        pc10_mode: str = "system_error",
     ) -> None:
+        if pc10_mode not in PC10_MODES:
+            raise ValueError(f"pc10_mode must be one of {PC10_MODES}")
+        self.pc10_mode = pc10_mode
         self.cfg, self.pharma = load_config(), load_config("pharma.yaml")
         self.model: RuntimeModel = load_artifact(  # refuses on any mismatch
             model_dir, self.cfg, self.pharma, expected_manifest_sha256
@@ -105,7 +121,9 @@ class Service:
             FeatureBuilder(self.cfg),
             self.model,
             MAX_CONSECUTIVE_ERRORS,
+            reject_non_cgm_as_error=pc10_mode == "system_error",
         )
+        self.cgm_cfg = CGMFeatureConfig.from_config(self.cfg)
         if streams is None:
             streams = load_tuning_streams(self.cfg, self.pharma)
         self.catalog = {s.identity.recording_key: s for s in streams}
@@ -290,34 +308,73 @@ class Service:
         rows = []
         for i, r in enumerate(s.runners):
             rec, d = self._shown(i, r)
-            q = r.state.quality
-            badges = sorted(set(d.tags) | ({"SENSOR_FAULT_SUSPECTED"} & set(d.reasons)))
-            if r.halted:
-                badges.append("RUNNER_HALTED")
-            if (
-                q is not None
-                and q.sensor_fault_suspected
-                and "SENSOR_FAULT_SUSPECTED" not in badges
-            ):
-                badges.append("SENSOR_FAULT_SUSPECTED")
             unack = sum(1 for n in self._notifications(r) if not n.acknowledged)
             key = (STATE_ORDER[d.state], -(d.p if d.p is not None else -1.0), r.recording_key)
-            rows.append((key, i, r, rec, d, badges, unack))
+            rows.append((key, i, r, rec, d, unack))
         rows.sort(key=lambda x: x[0])
-        beds = [
-            S.Bed(
-                rank=k + 1,
-                recording_key=r.recording_key,
-                patient_key=r.patient_key,
-                now_ts=s.now(i),
-                last_reading_ts=int(r.state.cgm.series.ts[-1]) if r.state.cgm.n else None,
-                decision=decision_view(rec, d, self.model.status),
-                badges=badges,
-                unacknowledged_notifications=unack,
+        beds = []
+        for k, (_, i, r, rec, d, unack) in enumerate(rows):
+            now = s.now(i)
+            last = int(r.state.cgm.series.ts[-1]) if r.state.cgm.n else None
+            groups = [g.group for g in self._factor_groups(r, d)] if d.p is not None else []
+            beds.append(
+                S.Bed(
+                    rank=k + 1,
+                    recording_key=r.recording_key,
+                    patient_key=r.patient_key,
+                    now_ts=now,
+                    last_reading_ts=last,
+                    data_age_s=None if last is None else now - last,
+                    cgm_mgdl=self._cgm_now(r, d),
+                    trend=self._trend(r, d),
+                    decision=decision_view(rec, d, self.model.status),
+                    summary=summary(d, self._since(r, d), groups, self.cgm_cfg.utc_offset_s),
+                    reason=reason_line(d, groups),
+                    badges=self._badges(r, d, now),
+                    info_tags=[t for t in d.tags if t.startswith(INFO_TAG_PREFIXES)],
+                    unacknowledged_notifications=unack,
+                )
             )
-            for k, (_, i, r, rec, d, badges, unack) in enumerate(rows)
-        ]
         return S.Ward(session_id=self.session_id, offset_s=s.offset, beds=beds)
+
+    # ------------------------------------------------------------------ display helpers
+    def _current_reading(self, r: TwinRunner, d: PolicyDecision) -> bool:
+        """The latest reading is the displayed decision's reading (not stale, not an error)."""
+        return r.state.cgm.n > 0 and int(r.state.cgm.series.ts[-1]) == d.ts
+
+    def _cgm_now(self, r: TwinRunner, d: PolicyDecision) -> float | None:
+        return float(r.state.cgm.series.values[-1]) if self._current_reading(r, d) else None
+
+    def _trend(self, r: TwinRunner, d: PolicyDecision) -> S.Trend:
+        if not self._current_reading(r, d):
+            return S.Trend(rate_mgdl_per_min=None, category=None)
+        sr = r.state.cgm.series
+        rate = trend_slope(sr.ts, sr.values, 1800, self.cgm_cfg)  # canonical cgm_slope30
+        ok = rate == rate
+        return S.Trend(rate_mgdl_per_min=rate if ok else None, category=trend_category(rate))
+
+    def _since(self, r: TwinRunner, d: PolicyDecision) -> int | None:
+        """Start of the current run of the displayed state (consecutive decisions)."""
+        if not r.decisions or r.decisions[-1].decision is not d:
+            return None
+        since = d.ts
+        for x in reversed(r.decisions):
+            if x.decision.state is not d.state:
+                break
+            since = x.decision.ts
+        return since
+
+    def _badges(self, r: TwinRunner, d: PolicyDecision, now: int) -> list[str]:
+        out = []
+        q = r.state.quality
+        if "SENSOR_FAULT_SUSPECTED" in d.reasons or (q is not None and q.sensor_fault_suspected):
+            out.append("SENSOR_FAULT_SUSPECTED")
+        if r.halted:
+            out.append("RUNNER_HALTED")
+        recent = any((x.get("at") or 0) >= now - 3600 for x in r.rejected)
+        if recent or (r.rejected_until is not None and now <= r.rejected_until and r.rejected):
+            out.append("INPUT_REJECTED")
+        return out
 
     def _runner(self, key: str) -> tuple[int, TwinRunner]:
         s = self._require()
@@ -334,6 +391,9 @@ class Service:
             return []
         if snap is None or snap.digest != lf.input_digest:
             return []
+        return self._groups(snap)
+
+    def _groups(self, snap: Any) -> list[S.FactorGroup]:
         sums: dict[str, float] = {}
         for f, c in self.model.contributions(snap).items():
             g = BY_NAME[f].group.value
@@ -341,7 +401,10 @@ class Service:
         top = sorted(sums.items(), key=lambda kv: (-abs(kv[1]), kv[0]))[:3]
         return [
             S.FactorGroup(
-                group=g, contribution=v, direction="raises_risk" if v > 0 else "lowers_risk"
+                group=g,
+                label=GROUP_LABEL.get(g, g),
+                contribution=v,
+                direction="raises_risk" if v > 0 else "lowers_risk",
             )
             for g, v in top
         ]
@@ -366,12 +429,56 @@ class Service:
             med_q = {c: q.value for c, q in sorted(m.quality.items())}
         led = st.ledger
         resolved = [x for x in led.resolved.items() if x.forecast.p is not None]
+        groups = self._factor_groups(r, d)
+        by_ts = {
+            x.decision.ts: x
+            for x in r.decisions
+            if x.decision.state is not PolicyState.SYSTEM_ERROR
+        }
+        entries: list[S.LedgerEntry] = []
+        for f in [x for x in led.pending if x.p is not None]:
+            entries.append(self._ledger_row(f.ts, f.p, by_ts.get(f.ts), "PENDING", None))
+        for f in [x for x in r.unknown_forecasts if x.p is not None]:
+            entries.append(self._ledger_row(f.ts, f.p, by_ts.get(f.ts), "OUTCOME_UNKNOWN", None))
+        for x in reversed(resolved[-LEDGER_ROWS:]):
+            dec = by_ts.get(x.forecast.ts)
+            outcome = "LOW_FOLLOWED" if x.outcome == 1 else "NO_LOW"
+            entries.append(
+                self._ledger_row(x.forecast.ts, x.forecast.p, dec, outcome, x.resolved_ts)
+            )
+        entries.sort(key=lambda e: -e.forecast_ts)
+        timeline = [
+            S.TimelinePoint(
+                decision_id=x.decision_id,
+                ts=x.decision.ts,
+                cgm_mgdl=x.cgm_mgdl,
+                state=x.decision.state.value,
+                p=x.decision.p,
+                notify=x.decision.notify,
+                in_episode=x.in_episode,
+                sensor_fault="SENSOR_FAULT_SUSPECTED" in x.decision.reasons
+                or "SENSOR_FAULT_SUSPECTED" in x.quality,
+                exposure=dict(x.exposure),
+            )
+            for x in r.decisions
+            if x.cgm_mgdl is not None and x.decision.ts >= lo
+        ]
         return S.PatientView(
             recording_key=key,
             patient_key=r.patient_key,
             now_ts=now,
             model_status=self.model.status,
             current=decision_view(rec, d, self.model.status),
+            summary=summary(
+                d, self._since(r, d), [g.group for g in groups], self.cgm_cfg.utc_offset_s
+            ),
+            trend=self._trend(r, d),
+            cgm_mgdl=self._cgm_now(r, d),
+            data_age_s=None if not st.cgm.n else now - int(st.cgm.series.ts[-1]),
+            exposure_units={k: BY_NAME[k].unit for k in EXPOSURE_DISPLAY if k in BY_NAME},
+            timeline=timeline,
+            ledger_entries=entries[:LEDGER_ROWS],
+            input_rejected="INPUT_REJECTED" in self._badges(r, d, now),
             last_forecast=None
             if lf is None or lf.decision.p is None
             else S.ForecastView(
@@ -401,7 +508,7 @@ class Service:
             exposure_ts=st.ts,
             medication_quality=med_q,
             data_quality=list(st.quality.reasons) if st.quality is not None else [],
-            factor_groups=self._factor_groups(r, d),
+            factor_groups=groups,
             notifications=self._notifications(r),
             ledger={
                 "pending": sum(1 for f in led.pending if f.p is not None),
@@ -412,6 +519,25 @@ class Service:
             rejected_events=len(r.rejected),
             halted=r.halted,
             caveat=LABEL_CAVEAT,
+        )
+
+    def _ledger_row(
+        self,
+        ts: int,
+        p: float | None,
+        dec: DecisionRecord | None,
+        outcome: str,
+        resolved_ts: int | None,
+    ) -> S.LedgerEntry:
+        assert p is not None
+        return S.LedgerEntry(
+            forecast_ts=ts,
+            p=p,
+            p_text=probability_text(p) or "",
+            state=None if dec is None else dec.decision.state.value,
+            notified=False if dec is None else dec.decision.notify,
+            outcome=outcome,
+            resolved_ts=resolved_ts,
         )
 
     # ------------------------------------------------------------------ acknowledgement
@@ -470,17 +596,24 @@ class Service:
                 "max_gap_s": m.rules.max_gap_s,
             },
             "freeze_status": "NOT FROZEN (development)",
+            "data_utc_offset_s": self.cgm_cfg.utc_offset_s,
+            "pc10_mode": {
+                "value": self.pc10_mode,
+                "status": "PENDING owner decision (P-C10); system_error = current specification",
+            },
             "source": SOURCE_LABEL,
             "caveat": LABEL_CAVEAT,
         }
 
     def evidence(self) -> dict[str, Any]:
-        """DEVELOPMENT evidence (T inner CV, S6). Confirmatory evidence: PENDING (E sealed)."""
+        """Evidence View content, assembled from canonical artefacts only (no computation):
+        S6 development results, the aggregate curve artefact, gate files, S7 engineering runs
+        and the model manifest. Status DEVELOPMENT; confirmatory PENDING (E sealed)."""
         run = str(self.model.manifest["provenance"].get("s6_run"))
         if not S6_RUN_ID.fullmatch(run):
             raise NotFound("no development evidence is linked to this model")
-        path = REPO_ROOT / "experiments" / "runs" / run / "results.json"
-        doc = json.loads(path.read_text("utf-8"))
+        runs = REPO_ROOT / "experiments" / "runs"
+        doc = json.loads((runs / run / "results.json").read_text("utf-8"))
         res = doc["results"]
         lad = res["ladder"]
         comps = lad["treated"].get("comparisons", {})
@@ -489,23 +622,98 @@ class Service:
             k: v for k, v in comps.items() if k.endswith(":sens1") and k.startswith(ladder_keys)
         }
         separate = sorted(k for k, v in sens.items() if not v["ci95"][0] <= 0.0 <= v["ci95"][1])
+        ladder: dict[str, Any] = {}
+        for pop, block in lad.items():
+            iv = block.get("intervals", {})
+            ladder[pop] = {
+                "patients": block.get("patients"),
+                "episodes": block.get("episodes"),
+                "models": {
+                    name: {
+                        "sens_at_1fa": v["sens_at_1fa"],
+                        "sens_at_1fa_ci95": iv.get(f"{name}:sens1", {}).get("ci95"),
+                        "partial_area": v.get("partial_area"),
+                        "partial_area_ci95": iv.get(f"{name}:area", {}).get("ci95"),
+                        "operating_point": v.get("operating_point"),
+                        "calibration": v.get("calibration"),
+                        "reliability": v.get("reliability"),
+                        "log_loss": (v.get("window") or {}).get("log_loss"),
+                    }
+                    for name, v in block["models"].items()
+                },
+            }
+        curves = None
+        for d in sorted(runs.glob("T-AGG-dev-evidence-*"), reverse=True):
+            ev = json.loads((d / "results.json").read_text("utf-8"))
+            if ev["results"].get("source_run") == run:
+                curves = {
+                    "run_id": ev["run_id"],
+                    "results_sha256": ev["results_sha256"],
+                    **ev["results"]["curves"],
+                }
+                break
+        gates = []
+        for g in sorted((REPO_ROOT / "artifacts" / "gates").glob("G*.json")):
+            gd = json.loads(g.read_text("utf-8"))
+            gates.append(
+                {
+                    "gate": gd.get("gate"),
+                    "title": gd.get("title"),
+                    "status": gd.get("status"),
+                    "evaluated_utc": gd.get("evaluated_utc"),
+                    "summary": [c.get("summary") for c in gd.get("checks", []) if c.get("summary")][
+                        :3
+                    ],
+                    "consequences": gd.get("consequences_applied") or [],
+                }
+            )
+        engineering = None
+        for d in sorted(runs.glob("T-AGG-s7-engineering-*"), reverse=True):
+            en = json.loads((d / "results.json").read_text("utf-8"))
+            if en["provenance"]["git"].get("dirty") is False and "error_injection" in en["results"]:
+                r = en["results"]
+                if r["error_injection"].get("later_decisions_changed") == 0:
+                    engineering = {
+                        "run_id": en["run_id"],
+                        "results_sha256": en["results_sha256"],
+                        "commit": en["provenance"]["git"].get("commit"),
+                        "parity": r["parity"],
+                        "determinism_identical": r["determinism"]["identical"],
+                        "error_injection": r["error_injection"],
+                        "long_run": r["long_run"],
+                        "latency_ms": en["timing"]["per_reading_end_to_end"],
+                    }
+                    break
+        ev_cfg = self.cfg["event"]
+        m = self.model
         return {
             "status": "DEVELOPMENT",
             "confirmatory": "PENDING (sealed evaluation partition not opened)",
+            "task": {
+                "target": f"CGM-detected L1 episode (CGM < {ev_cfg['threshold_mgdl']:g} mg/dL)",
+                "horizon_min": ev_cfg["horizon_min"],
+                "warning_window_min": [-int(ev_cfg["horizon_min"]), -int(ev_cfg["min_lead_min"])],
+                "fa_budget_per_day": self.cfg["policy"]["fa_budget_alert"],
+                "primary_comparison": "M3 vs M2, sens@1FA, treated patients (sealed partition)",
+                "population_development": "tuning partition T, nested patient-grouped CV",
+            },
             "run_id": doc["run_id"],
             "results_sha256": doc["results_sha256"],
-            "provenance": {k: doc["provenance"].get(k) for k in ("git", "config_sha256")},
-            "ladder": {
-                pop: {
-                    name: {
-                        "sens_at_1fa": v["sens_at_1fa"],
-                        "partial_area": v.get("partial_area"),
-                    }
-                    for name, v in lad[pop]["models"].items()
-                }
-                for pop in lad
-            },
+            "commit": doc["provenance"].get("git", {}).get("commit"),
+            "ladder": ladder,
             "comparisons": comps,
+            "curves": curves,
+            "calibration_decision": res.get("pb1_calibration", {}).get("decision"),
+            "gates": gates,
+            "engineering": engineering,
+            "model": {
+                "model_version": m.model_version,
+                "status": m.status,
+                "manifest_sha256": m.manifest_sha256,
+                "compatibility": m.manifest["compatibility"],
+                "tau_alert": m.thresholds.tau_alert,
+                "tau_watch": m.thresholds.tau_watch,
+            },
             "interpretation": (
                 "Development only (T). "
                 + (
@@ -515,7 +723,69 @@ class Service:
                     else f"Intervals excluding 0 on T: {separate} (development only)."
                 )
             ),
+            "safeguards": self._safeguards(),
+            "limitations": [
+                "Research prototype; not a medical device; not clinically validated.",
+                "Development evidence only: tuning partition, internal cross-validation. The "
+                "evaluation partition is sealed.",
+                "The target is a CGM-detected low; CGM and capillary glucose often disagree "
+                "(gate G3b TRIGGERED). The supported action is capillary confirmation.",
+                "Medication exposure is estimated from logged doses with fixed population-level "
+                "kernels.",
+                "No dose or treatment recommendations are made.",
+            ],
+            "caveat": LABEL_CAVEAT,
         }
+
+    def _safeguards(self) -> list[dict[str, str]]:
+        """Leakage and separation controls, quoted from their audit artefacts (no recomputation)."""
+        runs = REPO_ROOT / "experiments" / "runs"
+        out: list[dict[str, str]] = []
+        for d in sorted(runs.glob("T-AGG-audit-features-*"), reverse=True):
+            f = d / "audit_features.json"
+            if not f.is_file():
+                continue
+            a = json.loads(f.read_text("utf-8"))
+            if a.get("provenance", {}).get("git", {}).get("dirty") is not False:
+                continue
+            det = a["deterministic"]
+            tr, pa = det["truncation"], det["parity"]
+            pert = det["perturbation"]
+            n_p = sum(v["comparisons"] for v in pert.values())
+            m_p = sum(v["mismatches"] for v in pert.values())
+            src = a["run_id"]
+            out += [
+                {
+                    "label": "Truncation equality (features at t: full vs truncated record)",
+                    "value": f"{tr['comparisons']:,} comparisons, {tr['mismatches']} mismatches",
+                    "source": src,
+                },
+                {
+                    "label": "Future-perturbation test (CGM, medication, meals, outcomes after t)",
+                    "value": f"{n_p:,} comparisons, {m_p} mismatches",
+                    "source": src,
+                },
+                {
+                    "label": "Offline / replay feature parity",
+                    "value": f"{pa['comparisons']:,} comparisons, {pa['mismatches']} mismatches",
+                    "source": src,
+                },
+            ]
+            break
+        part = self.cfg["partition"]
+        out += [
+            {
+                "label": "Patient-level partition (development T vs sealed evaluation E)",
+                "value": f"fixed file {str(part['sha256'])[:12]}…; E never loaded before freeze",
+                "source": "configs/partition.csv",
+            },
+            {
+                "label": "Nested patient-grouped cross-validation",
+                "value": "tuning, calibration and thresholds use training patients only",
+                "source": str(self.model.manifest["provenance"].get("s6_run")),
+            },
+        ]
+        return out
 
     # ------------------------------------------------------------------ stream
     def subscribe(self) -> asyncio.Queue[dict[str, Any] | None]:

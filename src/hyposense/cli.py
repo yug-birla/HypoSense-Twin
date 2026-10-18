@@ -207,6 +207,13 @@ def cmd_dev_s7(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_dev_evidence(args: argparse.Namespace) -> int:
+    from hyposense.evaluation.s8_evidence import build_evidence
+
+    _print(build_evidence())
+    return 0
+
+
 def cmd_serve(args: argparse.Namespace) -> int:
     import uvicorn
 
@@ -215,7 +222,11 @@ def cmd_serve(args: argparse.Namespace) -> int:
     from hyposense.models.artifact import ArtifactError
 
     try:
-        svc = Service(_latest_model(args.model), expected_manifest_sha256=args.expect_sha)
+        svc = Service(
+            _latest_model(args.model),
+            expected_manifest_sha256=args.expect_sha,
+            pc10_mode=args.pc10,
+        )
     except ArtifactError as exc:
         print(f"REFUSING TO START: {exc}")
         return 3
@@ -335,11 +346,19 @@ def build_parser() -> argparse.ArgumentParser:
     d7 = dv.add_parser("s7", help="S7 engineering evidence on T")
     d7.add_argument("--model", default=None)
     d7.set_defaults(func=cmd_dev_s7)
+    d8 = dv.add_parser("evidence", help="aggregate Evidence View curves from the S6 OOF (T)")
+    d8.set_defaults(func=cmd_dev_evidence)
     sv = sub.add_parser("serve", help="replay API (FastAPI + SSE), offline")
     sv.add_argument("--model", default=None)
     sv.add_argument("--host", default="127.0.0.1")
     sv.add_argument("--port", type=int, default=8000)
     sv.add_argument("--expect-sha", default=None, help="pin the artefact manifest SHA-256")
+    sv.add_argument(
+        "--pc10",
+        default="system_error",
+        choices=["system_error", "badge"],
+        help="P-C10 (PENDING): display of a rejected non-CGM event; badge = development setting",
+    )
     sv.set_defaults(func=cmd_serve)
 
     gates = sub.add_parser("gates", help="gate results").add_subparsers(dest="cmd", required=True)

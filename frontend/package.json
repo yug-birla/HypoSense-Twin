@@ -1,0 +1,41 @@
+{
+  "name": "hyposense-frontend",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "gen:types": "openapi-typescript ../frontend/openapi.json -o src/lib/openapi.d.ts"
+  },
+  "dependencies": {
+    "@fontsource-variable/inter": "5.1.1",
+    "@fontsource-variable/jetbrains-mono": "5.1.2",
+    "@radix-ui/react-dialog": "1.1.5",
+    "@radix-ui/react-tooltip": "1.1.7",
+    "@tanstack/react-query": "5.64.2",
+    "clsx": "2.1.1",
+    "echarts": "6.1.0",
+    "lucide-react": "0.474.0",
+    "next": "16.3.8",
+    "react": "19.3.0",
+    "react-dom": "19.3.0"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "4.3.3",
+    "@testing-library/jest-dom": "6.6.3",
+    "@testing-library/react": "16.3.3",
+    "@types/node": "22.15.0",
+    "@types/react": "19.0.8",
+    "@types/react-dom": "19.0.3",
+    "@vitejs/plugin-react": "6.1.1",
+    "axe-core": "4.13.0",
+    "jsdom": "30.1.1",
+    "openapi-typescript": "7.6.0",
+    "postcss": "8.5.28",
+    "tailwindcss": "4.3.3",
+    "typescript": "5.9.3",
+    "vitest": "5.0.3"
+  }
+}

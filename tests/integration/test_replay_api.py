@@ -278,3 +278,56 @@ def test_slow_subscriber_is_disconnected_not_blocking(client: Any) -> None:
         svc.publish({"type": "tick", "k": k})
     assert q not in svc.subscribers and q.get_nowait() is None
     assert PolicyState.ALERT.value == "ALERT"
+
+
+def test_s8_ward_and_patient_fields(client: Any, streams: list[RecordingStream]) -> None:
+    c, _ = client
+    keys = [s.identity.recording_key for s in streams[:3]]
+    c.post("/api/replay/select", json={"recording_keys": keys})
+    for _ in range(8):
+        c.post("/api/replay/advance", json={"seconds": 6 * 3600})
+    beds = c.get("/api/ward").json()["beds"]
+    for b in beds:
+        assert b["reason"] and b["summary"].startswith(b["decision"]["state"].replace("_", " "))
+        if b["decision"]["p"] is None:
+            assert "estimated risk" not in b["summary"]
+        assert b["trend"]["category"] in (
+            None,
+            "steady",
+            "rising",
+            "rising_fast",
+            "falling",
+            "falling_fast",
+        )
+        assert set(b["badges"]) <= {"SENSOR_FAULT_SUSPECTED", "RUNNER_HALTED", "INPUT_REJECTED"}
+    pv = c.get(f"/api/patients/{keys[0]}").json()
+    ts = [p["ts"] for p in pv["timeline"]]
+    assert ts == sorted(ts) and ts and pv["now_ts"] - ts[0] <= 24 * 3600
+    assert all(p["cgm_mgdl"] > 0 for p in pv["timeline"])
+    fts = [e["forecast_ts"] for e in pv["ledger_entries"]]
+    assert fts == sorted(fts, reverse=True)
+    assert {e["outcome"] for e in pv["ledger_entries"]} <= {
+        "LOW_FOLLOWED",
+        "NO_LOW",
+        "PENDING",
+        "OUTCOME_UNKNOWN",
+    }
+    assert pv["exposure_units"] and all(isinstance(v, str) for v in pv["exposure_units"].values())
+    # a synthetic artefact links no development run: evidence is refused, never invented
+    assert c.get("/api/evidence").status_code == 404
+
+
+def test_evidence_view_from_real_artifacts(streams: list[RecordingStream], tmp_path: Path) -> None:
+    from hyposense.evaluation.s7_artifact import MODELS_DIR
+
+    found = sorted(MODELS_DIR.glob("M3-dev-*"))
+    if not found:
+        pytest.skip("no DEVELOPMENT artefact built (hyposense dev artifact)")
+    svc = Service(found[-1], streams[:1], log_root=tmp_path)
+    ev = TestClient(create_app(svc, clock=False)).get("/api/evidence").json()
+    assert ev["status"] == "DEVELOPMENT" and ev["confirmatory"].startswith("PENDING")
+    assert set(ev["ladder"]["treated"]["models"]) >= {"M0", "M1", "M2", "M3r", "M3"}
+    assert any(g["gate"] == "G3b" and g["status"] == "TRIGGERED" for g in ev["gates"])
+    assert len(ev["safeguards"]) >= 2 and ev["limitations"]
+    meta = TestClient(create_app(svc, clock=False)).get("/api/meta").json()
+    assert meta["pc10_mode"]["value"] == "system_error" and "PENDING" in meta["pc10_mode"]["status"]

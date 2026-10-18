@@ -1,0 +1,119 @@
+"use client";
+import Link from "next/link";
+import { useSearchParams } from "next/navigation";
+import { Suspense } from "react";
+import { ApiError } from "@/lib/api";
+import { bedLabel } from "@/lib/format";
+import { useDataOffset, useMeta, usePatient, useWard } from "@/lib/queries";
+import { PageHeader } from "@/components/shell/AppShell";
+import { ReplayBar } from "@/components/replay/ReplayBar";
+import { ExposureChart } from "@/components/patient/ExposureChart";
+import { GlucoseChart } from "@/components/patient/GlucoseChart";
+import { AckPanel, LedgerPanel, PatientHeader, QualityPanel, WhyPanel } from "@/components/patient/Panels";
+import { Empty, ErrorBox, Panel, Skeleton, StatePill } from "@/components/ui/primitives";
+
+function Chooser() {
+  const ward = useWard();
+  return (
+    <div>
+      <PageHeader title="Patient review" sub="Select a bed from the current replay." />
+      <div className="p-6">
+        {!ward.data?.beds.length ? (
+          <Panel>
+            <Empty title="No replay running">
+              Start a ward replay on the <Link className="text-accent underline" href="/">Ward board</Link>.
+            </Empty>
+          </Panel>
+        ) : (
+          <Panel title="Beds in this replay" bodyClass="p-2">
+            <ul className="grid grid-cols-[repeat(auto-fill,minmax(220px,1fr))] gap-1.5">
+              {ward.data.beds.map((b) => (
+                <li key={b.recording_key}>
+                  <Link
+                    href={`/patient/?key=${encodeURIComponent(b.recording_key)}`}
+                    className="flex items-center justify-between rounded-md border border-line px-3 py-2 hover:bg-sunken"
+                  >
+                    <span className="font-medium">{bedLabel(b.recording_key)}</span>
+                    <StatePill state={b.decision.state} size="sm" />
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </Panel>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function Review({ k }: { k: string }) {
+  const q = usePatient(k);
+  const meta = useMeta();
+  const offset = useDataOffset();
+  const th = meta.data?.thresholds;
+  if (q.isError) {
+    const nf = q.error instanceof ApiError && (q.error.status === 404 || q.error.status === 409);
+    return (
+      <div className="p-6">
+        <ErrorBox
+          title={nf ? "This bed is not in the current replay" : "Patient view unavailable"}
+          detail={nf ? "Select a bed from the Ward board." : (q.error as Error).message}
+          onRetry={nf ? undefined : () => q.refetch()}
+        />
+      </div>
+    );
+  }
+  if (!q.data) {
+    return (
+      <div className="flex flex-col gap-4 p-6">
+        <Skeleton className="h-28 w-full" />
+        <Skeleton className="h-96 w-full" />
+      </div>
+    );
+  }
+  const v = q.data;
+  return (
+    <div className="flex flex-col gap-4 p-6">
+      <nav aria-label="Breadcrumb" className="-mb-1 text-small text-ink-3">
+        <Link href="/" className="hover:text-accent hover:underline">Ward board</Link>
+        <span aria-hidden className="mx-1.5 text-ink-4">/</span>
+        <span className="text-ink-2">{bedLabel(v.recording_key)}</span>
+      </nav>
+      <ReplayBar compact />
+      <PatientHeader v={v} offsetS={offset} />
+      <div className="grid grid-cols-1 gap-4 xl:grid-cols-[minmax(0,1fr)_340px]">
+        <div className="flex min-w-0 flex-col gap-4">
+          <Panel title="Glucose and model timeline">
+            <GlucoseChart view={v} offsetS={offset} tauAlert={th?.tau_alert ?? null} tauWatch={th?.tau_watch ?? null} />
+          </Panel>
+          <Panel
+            title="Medication context"
+            aside={<span className="text-[11px] text-ink-4">Exposure is ESTIMATED from logged doses with fixed population-level kernels</span>}
+          >
+            <ExposureChart view={v} offsetS={offset} />
+          </Panel>
+        </div>
+        <div className="grid grid-cols-1 content-start gap-4 md:grid-cols-2 xl:grid-cols-1">
+          <WhyPanel v={v} />
+          <AckPanel v={v} offsetS={offset} />
+          <QualityPanel v={v} />
+        </div>
+      </div>
+      <LedgerPanel v={v} offsetS={offset} />
+      <p className="text-[11.5px] text-ink-4">{v.caveat} No dose or treatment recommendation is made.</p>
+    </div>
+  );
+}
+
+function Inner() {
+  const key = useSearchParams().get("key");
+  return key ? <Review k={key} /> : <Chooser />;
+}
+
+export default function PatientPage() {
+  return (
+    <Suspense>
+      <Inner />
+    </Suspense>
+  );
+}

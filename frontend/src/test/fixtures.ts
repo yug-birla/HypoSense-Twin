@@ -1,0 +1,67 @@
+// TEST FIXTURES (SYNTHETIC). Shape-only data for component tests; never used by the app.
+import type { Bed, PatientView } from "@/lib/api";
+
+export function bed(over: Partial<Bed> = {}): Bed {
+  return {
+    rank: 1,
+    recording_key: "9001_0_20200101",
+    patient_key: "synthetic:9001",
+    now_ts: 1_600_000_000,
+    last_reading_ts: 1_600_000_000,
+    data_age_s: 0,
+    cgm_mgdl: 120,
+    trend: { rate_mgdl_per_min: -0.4, category: "steady" },
+    decision: {
+      decision_id: "9001_0_20200101@1600000000",
+      ts: 1_600_000_000,
+      state: "NO_ALERT",
+      p: 0.004,
+      p_text: "<1%",
+      reasons: ["P_BELOW_TAU_WATCH"],
+      tags: [],
+      notify: false,
+      texts: ["Risk below the WATCH threshold."],
+      model_status: "DEVELOPMENT",
+    },
+    summary: "NO ALERT since 10:00 · estimated risk <1%",
+    reason: "Below the WATCH threshold",
+    badges: [],
+    info_tags: [],
+    unacknowledged_notifications: 0,
+    ...over,
+  };
+}
+
+export function patient(over: Partial<PatientView> = {}): PatientView {
+  return {
+    recording_key: "9001_0_20200101",
+    patient_key: "synthetic:9001",
+    now_ts: 1_600_000_000,
+    model_status: "DEVELOPMENT",
+    current: bed().decision,
+    summary: "NO ALERT since 10:00",
+    trend: { rate_mgdl_per_min: null, category: null },
+    cgm_mgdl: 120,
+    data_age_s: 0,
+    last_forecast: null,
+    cgm: [],
+    cbg: [],
+    meals: [],
+    doses: [],
+    exposure: {},
+    exposure_ts: null,
+    exposure_units: {},
+    timeline: [],
+    ledger_entries: [],
+    input_rejected: false,
+    medication_quality: {},
+    data_quality: [],
+    factor_groups: [],
+    notifications: [{ decision_id: "9001_0_20200101@1599990000", ts: 1_599_990_000, acknowledged: false, reason: null }],
+    ledger: { pending: 0, resolved_low: 0, resolved_no_low: 0, outcome_unknown: 0 },
+    rejected_events: 0,
+    halted: false,
+    caveat: "Forecasts refer to CGM-detected lows.",
+    ...over,
+  };
+}
