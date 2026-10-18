@@ -325,6 +325,8 @@ class Service:
                     now_ts=now,
                     last_reading_ts=last,
                     data_age_s=None if last is None else now - last,
+                    stale=last is None or now - last > self.model.rules.max_gap_s,
+                    cgm_low=self._is_low(self._cgm_now(r, d)),
                     cgm_mgdl=self._cgm_now(r, d),
                     trend=self._trend(r, d),
                     decision=decision_view(rec, d, self.model.status),
@@ -341,6 +343,9 @@ class Service:
     def _current_reading(self, r: TwinRunner, d: PolicyDecision) -> bool:
         """The latest reading is the displayed decision's reading (not stale, not an error)."""
         return r.state.cgm.n > 0 and int(r.state.cgm.series.ts[-1]) == d.ts
+
+    def _is_low(self, v: float | None) -> bool:
+        return v is not None and v < self.model.rules.low_mgdl
 
     def _cgm_now(self, r: TwinRunner, d: PolicyDecision) -> float | None:
         return float(r.state.cgm.series.values[-1]) if self._current_reading(r, d) else None
@@ -475,6 +480,8 @@ class Service:
             trend=self._trend(r, d),
             cgm_mgdl=self._cgm_now(r, d),
             data_age_s=None if not st.cgm.n else now - int(st.cgm.series.ts[-1]),
+            stale=not st.cgm.n or now - int(st.cgm.series.ts[-1]) > self.model.rules.max_gap_s,
+            cgm_low=self._is_low(self._cgm_now(r, d)),
             exposure_units={k: BY_NAME[k].unit for k in EXPOSURE_DISPLAY if k in BY_NAME},
             timeline=timeline,
             ledger_entries=entries[:LEDGER_ROWS],
@@ -701,7 +708,27 @@ class Service:
             "results_sha256": doc["results_sha256"],
             "commit": doc["provenance"].get("git", {}).get("commit"),
             "ladder": ladder,
-            "comparisons": comps,
+            "comparisons": {
+                k: {
+                    **v,
+                    "excludes_zero": None
+                    if not v.get("ci95")
+                    else not v["ci95"][0] <= 0.0 <= v["ci95"][1],
+                }
+                for k, v in comps.items()
+            },
+            "diagnostics": [
+                {
+                    "label": f"Post-hoc CGM level rule ({k.split(':')[0]} patients; P-C9 pending)",
+                    "value": (
+                        f"sens@1FA {v['sens_at_1fa']:.3f} "
+                        f"(alerts when CGM < {-v['tau_alert']:g} mg/dL)"
+                    ),
+                    "source": run,
+                }
+                for k, v in res.get("diagnostic_simple_rules", {}).items()
+                if k.split(":")[1].startswith("level_")
+            ],
             "curves": curves,
             "calibration_decision": res.get("pb1_calibration", {}).get("decision"),
             "gates": gates,
@@ -725,6 +752,8 @@ class Service:
             ),
             "safeguards": self._safeguards(),
             "limitations": [
+                "C0 (M1 vs the M0 trend rule) overstates the value of learning: a post-hoc "
+                "CGM-level rule matches the learned models on T (see diagnostics; P-C9 pending).",
                 "Research prototype; not a medical device; not clinically validated.",
                 "Development evidence only: tuning partition, internal cross-validation. The "
                 "evaluation partition is sealed.",

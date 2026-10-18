@@ -7,7 +7,7 @@ import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 import { Suspense, useState, type ReactNode } from "react";
 import { StreamProvider, useStream } from "@/lib/stream";
-import { useHealth, useMeta } from "@/lib/queries";
+import { useConnectionLost, useHealth, useMeta } from "@/lib/queries";
 
 const NAV = [
   { href: "/", label: "Ward board", icon: LayoutList },
@@ -51,10 +51,22 @@ function Connection() {
   const up = health.isSuccess;
   const text = !up ? "Service unreachable" : status === "live" ? "Live" : status === "offline" ? "Stream offline" : "Reconnecting…";
   const tone = !up || status === "offline" ? "bg-low" : status === "live" ? "bg-accent" : "bg-watch";
+  const short = !up || status === "offline" ? "Offline" : status === "live" ? "Live" : "Retry";
   return (
-    <div className="flex items-center justify-center gap-2 text-small text-ink-3 xl:justify-start" role="status" aria-live="polite" title={text}>
+    <div className="flex flex-col items-center gap-1 text-small text-ink-3 xl:flex-row xl:gap-2" role="status" aria-live="polite" title={text}>
       <span aria-hidden className={clsx("size-2 shrink-0 rounded-full", tone)} />
-      <span className="sr-only xl:not-sr-only">{text}</span>
+      <span className="text-[10.5px] font-medium xl:hidden">{short}</span>
+      <span className="hidden xl:inline">{text}</span>
+    </div>
+  );
+}
+
+function LostBanner() {
+  const lost = useConnectionLost();
+  if (!lost) return null;
+  return (
+    <div role="alert" className="sticky top-0 z-30 border-b border-low-line bg-low-tint px-6 py-2 text-body font-semibold text-low-ink">
+      Connection to the HypoSense service lost. Values on screen are NOT current; patient states are hidden until it reconnects.
     </div>
   );
 }
@@ -111,6 +123,7 @@ function Shell({ children }: { children: ReactNode }) {
         </div>
       </aside>
       <main id="main" className="min-w-0 flex-1">
+        <LostBanner />
         {children}
       </main>
     </div>

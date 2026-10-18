@@ -9,6 +9,8 @@ export function bed(over: Partial<Bed> = {}): Bed {
     now_ts: 1_600_000_000,
     last_reading_ts: 1_600_000_000,
     data_age_s: 0,
+    stale: false,
+    cgm_low: false,
     cgm_mgdl: 120,
     trend: { rate_mgdl_per_min: -0.4, category: "steady" },
     decision: {
@@ -43,6 +45,8 @@ export function patient(over: Partial<PatientView> = {}): PatientView {
     trend: { rate_mgdl_per_min: null, category: null },
     cgm_mgdl: 120,
     data_age_s: 0,
+    stale: false,
+    cgm_low: false,
     last_forecast: null,
     cgm: [],
     cbg: [],

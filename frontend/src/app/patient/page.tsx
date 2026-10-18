@@ -4,7 +4,7 @@ import { useSearchParams } from "next/navigation";
 import { Suspense } from "react";
 import { ApiError } from "@/lib/api";
 import { bedLabel } from "@/lib/format";
-import { useDataOffset, useMeta, usePatient, useWard } from "@/lib/queries";
+import { useConnectionLost, useDataOffset, useMeta, usePatient, useWard } from "@/lib/queries";
 import { PageHeader } from "@/components/shell/AppShell";
 import { ReplayBar } from "@/components/replay/ReplayBar";
 import { ExposureChart } from "@/components/patient/ExposureChart";
@@ -50,6 +50,7 @@ function Review({ k }: { k: string }) {
   const q = usePatient(k);
   const meta = useMeta();
   const offset = useDataOffset();
+  const lost = useConnectionLost();
   const th = meta.data?.thresholds;
   if (q.isError) {
     const nf = q.error instanceof ApiError && (q.error.status === 404 || q.error.status === 409);
@@ -60,6 +61,13 @@ function Review({ k }: { k: string }) {
           detail={nf ? "Select a bed from the Ward board." : (q.error as Error).message}
           onRetry={nf ? undefined : () => q.refetch()}
         />
+      </div>
+    );
+  }
+  if (lost) {
+    return (
+      <div className="p-6">
+        <ErrorBox title="Patient state not current" detail="The service or stream is unreachable; the view is hidden until it reconnects." />
       </div>
     );
   }
@@ -84,7 +92,7 @@ function Review({ k }: { k: string }) {
       <div className="grid grid-cols-1 gap-4 xl:grid-cols-[minmax(0,1fr)_340px]">
         <div className="flex min-w-0 flex-col gap-4">
           <Panel title="Glucose and model timeline">
-            <GlucoseChart view={v} offsetS={offset} tauAlert={th?.tau_alert ?? null} tauWatch={th?.tau_watch ?? null} />
+            <GlucoseChart view={v} offsetS={offset} tauAlert={th?.tau_alert ?? null} tauWatch={th?.tau_watch ?? null} gapS={meta.data?.policy.max_gap_s} />
           </Panel>
           <Panel
             title="Medication context"

@@ -329,5 +329,10 @@ def test_evidence_view_from_real_artifacts(streams: list[RecordingStream], tmp_p
     assert set(ev["ladder"]["treated"]["models"]) >= {"M0", "M1", "M2", "M3r", "M3"}
     assert any(g["gate"] == "G3b" and g["status"] == "TRIGGERED" for g in ev["gates"])
     assert len(ev["safeguards"]) >= 2 and ev["limitations"]
+    for c in ev["comparisons"].values():
+        if c.get("ci95"):
+            assert c["excludes_zero"] == (not c["ci95"][0] <= 0.0 <= c["ci95"][1])
+    assert any("level rule" in d["label"] for d in ev["diagnostics"])
+    assert any("C0" in x for x in ev["limitations"])
     meta = TestClient(create_app(svc, clock=False)).get("/api/meta").json()
     assert meta["pc10_mode"]["value"] == "system_error" and "PENDING" in meta["pc10_mode"]["status"]

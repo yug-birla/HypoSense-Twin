@@ -111,6 +111,10 @@
       "title": "Badges",
       "type": "array"
      },
+     "cgm_low": {
+      "title": "Cgm Low",
+      "type": "boolean"
+     },
      "cgm_mgdl": {
       "anyOf": [
        {
@@ -174,6 +178,10 @@
       "title": "Recording Key",
       "type": "string"
      },
+     "stale": {
+      "title": "Stale",
+      "type": "boolean"
+     },
      "summary": {
       "title": "Summary",
       "type": "string"
@@ -193,6 +201,8 @@
      "now_ts",
      "last_reading_ts",
      "data_age_s",
+     "stale",
+     "cgm_low",
      "cgm_mgdl",
      "trend",
      "decision",
@@ -293,6 +303,17 @@
        }
       ],
       "title": "Ci95"
+     },
+     "excludes_zero": {
+      "anyOf": [
+       {
+        "type": "boolean"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Excludes Zero"
      },
      "point": {
       "anyOf": [
@@ -670,6 +691,13 @@
        }
       ]
      },
+     "diagnostics": {
+      "items": {
+       "$ref": "#/components/schemas/Safeguard"
+      },
+      "title": "Diagnostics",
+      "type": "array"
+     },
      "engineering": {
       "anyOf": [
        {
@@ -747,6 +775,7 @@
      "model",
      "interpretation",
      "limitations",
+     "diagnostics",
      "safeguards",
      "caveat"
     ],
@@ -1544,6 +1573,10 @@
       "title": "Cgm",
       "type": "array"
      },
+     "cgm_low": {
+      "title": "Cgm Low",
+      "type": "boolean"
+     },
      "cgm_mgdl": {
       "anyOf": [
        {
@@ -1688,6 +1721,10 @@
       "title": "Rejected Events",
       "type": "integer"
      },
+     "stale": {
+      "title": "Stale",
+      "type": "boolean"
+     },
      "summary": {
       "title": "Summary",
       "type": "string"
@@ -1713,6 +1750,8 @@
      "trend",
      "cgm_mgdl",
      "data_age_s",
+     "stale",
+     "cgm_low",
      "last_forecast",
      "cgm",
      "cbg",

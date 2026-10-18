@@ -58,12 +58,13 @@ describe("ward board", () => {
         rank: 1,
         recording_key: "9001_0_20200101",
         cgm_mgdl: 39.6,
+        cgm_low: true,
         decision: { ...bed().decision, state: "LOW_NOW", p: null, p_text: null, reasons: ["CGM_LOW", "SENSOR_FAULT_SUSPECTED"] },
         reason: "Sensor fault suspected: verify sensor and capillary glucose",
         badges: ["SENSOR_FAULT_SUSPECTED"],
       }),
       bed({ rank: 2, recording_key: "9002_0_20200101", decision: { ...bed().decision, state: "ALERT", p: 0.2, p_text: "20%" }, unacknowledged_notifications: 2 }),
-      bed({ rank: 3, recording_key: "9003_0_20200101", data_age_s: 1800, decision: { ...bed().decision, state: "INSUFFICIENT_DATA", p: null, p_text: null } }),
+      bed({ rank: 3, recording_key: "9003_0_20200101", data_age_s: 1800, stale: true, decision: { ...bed().decision, state: "INSUFFICIENT_DATA", p: null, p_text: null } }),
       bed({ rank: 4, recording_key: "9004_0_20200101", badges: ["INPUT_REJECTED"], decision: { ...bed().decision, state: "SYSTEM_ERROR", p: null, p_text: null } }),
     ];
     wrap(<WardTable beds={beds} offsetS={0} />);
@@ -82,7 +83,7 @@ describe("ward board", () => {
 
 describe("patient review", () => {
   it("header shows a current low unmistakably and no probability when there is no forecast", () => {
-    const v = patient({ current: { ...bed().decision, state: "LOW_NOW", p: null, p_text: null }, cgm_mgdl: 61.2 });
+    const v = patient({ current: { ...bed().decision, state: "LOW_NOW", p: null, p_text: null }, cgm_mgdl: 61.2, cgm_low: true });
     wrap(<PatientHeader v={v} offsetS={0} />);
     expect(screen.getByText("LOW NOW")).toBeInTheDocument();
     expect(screen.getByText("no forecast in this state")).toBeInTheDocument();
@@ -150,7 +151,14 @@ describe("chart helpers (display only)", () => {
   });
 });
 
+const wordRe = (word: string) => new RegExp(`\\b${word}\\b`, "i"); // regex word boundary
+
 describe("prohibited wording (Blueprint §16.3)", () => {
+  it("the word matcher works (positive and negative controls)", () => {
+    expect(wordRe("safe").test("this is safe here")).toBe(true);
+    expect(wordRe("safe").test("Leakage safeguards")).toBe(false);
+    expect(wordRe("inject").test("inject now")).toBe(true);
+  });
   const files: string[] = [];
   const walk = (d: string) => {
     for (const f of readdirSync(d)) {
@@ -163,7 +171,7 @@ describe("prohibited wording (Blueprint §16.3)", () => {
   it.each(["safe", "inject", "injection", "administer", "increase insulin", "reduce insulin", "give glucose", "units of"])("UI source never says %s", (word) => {
     for (const f of files) {
       const strings = readFileSync(f, "utf-8").match(/(["'`])(?:(?!\1).)*\1|>[^<{}]+</g) ?? [];
-      const re = new RegExp(`\b${word}\b`, "i"); // whole words: "safeguards" is not "safe"
+      const re = wordRe(word); // whole words: "safeguards" is not "safe"
       for (const s of strings) expect(re.test(s) ? `${f}: ${s}` : "").toBe("");
     }
   });

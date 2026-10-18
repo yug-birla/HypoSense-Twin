@@ -80,7 +80,7 @@ function Ladder({ ev, pop }: { ev: Evidence; pop: Pop }) {
 }
 
 const COMPARISONS: Array<[string, string]> = [
-  ["C0_M1-M0:sens1", "C0 · M1 − M0 (learning vs trend rule)"],
+  ["C0_M1-M0:sens1", "C0 · M1 − M0 (learning vs trend rule)*"],
   ["C1_M2-M1:sens1", "C1 · M2 − M1 (context and meals)"],
   ["C2a_M3r-M2:sens1", "C2a · M3r − M2 (raw medication timing)"],
   ["C2b_M3-M3r:sens1", "C2b · M3 − M3r (exposure representation)"],
@@ -93,7 +93,7 @@ function Comparisons({ ev }: { ev: Evidence }) {
       <ul className="flex flex-col divide-y divide-line">
         {COMPARISONS.filter(([k]) => ev.comparisons[k]).map(([k, label]) => {
           const c = ev.comparisons[k]!;
-          const excl = c.ci95 && (c.ci95[0]! > 0 || c.ci95[1]! < 0);
+          const excl = c.excludes_zero === true;
           return (
             <li key={k} className="grid grid-cols-[minmax(0,1fr)_170px_150px] items-center gap-3 py-2">
               <span className="text-body text-ink-2">{label}</span>
@@ -110,6 +110,8 @@ function Comparisons({ ev }: { ev: Evidence }) {
       </ul>
       <p className="mt-2 text-[11.5px] text-ink-3">
         Paired patient-cluster bootstrap (2,000 resamples), treated patients, development data. Grey = interval includes 0.
+        <br />* M0 is a weak reference: a post-hoc CGM-level rule matches the learned models on T (see Diagnostics;
+        P-C9 pending).
       </p>
     </div>
   );
@@ -209,6 +211,22 @@ export default function EvidencePage() {
                 <Gates ev={q.data} />
               </Panel>
             </div>
+
+            {q.data.diagnostics.length > 0 && (
+              <Panel title="Post-hoc diagnostics (development, T only)">
+                <ul className="flex flex-col gap-1">
+                  {q.data.diagnostics.map((d) => (
+                    <li key={d.label} className="flex items-start justify-between gap-4 text-small">
+                      <span className="text-ink-2">{d.label}</span>
+                      <span className="text-right text-ink tnum">{d.value}</span>
+                    </li>
+                  ))}
+                </ul>
+                <p className="mt-2 text-[11.5px] text-ink-3">
+                  Not part of the pre-registered ladder. Shown so the C0 contrast is not over-read.
+                </p>
+              </Panel>
+            )}
 
             <Panel title="Leakage and separation safeguards">
               <ul className="grid grid-cols-1 gap-x-8 gap-y-2 lg:grid-cols-2">

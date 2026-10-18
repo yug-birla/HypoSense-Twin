@@ -103,6 +103,8 @@ class Bed(Strict):
     now_ts: int
     last_reading_ts: int | None
     data_age_s: int | None
+    stale: bool  # no reading for longer than the policy sufficiency gap (policy.current)
+    cgm_low: bool  # latest observed reading below the event threshold
     cgm_mgdl: float | None  # latest observed reading (measured, never forecast)
     trend: Trend
     decision: DecisionView
@@ -175,6 +177,8 @@ class PatientView(Strict):
     trend: Trend
     cgm_mgdl: float | None
     data_age_s: int | None
+    stale: bool  # no reading for longer than the policy sufficiency gap (policy.current)
+    cgm_low: bool  # latest observed reading below the event threshold
     last_forecast: ForecastView | None
     cgm: list[tuple[int, float]]  # last 24 h
     cbg: list[tuple[int, float]]
@@ -304,6 +308,7 @@ class LadderPopulation(Loose):
 class Comparison(Loose):
     point: float | None
     ci95: list[float] | None = None
+    excludes_zero: bool | None = None  # computed by the backend from ci95
 
 
 class CurveData(Loose):
@@ -379,6 +384,7 @@ class Evidence(Loose):
     model: ModelInfo
     interpretation: str
     limitations: list[str]
+    diagnostics: list[Safeguard]  # post-hoc development diagnostics, quoted from the S6 run
     safeguards: list[Safeguard]
     caveat: str
 

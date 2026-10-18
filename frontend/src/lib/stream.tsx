@@ -88,7 +88,7 @@ export function StreamProvider({ children }: { children: ReactNode }) {
       es.onopen = () => {
         attempt = 0;
         setStatus("live");
-        qc.invalidateQueries(); // resynchronise snapshots after (re)connect
+        for (const k of ["status", "ward", "patient", "health"]) qc.invalidateQueries({ queryKey: [k] }); // resync live views
       };
       for (const t of ["session", "tick", "decision", "notification", "error", "bed_state", "acknowledgement"]) {
         es.addEventListener(t, onMessage as EventListener);

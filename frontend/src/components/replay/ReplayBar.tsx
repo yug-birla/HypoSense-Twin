@@ -5,7 +5,7 @@ import { Pause, Play, RotateCcw, StepForward } from "lucide-react";
 import { useEffect, useState } from "react";
 import { api, ApiError } from "@/lib/api";
 import { duration } from "@/lib/format";
-import { useStatus } from "@/lib/queries";
+import { useConnectionLost, useStatus } from "@/lib/queries";
 import { Button, Tip } from "@/components/ui/primitives";
 
 const SPEEDS = [60, 120, 600, 1800];
@@ -27,14 +27,16 @@ export function ReplayBar({ compact = false }: { compact?: boolean }) {
       qc.invalidateQueries({ queryKey: ["patient"] });
     },
     onError: (e) => setErr(e instanceof ApiError ? e.message : "Replay command failed."),
+    onSettled: () => setDrag(null), // F9: never leave the slider on a value that was not applied
   });
+  const lost = useConnectionLost();
 
   useEffect(() => {
     if (drag !== null && !run.isPending) setDrag(null);
   }, [s?.offset_s]); // eslint-disable-line react-hooks/exhaustive-deps
 
   if (!s || s.recordings.length === 0) return null;
-  const busy = run.isPending;
+  const busy = run.isPending || lost;
   const offset = drag ?? s.offset_s;
   const pctDone = s.duration_s ? (100 * offset) / s.duration_s : 0;
 

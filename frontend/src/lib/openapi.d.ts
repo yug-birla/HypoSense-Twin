@@ -338,6 +338,8 @@ export interface components {
         Bed: {
             /** Badges */
             badges: string[];
+            /** Cgm Low */
+            cgm_low: boolean;
             /** Cgm Mgdl */
             cgm_mgdl: number | null;
             /** Data Age S */
@@ -357,6 +359,8 @@ export interface components {
             reason: string;
             /** Recording Key */
             recording_key: string;
+            /** Stale */
+            stale: boolean;
             /** Summary */
             summary: string;
             trend: components["schemas"]["Trend"];
@@ -389,6 +393,8 @@ export interface components {
         Comparison: {
             /** Ci95 */
             ci95?: number[] | null;
+            /** Excludes Zero */
+            excludes_zero?: boolean | null;
             /** Point */
             point: number | null;
         };
@@ -496,6 +502,8 @@ export interface components {
             /** Confirmatory */
             confirmatory: string;
             curves: components["schemas"]["Curves"] | null;
+            /** Diagnostics */
+            diagnostics: components["schemas"]["Safeguard"][];
             engineering: components["schemas"]["Engineering"] | null;
             /** Gates */
             gates: components["schemas"]["GateView"][];
@@ -752,6 +760,8 @@ export interface components {
                 number,
                 number
             ][];
+            /** Cgm Low */
+            cgm_low: boolean;
             /** Cgm Mgdl */
             cgm_mgdl: number | null;
             current: components["schemas"]["DecisionView"];
@@ -802,6 +812,8 @@ export interface components {
             recording_key: string;
             /** Rejected Events */
             rejected_events: number;
+            /** Stale */
+            stale: boolean;
             /** Summary */
             summary: string;
             /** Timeline */

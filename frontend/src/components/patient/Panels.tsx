@@ -33,7 +33,7 @@ export function PatientHeader({ v, offsetS }: { v: PatientView; offsetS: number 
         </div>
         <div className="flex flex-col justify-center px-5 py-4">
           <p className="label-caps">CGM (observed)</p>
-          <p className={clsx("text-metric font-semibold tnum", v.cgm_mgdl !== null && v.cgm_mgdl < 70 ? "text-low-ink" : "text-ink")}>
+          <p className={clsx("text-metric font-semibold tnum", v.cgm_low ? "text-low-ink" : "text-ink")}>
             {mgdl(v.cgm_mgdl)}
             <span className="ml-1 text-small font-normal text-ink-3">mg/dL</span>
           </p>
@@ -50,7 +50,7 @@ export function PatientHeader({ v, offsetS }: { v: PatientView; offsetS: number 
         </div>
         <div className="flex flex-col justify-center px-5 py-4">
           <p className="label-caps">Last reading</p>
-          <p className={clsx("text-title font-semibold tnum", v.data_age_s !== null && v.data_age_s > 1200 ? "text-alert-ink" : "text-ink")}>
+          <p className={clsx("text-title font-semibold tnum", v.stale ? "text-alert-ink" : "text-ink")}>
             {age(v.data_age_s)}
           </p>
           <p className="text-small text-ink-3 tnum">{v.timeline.length ? clock(v.timeline[v.timeline.length - 1]!.ts, offsetS) : "—"} record clock</p>

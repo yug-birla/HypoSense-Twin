@@ -5,14 +5,23 @@ import type { PatientView, TimelinePoint } from "@/lib/api";
 import { clock } from "@/lib/format";
 import { AXIS, Chart, TOOLTIP, type ChartOption } from "@/components/ui/Chart";
 
-const GAP_S = 1200; // a reading gap > 20 min is drawn as a gap (never interpolated)
+// Default only; the page passes the policy's sufficiency gap from /api/meta (policy.max_gap_s).
+export const DEFAULT_GAP_S = 1200;
 
-/** Contiguous runs of a backend flag -> [start, end] (display only). */
-export function runs(points: TimelinePoint[], flag: (p: TimelinePoint) => boolean): Array<[number, number]> {
+/** Contiguous runs of a backend flag -> [start, end] (display only); a reading gap ends a run. */
+export function runs(
+  points: TimelinePoint[],
+  flag: (p: TimelinePoint) => boolean,
+  gapS: number = DEFAULT_GAP_S,
+): Array<[number, number]> {
   const out: Array<[number, number]> = [];
   let start: number | null = null;
   let last = 0;
   for (const p of points) {
+    if (start !== null && p.ts - last > gapS) {
+      out.push([start, last]);
+      start = null;
+    }
     if (flag(p)) {
       if (start === null) start = p.ts;
       last = p.ts;
@@ -25,17 +34,23 @@ export function runs(points: TimelinePoint[], flag: (p: TimelinePoint) => boolea
   return out;
 }
 
-/** CGM series with explicit nulls at gaps > 20 min (so the line breaks honestly). */
-export function withGaps(points: TimelinePoint[]): Array<[number, number | null]> {
+/** A series with explicit nulls at reading gaps (so the line breaks honestly, never interpolated). */
+export function withGaps(
+  points: TimelinePoint[],
+  gapS: number = DEFAULT_GAP_S,
+  value: (p: TimelinePoint) => number | null = (p) => p.cgm_mgdl,
+): Array<[number, number | null]> {
   const out: Array<[number, number | null]> = [];
   let prev: number | null = null;
   for (const p of points) {
-    if (prev !== null && p.ts - prev > GAP_S) out.push([prev + 1, null]);
-    out.push([p.ts, p.cgm_mgdl]);
+    if (prev !== null && p.ts - prev > gapS) out.push([prev + 1, null]);
+    out.push([p.ts, value(p)]);
     prev = p.ts;
   }
   return out;
 }
+
+const esc = (s: string) => s.replace(/[&<>"']/g, (c) => `&#${c.charCodeAt(0)};`);
 
 type Layer = "episodes" | "notifications" | "fault" | "risk" | "events";
 const LAYERS: Array<[Layer, string]> = [
@@ -51,11 +66,13 @@ export function GlucoseChart({
   offsetS,
   tauAlert,
   tauWatch,
+  gapS = DEFAULT_GAP_S,
 }: {
   view: PatientView;
   offsetS: number;
   tauAlert: number | null;
   tauWatch: number | null;
+  gapS?: number;
 }) {
   const [on, setOn] = useState<Record<Layer, boolean>>({
     episodes: true,
@@ -67,15 +84,15 @@ export function GlucoseChart({
   const option = useMemo<ChartOption>(() => {
     const pts = view.timeline;
     const ms = (ts: number) => (ts + offsetS) * 1000;
-    const series = withGaps(pts).map(([t, v]) => [ms(t), v]);
+    const series = withGaps(pts, gapS).map(([t, v]) => [ms(t), v]);
     const maxG = Math.max(250, ...pts.map((p) => p.cgm_mgdl + 20));
     // window: the last 24 h, or since the first reading if the record is younger
     const t0 = ms(Math.max(view.now_ts - 24 * 3600, pts[0]?.ts ?? view.now_ts - 24 * 3600));
     const t1 = ms(view.now_ts);
-    const episodes = runs(pts, (p) => p.in_episode).map(([a, b]) => [{ xAxis: ms(a) }, { xAxis: ms(b) + 1 }]);
-    const faults = runs(pts, (p) => p.sensor_fault).map(([a, b]) => [{ xAxis: ms(a) }, { xAxis: ms(b) + 1 }]);
+    const episodes = runs(pts, (p) => p.in_episode, gapS).map(([a, b]) => [{ xAxis: ms(a) }, { xAxis: ms(b) + 1 }]);
+    const faults = runs(pts, (p) => p.sensor_fault, gapS).map(([a, b]) => [{ xAxis: ms(a) }, { xAxis: ms(b) + 1 }]);
     const notes = pts.filter((p) => p.notify).map((p) => [ms(p.ts), p.cgm_mgdl]);
-    const risk = pts.map((p) => [ms(p.ts), p.p]);
+    const risk = withGaps(pts, gapS, (p) => p.p).map(([t, v]) => [ms(t), v]);
     const showRisk = on.risk;
     const showEvents = on.events;
     const topH = showRisk ? (showEvents ? "54%" : "62%") : showEvents ? "74%" : "84%";
@@ -140,7 +157,7 @@ export function GlucoseChart({
     }
     let gi = 1;
     if (showRisk) {
-      grids.push({ left: 52, right: 18, top: showEvents ? "71%" : "80%", height: showEvents ? "15%" : "13%" });
+      grids.push({ left: 52, right: 18, top: showEvents ? "70%" : "80%", height: showEvents ? "13%" : "13%" });
       xAxes.push({
         type: "time",
         gridIndex: gi,
@@ -187,7 +204,7 @@ export function GlucoseChart({
       gi += 1;
     }
     if (showEvents) {
-      grids.push({ left: 52, right: 18, top: "87%", height: "8%" });
+      grids.push({ left: 52, right: 18, top: "88%", height: "7%" });
       xAxes.push({
         type: "time",
         gridIndex: gi,
@@ -239,7 +256,7 @@ export function GlucoseChart({
               if (i.seriesName === "CGM (observed)") return `CGM: <b>${Math.round(Number(v))} mg/dL</b>`;
               if (i.seriesName === "Recorded dose") {
                 const d = i.data.dose;
-                return `Dose: <b>${d?.canonical ?? "unknown"}</b>${d?.dose ? ` ${d.dose} ${d.dose_unit ?? ""}` : ""}`;
+                return `Dose: <b>${esc(d?.canonical ?? "unknown")}</b>${d?.dose ? ` ${d.dose} ${esc(d.dose_unit ?? "")}` : ""}`;
               }
               return i.seriesName;
             });
@@ -247,7 +264,7 @@ export function GlucoseChart({
         },
       },
     };
-  }, [view, offsetS, tauAlert, tauWatch, on]);
+  }, [view, offsetS, tauAlert, tauWatch, on, gapS]);
 
   return (
     <div>

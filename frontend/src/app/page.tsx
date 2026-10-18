@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import type { Bed } from "@/lib/api";
-import { useDataOffset, useStatus, useWard } from "@/lib/queries";
+import { useConnectionLost, useDataOffset, useStatus, useWard } from "@/lib/queries";
 import { STATE, type PolicyState } from "@/lib/states";
 import { PageHeader } from "@/components/shell/AppShell";
 import { ReplayBar } from "@/components/replay/ReplayBar";
@@ -53,6 +53,7 @@ export default function WardPage() {
   const status = useStatus();
   const ward = useWard();
   const offset = useDataOffset();
+  const lost = useConnectionLost() || ward.isError;
   const [picking, setPicking] = useState(false);
   const hasSession = (status.data?.recordings.length ?? 0) > 0;
 
@@ -77,7 +78,13 @@ export default function WardPage() {
             <ReplayBar />
             {ward.isError && <ErrorBox title="Ward unavailable" detail={(ward.error as Error).message} onRetry={() => ward.refetch()} />}
             {!ward.data && !ward.isError && <Skeleton className="h-64 w-full" />}
-            {ward.data && ward.data.beds.length > 0 && (
+            {ward.data && ward.data.beds.length > 0 && lost && (
+              <Empty title="Ward state not current">
+                The service or stream is unreachable, so bed states are hidden rather than shown out of date. They
+                return as soon as the connection is restored.
+              </Empty>
+            )}
+            {ward.data && ward.data.beds.length > 0 && !lost && (
               <>
                 <AttentionSummary beds={ward.data.beds} />
                 <WardTable beds={ward.data.beds} offsetS={offset} />

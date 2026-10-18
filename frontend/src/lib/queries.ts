@@ -1,6 +1,7 @@
 "use client";
 import { useQuery } from "@tanstack/react-query";
 import { api } from "./api";
+import { useStream } from "./stream";
 
 // Snapshots are refreshed by stream messages (stream.tsx); the slow interval is only a safety
 // net for a silently dropped stream (staleness is still decided by the backend).
@@ -20,6 +21,13 @@ export const usePatient = (key: string | null) =>
     refetchInterval: SAFETY_MS,
     retry: false,
   });
+
+/** True when the backend or the stream is unreachable: every value on screen is then NOT current. */
+export function useConnectionLost(): boolean {
+  const health = useHealth();
+  const { status } = useStream();
+  return health.isError || status === "offline";
+}
 
 export function useDataOffset(): number {
   return useMeta().data?.data_utc_offset_s ?? 0;
