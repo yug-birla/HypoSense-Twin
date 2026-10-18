@@ -104,13 +104,18 @@ def treatment_status(meds: Sequence[RecordingMedication]) -> TreatmentStatus:
     return TreatmentStatus("insulin" in logged, "sulfonylurea" in logged, "glinide" in logged)
 
 
+def prescribed_drugs(text: object, d: DrugDictionary) -> frozenset[str] | None:
+    """Canonical drugs named in the summary's prescribed-regimen text (static context). None if
+    the field is empty; an empty set if it names no known drug (e.g. "none")."""
+    if text is None or (isinstance(text, float) and pd.isna(text)) or not str(text).strip():
+        return None
+    norm = normalise_text(str(text))
+    drugs: set[str] = set()
+    for m in d.alias_regex.finditer(norm):
+        drugs.update(d.lookup(m.group(1)).components)
+    return frozenset(drugs)
+
+
 def prescribed_classes(text: object, d: DrugDictionary) -> frozenset[str]:
     """Drug classes named in the summary's prescribed-regimen text (static context)."""
-    if text is None or (isinstance(text, float) and pd.isna(text)):
-        return frozenset()
-    norm = normalise_text(str(text))
-    classes: set[str] = set()
-    for m in d.alias_regex.finditer(norm):
-        e = d.lookup(m.group(1))
-        classes.update(d.by_canonical(c).drug_class for c in e.components)
-    return frozenset(classes)
+    return frozenset(d.by_canonical(c).drug_class for c in prescribed_drugs(text, d) or ())

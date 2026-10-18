@@ -117,6 +117,35 @@ exposure:                           # [CLASS B] Section 12; kernel parameters li
   iv_flag_h: 4
   projections_min: [30, 60]
 
+features:                           # [CLASS B] Appendix D representation constants (S4). Values are
+                                    # the blueprint's where it states them; the rest are a-priori
+                                    # operational choices, fixed before any model is fitted
+                                    # (docs/FEATURE_DICTIONARY.md; DECISION_LOG ADR-030).
+  spec_version: "1.0.0"
+  cgm_nominal_interval_min: 15      # ShanghaiT2DM sampling interval (S1: >= 99 % of intervals <= 20 min)
+  lags_min: [15, 30, 45, 60]        # App. D group 1: g at t-15 ... t-60
+  lag_tolerance_min: 7.5            # reading nearest to t-L within +/- half a sampling interval
+  trend_window_tolerance_min: 5     # slope over "last D min" uses (t - D - 5, t]: the executable
+                                    # spec's M0 window (audit2.py: ts > t - 35 min)
+  slope_windows_min: [30, 60, 120]  # App. D group 2
+  slope_min_readings: 3             # M0: ">= 3 readings" (Table 11.1; audit2.py)
+  m0_projections_min: [30, 60]      # App. D group 1: M0 projection at t+30, t+60
+  stat_windows_min: [120, 360, 1440]  # App. D group 3: min, mean, SD over 2 h, 6 h, 24 h
+  below_threshold_mgdl: 80          # App. D group 3: minutes < 80 mg/dL in the past 24 h
+  min_since_low_cap_min: 1440       # minutes since last reading < 70 (cap = the 24-h lookback)
+  own_percentile_min_history_h: 24  # App. D group 3: percentile within own history (>= 24 h)
+  night_hours: [0, 6]               # App. D group 4: night flag 00:00-05:59 (local clock)
+  meal_min_since_cap_min: 720       # App. D group 6
+  meal_recent_window_min: 180       # App. D group 6: meal logged in the last 3 h
+  static_plausible:                 # validation ranges (values outside -> missing, counted)
+    age_y: [18, 110]
+    bmi: [10, 70]
+    weight_kg: [25, 250]
+    diabetes_duration_y: [0, 70]
+    hba1c_mmol_mol: [15, 200]
+    egfr: [1, 400]                  # wide: catches gross errors only (T max 257 kept; S3 keep-and-flag rule)
+    c_peptide_fasting_nmol_l: [0, 10]
+
 bootstrap:                          # [CLASS C] Section 20.1
   resamples: 2000
   seed: 2027

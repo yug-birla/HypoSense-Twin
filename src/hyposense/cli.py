@@ -8,6 +8,9 @@ hyposense partition verify              pinned hash, patient-set agreement, coun
 hyposense audit run                     structural audit + version reconciliation + G0/G1
 hyposense audit events                  labels, event audit, legacy reproduction, G2/G3b
 hyposense audit medication              medication audit, G3, G2 re-check (production treated)
+hyposense audit features [--workers N]  S4 feature audit on T: truncation equality at every
+                                        eligible time, replay parity, perturbation, distributions
+hyposense features spec                 write artifacts/features/feature_spec.json (registry)
 hyposense gates show                  print the latest gate results
 """
 
@@ -128,6 +131,29 @@ def cmd_audit_medication(args: argparse.Namespace) -> int:
     return 0 if summary["G3"] != "FAIL" and summary["G2"] != "FAIL" else 1
 
 
+def cmd_audit_features(args: argparse.Namespace) -> int:
+    from hyposense.audit.feature_run import run_features_audit
+
+    summary = run_features_audit(workers=args.workers)
+    _print(summary)
+    ok = (
+        summary["truncation"]["mismatches"] == 0
+        and summary["parity"]["mismatches"] == 0
+        and all(v["mismatches"] == 0 for v in summary["perturbation"].values())
+        and summary["tracker_vs_label_builder"]["mismatches"] == 0
+        and summary["determinism_two_builds_identical"]
+    )
+    return 0 if ok else 1
+
+
+def cmd_features_spec(args: argparse.Namespace) -> int:
+    from hyposense.features.export import SPEC_PATH, write_spec
+
+    sha = write_spec()
+    print(f"wrote {SPEC_PATH} (sha256 {sha})")
+    return 0
+
+
 def cmd_gates_show(args: argparse.Namespace) -> int:
     from hyposense.audit.gates import gates_dir
 
@@ -196,6 +222,17 @@ def build_parser() -> argparse.ArgumentParser:
     ev.set_defaults(func=cmd_audit_events)
     audit.add_parser("medication", help="medication audit, G3, G2 re-check").set_defaults(
         func=cmd_audit_medication
+    )
+
+    af = audit.add_parser("features", help="S4 feature audit on the tuning partition")
+    af.add_argument("--workers", type=int, default=None, help="worker processes (default cpus-1)")
+    af.set_defaults(func=cmd_audit_features)
+
+    feats = sub.add_parser("features", help="feature specification").add_subparsers(
+        dest="cmd", required=True
+    )
+    feats.add_parser("spec", help="write artifacts/features/feature_spec.json").set_defaults(
+        func=cmd_features_spec
     )
 
     gates = sub.add_parser("gates", help="gate results").add_subparsers(dest="cmd", required=True)

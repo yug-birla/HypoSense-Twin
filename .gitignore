@@ -12,10 +12,14 @@ artifacts/*
 !artifacts/gates/
 # population definitions (outcome-blind, e.g. treated status) are committed evidence
 !artifacts/population/
+# the canonical feature specification (generated from features/spec.py; S4)
+!artifacts/features/
 experiments/runs/*
 !experiments/runs/.gitkeep
 # aggregate-only audit runs are committed as evidence (P-C5: no patient-level values inside)
 !experiments/runs/ALL-AGG-*/
+# aggregate-only TUNING-partition audits (no row-level values inside)
+!experiments/runs/T-AGG-*/
 logs/
 
 # --- Python ---

@@ -1,0 +1,3259 @@
+{
+ "spec_version": "1.0.0",
+ "description": "HypoSense Twin v2 canonical feature specification (generated from src/hyposense/features/spec.py; do not edit by hand)",
+ "constants": {
+  "spec_version": "1.0.0",
+  "cgm_nominal_interval_min": 15,
+  "lags_min": [
+   15,
+   30,
+   45,
+   60
+  ],
+  "lag_tolerance_min": 7.5,
+  "trend_window_tolerance_min": 5,
+  "slope_windows_min": [
+   30,
+   60,
+   120
+  ],
+  "slope_min_readings": 3,
+  "m0_projections_min": [
+   30,
+   60
+  ],
+  "stat_windows_min": [
+   120,
+   360,
+   1440
+  ],
+  "below_threshold_mgdl": 80,
+  "min_since_low_cap_min": 1440,
+  "own_percentile_min_history_h": 24,
+  "night_hours": [
+   0,
+   6
+  ],
+  "meal_min_since_cap_min": 720,
+  "meal_recent_window_min": 180,
+  "static_plausible": {
+   "age_y": [
+    18,
+    110
+   ],
+   "bmi": [
+    10,
+    70
+   ],
+   "weight_kg": [
+    25,
+    250
+   ],
+   "diabetes_duration_y": [
+    0,
+    70
+   ],
+   "hba1c_mmol_mol": [
+    15,
+    200
+   ],
+   "egfr": [
+    1,
+    400
+   ],
+   "c_peptide_fasting_nmol_l": [
+    0,
+    10
+   ]
+  }
+ },
+ "levels": {
+  "M1": [
+   "cgm",
+   "cgm_lag15",
+   "cgm_lag30",
+   "cgm_lag45",
+   "cgm_lag60",
+   "cgm_m0_proj30",
+   "cgm_m0_proj60",
+   "cgm_lag15_missing",
+   "cgm_lag30_missing",
+   "cgm_lag45_missing",
+   "cgm_lag60_missing",
+   "cgm_slope30",
+   "cgm_slope60",
+   "cgm_slope120",
+   "cgm_accel",
+   "cgm_n_falling",
+   "cgm_slope30_missing",
+   "cgm_slope60_missing",
+   "cgm_min_2h",
+   "cgm_mean_2h",
+   "cgm_sd_2h",
+   "cgm_min_6h",
+   "cgm_mean_6h",
+   "cgm_sd_6h",
+   "cgm_min_24h",
+   "cgm_mean_24h",
+   "cgm_sd_24h",
+   "cgm_cv_24h",
+   "cgm_min_below80_24h",
+   "cgm_prior_l1_onsets",
+   "cgm_min_since_low70",
+   "cgm_pct_own",
+   "sensor_day",
+   "cgm_min_since_low70_missing",
+   "cgm_pct_own_missing",
+   "hour_sin",
+   "hour_cos",
+   "night"
+  ],
+  "M2": [
+   "cgm",
+   "cgm_lag15",
+   "cgm_lag30",
+   "cgm_lag45",
+   "cgm_lag60",
+   "cgm_m0_proj30",
+   "cgm_m0_proj60",
+   "cgm_lag15_missing",
+   "cgm_lag30_missing",
+   "cgm_lag45_missing",
+   "cgm_lag60_missing",
+   "cgm_slope30",
+   "cgm_slope60",
+   "cgm_slope120",
+   "cgm_accel",
+   "cgm_n_falling",
+   "cgm_slope30_missing",
+   "cgm_slope60_missing",
+   "cgm_min_2h",
+   "cgm_mean_2h",
+   "cgm_sd_2h",
+   "cgm_min_6h",
+   "cgm_mean_6h",
+   "cgm_sd_6h",
+   "cgm_min_24h",
+   "cgm_mean_24h",
+   "cgm_sd_24h",
+   "cgm_cv_24h",
+   "cgm_min_below80_24h",
+   "cgm_prior_l1_onsets",
+   "cgm_min_since_low70",
+   "cgm_pct_own",
+   "sensor_day",
+   "cgm_min_since_low70_missing",
+   "cgm_pct_own_missing",
+   "hour_sin",
+   "hour_cos",
+   "night",
+   "age_y",
+   "sex_male",
+   "bmi",
+   "weight_kg",
+   "diabetes_duration_y",
+   "hba1c_mmol_mol",
+   "egfr",
+   "c_peptide_fasting_nmol_l",
+   "rx_insulin",
+   "rx_premix",
+   "rx_basal",
+   "rx_short_rapid",
+   "rx_su",
+   "rx_glinide",
+   "rx_metformin",
+   "rx_agi",
+   "rx_dpp4",
+   "rx_sglt2",
+   "rx_glp1",
+   "rx_tzd",
+   "age_y_missing",
+   "sex_male_missing",
+   "bmi_missing",
+   "weight_kg_missing",
+   "diabetes_duration_y_missing",
+   "hba1c_mmol_mol_missing",
+   "egfr_missing",
+   "c_peptide_fasting_nmol_l_missing",
+   "rx_missing",
+   "meal_min_since",
+   "meal_last_3h",
+   "meals_today",
+   "meal_last_content_unknown",
+   "meal_none_logged"
+  ],
+  "M3r": [
+   "cgm",
+   "cgm_lag15",
+   "cgm_lag30",
+   "cgm_lag45",
+   "cgm_lag60",
+   "cgm_m0_proj30",
+   "cgm_m0_proj60",
+   "cgm_lag15_missing",
+   "cgm_lag30_missing",
+   "cgm_lag45_missing",
+   "cgm_lag60_missing",
+   "cgm_slope30",
+   "cgm_slope60",
+   "cgm_slope120",
+   "cgm_accel",
+   "cgm_n_falling",
+   "cgm_slope30_missing",
+   "cgm_slope60_missing",
+   "cgm_min_2h",
+   "cgm_mean_2h",
+   "cgm_sd_2h",
+   "cgm_min_6h",
+   "cgm_mean_6h",
+   "cgm_sd_6h",
+   "cgm_min_24h",
+   "cgm_mean_24h",
+   "cgm_sd_24h",
+   "cgm_cv_24h",
+   "cgm_min_below80_24h",
+   "cgm_prior_l1_onsets",
+   "cgm_min_since_low70",
+   "cgm_pct_own",
+   "sensor_day",
+   "cgm_min_since_low70_missing",
+   "cgm_pct_own_missing",
+   "hour_sin",
+   "hour_cos",
+   "night",
+   "age_y",
+   "sex_male",
+   "bmi",
+   "weight_kg",
+   "diabetes_duration_y",
+   "hba1c_mmol_mol",
+   "egfr",
+   "c_peptide_fasting_nmol_l",
+   "rx_insulin",
+   "rx_premix",
+   "rx_basal",
+   "rx_short_rapid",
+   "rx_su",
+   "rx_glinide",
+   "rx_metformin",
+   "rx_agi",
+   "rx_dpp4",
+   "rx_sglt2",
+   "rx_glp1",
+   "rx_tzd",
+   "age_y_missing",
+   "sex_male_missing",
+   "bmi_missing",
+   "weight_kg_missing",
+   "diabetes_duration_y_missing",
+   "hba1c_mmol_mol_missing",
+   "egfr_missing",
+   "c_peptide_fasting_nmol_l_missing",
+   "rx_missing",
+   "meal_min_since",
+   "meal_last_3h",
+   "meals_today",
+   "meal_last_content_unknown",
+   "meal_none_logged",
+   "insulin_bolus_min_since_last",
+   "insulin_bolus_last_dose",
+   "insulin_bolus_dose_24h",
+   "insulin_bolus_n_24h",
+   "insulin_basal_min_since_last",
+   "insulin_basal_last_dose",
+   "insulin_basal_dose_24h",
+   "insulin_basal_n_24h",
+   "su_min_since_last",
+   "su_last_dose",
+   "su_dose_24h",
+   "su_n_24h",
+   "glinide_min_since_last",
+   "glinide_last_dose",
+   "glinide_dose_24h",
+   "glinide_n_24h",
+   "insulin_bolus_missing",
+   "insulin_basal_missing",
+   "su_missing",
+   "glinide_missing",
+   "csii_active",
+   "csii_rate_iu_h",
+   "iv_insulin_recent"
+  ],
+  "M3": [
+   "cgm",
+   "cgm_lag15",
+   "cgm_lag30",
+   "cgm_lag45",
+   "cgm_lag60",
+   "cgm_m0_proj30",
+   "cgm_m0_proj60",
+   "cgm_lag15_missing",
+   "cgm_lag30_missing",
+   "cgm_lag45_missing",
+   "cgm_lag60_missing",
+   "cgm_slope30",
+   "cgm_slope60",
+   "cgm_slope120",
+   "cgm_accel",
+   "cgm_n_falling",
+   "cgm_slope30_missing",
+   "cgm_slope60_missing",
+   "cgm_min_2h",
+   "cgm_mean_2h",
+   "cgm_sd_2h",
+   "cgm_min_6h",
+   "cgm_mean_6h",
+   "cgm_sd_6h",
+   "cgm_min_24h",
+   "cgm_mean_24h",
+   "cgm_sd_24h",
+   "cgm_cv_24h",
+   "cgm_min_below80_24h",
+   "cgm_prior_l1_onsets",
+   "cgm_min_since_low70",
+   "cgm_pct_own",
+   "sensor_day",
+   "cgm_min_since_low70_missing",
+   "cgm_pct_own_missing",
+   "hour_sin",
+   "hour_cos",
+   "night",
+   "age_y",
+   "sex_male",
+   "bmi",
+   "weight_kg",
+   "diabetes_duration_y",
+   "hba1c_mmol_mol",
+   "egfr",
+   "c_peptide_fasting_nmol_l",
+   "rx_insulin",
+   "rx_premix",
+   "rx_basal",
+   "rx_short_rapid",
+   "rx_su",
+   "rx_glinide",
+   "rx_metformin",
+   "rx_agi",
+   "rx_dpp4",
+   "rx_sglt2",
+   "rx_glp1",
+   "rx_tzd",
+   "age_y_missing",
+   "sex_male_missing",
+   "bmi_missing",
+   "weight_kg_missing",
+   "diabetes_duration_y_missing",
+   "hba1c_mmol_mol_missing",
+   "egfr_missing",
+   "c_peptide_fasting_nmol_l_missing",
+   "rx_missing",
+   "meal_min_since",
+   "meal_last_3h",
+   "meals_today",
+   "meal_last_content_unknown",
+   "meal_none_logged",
+   "csii_active",
+   "csii_rate_iu_h",
+   "iv_insulin_recent",
+   "act_prandial",
+   "act_intermediate",
+   "act_basal",
+   "act_insulin_total",
+   "iob_insulin",
+   "insulin_p30",
+   "insulin_p60",
+   "act_su",
+   "su_p30",
+   "su_p60",
+   "act_glinide",
+   "glinide_p30",
+   "glinide_p60",
+   "min_since_insulin",
+   "min_since_su",
+   "min_since_glinide",
+   "delta_insulin_60",
+   "delta_su_60",
+   "act_insulin_total_per_kg",
+   "quality_insulin",
+   "quality_sulfonylurea",
+   "quality_glinide",
+   "min_since_insulin_missing",
+   "min_since_su_missing",
+   "min_since_glinide_missing"
+  ]
+ },
+ "level_groups": {
+  "M1": [
+   "G1_cgm_level",
+   "G2_cgm_trend",
+   "G3_cgm_history",
+   "G4_time"
+  ],
+  "M2": [
+   "G1_cgm_level",
+   "G2_cgm_trend",
+   "G3_cgm_history",
+   "G4_time",
+   "G5_static_context",
+   "G6_meal_timing"
+  ],
+  "M3r": [
+   "G1_cgm_level",
+   "G2_cgm_trend",
+   "G3_cgm_history",
+   "G4_time",
+   "G5_static_context",
+   "G6_meal_timing",
+   "G7_raw_medication_timing",
+   "G78_csii_iv_flags"
+  ],
+  "M3": [
+   "G1_cgm_level",
+   "G2_cgm_trend",
+   "G3_cgm_history",
+   "G4_time",
+   "G5_static_context",
+   "G6_meal_timing",
+   "G78_csii_iv_flags",
+   "G8_medication_exposure"
+  ]
+ },
+ "features": [
+  {
+   "name": "cgm",
+   "group": "G1_cgm_level",
+   "dtype": "float",
+   "unit": "mg/dL",
+   "source": "CGM readings of this recording with ts <= t",
+   "computation": "g(t), the reading at t",
+   "availability": "t",
+   "missing": "REQUIRED",
+   "nan_meaning": null,
+   "indicators": [],
+   "zero_meaning": null,
+   "ref": "App. D group 1",
+   "status": "BLUEPRINT",
+   "lab": false,
+   "version": "1.0.0",
+   "causal": true,
+   "models": [
+    "M1",
+    "M2",
+    "M3r",
+    "M3"
+   ]
+  },
+  {
+   "name": "cgm_lag15",
+   "group": "G1_cgm_level",
+   "dtype": "float",
+   "unit": "mg/dL",
+   "source": "CGM readings of this recording with ts <= t",
+   "computation": "value of the reading nearest to t - 15 min within +/- lag_tolerance_min (7.5 min); ties go to the earlier reading",
+   "availability": "readings in [t - 15 - 7.5, t - 15 + 7.5] min (all < t)",
+   "missing": "NAN_WITH_INDICATOR",
+   "nan_meaning": "NOT_OBSERVED (no reading near that time)",
+   "indicators": [
+    "cgm_lag15_missing"
+   ],
+   "zero_meaning": null,
+   "ref": "App. D group 1",
+   "status": "OPERATIONALISED",
+   "lab": false,
+   "version": "1.0.0",
+   "causal": true,
+   "models": [
+    "M1",
+    "M2",
+    "M3r",
+    "M3"
+   ]
+  },
+  {
+   "name": "cgm_lag30",
+   "group": "G1_cgm_level",
+   "dtype": "float",
+   "unit": "mg/dL",
+   "source": "CGM readings of this recording with ts <= t",
+   "computation": "value of the reading nearest to t - 30 min within +/- lag_tolerance_min (7.5 min); ties go to the earlier reading",
+   "availability": "readings in [t - 30 - 7.5, t - 30 + 7.5] min (all < t)",
+   "missing": "NAN_WITH_INDICATOR",
+   "nan_meaning": "NOT_OBSERVED (no reading near that time)",
+   "indicators": [
+    "cgm_lag30_missing"
+   ],
+   "zero_meaning": null,
+   "ref": "App. D group 1",
+   "status": "OPERATIONALISED",
+   "lab": false,
+   "version": "1.0.0",
+   "causal": true,
+   "models": [
+    "M1",
+    "M2",
+    "M3r",
+    "M3"
+   ]
+  },
+  {
+   "name": "cgm_lag45",
+   "group": "G1_cgm_level",
+   "dtype": "float",
+   "unit": "mg/dL",
+   "source": "CGM readings of this recording with ts <= t",
+   "computation": "value of the reading nearest to t - 45 min within +/- lag_tolerance_min (7.5 min); ties go to the earlier reading",
+   "availability": "readings in [t - 45 - 7.5, t - 45 + 7.5] min (all < t)",
+   "missing": "NAN_WITH_INDICATOR",
+   "nan_meaning": "NOT_OBSERVED (no reading near that time)",
+   "indicators": [
+    "cgm_lag45_missing"
+   ],
+   "zero_meaning": null,
+   "ref": "App. D group 1",
+   "status": "OPERATIONALISED",
+   "lab": false,
+   "version": "1.0.0",
+   "causal": true,
+   "models": [
+    "M1",
+    "M2",
+    "M3r",
+    "M3"
+   ]
+  },
+  {
+   "name": "cgm_lag60",
+   "group": "G1_cgm_level",
+   "dtype": "float",
+   "unit": "mg/dL",
+   "source": "CGM readings of this recording with ts <= t",
+   "computation": "value of the reading nearest to t - 60 min within +/- lag_tolerance_min (7.5 min); ties go to the earlier reading",
+   "availability": "readings in [t - 60 - 7.5, t - 60 + 7.5] min (all < t)",
+   "missing": "NAN_WITH_INDICATOR",
+   "nan_meaning": "NOT_OBSERVED (no reading near that time)",
+   "indicators": [
+    "cgm_lag60_missing"
+   ],
+   "zero_meaning": null,
+   "ref": "App. D group 1",
+   "status": "OPERATIONALISED",
+   "lab": false,
+   "version": "1.0.0",
+   "causal": true,
+   "models": [
+    "M1",
+    "M2",
+    "M3r",
+    "M3"
+   ]
+  },
+  {
+   "name": "cgm_m0_proj30",
+   "group": "G1_cgm_level",
+   "dtype": "float",
+   "unit": "mg/dL",
+   "source": "CGM readings of this recording with ts <= t",
+   "computation": "M0 trend projection g(t) + 30 x cgm_slope30 (executable spec audit2.py: least-squares slope over (t - 35 min, t], >= 3 readings)",
+   "availability": "readings in (t - 35 min, t]",
+   "missing": "NAN_WITH_INDICATOR",
+   "nan_meaning": "INSUFFICIENT_HISTORY (< 3 readings)",
+   "indicators": [
+    "cgm_slope30_missing"
+   ],
+   "zero_meaning": null,
+   "ref": "App. D group 1; Table 11.1 M0",
+   "status": "OPERATIONALISED",
+   "lab": false,
+   "version": "1.0.0",
+   "causal": true,
+   "models": [
+    "M1",
+    "M2",
+    "M3r",
+    "M3"
+   ]
+  },
+  {
+   "name": "cgm_m0_proj60",
+   "group": "G1_cgm_level",
+   "dtype": "float",
+   "unit": "mg/dL",
+   "source": "CGM readings of this recording with ts <= t",
+   "computation": "M0 trend projection g(t) + 60 x cgm_slope30 (executable spec audit2.py: least-squares slope over (t - 35 min, t], >= 3 readings)",
+   "availability": "readings in (t - 35 min, t]",
+   "missing": "NAN_WITH_INDICATOR",
+   "nan_meaning": "INSUFFICIENT_HISTORY (< 3 readings)",
+   "indicators": [
+    "cgm_slope30_missing"
+   ],
+   "zero_meaning": null,
+   "ref": "App. D group 1; Table 11.1 M0",
+   "status": "OPERATIONALISED",
+   "lab": false,
+   "version": "1.0.0",
+   "causal": true,
+   "models": [
+    "M1",
+    "M2",
+    "M3r",
+    "M3"
+   ]
+  },
+  {
+   "name": "cgm_lag15_missing",
+   "group": "G1_cgm_level",
+   "dtype": "binary",
+   "unit": "0/1",
+   "source": "indicator",
+   "computation": "1 if no reading within 7.5 min of t - 15, else 0",
+   "availability": "same information as the features it indicates",
+   "missing": "NEVER_MISSING",
+   "nan_meaning": null,
+   "indicators": [],
+   "zero_meaning": null,
+   "ref": "§25.1",
+   "status": "INDICATOR",
+   "lab": false,
+   "version": "1.0.0",
+   "causal": true,
+   "models": [
+    "M1",
+    "M2",
+    "M3r",
+    "M3"
+   ]
+  },
+  {
+   "name": "cgm_lag30_missing",
+   "group": "G1_cgm_level",
+   "dtype": "binary",
+   "unit": "0/1",
+   "source": "indicator",
+   "computation": "1 if no reading within 7.5 min of t - 30, else 0",
+   "availability": "same information as the features it indicates",
+   "missing": "NEVER_MISSING",
+   "nan_meaning": null,
+   "indicators": [],
+   "zero_meaning": null,
+   "ref": "§25.1",
+   "status": "INDICATOR",
+   "lab": false,
+   "version": "1.0.0",
+   "causal": true,
+   "models": [
+    "M1",
+    "M2",
+    "M3r",
+    "M3"
+   ]
+  },
+  {
+   "name": "cgm_lag45_missing",
+   "group": "G1_cgm_level",
+   "dtype": "binary",
+   "unit": "0/1",
+   "source": "indicator",
+   "computation": "1 if no reading within 7.5 min of t - 45, else 0",
+   "availability": "same information as the features it indicates",
+   "missing": "NEVER_MISSING",
+   "nan_meaning": null,
+   "indicators": [],
+   "zero_meaning": null,
+   "ref": "§25.1",
+   "status": "INDICATOR",
+   "lab": false,
+   "version": "1.0.0",
+   "causal": true,
+   "models": [
+    "M1",
+    "M2",
+    "M3r",
+    "M3"
+   ]
+  },
+  {
+   "name": "cgm_lag60_missing",
+   "group": "G1_cgm_level",
+   "dtype": "binary",
+   "unit": "0/1",
+   "source": "indicator",
+   "computation": "1 if no reading within 7.5 min of t - 60, else 0",
+   "availability": "same information as the features it indicates",
+   "missing": "NEVER_MISSING",
+   "nan_meaning": null,
+   "indicators": [],
+   "zero_meaning": null,
+   "ref": "§25.1",
+   "status": "INDICATOR",
+   "lab": false,
+   "version": "1.0.0",
+   "causal": true,
+   "models": [
+    "M1",
+    "M2",
+    "M3r",
+    "M3"
+   ]
+  },
+  {
+   "name": "cgm_slope30",
+   "group": "G2_cgm_trend",
+   "dtype": "float",
+   "unit": "mg/dL/min",
+   "source": "CGM readings of this recording with ts <= t",
+   "computation": "least-squares slope of g on time over (t - 30 - 5 min, t] (trend_window_tolerance_min = 5, the M0 window convention); exact sums",
+   "availability": "readings in (t - 35 min, t]",
+   "missing": "NAN_WITH_INDICATOR",
+   "nan_meaning": "INSUFFICIENT_HISTORY (< 3 readings in the window)",
+   "indicators": [
+    "cgm_slope30_missing"
+   ],
+   "zero_meaning": null,
+   "ref": "App. D group 2",
+   "status": "OPERATIONALISED",
+   "lab": false,
+   "version": "1.0.0",
+   "causal": true,
+   "models": [
+    "M1",
+    "M2",
+    "M3r",
+    "M3"
+   ]
+  },
+  {
+   "name": "cgm_slope60",
+   "group": "G2_cgm_trend",
+   "dtype": "float",
+   "unit": "mg/dL/min",
+   "source": "CGM readings of this recording with ts <= t",
+   "computation": "least-squares slope of g on time over (t - 60 - 5 min, t] (trend_window_tolerance_min = 5, the M0 window convention); exact sums",
+   "availability": "readings in (t - 65 min, t]",
+   "missing": "NAN_WITH_INDICATOR",
+   "nan_meaning": "INSUFFICIENT_HISTORY (< 3 readings in the window)",
+   "indicators": [
+    "cgm_slope60_missing"
+   ],
+   "zero_meaning": null,
+   "ref": "App. D group 2",
+   "status": "OPERATIONALISED",
+   "lab": false,
+   "version": "1.0.0",
+   "causal": true,
+   "models": [
+    "M1",
+    "M2",
+    "M3r",
+    "M3"
+   ]
+  },
+  {
+   "name": "cgm_slope120",
+   "group": "G2_cgm_trend",
+   "dtype": "float",
+   "unit": "mg/dL/min",
+   "source": "CGM readings of this recording with ts <= t",
+   "computation": "least-squares slope of g on time over (t - 120 - 5 min, t] (trend_window_tolerance_min = 5, the M0 window convention); exact sums",
+   "availability": "readings in (t - 125 min, t]",
+   "missing": "REQUIRED",
+   "nan_meaning": null,
+   "indicators": [],
+   "zero_meaning": null,
+   "ref": "App. D group 2",
+   "status": "OPERATIONALISED",
+   "lab": false,
+   "version": "1.0.0",
+   "causal": true,
+   "models": [
+    "M1",
+    "M2",
+    "M3r",
+    "M3"
+   ]
+  },
+  {
+   "name": "cgm_accel",
+   "group": "G2_cgm_trend",
+   "dtype": "float",
+   "unit": "mg/dL/min",
+   "source": "CGM readings of this recording with ts <= t",
+   "computation": "cgm_slope30 - cgm_slope60 (App. D: 'slope 30 - slope 60')",
+   "availability": "readings in (t - 65 min, t]",
+   "missing": "NAN_WITH_INDICATOR",
+   "nan_meaning": "INSUFFICIENT_HISTORY",
+   "indicators": [
+    "cgm_slope30_missing",
+    "cgm_slope60_missing"
+   ],
+   "zero_meaning": null,
+   "ref": "App. D group 2",
+   "status": "BLUEPRINT",
+   "lab": false,
+   "version": "1.0.0",
+   "causal": true,
+   "models": [
+    "M1",
+    "M2",
+    "M3r",
+    "M3"
+   ]
+  },
+  {
+   "name": "cgm_n_falling",
+   "group": "G2_cgm_trend",
+   "dtype": "count",
+   "unit": "readings",
+   "source": "CGM readings of this recording with ts <= t",
+   "computation": "number of consecutive strictly falling steps ending at t; a step longer than event.max_step_min (20 min) ends the run",
+   "availability": "readings up to t",
+   "missing": "NEVER_MISSING",
+   "nan_meaning": null,
+   "indicators": [],
+   "zero_meaning": "g(t) is not below the previous reading",
+   "ref": "App. D group 2",
+   "status": "OPERATIONALISED",
+   "lab": false,
+   "version": "1.0.0",
+   "causal": true,
+   "models": [
+    "M1",
+    "M2",
+    "M3r",
+    "M3"
+   ]
+  },
+  {
+   "name": "cgm_slope30_missing",
+   "group": "G2_cgm_trend",
+   "dtype": "binary",
+   "unit": "0/1",
+   "source": "indicator",
+   "computation": "1 if < 3 readings in (t - 35 min, t], else 0",
+   "availability": "same information as the features it indicates",
+   "missing": "NEVER_MISSING",
+   "nan_meaning": null,
+   "indicators": [],
+   "zero_meaning": null,
+   "ref": "§25.1",
+   "status": "INDICATOR",
+   "lab": false,
+   "version": "1.0.0",
+   "causal": true,
+   "models": [
+    "M1",
+    "M2",
+    "M3r",
+    "M3"
+   ]
+  },
+  {
+   "name": "cgm_slope60_missing",
+   "group": "G2_cgm_trend",
+   "dtype": "binary",
+   "unit": "0/1",
+   "source": "indicator",
+   "computation": "1 if < 3 readings in (t - 65 min, t], else 0",
+   "availability": "same information as the features it indicates",
+   "missing": "NEVER_MISSING",
+   "nan_meaning": null,
+   "indicators": [],
+   "zero_meaning": null,
+   "ref": "§25.1",
+   "status": "INDICATOR",
+   "lab": false,
+   "version": "1.0.0",
+   "causal": true,
+   "models": [
+    "M1",
+    "M2",
+    "M3r",
+    "M3"
+   ]
+  },
+  {
+   "name": "cgm_min_2h",
+   "group": "G3_cgm_history",
+   "dtype": "float",
+   "unit": "mg/dL",
+   "source": "CGM readings of this recording with ts <= t",
+   "computation": "minimum of readings in (t - 120 min, t]; a recording younger than the window uses the readings it has",
+   "availability": "readings in (t - 120 min, t]",
+   "missing": "REQUIRED",
+   "nan_meaning": null,
+   "indicators": [],
+   "zero_meaning": null,
+   "ref": "App. D group 3",
+   "status": "BLUEPRINT",
+   "lab": false,
+   "version": "1.0.0",
+   "causal": true,
+   "models": [
+    "M1",
+    "M2",
+    "M3r",
+    "M3"
+   ]
+  },
+  {
+   "name": "cgm_mean_2h",
+   "group": "G3_cgm_history",
+   "dtype": "float",
+   "unit": "mg/dL",
+   "source": "CGM readings of this recording with ts <= t",
+   "computation": "mean (exact sum) of readings in (t - 120 min, t]; a recording younger than the window uses the readings it has",
+   "availability": "readings in (t - 120 min, t]",
+   "missing": "REQUIRED",
+   "nan_meaning": null,
+   "indicators": [],
+   "zero_meaning": null,
+   "ref": "App. D group 3",
+   "status": "BLUEPRINT",
+   "lab": false,
+   "version": "1.0.0",
+   "causal": true,
+   "models": [
+    "M1",
+    "M2",
+    "M3r",
+    "M3"
+   ]
+  },
+  {
+   "name": "cgm_sd_2h",
+   "group": "G3_cgm_history",
+   "dtype": "float",
+   "unit": "mg/dL",
+   "source": "CGM readings of this recording with ts <= t",
+   "computation": "sample standard deviation (ddof = 1) of readings in (t - 120 min, t]; a recording younger than the window uses the readings it has",
+   "availability": "readings in (t - 120 min, t]",
+   "missing": "REQUIRED",
+   "nan_meaning": null,
+   "indicators": [],
+   "zero_meaning": null,
+   "ref": "App. D group 3",
+   "status": "BLUEPRINT",
+   "lab": false,
+   "version": "1.0.0",
+   "causal": true,
+   "models": [
+    "M1",
+    "M2",
+    "M3r",
+    "M3"
+   ]
+  },
+  {
+   "name": "cgm_min_6h",
+   "group": "G3_cgm_history",
+   "dtype": "float",
+   "unit": "mg/dL",
+   "source": "CGM readings of this recording with ts <= t",
+   "computation": "minimum of readings in (t - 360 min, t]; a recording younger than the window uses the readings it has",
+   "availability": "readings in (t - 360 min, t]",
+   "missing": "REQUIRED",
+   "nan_meaning": null,
+   "indicators": [],
+   "zero_meaning": null,
+   "ref": "App. D group 3",
+   "status": "BLUEPRINT",
+   "lab": false,
+   "version": "1.0.0",
+   "causal": true,
+   "models": [
+    "M1",
+    "M2",
+    "M3r",
+    "M3"
+   ]
+  },
+  {
+   "name": "cgm_mean_6h",
+   "group": "G3_cgm_history",
+   "dtype": "float",
+   "unit": "mg/dL",
+   "source": "CGM readings of this recording with ts <= t",
+   "computation": "mean (exact sum) of readings in (t - 360 min, t]; a recording younger than the window uses the readings it has",
+   "availability": "readings in (t - 360 min, t]",
+   "missing": "REQUIRED",
+   "nan_meaning": null,
+   "indicators": [],
+   "zero_meaning": null,
+   "ref": "App. D group 3",
+   "status": "BLUEPRINT",
+   "lab": false,
+   "version": "1.0.0",
+   "causal": true,
+   "models": [
+    "M1",
+    "M2",
+    "M3r",
+    "M3"
+   ]
+  },
+  {
+   "name": "cgm_sd_6h",
+   "group": "G3_cgm_history",
+   "dtype": "float",
+   "unit": "mg/dL",
+   "source": "CGM readings of this recording with ts <= t",
+   "computation": "sample standard deviation (ddof = 1) of readings in (t - 360 min, t]; a recording younger than the window uses the readings it has",
+   "availability": "readings in (t - 360 min, t]",
+   "missing": "REQUIRED",
+   "nan_meaning": null,
+   "indicators": [],
+   "zero_meaning": null,
+   "ref": "App. D group 3",
+   "status": "BLUEPRINT",
+   "lab": false,
+   "version": "1.0.0",
+   "causal": true,
+   "models": [
+    "M1",
+    "M2",
+    "M3r",
+    "M3"
+   ]
+  },
+  {
+   "name": "cgm_min_24h",
+   "group": "G3_cgm_history",
+   "dtype": "float",
+   "unit": "mg/dL",
+   "source": "CGM readings of this recording with ts <= t",
+   "computation": "minimum of readings in (t - 1440 min, t]; a recording younger than the window uses the readings it has",
+   "availability": "readings in (t - 1440 min, t]",
+   "missing": "REQUIRED",
+   "nan_meaning": null,
+   "indicators": [],
+   "zero_meaning": null,
+   "ref": "App. D group 3",
+   "status": "BLUEPRINT",
+   "lab": false,
+   "version": "1.0.0",
+   "causal": true,
+   "models": [
+    "M1",
+    "M2",
+    "M3r",
+    "M3"
+   ]
+  },
+  {
+   "name": "cgm_mean_24h",
+   "group": "G3_cgm_history",
+   "dtype": "float",
+   "unit": "mg/dL",
+   "source": "CGM readings of this recording with ts <= t",
+   "computation": "mean (exact sum) of readings in (t - 1440 min, t]; a recording younger than the window uses the readings it has",
+   "availability": "readings in (t - 1440 min, t]",
+   "missing": "REQUIRED",
+   "nan_meaning": null,
+   "indicators": [],
+   "zero_meaning": null,
+   "ref": "App. D group 3",
+   "status": "BLUEPRINT",
+   "lab": false,
+   "version": "1.0.0",
+   "causal": true,
+   "models": [
+    "M1",
+    "M2",
+    "M3r",
+    "M3"
+   ]
+  },
+  {
+   "name": "cgm_sd_24h",
+   "group": "G3_cgm_history",
+   "dtype": "float",
+   "unit": "mg/dL",
+   "source": "CGM readings of this recording with ts <= t",
+   "computation": "sample standard deviation (ddof = 1) of readings in (t - 1440 min, t]; a recording younger than the window uses the readings it has",
+   "availability": "readings in (t - 1440 min, t]",
+   "missing": "REQUIRED",
+   "nan_meaning": null,
+   "indicators": [],
+   "zero_meaning": null,
+   "ref": "App. D group 3",
+   "status": "BLUEPRINT",
+   "lab": false,
+   "version": "1.0.0",
+   "causal": true,
+   "models": [
+    "M1",
+    "M2",
+    "M3r",
+    "M3"
+   ]
+  },
+  {
+   "name": "cgm_cv_24h",
+   "group": "G3_cgm_history",
+   "dtype": "float",
+   "unit": "fraction",
+   "source": "CGM readings of this recording with ts <= t",
+   "computation": "cgm_sd_24h / cgm_mean_24h",
+   "availability": "readings in (t - 1440 min, t]",
+   "missing": "REQUIRED",
+   "nan_meaning": null,
+   "indicators": [],
+   "zero_meaning": null,
+   "ref": "App. D group 3",
+   "status": "BLUEPRINT",
+   "lab": false,
+   "version": "1.0.0",
+   "causal": true,
+   "models": [
+    "M1",
+    "M2",
+    "M3r",
+    "M3"
+   ]
+  },
+  {
+   "name": "cgm_min_below80_24h",
+   "group": "G3_cgm_history",
+   "dtype": "float",
+   "unit": "min",
+   "source": "CGM readings of this recording with ts <= t",
+   "computation": "15 (nominal sampling interval) x number of readings < 80 mg/dL in (t - 24 h, t]",
+   "availability": "readings in (t - 1440 min, t]",
+   "missing": "REQUIRED",
+   "nan_meaning": null,
+   "indicators": [],
+   "zero_meaning": "no reading < 80 mg/dL in the past 24 h",
+   "ref": "App. D group 3",
+   "status": "OPERATIONALISED",
+   "lab": false,
+   "version": "1.0.0",
+   "causal": true,
+   "models": [
+    "M1",
+    "M2",
+    "M3r",
+    "M3"
+   ]
+  },
+  {
+   "name": "cgm_prior_l1_onsets",
+   "group": "G3_cgm_history",
+   "dtype": "count",
+   "unit": "episodes",
+   "source": "CGM readings of this recording with ts <= t (causal episode tracker, state.cgm)",
+   "computation": "L1 onsets in this recording confirmed at or before t (onset at reading i is confirmed by reading i+1; same rule as the label builder)",
+   "availability": "readings up to t",
+   "missing": "NEVER_MISSING",
+   "nan_meaning": null,
+   "indicators": [],
+   "zero_meaning": "no confirmed L1 onset in the recording so far",
+   "ref": "App. D group 3",
+   "status": "BLUEPRINT",
+   "lab": false,
+   "version": "1.0.0",
+   "causal": true,
+   "models": [
+    "M1",
+    "M2",
+    "M3r",
+    "M3"
+   ]
+  },
+  {
+   "name": "cgm_min_since_low70",
+   "group": "G3_cgm_history",
+   "dtype": "float",
+   "unit": "min",
+   "source": "CGM readings of this recording with ts <= t",
+   "computation": "minutes since the latest reading < 70 mg/dL, capped at 1440",
+   "availability": "readings up to t",
+   "missing": "NAN_WITH_INDICATOR",
+   "nan_meaning": "NOT_OBSERVED (no reading < 70 in the recording so far)",
+   "indicators": [
+    "cgm_min_since_low70_missing"
+   ],
+   "zero_meaning": null,
+   "ref": "App. D group 3",
+   "status": "OPERATIONALISED",
+   "lab": false,
+   "version": "1.0.0",
+   "causal": true,
+   "models": [
+    "M1",
+    "M2",
+    "M3r",
+    "M3"
+   ]
+  },
+  {
+   "name": "cgm_pct_own",
+   "group": "G3_cgm_history",
+   "dtype": "float",
+   "unit": "percentile (0-100)",
+   "source": "CGM readings of this recording with ts <= t",
+   "computation": "mid-rank percentile of g(t) among all readings of the recording up to t: 100 x (#{g < g(t)} + 0.5 #{g = g(t)}) / n",
+   "availability": "readings up to t",
+   "missing": "NAN_WITH_INDICATOR",
+   "nan_meaning": "INSUFFICIENT_HISTORY (t - first reading < 24 h)",
+   "indicators": [
+    "cgm_pct_own_missing"
+   ],
+   "zero_meaning": null,
+   "ref": "App. D group 3",
+   "status": "OPERATIONALISED",
+   "lab": false,
+   "version": "1.0.0",
+   "causal": true,
+   "models": [
+    "M1",
+    "M2",
+    "M3r",
+    "M3"
+   ]
+  },
+  {
+   "name": "sensor_day",
+   "group": "G3_cgm_history",
+   "dtype": "count",
+   "unit": "day",
+   "source": "CGM readings of this recording with ts <= t",
+   "computation": "floor((t - first reading of the recording) / 24 h) + 1",
+   "availability": "first reading and t",
+   "missing": "NEVER_MISSING",
+   "nan_meaning": null,
+   "indicators": [],
+   "zero_meaning": null,
+   "ref": "App. D group 3",
+   "status": "OPERATIONALISED",
+   "lab": false,
+   "version": "1.0.0",
+   "causal": true,
+   "models": [
+    "M1",
+    "M2",
+    "M3r",
+    "M3"
+   ]
+  },
+  {
+   "name": "cgm_min_since_low70_missing",
+   "group": "G3_cgm_history",
+   "dtype": "binary",
+   "unit": "0/1",
+   "source": "indicator",
+   "computation": "1 if no reading < 70 so far, else 0",
+   "availability": "same information as the features it indicates",
+   "missing": "NEVER_MISSING",
+   "nan_meaning": null,
+   "indicators": [],
+   "zero_meaning": null,
+   "ref": "§25.1",
+   "status": "INDICATOR",
+   "lab": false,
+   "version": "1.0.0",
+   "causal": true,
+   "models": [
+    "M1",
+    "M2",
+    "M3r",
+    "M3"
+   ]
+  },
+  {
+   "name": "cgm_pct_own_missing",
+   "group": "G3_cgm_history",
+   "dtype": "binary",
+   "unit": "0/1",
+   "source": "indicator",
+   "computation": "1 if t - first reading < 24 h, else 0",
+   "availability": "same information as the features it indicates",
+   "missing": "NEVER_MISSING",
+   "nan_meaning": null,
+   "indicators": [],
+   "zero_meaning": null,
+   "ref": "§25.1",
+   "status": "INDICATOR",
+   "lab": false,
+   "version": "1.0.0",
+   "causal": true,
+   "models": [
+    "M1",
+    "M2",
+    "M3r",
+    "M3"
+   ]
+  },
+  {
+   "name": "hour_sin",
+   "group": "G4_time",
+   "dtype": "float",
+   "unit": "-",
+   "source": "local clock (+08:00, ASSUMPTION) of t",
+   "computation": "sin(2 pi h / 24), h = hour of day",
+   "availability": "t",
+   "missing": "NEVER_MISSING",
+   "nan_meaning": null,
+   "indicators": [],
+   "zero_meaning": null,
+   "ref": "App. D group 4",
+   "status": "BLUEPRINT",
+   "lab": false,
+   "version": "1.0.0",
+   "causal": true,
+   "models": [
+    "M1",
+    "M2",
+    "M3r",
+    "M3"
+   ]
+  },
+  {
+   "name": "hour_cos",
+   "group": "G4_time",
+   "dtype": "float",
+   "unit": "-",
+   "source": "local clock (+08:00, ASSUMPTION) of t",
+   "computation": "cos(2 pi h / 24)",
+   "availability": "t",
+   "missing": "NEVER_MISSING",
+   "nan_meaning": null,
+   "indicators": [],
+   "zero_meaning": null,
+   "ref": "App. D group 4",
+   "status": "BLUEPRINT",
+   "lab": false,
+   "version": "1.0.0",
+   "causal": true,
+   "models": [
+    "M1",
+    "M2",
+    "M3r",
+    "M3"
+   ]
+  },
+  {
+   "name": "night",
+   "group": "G4_time",
+   "dtype": "binary",
+   "unit": "0/1",
+   "source": "local clock (+08:00, ASSUMPTION) of t",
+   "computation": "1 if 00:00 <= local time < 06:00",
+   "availability": "t",
+   "missing": "NEVER_MISSING",
+   "nan_meaning": null,
+   "indicators": [],
+   "zero_meaning": null,
+   "ref": "App. D group 4",
+   "status": "BLUEPRINT",
+   "lab": false,
+   "version": "1.0.0",
+   "causal": true,
+   "models": [
+    "M1",
+    "M2",
+    "M3r",
+    "M3"
+   ]
+  },
+  {
+   "name": "age_y",
+   "group": "G5_static_context",
+   "dtype": "float",
+   "unit": "years",
+   "source": "summary sheet: Age (years)",
+   "computation": "value of this recording's summary row ('/' or blank or implausible -> NaN)",
+   "availability": "patient-level context of this recording's summary row; constant over the recording (Blueprint §10.2: accepted residual risk; labs may post-date CGM)",
+   "missing": "NAN_WITH_INDICATOR",
+   "nan_meaning": "UNKNOWN",
+   "indicators": [
+    "age_y_missing"
+   ],
+   "zero_meaning": null,
+   "ref": "App. D group 5",
+   "status": "BLUEPRINT",
+   "lab": false,
+   "version": "1.0.0",
+   "causal": true,
+   "models": [
+    "M2",
+    "M3r",
+    "M3"
+   ]
+  },
+  {
+   "name": "sex_male",
+   "group": "G5_static_context",
+   "dtype": "binary",
+   "unit": "0/1",
+   "source": "summary sheet: Gender (Female=1, Male=2) -> 1 if male",
+   "computation": "value of this recording's summary row ('/' or blank or implausible -> NaN)",
+   "availability": "patient-level context of this recording's summary row; constant over the recording (Blueprint §10.2: accepted residual risk; labs may post-date CGM)",
+   "missing": "NAN_WITH_INDICATOR",
+   "nan_meaning": "UNKNOWN",
+   "indicators": [
+    "sex_male_missing"
+   ],
+   "zero_meaning": null,
+   "ref": "App. D group 5",
+   "status": "BLUEPRINT",
+   "lab": false,
+   "version": "1.0.0",
+   "causal": true,
+   "models": [
+    "M2",
+    "M3r",
+    "M3"
+   ]
+  },
+  {
+   "name": "bmi",
+   "group": "G5_static_context",
+   "dtype": "float",
+   "unit": "kg/m2",
+   "source": "summary sheet: BMI (kg/m2)",
+   "computation": "value of this recording's summary row ('/' or blank or implausible -> NaN)",
+   "availability": "patient-level context of this recording's summary row; constant over the recording (Blueprint §10.2: accepted residual risk; labs may post-date CGM)",
+   "missing": "NAN_WITH_INDICATOR",
+   "nan_meaning": "UNKNOWN",
+   "indicators": [
+    "bmi_missing"
+   ],
+   "zero_meaning": null,
+   "ref": "App. D group 5",
+   "status": "BLUEPRINT",
+   "lab": false,
+   "version": "1.0.0",
+   "causal": true,
+   "models": [
+    "M2",
+    "M3r",
+    "M3"
+   ]
+  },
+  {
+   "name": "weight_kg",
+   "group": "G5_static_context",
+   "dtype": "float",
+   "unit": "kg",
+   "source": "summary sheet: Weight (kg)",
+   "computation": "value of this recording's summary row ('/' or blank or implausible -> NaN)",
+   "availability": "patient-level context of this recording's summary row; constant over the recording (Blueprint §10.2: accepted residual risk; labs may post-date CGM)",
+   "missing": "NAN_WITH_INDICATOR",
+   "nan_meaning": "UNKNOWN",
+   "indicators": [
+    "weight_kg_missing"
+   ],
+   "zero_meaning": null,
+   "ref": "App. D group 5",
+   "status": "BLUEPRINT",
+   "lab": false,
+   "version": "1.0.0",
+   "causal": true,
+   "models": [
+    "M2",
+    "M3r",
+    "M3"
+   ]
+  },
+  {
+   "name": "diabetes_duration_y",
+   "group": "G5_static_context",
+   "dtype": "float",
+   "unit": "years",
+   "source": "summary sheet: Duration of diabetes (years)",
+   "computation": "value of this recording's summary row ('/' or blank or implausible -> NaN)",
+   "availability": "patient-level context of this recording's summary row; constant over the recording (Blueprint §10.2: accepted residual risk; labs may post-date CGM)",
+   "missing": "NAN_WITH_INDICATOR",
+   "nan_meaning": "UNKNOWN",
+   "indicators": [
+    "diabetes_duration_y_missing"
+   ],
+   "zero_meaning": null,
+   "ref": "App. D group 5",
+   "status": "BLUEPRINT",
+   "lab": false,
+   "version": "1.0.0",
+   "causal": true,
+   "models": [
+    "M2",
+    "M3r",
+    "M3"
+   ]
+  },
+  {
+   "name": "hba1c_mmol_mol",
+   "group": "G5_static_context",
+   "dtype": "float",
+   "unit": "mmol/mol",
+   "source": "summary sheet: HbA1c (mmol/mol)",
+   "computation": "value of this recording's summary row ('/' or blank or implausible -> NaN)",
+   "availability": "patient-level context of this recording's summary row; constant over the recording (Blueprint §10.2: accepted residual risk; labs may post-date CGM)",
+   "missing": "NAN_WITH_INDICATOR",
+   "nan_meaning": "UNKNOWN",
+   "indicators": [
+    "hba1c_mmol_mol_missing"
+   ],
+   "zero_meaning": null,
+   "ref": "App. D group 5",
+   "status": "BLUEPRINT",
+   "lab": true,
+   "version": "1.0.0",
+   "causal": true,
+   "models": [
+    "M2",
+    "M3r",
+    "M3"
+   ]
+  },
+  {
+   "name": "egfr",
+   "group": "G5_static_context",
+   "dtype": "float",
+   "unit": "ml/min/1.73m2",
+   "source": "summary sheet: Estimated Glomerular Filtration Rate",
+   "computation": "value of this recording's summary row ('/' or blank or implausible -> NaN)",
+   "availability": "patient-level context of this recording's summary row; constant over the recording (Blueprint §10.2: accepted residual risk; labs may post-date CGM)",
+   "missing": "NAN_WITH_INDICATOR",
+   "nan_meaning": "UNKNOWN",
+   "indicators": [
+    "egfr_missing"
+   ],
+   "zero_meaning": null,
+   "ref": "App. D group 5",
+   "status": "BLUEPRINT",
+   "lab": true,
+   "version": "1.0.0",
+   "causal": true,
+   "models": [
+    "M2",
+    "M3r",
+    "M3"
+   ]
+  },
+  {
+   "name": "c_peptide_fasting_nmol_l",
+   "group": "G5_static_context",
+   "dtype": "float",
+   "unit": "nmol/L",
+   "source": "summary sheet: Fasting C-peptide (nmol/L)",
+   "computation": "value of this recording's summary row ('/' or blank or implausible -> NaN)",
+   "availability": "patient-level context of this recording's summary row; constant over the recording (Blueprint §10.2: accepted residual risk; labs may post-date CGM)",
+   "missing": "NAN_WITH_INDICATOR",
+   "nan_meaning": "UNKNOWN",
+   "indicators": [
+    "c_peptide_fasting_nmol_l_missing"
+   ],
+   "zero_meaning": null,
+   "ref": "App. D group 5",
+   "status": "BLUEPRINT",
+   "lab": true,
+   "version": "1.0.0",
+   "causal": true,
+   "models": [
+    "M2",
+    "M3r",
+    "M3"
+   ]
+  },
+  {
+   "name": "rx_insulin",
+   "group": "G5_static_context",
+   "dtype": "binary",
+   "unit": "0/1",
+   "source": "summary sheet: Hypoglycemic Agents (drug dictionary)",
+   "computation": "1 if the prescribed regimen names any insulin",
+   "availability": "patient-level context of this recording's summary row; constant over the recording (Blueprint §10.2: accepted residual risk; labs may post-date CGM)",
+   "missing": "NAN_WITH_INDICATOR",
+   "nan_meaning": "UNKNOWN (regimen field empty)",
+   "indicators": [
+    "rx_missing"
+   ],
+   "zero_meaning": "not named in the prescribed regimen",
+   "ref": "App. D group 5",
+   "status": "BLUEPRINT",
+   "lab": false,
+   "version": "1.0.0",
+   "causal": true,
+   "models": [
+    "M2",
+    "M3r",
+    "M3"
+   ]
+  },
+  {
+   "name": "rx_premix",
+   "group": "G5_static_context",
+   "dtype": "binary",
+   "unit": "0/1",
+   "source": "summary sheet: Hypoglycemic Agents (drug dictionary)",
+   "computation": "1 if the prescribed regimen names premixed insulin (analogue or human)",
+   "availability": "patient-level context of this recording's summary row; constant over the recording (Blueprint §10.2: accepted residual risk; labs may post-date CGM)",
+   "missing": "NAN_WITH_INDICATOR",
+   "nan_meaning": "UNKNOWN (regimen field empty)",
+   "indicators": [
+    "rx_missing"
+   ],
+   "zero_meaning": "not named in the prescribed regimen",
+   "ref": "App. D group 5",
+   "status": "BLUEPRINT",
+   "lab": false,
+   "version": "1.0.0",
+   "causal": true,
+   "models": [
+    "M2",
+    "M3r",
+    "M3"
+   ]
+  },
+  {
+   "name": "rx_basal",
+   "group": "G5_static_context",
+   "dtype": "binary",
+   "unit": "0/1",
+   "source": "summary sheet: Hypoglycemic Agents (drug dictionary)",
+   "computation": "1 if the prescribed regimen names basal insulin (basal analogue or NPH)",
+   "availability": "patient-level context of this recording's summary row; constant over the recording (Blueprint §10.2: accepted residual risk; labs may post-date CGM)",
+   "missing": "NAN_WITH_INDICATOR",
+   "nan_meaning": "UNKNOWN (regimen field empty)",
+   "indicators": [
+    "rx_missing"
+   ],
+   "zero_meaning": "not named in the prescribed regimen",
+   "ref": "App. D group 5",
+   "status": "BLUEPRINT",
+   "lab": false,
+   "version": "1.0.0",
+   "causal": true,
+   "models": [
+    "M2",
+    "M3r",
+    "M3"
+   ]
+  },
+  {
+   "name": "rx_short_rapid",
+   "group": "G5_static_context",
+   "dtype": "binary",
+   "unit": "0/1",
+   "source": "summary sheet: Hypoglycemic Agents (drug dictionary)",
+   "computation": "1 if the prescribed regimen names short (regular human) or rapid-analogue insulin",
+   "availability": "patient-level context of this recording's summary row; constant over the recording (Blueprint §10.2: accepted residual risk; labs may post-date CGM)",
+   "missing": "NAN_WITH_INDICATOR",
+   "nan_meaning": "UNKNOWN (regimen field empty)",
+   "indicators": [
+    "rx_missing"
+   ],
+   "zero_meaning": "not named in the prescribed regimen",
+   "ref": "App. D group 5",
+   "status": "BLUEPRINT",
+   "lab": false,
+   "version": "1.0.0",
+   "causal": true,
+   "models": [
+    "M2",
+    "M3r",
+    "M3"
+   ]
+  },
+  {
+   "name": "rx_su",
+   "group": "G5_static_context",
+   "dtype": "binary",
+   "unit": "0/1",
+   "source": "summary sheet: Hypoglycemic Agents (drug dictionary)",
+   "computation": "1 if the prescribed regimen names sulfonylurea",
+   "availability": "patient-level context of this recording's summary row; constant over the recording (Blueprint §10.2: accepted residual risk; labs may post-date CGM)",
+   "missing": "NAN_WITH_INDICATOR",
+   "nan_meaning": "UNKNOWN (regimen field empty)",
+   "indicators": [
+    "rx_missing"
+   ],
+   "zero_meaning": "not named in the prescribed regimen",
+   "ref": "App. D group 5",
+   "status": "BLUEPRINT",
+   "lab": false,
+   "version": "1.0.0",
+   "causal": true,
+   "models": [
+    "M2",
+    "M3r",
+    "M3"
+   ]
+  },
+  {
+   "name": "rx_glinide",
+   "group": "G5_static_context",
+   "dtype": "binary",
+   "unit": "0/1",
+   "source": "summary sheet: Hypoglycemic Agents (drug dictionary)",
+   "computation": "1 if the prescribed regimen names glinide",
+   "availability": "patient-level context of this recording's summary row; constant over the recording (Blueprint §10.2: accepted residual risk; labs may post-date CGM)",
+   "missing": "NAN_WITH_INDICATOR",
+   "nan_meaning": "UNKNOWN (regimen field empty)",
+   "indicators": [
+    "rx_missing"
+   ],
+   "zero_meaning": "not named in the prescribed regimen",
+   "ref": "App. D group 5",
+   "status": "BLUEPRINT",
+   "lab": false,
+   "version": "1.0.0",
+   "causal": true,
+   "models": [
+    "M2",
+    "M3r",
+    "M3"
+   ]
+  },
+  {
+   "name": "rx_metformin",
+   "group": "G5_static_context",
+   "dtype": "binary",
+   "unit": "0/1",
+   "source": "summary sheet: Hypoglycemic Agents (drug dictionary)",
+   "computation": "1 if the prescribed regimen names metformin",
+   "availability": "patient-level context of this recording's summary row; constant over the recording (Blueprint §10.2: accepted residual risk; labs may post-date CGM)",
+   "missing": "NAN_WITH_INDICATOR",
+   "nan_meaning": "UNKNOWN (regimen field empty)",
+   "indicators": [
+    "rx_missing"
+   ],
+   "zero_meaning": "not named in the prescribed regimen",
+   "ref": "App. D group 5",
+   "status": "BLUEPRINT",
+   "lab": false,
+   "version": "1.0.0",
+   "causal": true,
+   "models": [
+    "M2",
+    "M3r",
+    "M3"
+   ]
+  },
+  {
+   "name": "rx_agi",
+   "group": "G5_static_context",
+   "dtype": "binary",
+   "unit": "0/1",
+   "source": "summary sheet: Hypoglycemic Agents (drug dictionary)",
+   "computation": "1 if the prescribed regimen names alpha-glucosidase inhibitor",
+   "availability": "patient-level context of this recording's summary row; constant over the recording (Blueprint §10.2: accepted residual risk; labs may post-date CGM)",
+   "missing": "NAN_WITH_INDICATOR",
+   "nan_meaning": "UNKNOWN (regimen field empty)",
+   "indicators": [
+    "rx_missing"
+   ],
+   "zero_meaning": "not named in the prescribed regimen",
+   "ref": "App. D group 5",
+   "status": "BLUEPRINT",
+   "lab": false,
+   "version": "1.0.0",
+   "causal": true,
+   "models": [
+    "M2",
+    "M3r",
+    "M3"
+   ]
+  },
+  {
+   "name": "rx_dpp4",
+   "group": "G5_static_context",
+   "dtype": "binary",
+   "unit": "0/1",
+   "source": "summary sheet: Hypoglycemic Agents (drug dictionary)",
+   "computation": "1 if the prescribed regimen names DPP-4 inhibitor",
+   "availability": "patient-level context of this recording's summary row; constant over the recording (Blueprint §10.2: accepted residual risk; labs may post-date CGM)",
+   "missing": "NAN_WITH_INDICATOR",
+   "nan_meaning": "UNKNOWN (regimen field empty)",
+   "indicators": [
+    "rx_missing"
+   ],
+   "zero_meaning": "not named in the prescribed regimen",
+   "ref": "App. D group 5",
+   "status": "BLUEPRINT",
+   "lab": false,
+   "version": "1.0.0",
+   "causal": true,
+   "models": [
+    "M2",
+    "M3r",
+    "M3"
+   ]
+  },
+  {
+   "name": "rx_sglt2",
+   "group": "G5_static_context",
+   "dtype": "binary",
+   "unit": "0/1",
+   "source": "summary sheet: Hypoglycemic Agents (drug dictionary)",
+   "computation": "1 if the prescribed regimen names SGLT2 inhibitor",
+   "availability": "patient-level context of this recording's summary row; constant over the recording (Blueprint §10.2: accepted residual risk; labs may post-date CGM)",
+   "missing": "NAN_WITH_INDICATOR",
+   "nan_meaning": "UNKNOWN (regimen field empty)",
+   "indicators": [
+    "rx_missing"
+   ],
+   "zero_meaning": "not named in the prescribed regimen",
+   "ref": "App. D group 5",
+   "status": "BLUEPRINT",
+   "lab": false,
+   "version": "1.0.0",
+   "causal": true,
+   "models": [
+    "M2",
+    "M3r",
+    "M3"
+   ]
+  },
+  {
+   "name": "rx_glp1",
+   "group": "G5_static_context",
+   "dtype": "binary",
+   "unit": "0/1",
+   "source": "summary sheet: Hypoglycemic Agents (drug dictionary)",
+   "computation": "1 if the prescribed regimen names GLP-1 receptor agonist",
+   "availability": "patient-level context of this recording's summary row; constant over the recording (Blueprint §10.2: accepted residual risk; labs may post-date CGM)",
+   "missing": "NAN_WITH_INDICATOR",
+   "nan_meaning": "UNKNOWN (regimen field empty)",
+   "indicators": [
+    "rx_missing"
+   ],
+   "zero_meaning": "not named in the prescribed regimen",
+   "ref": "App. D group 5",
+   "status": "BLUEPRINT",
+   "lab": false,
+   "version": "1.0.0",
+   "causal": true,
+   "models": [
+    "M2",
+    "M3r",
+    "M3"
+   ]
+  },
+  {
+   "name": "rx_tzd",
+   "group": "G5_static_context",
+   "dtype": "binary",
+   "unit": "0/1",
+   "source": "summary sheet: Hypoglycemic Agents (drug dictionary)",
+   "computation": "1 if the prescribed regimen names thiazolidinedione",
+   "availability": "patient-level context of this recording's summary row; constant over the recording (Blueprint §10.2: accepted residual risk; labs may post-date CGM)",
+   "missing": "NAN_WITH_INDICATOR",
+   "nan_meaning": "UNKNOWN (regimen field empty)",
+   "indicators": [
+    "rx_missing"
+   ],
+   "zero_meaning": "not named in the prescribed regimen",
+   "ref": "App. D group 5",
+   "status": "BLUEPRINT",
+   "lab": false,
+   "version": "1.0.0",
+   "causal": true,
+   "models": [
+    "M2",
+    "M3r",
+    "M3"
+   ]
+  },
+  {
+   "name": "age_y_missing",
+   "group": "G5_static_context",
+   "dtype": "binary",
+   "unit": "0/1",
+   "source": "indicator",
+   "computation": "1 if age_y is unknown, else 0",
+   "availability": "same information as the features it indicates",
+   "missing": "NEVER_MISSING",
+   "nan_meaning": null,
+   "indicators": [],
+   "zero_meaning": null,
+   "ref": "§25.1",
+   "status": "INDICATOR",
+   "lab": false,
+   "version": "1.0.0",
+   "causal": true,
+   "models": [
+    "M2",
+    "M3r",
+    "M3"
+   ]
+  },
+  {
+   "name": "sex_male_missing",
+   "group": "G5_static_context",
+   "dtype": "binary",
+   "unit": "0/1",
+   "source": "indicator",
+   "computation": "1 if sex_male is unknown, else 0",
+   "availability": "same information as the features it indicates",
+   "missing": "NEVER_MISSING",
+   "nan_meaning": null,
+   "indicators": [],
+   "zero_meaning": null,
+   "ref": "§25.1",
+   "status": "INDICATOR",
+   "lab": false,
+   "version": "1.0.0",
+   "causal": true,
+   "models": [
+    "M2",
+    "M3r",
+    "M3"
+   ]
+  },
+  {
+   "name": "bmi_missing",
+   "group": "G5_static_context",
+   "dtype": "binary",
+   "unit": "0/1",
+   "source": "indicator",
+   "computation": "1 if bmi is unknown, else 0",
+   "availability": "same information as the features it indicates",
+   "missing": "NEVER_MISSING",
+   "nan_meaning": null,
+   "indicators": [],
+   "zero_meaning": null,
+   "ref": "§25.1",
+   "status": "INDICATOR",
+   "lab": false,
+   "version": "1.0.0",
+   "causal": true,
+   "models": [
+    "M2",
+    "M3r",
+    "M3"
+   ]
+  },
+  {
+   "name": "weight_kg_missing",
+   "group": "G5_static_context",
+   "dtype": "binary",
+   "unit": "0/1",
+   "source": "indicator",
+   "computation": "1 if weight_kg is unknown, else 0",
+   "availability": "same information as the features it indicates",
+   "missing": "NEVER_MISSING",
+   "nan_meaning": null,
+   "indicators": [],
+   "zero_meaning": null,
+   "ref": "§25.1",
+   "status": "INDICATOR",
+   "lab": false,
+   "version": "1.0.0",
+   "causal": true,
+   "models": [
+    "M2",
+    "M3r",
+    "M3"
+   ]
+  },
+  {
+   "name": "diabetes_duration_y_missing",
+   "group": "G5_static_context",
+   "dtype": "binary",
+   "unit": "0/1",
+   "source": "indicator",
+   "computation": "1 if diabetes_duration_y is unknown, else 0",
+   "availability": "same information as the features it indicates",
+   "missing": "NEVER_MISSING",
+   "nan_meaning": null,
+   "indicators": [],
+   "zero_meaning": null,
+   "ref": "§25.1",
+   "status": "INDICATOR",
+   "lab": false,
+   "version": "1.0.0",
+   "causal": true,
+   "models": [
+    "M2",
+    "M3r",
+    "M3"
+   ]
+  },
+  {
+   "name": "hba1c_mmol_mol_missing",
+   "group": "G5_static_context",
+   "dtype": "binary",
+   "unit": "0/1",
+   "source": "indicator",
+   "computation": "1 if hba1c_mmol_mol is unknown, else 0",
+   "availability": "same information as the features it indicates",
+   "missing": "NEVER_MISSING",
+   "nan_meaning": null,
+   "indicators": [],
+   "zero_meaning": null,
+   "ref": "§25.1",
+   "status": "INDICATOR",
+   "lab": false,
+   "version": "1.0.0",
+   "causal": true,
+   "models": [
+    "M2",
+    "M3r",
+    "M3"
+   ]
+  },
+  {
+   "name": "egfr_missing",
+   "group": "G5_static_context",
+   "dtype": "binary",
+   "unit": "0/1",
+   "source": "indicator",
+   "computation": "1 if egfr is unknown, else 0",
+   "availability": "same information as the features it indicates",
+   "missing": "NEVER_MISSING",
+   "nan_meaning": null,
+   "indicators": [],
+   "zero_meaning": null,
+   "ref": "§25.1",
+   "status": "INDICATOR",
+   "lab": false,
+   "version": "1.0.0",
+   "causal": true,
+   "models": [
+    "M2",
+    "M3r",
+    "M3"
+   ]
+  },
+  {
+   "name": "c_peptide_fasting_nmol_l_missing",
+   "group": "G5_static_context",
+   "dtype": "binary",
+   "unit": "0/1",
+   "source": "indicator",
+   "computation": "1 if c_peptide_fasting_nmol_l is unknown, else 0",
+   "availability": "same information as the features it indicates",
+   "missing": "NEVER_MISSING",
+   "nan_meaning": null,
+   "indicators": [],
+   "zero_meaning": null,
+   "ref": "§25.1",
+   "status": "INDICATOR",
+   "lab": false,
+   "version": "1.0.0",
+   "causal": true,
+   "models": [
+    "M2",
+    "M3r",
+    "M3"
+   ]
+  },
+  {
+   "name": "rx_missing",
+   "group": "G5_static_context",
+   "dtype": "binary",
+   "unit": "0/1",
+   "source": "indicator",
+   "computation": "1 if the prescribed-regimen field is empty, else 0",
+   "availability": "same information as the features it indicates",
+   "missing": "NEVER_MISSING",
+   "nan_meaning": null,
+   "indicators": [],
+   "zero_meaning": null,
+   "ref": "§25.1",
+   "status": "INDICATOR",
+   "lab": false,
+   "version": "1.0.0",
+   "causal": true,
+   "models": [
+    "M2",
+    "M3r",
+    "M3"
+   ]
+  },
+  {
+   "name": "meal_min_since",
+   "group": "G6_meal_timing",
+   "dtype": "float",
+   "unit": "min",
+   "source": "diet entries of this recording with ts <= t",
+   "computation": "minutes since the latest logged meal, capped at 720",
+   "availability": "meals up to t",
+   "missing": "NAN_WITH_INDICATOR",
+   "nan_meaning": "NOT_OBSERVED (no meal logged so far)",
+   "indicators": [
+    "meal_none_logged"
+   ],
+   "zero_meaning": null,
+   "ref": "App. D group 6",
+   "status": "BLUEPRINT",
+   "lab": false,
+   "version": "1.0.0",
+   "causal": true,
+   "models": [
+    "M2",
+    "M3r",
+    "M3"
+   ]
+  },
+  {
+   "name": "meal_last_3h",
+   "group": "G6_meal_timing",
+   "dtype": "binary",
+   "unit": "0/1",
+   "source": "diet entries of this recording with ts <= t",
+   "computation": "1 if a meal is logged in (t - 180 min, t]",
+   "availability": "meals up to t",
+   "missing": "NEVER_MISSING",
+   "nan_meaning": null,
+   "indicators": [],
+   "zero_meaning": "no meal logged in the last 3 h",
+   "ref": "App. D group 6",
+   "status": "BLUEPRINT",
+   "lab": false,
+   "version": "1.0.0",
+   "causal": true,
+   "models": [
+    "M2",
+    "M3r",
+    "M3"
+   ]
+  },
+  {
+   "name": "meals_today",
+   "group": "G6_meal_timing",
+   "dtype": "count",
+   "unit": "meals",
+   "source": "diet entries of this recording with ts <= t",
+   "computation": "meals logged since local midnight, up to t",
+   "availability": "meals up to t",
+   "missing": "NEVER_MISSING",
+   "nan_meaning": null,
+   "indicators": [],
+   "zero_meaning": "no meal logged today so far",
+   "ref": "App. D group 6",
+   "status": "BLUEPRINT",
+   "lab": false,
+   "version": "1.0.0",
+   "causal": true,
+   "models": [
+    "M2",
+    "M3r",
+    "M3"
+   ]
+  },
+  {
+   "name": "meal_last_content_unknown",
+   "group": "G6_meal_timing",
+   "dtype": "binary",
+   "unit": "0/1",
+   "source": "diet entries of this recording with ts <= t",
+   "computation": "1 if the latest logged meal has no recorded content ('Data not available')",
+   "availability": "meals up to t",
+   "missing": "NAN_WITH_INDICATOR",
+   "nan_meaning": "NOT_OBSERVED (no meal logged so far)",
+   "indicators": [
+    "meal_none_logged"
+   ],
+   "zero_meaning": null,
+   "ref": "App. D group 6",
+   "status": "BLUEPRINT",
+   "lab": false,
+   "version": "1.0.0",
+   "causal": true,
+   "models": [
+    "M2",
+    "M3r",
+    "M3"
+   ]
+  },
+  {
+   "name": "meal_none_logged",
+   "group": "G6_meal_timing",
+   "dtype": "binary",
+   "unit": "0/1",
+   "source": "indicator",
+   "computation": "1 if no meal logged in the recording so far, else 0",
+   "availability": "same information as the features it indicates",
+   "missing": "NEVER_MISSING",
+   "nan_meaning": null,
+   "indicators": [],
+   "zero_meaning": null,
+   "ref": "§25.1",
+   "status": "INDICATOR",
+   "lab": false,
+   "version": "1.0.0",
+   "causal": true,
+   "models": [
+    "M2",
+    "M3r",
+    "M3"
+   ]
+  },
+  {
+   "name": "insulin_bolus_min_since_last",
+   "group": "G7_raw_medication_timing",
+   "dtype": "float",
+   "unit": "min",
+   "source": "parsed medication events with ts <= t (medication.timing.raw_timing)",
+   "computation": "minutes since the latest administration, capped at 1440",
+   "availability": "administrations up to t",
+   "missing": "NAN_WITH_INDICATOR",
+   "nan_meaning": "NOT_OBSERVED (none logged before t) or TIMING_UNKNOWN for class insulin (Table 12.1)",
+   "indicators": [
+    "insulin_bolus_missing"
+   ],
+   "zero_meaning": null,
+   "ref": "App. D group 7; FEATURE_DICTIONARY",
+   "status": "S3_CONTRACT",
+   "lab": false,
+   "version": "1.0.0",
+   "causal": true,
+   "models": [
+    "M3r"
+   ]
+  },
+  {
+   "name": "insulin_bolus_last_dose",
+   "group": "G7_raw_medication_timing",
+   "dtype": "float",
+   "unit": "IU",
+   "source": "parsed medication events with ts <= t (medication.timing.raw_timing)",
+   "computation": "dose of the latest administration",
+   "availability": "administrations up to t",
+   "missing": "NAN_WITH_INDICATOR",
+   "nan_meaning": "NOT_OBSERVED, TIMING_UNKNOWN for class insulin (Table 12.1), or dose unknown (0 cases in the data)",
+   "indicators": [
+    "insulin_bolus_missing"
+   ],
+   "zero_meaning": null,
+   "ref": "App. D group 7; FEATURE_DICTIONARY",
+   "status": "S3_CONTRACT",
+   "lab": false,
+   "version": "1.0.0",
+   "causal": true,
+   "models": [
+    "M3r"
+   ]
+  },
+  {
+   "name": "insulin_bolus_dose_24h",
+   "group": "G7_raw_medication_timing",
+   "dtype": "float",
+   "unit": "IU",
+   "source": "parsed medication events with ts <= t (medication.timing.raw_timing)",
+   "computation": "total dose in (t - 24 h, t]",
+   "availability": "administrations in (t - 24 h, t]",
+   "missing": "NAN_WITH_INDICATOR",
+   "nan_meaning": "TIMING_UNKNOWN for class insulin (Table 12.1), or a dose in the window is unknown (0 cases in the data)",
+   "indicators": [
+    "insulin_bolus_missing"
+   ],
+   "zero_meaning": "nothing of this category logged in the past 24 h",
+   "ref": "App. D group 7; FEATURE_DICTIONARY",
+   "status": "S3_CONTRACT",
+   "lab": false,
+   "version": "1.0.0",
+   "causal": true,
+   "models": [
+    "M3r"
+   ]
+  },
+  {
+   "name": "insulin_bolus_n_24h",
+   "group": "G7_raw_medication_timing",
+   "dtype": "count",
+   "unit": "administrations",
+   "source": "parsed medication events with ts <= t (medication.timing.raw_timing)",
+   "computation": "administrations in (t - 24 h, t]",
+   "availability": "administrations in (t - 24 h, t]",
+   "missing": "NEVER_MISSING",
+   "nan_meaning": null,
+   "indicators": [],
+   "zero_meaning": "none logged in the past 24 h",
+   "ref": "App. D group 7; FEATURE_DICTIONARY",
+   "status": "S3_CONTRACT",
+   "lab": false,
+   "version": "1.0.0",
+   "causal": true,
+   "models": [
+    "M3r"
+   ]
+  },
+  {
+   "name": "insulin_basal_min_since_last",
+   "group": "G7_raw_medication_timing",
+   "dtype": "float",
+   "unit": "min",
+   "source": "parsed medication events with ts <= t (medication.timing.raw_timing)",
+   "computation": "minutes since the latest administration, capped at 1440",
+   "availability": "administrations up to t",
+   "missing": "NAN_WITH_INDICATOR",
+   "nan_meaning": "NOT_OBSERVED (none logged before t) or TIMING_UNKNOWN for class insulin (Table 12.1)",
+   "indicators": [
+    "insulin_basal_missing"
+   ],
+   "zero_meaning": null,
+   "ref": "App. D group 7; FEATURE_DICTIONARY",
+   "status": "S3_CONTRACT",
+   "lab": false,
+   "version": "1.0.0",
+   "causal": true,
+   "models": [
+    "M3r"
+   ]
+  },
+  {
+   "name": "insulin_basal_last_dose",
+   "group": "G7_raw_medication_timing",
+   "dtype": "float",
+   "unit": "IU",
+   "source": "parsed medication events with ts <= t (medication.timing.raw_timing)",
+   "computation": "dose of the latest administration",
+   "availability": "administrations up to t",
+   "missing": "NAN_WITH_INDICATOR",
+   "nan_meaning": "NOT_OBSERVED, TIMING_UNKNOWN for class insulin (Table 12.1), or dose unknown (0 cases in the data)",
+   "indicators": [
+    "insulin_basal_missing"
+   ],
+   "zero_meaning": null,
+   "ref": "App. D group 7; FEATURE_DICTIONARY",
+   "status": "S3_CONTRACT",
+   "lab": false,
+   "version": "1.0.0",
+   "causal": true,
+   "models": [
+    "M3r"
+   ]
+  },
+  {
+   "name": "insulin_basal_dose_24h",
+   "group": "G7_raw_medication_timing",
+   "dtype": "float",
+   "unit": "IU",
+   "source": "parsed medication events with ts <= t (medication.timing.raw_timing)",
+   "computation": "total dose in (t - 24 h, t]",
+   "availability": "administrations in (t - 24 h, t]",
+   "missing": "NAN_WITH_INDICATOR",
+   "nan_meaning": "TIMING_UNKNOWN for class insulin (Table 12.1), or a dose in the window is unknown (0 cases in the data)",
+   "indicators": [
+    "insulin_basal_missing"
+   ],
+   "zero_meaning": "nothing of this category logged in the past 24 h",
+   "ref": "App. D group 7; FEATURE_DICTIONARY",
+   "status": "S3_CONTRACT",
+   "lab": false,
+   "version": "1.0.0",
+   "causal": true,
+   "models": [
+    "M3r"
+   ]
+  },
+  {
+   "name": "insulin_basal_n_24h",
+   "group": "G7_raw_medication_timing",
+   "dtype": "count",
+   "unit": "administrations",
+   "source": "parsed medication events with ts <= t (medication.timing.raw_timing)",
+   "computation": "administrations in (t - 24 h, t]",
+   "availability": "administrations in (t - 24 h, t]",
+   "missing": "NEVER_MISSING",
+   "nan_meaning": null,
+   "indicators": [],
+   "zero_meaning": "none logged in the past 24 h",
+   "ref": "App. D group 7; FEATURE_DICTIONARY",
+   "status": "S3_CONTRACT",
+   "lab": false,
+   "version": "1.0.0",
+   "causal": true,
+   "models": [
+    "M3r"
+   ]
+  },
+  {
+   "name": "su_min_since_last",
+   "group": "G7_raw_medication_timing",
+   "dtype": "float",
+   "unit": "min",
+   "source": "parsed medication events with ts <= t (medication.timing.raw_timing)",
+   "computation": "minutes since the latest administration, capped at 1440",
+   "availability": "administrations up to t",
+   "missing": "NAN_WITH_INDICATOR",
+   "nan_meaning": "NOT_OBSERVED (none logged before t) or TIMING_UNKNOWN for class sulfonylurea (Table 12.1)",
+   "indicators": [
+    "su_missing"
+   ],
+   "zero_meaning": null,
+   "ref": "App. D group 7; FEATURE_DICTIONARY",
+   "status": "S3_CONTRACT",
+   "lab": false,
+   "version": "1.0.0",
+   "causal": true,
+   "models": [
+    "M3r"
+   ]
+  },
+  {
+   "name": "su_last_dose",
+   "group": "G7_raw_medication_timing",
+   "dtype": "float",
+   "unit": "mg",
+   "source": "parsed medication events with ts <= t (medication.timing.raw_timing)",
+   "computation": "dose of the latest administration",
+   "availability": "administrations up to t",
+   "missing": "NAN_WITH_INDICATOR",
+   "nan_meaning": "NOT_OBSERVED, TIMING_UNKNOWN for class sulfonylurea (Table 12.1), or dose unknown (0 cases in the data)",
+   "indicators": [
+    "su_missing"
+   ],
+   "zero_meaning": null,
+   "ref": "App. D group 7; FEATURE_DICTIONARY",
+   "status": "S3_CONTRACT",
+   "lab": false,
+   "version": "1.0.0",
+   "causal": true,
+   "models": [
+    "M3r"
+   ]
+  },
+  {
+   "name": "su_dose_24h",
+   "group": "G7_raw_medication_timing",
+   "dtype": "float",
+   "unit": "mg",
+   "source": "parsed medication events with ts <= t (medication.timing.raw_timing)",
+   "computation": "total dose in (t - 24 h, t]",
+   "availability": "administrations in (t - 24 h, t]",
+   "missing": "NAN_WITH_INDICATOR",
+   "nan_meaning": "TIMING_UNKNOWN for class sulfonylurea (Table 12.1), or a dose in the window is unknown (0 cases in the data)",
+   "indicators": [
+    "su_missing"
+   ],
+   "zero_meaning": "nothing of this category logged in the past 24 h",
+   "ref": "App. D group 7; FEATURE_DICTIONARY",
+   "status": "S3_CONTRACT",
+   "lab": false,
+   "version": "1.0.0",
+   "causal": true,
+   "models": [
+    "M3r"
+   ]
+  },
+  {
+   "name": "su_n_24h",
+   "group": "G7_raw_medication_timing",
+   "dtype": "count",
+   "unit": "administrations",
+   "source": "parsed medication events with ts <= t (medication.timing.raw_timing)",
+   "computation": "administrations in (t - 24 h, t]",
+   "availability": "administrations in (t - 24 h, t]",
+   "missing": "NEVER_MISSING",
+   "nan_meaning": null,
+   "indicators": [],
+   "zero_meaning": "none logged in the past 24 h",
+   "ref": "App. D group 7; FEATURE_DICTIONARY",
+   "status": "S3_CONTRACT",
+   "lab": false,
+   "version": "1.0.0",
+   "causal": true,
+   "models": [
+    "M3r"
+   ]
+  },
+  {
+   "name": "glinide_min_since_last",
+   "group": "G7_raw_medication_timing",
+   "dtype": "float",
+   "unit": "min",
+   "source": "parsed medication events with ts <= t (medication.timing.raw_timing)",
+   "computation": "minutes since the latest administration, capped at 1440",
+   "availability": "administrations up to t",
+   "missing": "NAN_WITH_INDICATOR",
+   "nan_meaning": "NOT_OBSERVED (none logged before t) or TIMING_UNKNOWN for class glinide (Table 12.1)",
+   "indicators": [
+    "glinide_missing"
+   ],
+   "zero_meaning": null,
+   "ref": "App. D group 7; FEATURE_DICTIONARY",
+   "status": "S3_CONTRACT",
+   "lab": false,
+   "version": "1.0.0",
+   "causal": true,
+   "models": [
+    "M3r"
+   ]
+  },
+  {
+   "name": "glinide_last_dose",
+   "group": "G7_raw_medication_timing",
+   "dtype": "float",
+   "unit": "mg",
+   "source": "parsed medication events with ts <= t (medication.timing.raw_timing)",
+   "computation": "dose of the latest administration",
+   "availability": "administrations up to t",
+   "missing": "NAN_WITH_INDICATOR",
+   "nan_meaning": "NOT_OBSERVED, TIMING_UNKNOWN for class glinide (Table 12.1), or dose unknown (0 cases in the data)",
+   "indicators": [
+    "glinide_missing"
+   ],
+   "zero_meaning": null,
+   "ref": "App. D group 7; FEATURE_DICTIONARY",
+   "status": "S3_CONTRACT",
+   "lab": false,
+   "version": "1.0.0",
+   "causal": true,
+   "models": [
+    "M3r"
+   ]
+  },
+  {
+   "name": "glinide_dose_24h",
+   "group": "G7_raw_medication_timing",
+   "dtype": "float",
+   "unit": "mg",
+   "source": "parsed medication events with ts <= t (medication.timing.raw_timing)",
+   "computation": "total dose in (t - 24 h, t]",
+   "availability": "administrations in (t - 24 h, t]",
+   "missing": "NAN_WITH_INDICATOR",
+   "nan_meaning": "TIMING_UNKNOWN for class glinide (Table 12.1), or a dose in the window is unknown (0 cases in the data)",
+   "indicators": [
+    "glinide_missing"
+   ],
+   "zero_meaning": "nothing of this category logged in the past 24 h",
+   "ref": "App. D group 7; FEATURE_DICTIONARY",
+   "status": "S3_CONTRACT",
+   "lab": false,
+   "version": "1.0.0",
+   "causal": true,
+   "models": [
+    "M3r"
+   ]
+  },
+  {
+   "name": "glinide_n_24h",
+   "group": "G7_raw_medication_timing",
+   "dtype": "count",
+   "unit": "administrations",
+   "source": "parsed medication events with ts <= t (medication.timing.raw_timing)",
+   "computation": "administrations in (t - 24 h, t]",
+   "availability": "administrations in (t - 24 h, t]",
+   "missing": "NEVER_MISSING",
+   "nan_meaning": null,
+   "indicators": [],
+   "zero_meaning": "none logged in the past 24 h",
+   "ref": "App. D group 7; FEATURE_DICTIONARY",
+   "status": "S3_CONTRACT",
+   "lab": false,
+   "version": "1.0.0",
+   "causal": true,
+   "models": [
+    "M3r"
+   ]
+  },
+  {
+   "name": "insulin_bolus_missing",
+   "group": "G7_raw_medication_timing",
+   "dtype": "binary",
+   "unit": "0/1",
+   "source": "indicator",
+   "computation": "1 if insulin_bolus_min_since_last is NaN (none logged before t, or class insulin TIMING_UNKNOWN), else 0",
+   "availability": "same information as the features it indicates",
+   "missing": "NEVER_MISSING",
+   "nan_meaning": null,
+   "indicators": [],
+   "zero_meaning": null,
+   "ref": "§25.1; FEATURE_DICTIONARY",
+   "status": "INDICATOR",
+   "lab": false,
+   "version": "1.0.0",
+   "causal": true,
+   "models": [
+    "M3r"
+   ]
+  },
+  {
+   "name": "insulin_basal_missing",
+   "group": "G7_raw_medication_timing",
+   "dtype": "binary",
+   "unit": "0/1",
+   "source": "indicator",
+   "computation": "1 if insulin_basal_min_since_last is NaN (none logged before t, or class insulin TIMING_UNKNOWN), else 0",
+   "availability": "same information as the features it indicates",
+   "missing": "NEVER_MISSING",
+   "nan_meaning": null,
+   "indicators": [],
+   "zero_meaning": null,
+   "ref": "§25.1; FEATURE_DICTIONARY",
+   "status": "INDICATOR",
+   "lab": false,
+   "version": "1.0.0",
+   "causal": true,
+   "models": [
+    "M3r"
+   ]
+  },
+  {
+   "name": "su_missing",
+   "group": "G7_raw_medication_timing",
+   "dtype": "binary",
+   "unit": "0/1",
+   "source": "indicator",
+   "computation": "1 if su_min_since_last is NaN (none logged before t, or class sulfonylurea TIMING_UNKNOWN), else 0",
+   "availability": "same information as the features it indicates",
+   "missing": "NEVER_MISSING",
+   "nan_meaning": null,
+   "indicators": [],
+   "zero_meaning": null,
+   "ref": "§25.1; FEATURE_DICTIONARY",
+   "status": "INDICATOR",
+   "lab": false,
+   "version": "1.0.0",
+   "causal": true,
+   "models": [
+    "M3r"
+   ]
+  },
+  {
+   "name": "glinide_missing",
+   "group": "G7_raw_medication_timing",
+   "dtype": "binary",
+   "unit": "0/1",
+   "source": "indicator",
+   "computation": "1 if glinide_min_since_last is NaN (none logged before t, or class glinide TIMING_UNKNOWN), else 0",
+   "availability": "same information as the features it indicates",
+   "missing": "NEVER_MISSING",
+   "nan_meaning": null,
+   "indicators": [],
+   "zero_meaning": null,
+   "ref": "§25.1; FEATURE_DICTIONARY",
+   "status": "INDICATOR",
+   "lab": false,
+   "version": "1.0.0",
+   "causal": true,
+   "models": [
+    "M3r"
+   ]
+  },
+  {
+   "name": "csii_active",
+   "group": "G78_csii_iv_flags",
+   "dtype": "binary",
+   "unit": "0/1",
+   "source": "parsed CSII / i.v. events with ts <= t (ExposureEngine)",
+   "computation": "a programmed basal rate is in force at t (<= 6 h after its entry, not suspended)",
+   "availability": "pump entries up to t",
+   "missing": "NEVER_MISSING",
+   "nan_meaning": null,
+   "indicators": [],
+   "zero_meaning": null,
+   "ref": "App. D groups 7-8; ADR-026",
+   "status": "S3_CONTRACT",
+   "lab": false,
+   "version": "1.0.0",
+   "causal": true,
+   "models": [
+    "M3r",
+    "M3"
+   ]
+  },
+  {
+   "name": "csii_rate_iu_h",
+   "group": "G78_csii_iv_flags",
+   "dtype": "float",
+   "unit": "IU/h",
+   "source": "parsed CSII / i.v. events with ts <= t (ExposureEngine)",
+   "computation": "the currently programmed basal rate (0 if none in force)",
+   "availability": "pump entries up to t",
+   "missing": "NEVER_MISSING",
+   "nan_meaning": null,
+   "indicators": [],
+   "zero_meaning": "no basal rate in force",
+   "ref": "FEATURE_DICTIONARY",
+   "status": "S3_CONTRACT",
+   "lab": false,
+   "version": "1.0.0",
+   "causal": true,
+   "models": [
+    "M3r",
+    "M3"
+   ]
+  },
+  {
+   "name": "iv_insulin_recent",
+   "group": "G78_csii_iv_flags",
+   "dtype": "binary",
+   "unit": "0/1",
+   "source": "parsed CSII / i.v. events with ts <= t (ExposureEngine)",
+   "computation": "an i.v. insulin entry in (t - 4 h, t]",
+   "availability": "i.v. entries up to t",
+   "missing": "NEVER_MISSING",
+   "nan_meaning": null,
+   "indicators": [],
+   "zero_meaning": null,
+   "ref": "App. D groups 7-8; §12.2",
+   "status": "S3_CONTRACT",
+   "lab": false,
+   "version": "1.0.0",
+   "causal": true,
+   "models": [
+    "M3r",
+    "M3"
+   ]
+  },
+  {
+   "name": "act_prandial",
+   "group": "G8_medication_exposure",
+   "dtype": "float",
+   "unit": "IU/h",
+   "source": "parsed medication events with ts <= t (ExposureEngine, configs/pharma.yaml)",
+   "computation": "sum dose x weight x a(t - t_i), rapid + regular components incl. premix fast fractions and CSII micro-boluses",
+   "availability": "administrations up to t",
+   "missing": "NAN_WITH_INDICATOR",
+   "nan_meaning": "TIMING_UNKNOWN / DOSE_UNKNOWN / FORMULATION_UNKNOWN for the class (quality code)",
+   "indicators": [
+    "quality_insulin"
+   ],
+   "zero_meaning": "no exposure of this class at t",
+   "ref": "App. D group 8; FEATURE_DICTIONARY",
+   "status": "S3_CONTRACT",
+   "lab": false,
+   "version": "1.0.0",
+   "causal": true,
+   "models": [
+    "M3"
+   ]
+  },
+  {
+   "name": "act_intermediate",
+   "group": "G8_medication_exposure",
+   "dtype": "float",
+   "unit": "IU/h",
+   "source": "parsed medication events with ts <= t (ExposureEngine, configs/pharma.yaml)",
+   "computation": "the same for NPH components",
+   "availability": "administrations up to t",
+   "missing": "NAN_WITH_INDICATOR",
+   "nan_meaning": "TIMING_UNKNOWN / DOSE_UNKNOWN / FORMULATION_UNKNOWN for the class (quality code)",
+   "indicators": [
+    "quality_insulin"
+   ],
+   "zero_meaning": "no exposure of this class at t",
+   "ref": "App. D group 8; FEATURE_DICTIONARY",
+   "status": "S3_CONTRACT",
+   "lab": false,
+   "version": "1.0.0",
+   "causal": true,
+   "models": [
+    "M3"
+   ]
+  },
+  {
+   "name": "act_basal",
+   "group": "G8_medication_exposure",
+   "dtype": "float",
+   "unit": "IU/h",
+   "source": "parsed medication events with ts <= t (ExposureEngine, configs/pharma.yaml)",
+   "computation": "the same for basal analogues (flat kernels)",
+   "availability": "administrations up to t",
+   "missing": "NAN_WITH_INDICATOR",
+   "nan_meaning": "TIMING_UNKNOWN / DOSE_UNKNOWN / FORMULATION_UNKNOWN for the class (quality code)",
+   "indicators": [
+    "quality_insulin"
+   ],
+   "zero_meaning": "no exposure of this class at t",
+   "ref": "App. D group 8; FEATURE_DICTIONARY",
+   "status": "S3_CONTRACT",
+   "lab": false,
+   "version": "1.0.0",
+   "causal": true,
+   "models": [
+    "M3"
+   ]
+  },
+  {
+   "name": "act_insulin_total",
+   "group": "G8_medication_exposure",
+   "dtype": "float",
+   "unit": "IU/h",
+   "source": "parsed medication events with ts <= t (ExposureEngine, configs/pharma.yaml)",
+   "computation": "act_prandial + act_intermediate + act_basal",
+   "availability": "administrations up to t",
+   "missing": "NAN_WITH_INDICATOR",
+   "nan_meaning": "TIMING_UNKNOWN / DOSE_UNKNOWN / FORMULATION_UNKNOWN for the class (quality code)",
+   "indicators": [
+    "quality_insulin"
+   ],
+   "zero_meaning": "no exposure of this class at t",
+   "ref": "App. D group 8; FEATURE_DICTIONARY",
+   "status": "S3_CONTRACT",
+   "lab": false,
+   "version": "1.0.0",
+   "causal": true,
+   "models": [
+    "M3"
+   ]
+  },
+  {
+   "name": "iob_insulin",
+   "group": "G8_medication_exposure",
+   "dtype": "float",
+   "unit": "IU",
+   "source": "parsed medication events with ts <= t (ExposureEngine, configs/pharma.yaml)",
+   "computation": "sum dose x (1 - A(t - t_i)) over all insulin components",
+   "availability": "administrations up to t",
+   "missing": "NAN_WITH_INDICATOR",
+   "nan_meaning": "TIMING_UNKNOWN / DOSE_UNKNOWN / FORMULATION_UNKNOWN for the class (quality code)",
+   "indicators": [
+    "quality_insulin"
+   ],
+   "zero_meaning": "no exposure of this class at t",
+   "ref": "App. D group 8; FEATURE_DICTIONARY",
+   "status": "S3_CONTRACT",
+   "lab": false,
+   "version": "1.0.0",
+   "causal": true,
+   "models": [
+    "M3"
+   ]
+  },
+  {
+   "name": "insulin_p30",
+   "group": "G8_medication_exposure",
+   "dtype": "float",
+   "unit": "IU/h",
+   "source": "parsed medication events with ts <= t (ExposureEngine, configs/pharma.yaml)",
+   "computation": "total insulin activity at t + 30 from doses <= t plus the current CSII basal rate (no future injections)",
+   "availability": "administrations up to t",
+   "missing": "NAN_WITH_INDICATOR",
+   "nan_meaning": "TIMING_UNKNOWN / DOSE_UNKNOWN / FORMULATION_UNKNOWN for the class (quality code)",
+   "indicators": [
+    "quality_insulin"
+   ],
+   "zero_meaning": "no exposure of this class at t",
+   "ref": "App. D group 8; FEATURE_DICTIONARY",
+   "status": "S3_CONTRACT",
+   "lab": false,
+   "version": "1.0.0",
+   "causal": true,
+   "models": [
+    "M3"
+   ]
+  },
+  {
+   "name": "insulin_p60",
+   "group": "G8_medication_exposure",
+   "dtype": "float",
+   "unit": "IU/h",
+   "source": "parsed medication events with ts <= t (ExposureEngine, configs/pharma.yaml)",
+   "computation": "the same at t + 60",
+   "availability": "administrations up to t",
+   "missing": "NAN_WITH_INDICATOR",
+   "nan_meaning": "TIMING_UNKNOWN / DOSE_UNKNOWN / FORMULATION_UNKNOWN for the class (quality code)",
+   "indicators": [
+    "quality_insulin"
+   ],
+   "zero_meaning": "no exposure of this class at t",
+   "ref": "App. D group 8; FEATURE_DICTIONARY",
+   "status": "S3_CONTRACT",
+   "lab": false,
+   "version": "1.0.0",
+   "causal": true,
+   "models": [
+    "M3"
+   ]
+  },
+  {
+   "name": "act_su",
+   "group": "G8_medication_exposure",
+   "dtype": "float",
+   "unit": "dimensionless",
+   "source": "parsed medication events with ts <= t (ExposureEngine, configs/pharma.yaml)",
+   "computation": "sum (dose / D_max) x peak-normalised Bateman kernel",
+   "availability": "administrations up to t",
+   "missing": "NAN_WITH_INDICATOR",
+   "nan_meaning": "TIMING_UNKNOWN / DOSE_UNKNOWN / FORMULATION_UNKNOWN for the class (quality code)",
+   "indicators": [
+    "quality_sulfonylurea"
+   ],
+   "zero_meaning": "no exposure of this class at t",
+   "ref": "App. D group 8; FEATURE_DICTIONARY",
+   "status": "S3_CONTRACT",
+   "lab": false,
+   "version": "1.0.0",
+   "causal": true,
+   "models": [
+    "M3"
+   ]
+  },
+  {
+   "name": "su_p30",
+   "group": "G8_medication_exposure",
+   "dtype": "float",
+   "unit": "dimensionless",
+   "source": "parsed medication events with ts <= t (ExposureEngine, configs/pharma.yaml)",
+   "computation": "act_su at t + 30 from doses <= t",
+   "availability": "administrations up to t",
+   "missing": "NAN_WITH_INDICATOR",
+   "nan_meaning": "TIMING_UNKNOWN / DOSE_UNKNOWN / FORMULATION_UNKNOWN for the class (quality code)",
+   "indicators": [
+    "quality_sulfonylurea"
+   ],
+   "zero_meaning": "no exposure of this class at t",
+   "ref": "App. D group 8; FEATURE_DICTIONARY",
+   "status": "S3_CONTRACT",
+   "lab": false,
+   "version": "1.0.0",
+   "causal": true,
+   "models": [
+    "M3"
+   ]
+  },
+  {
+   "name": "su_p60",
+   "group": "G8_medication_exposure",
+   "dtype": "float",
+   "unit": "dimensionless",
+   "source": "parsed medication events with ts <= t (ExposureEngine, configs/pharma.yaml)",
+   "computation": "act_su at t + 60 from doses <= t",
+   "availability": "administrations up to t",
+   "missing": "NAN_WITH_INDICATOR",
+   "nan_meaning": "TIMING_UNKNOWN / DOSE_UNKNOWN / FORMULATION_UNKNOWN for the class (quality code)",
+   "indicators": [
+    "quality_sulfonylurea"
+   ],
+   "zero_meaning": "no exposure of this class at t",
+   "ref": "App. D group 8; FEATURE_DICTIONARY",
+   "status": "S3_CONTRACT",
+   "lab": false,
+   "version": "1.0.0",
+   "causal": true,
+   "models": [
+    "M3"
+   ]
+  },
+  {
+   "name": "act_glinide",
+   "group": "G8_medication_exposure",
+   "dtype": "float",
+   "unit": "dimensionless",
+   "source": "parsed medication events with ts <= t (ExposureEngine, configs/pharma.yaml)",
+   "computation": "as act_su, for glinides",
+   "availability": "administrations up to t",
+   "missing": "NAN_WITH_INDICATOR",
+   "nan_meaning": "TIMING_UNKNOWN / DOSE_UNKNOWN / FORMULATION_UNKNOWN for the class (quality code)",
+   "indicators": [
+    "quality_glinide"
+   ],
+   "zero_meaning": "no exposure of this class at t",
+   "ref": "App. D group 8; FEATURE_DICTIONARY",
+   "status": "S3_CONTRACT",
+   "lab": false,
+   "version": "1.0.0",
+   "causal": true,
+   "models": [
+    "M3"
+   ]
+  },
+  {
+   "name": "glinide_p30",
+   "group": "G8_medication_exposure",
+   "dtype": "float",
+   "unit": "dimensionless",
+   "source": "parsed medication events with ts <= t (ExposureEngine, configs/pharma.yaml)",
+   "computation": "act_glinide at t + 30 from doses <= t",
+   "availability": "administrations up to t",
+   "missing": "NAN_WITH_INDICATOR",
+   "nan_meaning": "TIMING_UNKNOWN / DOSE_UNKNOWN / FORMULATION_UNKNOWN for the class (quality code)",
+   "indicators": [
+    "quality_glinide"
+   ],
+   "zero_meaning": "no exposure of this class at t",
+   "ref": "App. D group 8; FEATURE_DICTIONARY",
+   "status": "S3_CONTRACT",
+   "lab": false,
+   "version": "1.0.0",
+   "causal": true,
+   "models": [
+    "M3"
+   ]
+  },
+  {
+   "name": "glinide_p60",
+   "group": "G8_medication_exposure",
+   "dtype": "float",
+   "unit": "dimensionless",
+   "source": "parsed medication events with ts <= t (ExposureEngine, configs/pharma.yaml)",
+   "computation": "act_glinide at t + 60 from doses <= t",
+   "availability": "administrations up to t",
+   "missing": "NAN_WITH_INDICATOR",
+   "nan_meaning": "TIMING_UNKNOWN / DOSE_UNKNOWN / FORMULATION_UNKNOWN for the class (quality code)",
+   "indicators": [
+    "quality_glinide"
+   ],
+   "zero_meaning": "no exposure of this class at t",
+   "ref": "App. D group 8; FEATURE_DICTIONARY",
+   "status": "S3_CONTRACT",
+   "lab": false,
+   "version": "1.0.0",
+   "causal": true,
+   "models": [
+    "M3"
+   ]
+  },
+  {
+   "name": "min_since_insulin",
+   "group": "G8_medication_exposure",
+   "dtype": "float",
+   "unit": "min",
+   "source": "parsed medication events with ts <= t (ExposureEngine, configs/pharma.yaml)",
+   "computation": "minutes since the latest insulin administration, capped at 1440",
+   "availability": "administrations up to t",
+   "missing": "NAN_WITH_INDICATOR",
+   "nan_meaning": "NOT_OBSERVED (none logged before t)",
+   "indicators": [
+    "min_since_insulin_missing"
+   ],
+   "zero_meaning": null,
+   "ref": "App. D group 8; FEATURE_DICTIONARY",
+   "status": "S3_CONTRACT",
+   "lab": false,
+   "version": "1.0.0",
+   "causal": true,
+   "models": [
+    "M3"
+   ]
+  },
+  {
+   "name": "min_since_su",
+   "group": "G8_medication_exposure",
+   "dtype": "float",
+   "unit": "min",
+   "source": "parsed medication events with ts <= t (ExposureEngine, configs/pharma.yaml)",
+   "computation": "minutes since the latest sulfonylurea administration, capped at 1440",
+   "availability": "administrations up to t",
+   "missing": "NAN_WITH_INDICATOR",
+   "nan_meaning": "NOT_OBSERVED (none logged before t)",
+   "indicators": [
+    "min_since_su_missing"
+   ],
+   "zero_meaning": null,
+   "ref": "App. D group 8; FEATURE_DICTIONARY",
+   "status": "S3_CONTRACT",
+   "lab": false,
+   "version": "1.0.0",
+   "causal": true,
+   "models": [
+    "M3"
+   ]
+  },
+  {
+   "name": "min_since_glinide",
+   "group": "G8_medication_exposure",
+   "dtype": "float",
+   "unit": "min",
+   "source": "parsed medication events with ts <= t (ExposureEngine, configs/pharma.yaml)",
+   "computation": "minutes since the latest glinide administration, capped at 1440",
+   "availability": "administrations up to t",
+   "missing": "NAN_WITH_INDICATOR",
+   "nan_meaning": "NOT_OBSERVED (none logged before t)",
+   "indicators": [
+    "min_since_glinide_missing"
+   ],
+   "zero_meaning": null,
+   "ref": "App. D group 8; FEATURE_DICTIONARY",
+   "status": "S3_CONTRACT",
+   "lab": false,
+   "version": "1.0.0",
+   "causal": true,
+   "models": [
+    "M3"
+   ]
+  },
+  {
+   "name": "delta_insulin_60",
+   "group": "G8_medication_exposure",
+   "dtype": "float",
+   "unit": "IU/h",
+   "source": "parsed medication events with ts <= t (ExposureEngine, configs/pharma.yaml)",
+   "computation": "insulin_p60 - act_insulin_total (App. D 'Delta exposure next 60 min')",
+   "availability": "administrations up to t",
+   "missing": "NAN_WITH_INDICATOR",
+   "nan_meaning": "TIMING_UNKNOWN / DOSE_UNKNOWN / FORMULATION_UNKNOWN for the class (quality code)",
+   "indicators": [
+    "quality_insulin"
+   ],
+   "zero_meaning": null,
+   "ref": "App. D group 8; FEATURE_DICTIONARY",
+   "status": "DERIVED",
+   "lab": false,
+   "version": "1.0.0",
+   "causal": true,
+   "models": [
+    "M3"
+   ]
+  },
+  {
+   "name": "delta_su_60",
+   "group": "G8_medication_exposure",
+   "dtype": "float",
+   "unit": "dimensionless",
+   "source": "parsed medication events with ts <= t (ExposureEngine, configs/pharma.yaml)",
+   "computation": "su_p60 - act_su",
+   "availability": "administrations up to t",
+   "missing": "NAN_WITH_INDICATOR",
+   "nan_meaning": "TIMING_UNKNOWN / DOSE_UNKNOWN / FORMULATION_UNKNOWN for the class (quality code)",
+   "indicators": [
+    "quality_sulfonylurea"
+   ],
+   "zero_meaning": null,
+   "ref": "App. D group 8; FEATURE_DICTIONARY",
+   "status": "DERIVED",
+   "lab": false,
+   "version": "1.0.0",
+   "causal": true,
+   "models": [
+    "M3"
+   ]
+  },
+  {
+   "name": "act_insulin_total_per_kg",
+   "group": "G8_medication_exposure",
+   "dtype": "float",
+   "unit": "IU/h/kg",
+   "source": "parsed medication events with ts <= t (ExposureEngine, configs/pharma.yaml); summary weight",
+   "computation": "act_insulin_total / weight_kg (§12.2: 'per kg body weight when weight is known')",
+   "availability": "administrations up to t; static weight",
+   "missing": "NAN_WITH_INDICATOR",
+   "nan_meaning": "TIMING_UNKNOWN / DOSE_UNKNOWN / FORMULATION_UNKNOWN for the class (quality code); or weight unknown",
+   "indicators": [
+    "quality_insulin",
+    "weight_kg_missing"
+   ],
+   "zero_meaning": null,
+   "ref": "App. D group 8; §12.2",
+   "status": "DERIVED",
+   "lab": false,
+   "version": "1.0.0",
+   "causal": true,
+   "models": [
+    "M3"
+   ]
+  },
+  {
+   "name": "quality_insulin",
+   "group": "G8_medication_exposure",
+   "dtype": "categorical",
+   "unit": "code",
+   "source": "parsed medication events with ts <= t (ExposureEngine, configs/pharma.yaml)",
+   "computation": "QualityState code: 0 KNOWN, 1 PARTIAL, 2 TIMING_UNKNOWN, 3 DOSE_UNKNOWN, 4 FORMULATION_UNKNOWN, 5 NO_LOGGED_MEDICATION (the 'timing-unknown indicators' of App. D)",
+   "availability": "administrations and regimen up to t",
+   "missing": "NEVER_MISSING",
+   "nan_meaning": null,
+   "indicators": [],
+   "zero_meaning": null,
+   "ref": "App. D group 8; FEATURE_DICTIONARY",
+   "status": "S3_CONTRACT",
+   "lab": false,
+   "version": "1.0.0",
+   "causal": true,
+   "models": [
+    "M3"
+   ]
+  },
+  {
+   "name": "quality_sulfonylurea",
+   "group": "G8_medication_exposure",
+   "dtype": "categorical",
+   "unit": "code",
+   "source": "parsed medication events with ts <= t (ExposureEngine, configs/pharma.yaml)",
+   "computation": "QualityState code: 0 KNOWN, 1 PARTIAL, 2 TIMING_UNKNOWN, 3 DOSE_UNKNOWN, 4 FORMULATION_UNKNOWN, 5 NO_LOGGED_MEDICATION (the 'timing-unknown indicators' of App. D)",
+   "availability": "administrations and regimen up to t",
+   "missing": "NEVER_MISSING",
+   "nan_meaning": null,
+   "indicators": [],
+   "zero_meaning": null,
+   "ref": "App. D group 8; FEATURE_DICTIONARY",
+   "status": "S3_CONTRACT",
+   "lab": false,
+   "version": "1.0.0",
+   "causal": true,
+   "models": [
+    "M3"
+   ]
+  },
+  {
+   "name": "quality_glinide",
+   "group": "G8_medication_exposure",
+   "dtype": "categorical",
+   "unit": "code",
+   "source": "parsed medication events with ts <= t (ExposureEngine, configs/pharma.yaml)",
+   "computation": "QualityState code: 0 KNOWN, 1 PARTIAL, 2 TIMING_UNKNOWN, 3 DOSE_UNKNOWN, 4 FORMULATION_UNKNOWN, 5 NO_LOGGED_MEDICATION (the 'timing-unknown indicators' of App. D)",
+   "availability": "administrations and regimen up to t",
+   "missing": "NEVER_MISSING",
+   "nan_meaning": null,
+   "indicators": [],
+   "zero_meaning": null,
+   "ref": "App. D group 8; FEATURE_DICTIONARY",
+   "status": "S3_CONTRACT",
+   "lab": false,
+   "version": "1.0.0",
+   "causal": true,
+   "models": [
+    "M3"
+   ]
+  },
+  {
+   "name": "min_since_insulin_missing",
+   "group": "G8_medication_exposure",
+   "dtype": "binary",
+   "unit": "0/1",
+   "source": "indicator",
+   "computation": "1 if no insulin administration logged before t, else 0",
+   "availability": "same information as the features it indicates",
+   "missing": "NEVER_MISSING",
+   "nan_meaning": null,
+   "indicators": [],
+   "zero_meaning": null,
+   "ref": "§25.1",
+   "status": "INDICATOR",
+   "lab": false,
+   "version": "1.0.0",
+   "causal": true,
+   "models": [
+    "M3"
+   ]
+  },
+  {
+   "name": "min_since_su_missing",
+   "group": "G8_medication_exposure",
+   "dtype": "binary",
+   "unit": "0/1",
+   "source": "indicator",
+   "computation": "1 if no sulfonylurea administration logged before t, else 0",
+   "availability": "same information as the features it indicates",
+   "missing": "NEVER_MISSING",
+   "nan_meaning": null,
+   "indicators": [],
+   "zero_meaning": null,
+   "ref": "§25.1",
+   "status": "INDICATOR",
+   "lab": false,
+   "version": "1.0.0",
+   "causal": true,
+   "models": [
+    "M3"
+   ]
+  },
+  {
+   "name": "min_since_glinide_missing",
+   "group": "G8_medication_exposure",
+   "dtype": "binary",
+   "unit": "0/1",
+   "source": "indicator",
+   "computation": "1 if no glinide administration logged before t, else 0",
+   "availability": "same information as the features it indicates",
+   "missing": "NEVER_MISSING",
+   "nan_meaning": null,
+   "indicators": [],
+   "zero_meaning": null,
+   "ref": "§25.1",
+   "status": "INDICATOR",
+   "lab": false,
+   "version": "1.0.0",
+   "causal": true,
+   "models": [
+    "M3"
+   ]
+  }
+ ],
+ "sha256": "0e87630cbbfdc7fb5f813d4c373ab9ac393f171c9ff764da80f7139343f97a2e"
+}

@@ -53,28 +53,48 @@ def category(e: MedicationEvent) -> str | None:
     return None
 
 
+class RawTiming:
+    """Per-category administration arrays, built once from an event list. `compute(times)` is
+    causal: only administrations with ts <= t count."""
+
+    def __init__(self, events: Sequence[MedicationEvent]) -> None:
+        self.ts: dict[str, npt.NDArray[np.int64]] = {}
+        self.dose: dict[str, npt.NDArray[np.float64]] = {}
+        self.csum: dict[str, npt.NDArray[np.float64]] = {}
+        self.nan_c: dict[str, npt.NDArray[np.int64]] = {}
+        for cat in CATEGORIES:
+            evs = sorted(
+                (e for e in events if category(e) == cat), key=lambda e: (e.ts, e.source_row)
+            )
+            dose = np.array([np.nan if e.dose is None else e.dose for e in evs], dtype=np.float64)
+            self.ts[cat] = np.array([e.ts for e in evs], dtype=np.int64)
+            self.dose[cat] = dose
+            self.csum[cat] = np.concatenate([[0.0], np.cumsum(np.nan_to_num(dose))])
+            self.nan_c[cat] = np.concatenate([[0], np.cumsum(np.isnan(dose))]).astype(np.int64)
+
+    def compute(self, times: npt.NDArray[np.int64]) -> dict[str, npt.NDArray[np.float64]]:
+        times = np.asarray(times, dtype=np.int64)
+        out: dict[str, npt.NDArray[np.float64]] = {}
+        for cat in CATEGORIES:
+            ts, dose = self.ts[cat], self.dose[cat]
+            csum, nan_c = self.csum[cat], self.nan_c[cat]
+            last = np.searchsorted(ts, times, side="right") - 1  # latest event with ts <= t
+            first_in_window = np.searchsorted(ts, times - WINDOW_S, side="right")
+            has = last >= 0
+            li = np.clip(last, 0, None)
+            out[f"{cat}_min_since_last"] = np.where(
+                has, np.minimum((times - ts[li]) / 60.0 if len(ts) else 0.0, MIN_SINCE_CAP), np.nan
+            )
+            out[f"{cat}_last_dose"] = np.where(has, dose[li] if len(ts) else np.nan, np.nan)
+            n24 = (last + 1) - first_in_window
+            out[f"{cat}_n_24h"] = n24.astype(np.float64)
+            tot = csum[last + 1] - csum[first_in_window]
+            any_nan = (nan_c[last + 1] - nan_c[first_in_window]) > 0
+            out[f"{cat}_dose_24h"] = np.where(any_nan, np.nan, tot)
+        return out
+
+
 def raw_timing(
     events: Sequence[MedicationEvent], times: npt.NDArray[np.int64]
 ) -> dict[str, npt.NDArray[np.float64]]:
-    times = np.asarray(times, dtype=np.int64)
-    out: dict[str, npt.NDArray[np.float64]] = {}
-    for cat in CATEGORIES:
-        evs = sorted((e for e in events if category(e) == cat), key=lambda e: (e.ts, e.source_row))
-        ts = np.array([e.ts for e in evs], dtype=np.int64)
-        dose = np.array([np.nan if e.dose is None else e.dose for e in evs], dtype=np.float64)
-        last = np.searchsorted(ts, times, side="right") - 1  # index of latest event with ts <= t
-        first_in_window = np.searchsorted(ts, times - WINDOW_S, side="right")
-        has = last >= 0
-        li = np.clip(last, 0, None)
-        out[f"{cat}_min_since_last"] = np.where(
-            has, np.minimum((times - ts[li]) / 60.0 if len(ts) else 0.0, MIN_SINCE_CAP), np.nan
-        )
-        out[f"{cat}_last_dose"] = np.where(has, dose[li] if len(ts) else np.nan, np.nan)
-        n24 = (last + 1) - first_in_window
-        out[f"{cat}_n_24h"] = n24.astype(np.float64)
-        csum = np.concatenate([[0.0], np.cumsum(np.nan_to_num(dose))])
-        nan_c = np.concatenate([[0], np.cumsum(np.isnan(dose))])
-        tot = csum[last + 1] - csum[first_in_window]
-        any_nan = (nan_c[last + 1] - nan_c[first_in_window]) > 0
-        out[f"{cat}_dose_24h"] = np.where(any_nan, np.nan, tot)
-    return out
+    return RawTiming(events).compute(times)
