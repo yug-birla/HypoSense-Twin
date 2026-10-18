@@ -485,7 +485,6 @@ def _write_tables(out: Path, det: dict[str, Any]) -> None:
     (out / "summary.md").write_text("\n".join(lines) + "\n", encoding="utf-8", newline="\n")
     for name, cr in det["canonical_v5"]["curves"].items():
         with (out / f"m0_v5_curve_{name}.csv").open("w", newline="", encoding="utf-8") as fh:
-            w = csv.DictWriter(fh, fieldnames=list(cr["points"][0]), lineterminator="
-")
+            w = csv.DictWriter(fh, fieldnames=list(cr["points"][0]), lineterminator="\n")
             w.writeheader()
             w.writerows(cr["points"])
