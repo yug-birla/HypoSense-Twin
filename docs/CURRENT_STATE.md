@@ -64,10 +64,10 @@ None implemented (M0–M3 in S5/S6; M4 not planned).
 | Unit | 249/249 |
 | Leakage / static guards | 12/12 (+ medication truncation property test in unit; full-snapshot truncation in S4) |
 | Regression | 9/9 |
-| Integration (real data) | 11/11 |
+| Integration (real data) | 12/12 (incl. committed treated-set recomputation) |
 | Lint / format / types | clean; mypy --strict clean (52 files) |
 
-Last full run: `uv run pytest -q` → **281 passed** (2026-10-18).
+Last full run: `uv run pytest -q` → **282 passed** (2026-10-18).
 
 ## UI Status
 Not started (S7/S8). P-C8b warning text and timing badges are specified.
