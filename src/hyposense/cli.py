@@ -13,6 +13,7 @@ hyposense audit features [--workers N]  S4 feature audit on T: truncation equali
 hyposense features spec                 write artifacts/features/feature_spec.json (registry)
 hyposense eval m0 [--resamples N]       S5: Table A.2 reproduction + M0 on v5 T (DEVELOPMENT)
 hyposense eval registry                 write artifacts/evaluation/metric_registry.json
+hyposense dev s6 [--workers N]          S6 development workflow on T (tuning, ladder, experiments)
 hyposense gates show                  print the latest gate results
 """
 
@@ -178,6 +179,13 @@ def cmd_eval_registry(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_dev_s6(args: argparse.Namespace) -> int:
+    from hyposense.evaluation.s6_run import run_s6
+
+    _print(run_s6(workers=args.workers, resamples=args.resamples, trials=args.trials))
+    return 0
+
+
 def cmd_gates_show(args: argparse.Namespace) -> int:
     from hyposense.audit.gates import gates_dir
 
@@ -268,6 +276,15 @@ def build_parser() -> argparse.ArgumentParser:
     ev_.add_parser("registry", help="write the metric registry").set_defaults(
         func=cmd_eval_registry
     )
+
+    dv = sub.add_parser("dev", help="development experiments on T (S6)").add_subparsers(
+        dest="cmd", required=True
+    )
+    d6 = dv.add_parser("s6", help="M1 tuning, ladder, pre-registered experiments (T only)")
+    d6.add_argument("--workers", type=int, default=None)
+    d6.add_argument("--resamples", type=int, default=None, help="smoke tests only")
+    d6.add_argument("--trials", type=int, default=None, help="smoke tests only")
+    d6.set_defaults(func=cmd_dev_s6)
 
     gates = sub.add_parser("gates", help="gate results").add_subparsers(dest="cmd", required=True)
     gates.add_parser("show", help="print latest gate results").set_defaults(func=cmd_gates_show)

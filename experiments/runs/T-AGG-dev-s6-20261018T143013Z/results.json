@@ -1,0 +1,2756 @@
+{
+ "run_id": "T-AGG-dev-s6-20261018T143013Z",
+ "created_utc": "2026-10-18T14:27:07+00:00",
+ "finished_utc": "2026-10-18T14:30:13+00:00",
+ "status": "DEVELOPMENT",
+ "partition": "T",
+ "results_sha256": "7695c8ef9931a037851a867c1cd779f89275b0d1f8ba321755b8e6759f7e3a86",
+ "provenance": {
+  "git": {
+   "commit": "877e9bfa1d65d2865dfaa9a38e7c2240f85c7070",
+   "dirty": true,
+   "dirty_paths": [
+    "src/hyposense/cli.py",
+    "src/hyposense/calibration/methods.py",
+    "src/hyposense/evaluation/devdata.py",
+    "src/hyposense/evaluation/folds.py",
+    "src/hyposense/evaluation/s6_run.py",
+    "src/hyposense/models/lgbm.py",
+    "tests/unit/test_models.py"
+   ]
+  },
+  "environment": {
+   "hyposense": "0.0.1",
+   "python": "3.11.9",
+   "platform": "Windows-10-10.0.26200-SP0",
+   "packages": {
+    "numpy": "2.4.6",
+    "pandas": "3.0.6",
+    "openpyxl": "3.1.5",
+    "xlrd": "2.0.2",
+    "pyyaml": "6.0.3",
+    "pydantic": "2.14.1",
+    "scikit-learn": "1.9.1",
+    "lightgbm": "4.7.0"
+   },
+   "uv_lock_sha256": "82ba7f45dbb87e3a3c1e25ece7687cbcd14387f8fa7ef04ea6955c251dcfe7da"
+  },
+  "config_sha256": "700ad6121d7a00d3574bc070b5ad343c8f8e02b4857e5c3e55b713c79202d110",
+  "partition_sha256": "ccdcbce02b049992b0ca09bd99a2a5b8c49bcf49940f3a68ed6ca69cd2449578",
+  "label_config_sha256": "92e24a777897ab727c410433f5c218bf45b9819d322d940678084918e7284f7f",
+  "analysis_plan_sha256": "435c6b5eb6982b1e4306c0932125371f128a660a9f68f6e455795b728e7085ad",
+  "analysis_plan_version": "v0.5",
+  "metric_registry_sha256": "cf01baeb30d2ae7afaddbcc4c399a170fec56699b800c29d585fea3dadc5f685",
+  "feature_spec_sha256": "90329804c62df16a6a24198e61a56b1df3b41a9f05be95036e19bbf3cf2e5f49",
+  "reference_sha256": "8631cd7edf2d01c16cd3532aea2d33800964ce4c28418fa8c4dd37c62d9bdab3",
+  "treated_population_sha256": "2016d3e3025b66081889e4fe64c3359c280f2be79534b57fb82e31db4050c5ef",
+  "dataset_v5_files_sha256": "5f9d65b4e9233d4ecdd05438e80bb94314290cd5e2d9fdd21e353487cd3cc4ab",
+  "feature_table_sha256": "acb1be1f3fbb53016cd3ac6d0b823cb2cb214bf6bdb0c427c957c79bc4e36004",
+  "model_seed": 2026,
+  "bootstrap": {
+   "resamples": 50,
+   "seed": 2027
+  }
+ },
+ "results": {
+  "status": "DEVELOPMENT (tuning partition only; not confirmatory)",
+  "protocol": "DEC-2026-10-18-G",
+  "tuning": {
+   "best_trial": 0,
+   "best_params": {
+    "learning_rate": 0.037548,
+    "num_leaves": 17,
+    "min_data_in_leaf": 784,
+    "feature_fraction": 0.63556,
+    "bagging_fraction": 0.843787,
+    "lambda_l2": 9.875505
+   },
+   "cv_logloss_mean": 0.046327,
+   "cv_logloss_sd": 0.028476,
+   "best_fold_iterations": [
+    244,
+    172,
+    201,
+    46
+   ],
+   "num_boost_round": 186,
+   "trials": 2
+  },
+  "folds": {
+   "tuning": {
+    "shanghai_t2dm:2037": 0,
+    "shanghai_t2dm:2016": 1,
+    "shanghai_t2dm:2088": 2,
+    "shanghai_t2dm:2056": 3,
+    "shanghai_t2dm:2077": 0,
+    "shanghai_t2dm:2081": 1,
+    "shanghai_t2dm:2062": 2,
+    "shanghai_t2dm:2075": 3,
+    "shanghai_t2dm:2032": 0,
+    "shanghai_t2dm:2014": 1,
+    "shanghai_t2dm:2033": 2,
+    "shanghai_t2dm:2006": 3,
+    "shanghai_t2dm:2013": 0,
+    "shanghai_t2dm:2002": 1,
+    "shanghai_t2dm:2050": 2,
+    "shanghai_t2dm:2023": 3,
+    "shanghai_t2dm:2090": 0,
+    "shanghai_t2dm:2035": 1,
+    "shanghai_t2dm:2028": 2,
+    "shanghai_t2dm:2083": 3,
+    "shanghai_t2dm:2040": 0,
+    "shanghai_t2dm:2059": 1,
+    "shanghai_t2dm:2080": 2,
+    "shanghai_t2dm:2018": 3,
+    "shanghai_t2dm:2001": 0,
+    "shanghai_t2dm:2069": 1,
+    "shanghai_t2dm:2053": 2,
+    "shanghai_t2dm:2024": 3,
+    "shanghai_t2dm:2008": 0,
+    "shanghai_t2dm:2012": 1
+   },
+   "outer": {
+    "shanghai_t2dm:2037": 0,
+    "shanghai_t2dm:2016": 1,
+    "shanghai_t2dm:2088": 2,
+    "shanghai_t2dm:2056": 3,
+    "shanghai_t2dm:2077": 4,
+    "shanghai_t2dm:2081": 0,
+    "shanghai_t2dm:2062": 1,
+    "shanghai_t2dm:2075": 2,
+    "shanghai_t2dm:2032": 3,
+    "shanghai_t2dm:2014": 4,
+    "shanghai_t2dm:2033": 0,
+    "shanghai_t2dm:2006": 1,
+    "shanghai_t2dm:2013": 2,
+    "shanghai_t2dm:2002": 3,
+    "shanghai_t2dm:2050": 4,
+    "shanghai_t2dm:2023": 0,
+    "shanghai_t2dm:2090": 1,
+    "shanghai_t2dm:2035": 2,
+    "shanghai_t2dm:2028": 3,
+    "shanghai_t2dm:2083": 4,
+    "shanghai_t2dm:2040": 0,
+    "shanghai_t2dm:2059": 1,
+    "shanghai_t2dm:2080": 2,
+    "shanghai_t2dm:2018": 3,
+    "shanghai_t2dm:2001": 4,
+    "shanghai_t2dm:2069": 0,
+    "shanghai_t2dm:2053": 1,
+    "shanghai_t2dm:2024": 2,
+    "shanghai_t2dm:2008": 3,
+    "shanghai_t2dm:2012": 4
+   }
+  },
+  "models": {
+   "M1": {
+    "features": 38,
+    "categorical": [],
+    "outer_model_sha256": [
+     "5292f9b9cd3cda64a5b1402a7fbd600f7f4f0289b9e75faac1f8e46ca1f905fa",
+     "894a8051898899c0b1412afa6997329eedd3916abc99b8e4e10603eb1c35e01a",
+     "e391cd2a38f2a40835400a4209803d90ae03434b203feb30c7997fa4d8b06ef8",
+     "79cd7192248e7aa2b41090077616b2b927b894afb01da95ac835146821cbadf7",
+     "b626b6d5db9dfc180904c4d8804d35346aa88fa940d9e355ed20e39985454da0"
+    ],
+    "inert_columns": 7
+   },
+   "M2": {
+    "features": 72,
+    "categorical": [],
+    "outer_model_sha256": [
+     "92a18635bddc0ca6289ff4e3f40b295c8868b99e6834fbc4370dbca2af0c8920",
+     "8c03e9fe107ec1a639cf1a6922f4d68b2ea8f1dc382162c6a322be5339d8d70a",
+     "259ba91447c2c7188363c62def48c79457af38fc4250f31445e66af33a65d41a",
+     "33769dd1edc2f30de09926f07ba6552b0479d14cc33aa8d81c28733192643100",
+     "c9d295e2e08556ea9c1e5ed1cd0600f9ea5ab8330ba90324f29e808179fc971f"
+    ],
+    "inert_columns": 18
+   },
+   "M3r": {
+    "features": 95,
+    "categorical": [],
+    "outer_model_sha256": [
+     "3c220f4d3a9412d34100d116b36b43653383b9e02e8efcbe0c6574c5987e8cdc",
+     "e32877d7c792f7fa37ae27ea019d878a0c0906529b55b9648bd80dd433409101",
+     "b3853e20c643a74c3e4313fd9bea9d54a93ddf9ce8975804b0526c2393c89a02",
+     "fe68a12862483a2e419cd7a25e8ab152776acd369da66f99124552061168ca91",
+     "7fb91984f05d7eab94bc92d4e1cca55c2cfc49bfdd0f0aefb3a81b247333d971"
+    ],
+    "inert_columns": 31
+   },
+   "M3": {
+    "features": 100,
+    "categorical": [
+     "quality_insulin",
+     "quality_sulfonylurea",
+     "quality_glinide"
+    ],
+    "outer_model_sha256": [
+     "956a4b5b27dbbb2d31831a277d6dc84c0b87f1f373632b4b2550e52795a251c7",
+     "f22a2d880b874645a99a29173e3c68376a1a904408ef55432982ff2fda3de00d",
+     "f68562ed087b9d7a109aa2674186e3c883551c295045b6499fe932d0f930e7b6",
+     "e55f9a7cd0332227d23c57dec165d8dd50a58575b35873bc322261c305ba8612",
+     "67df9028933213367803a6bbf97959da0fdf06166e1e10b98ed6291098a288d1"
+    ],
+    "inert_columns": 30
+   },
+   "M3_compact": {
+    "features": 93,
+    "categorical": [
+     "quality_insulin",
+     "quality_sulfonylurea",
+     "quality_glinide"
+    ],
+    "outer_model_sha256": [
+     "377d5d165ac7a4eedadc34a13aed22bb3fc6d60804a70ddb08ea70913d46e7c1",
+     "ff1d0f105188e04ea74286c2519f3883d5dcc03b1951d580db9c498e39fcdbe9",
+     "83b620b15b1a0abc58d827eab39d1bcd070b49ff77e371fe6f440019ae859794",
+     "ee864613841dea4cc8fd8d6a47b69024f9d065cb9a7ec50fea166990628bd75f",
+     "e8cb05d36a5df85253d52c542a47fba1497703d8cda70d8b6248c8aee3b56c3a"
+    ],
+    "inert_columns": 28
+   },
+   "M1_pb6": {
+    "features": 38,
+    "categorical": [],
+    "outer_model_sha256": [
+     "c888c1f19761ae4d545a20dd75e46225b1e1aa0de7e2716b1afeb029bd3cbdda",
+     "b0a618d39769e24f9b6859da2747faef33edd36db7325648a1ff799300b445be",
+     "f96c5680a6198541b35a9e9a51ce4776b15563f5d250f76158ba14d9d0fea04b",
+     "bb286c623f28179aefc49738c2d1f92da4c7cc2528e7c16252f03eb6461a0b8c",
+     "5bc5754bcce4701c273d38794b233070577ff9fa060c1e65944e6a199f185d76"
+    ],
+    "inert_columns": 6
+   }
+  },
+  "ladder": {
+   "treated": {
+    "models": {
+     "M0": {
+      "sens_at_1fa": 0.625959,
+      "tau_alert": -54.0,
+      "budget_not_reached": false,
+      "partial_area": 0.69141,
+      "non_monotone_fa_steps": 0,
+      "grid_points": 280,
+      "operating_point": {
+       "tau": -54.0,
+       "strict": true,
+       "episodes": 56,
+       "hits": 35,
+       "sensitivity": 0.625,
+       "missed_episode_rate": 0.375,
+       "warnable_episodes": 53,
+       "warnable_ceiling": 0.946429,
+       "notifications": {
+        "true": 35,
+        "false": 254,
+        "outcome_unknown": 2
+       },
+       "monitored_days": 255.020833,
+       "fa_per_day": 0.995997,
+       "alert_precision": 0.121107,
+       "lead_min": {
+        "median": 45.0,
+        "q25": 22.5,
+        "q75": 60.0,
+        "share_ge_30": 0.742857
+       },
+       "abstention": {
+        "readings": 24501,
+        "insufficient_data_share": 0.00853,
+        "warnable_episodes_without_forecast_in_window": 0
+       },
+       "per_patient_distribution": {
+        "patients": 22,
+        "patients_with_episodes": 13,
+        "sensitivity_q25_q50_q75": [
+         0.5,
+         0.571429,
+         0.875
+        ],
+        "fa_per_day_q25_q50_q75": [
+         0.369578,
+         1.017111,
+         1.352167
+        ]
+       }
+      },
+      "patient_weighted_sensitivity": 0.607319
+     },
+     "M1": {
+      "sens_at_1fa": 0.892857,
+      "tau_alert": 0.106667,
+      "budget_not_reached": false,
+      "partial_area": 0.888409,
+      "non_monotone_fa_steps": 0,
+      "grid_points": 23679,
+      "operating_point": {
+       "tau": 0.106667,
+       "strict": false,
+       "episodes": 56,
+       "hits": 50,
+       "sensitivity": 0.892857,
+       "missed_episode_rate": 0.107143,
+       "warnable_episodes": 53,
+       "warnable_ceiling": 0.946429,
+       "notifications": {
+        "true": 50,
+        "false": 255,
+        "outcome_unknown": 1
+       },
+       "monitored_days": 255.020833,
+       "fa_per_day": 0.999918,
+       "alert_precision": 0.163934,
+       "lead_min": {
+        "median": 37.5,
+        "q25": 15.0,
+        "q75": 60.0,
+        "share_ge_30": 0.7
+       },
+       "abstention": {
+        "readings": 24501,
+        "insufficient_data_share": 0.00853,
+        "warnable_episodes_without_forecast_in_window": 0
+       },
+       "per_patient_distribution": {
+        "patients": 22,
+        "patients_with_episodes": 13,
+        "sensitivity_q25_q50_q75": [
+         0.857143,
+         1.0,
+         1.0
+        ],
+        "fa_per_day_q25_q50_q75": [
+         0.253807,
+         0.683177,
+         1.534817
+        ]
+       }
+      },
+      "patient_weighted_sensitivity": 0.926536,
+      "window": {
+       "log_loss": 0.030362,
+       "brier": 0.007301,
+       "auprc": 0.260461,
+       "base_rate": 0.008625
+      },
+      "calibration": {
+       "ece": 0.00216,
+       "slope": 1.011639,
+       "intercept": -0.235109
+      },
+      "reliability": [
+       {
+        "n": 2366,
+        "mean_p": 0.000381,
+        "mean_y": 0.0
+       },
+       {
+        "n": 2365,
+        "mean_p": 0.000522,
+        "mean_y": 0.0
+       },
+       {
+        "n": 2365,
+        "mean_p": 0.000649,
+        "mean_y": 0.000423
+       },
+       {
+        "n": 2365,
+        "mean_p": 0.000781,
+        "mean_y": 0.0
+       },
+       {
+        "n": 2365,
+        "mean_p": 0.00093,
+        "mean_y": 0.001268
+       },
+       {
+        "n": 2365,
+        "mean_p": 0.001142,
+        "mean_y": 0.000423
+       },
+       {
+        "n": 2365,
+        "mean_p": 0.001525,
+        "mean_y": 0.000423
+       },
+       {
+        "n": 2365,
+        "mean_p": 0.002538,
+        "mean_y": 0.002537
+       },
+       {
+        "n": 2365,
+        "mean_p": 0.006623,
+        "mean_y": 0.00592
+       },
+       {
+        "n": 2365,
+        "mean_p": 0.092084,
+        "mean_y": 0.075264
+       }
+      ],
+      "unique_values": 23578
+     },
+     "M2": {
+      "sens_at_1fa": 0.910714,
+      "tau_alert": 0.093471,
+      "budget_not_reached": false,
+      "partial_area": 0.901271,
+      "non_monotone_fa_steps": 0,
+      "grid_points": 23663,
+      "operating_point": {
+       "tau": 0.093471,
+       "strict": false,
+       "episodes": 56,
+       "hits": 51,
+       "sensitivity": 0.910714,
+       "missed_episode_rate": 0.089286,
+       "warnable_episodes": 53,
+       "warnable_ceiling": 0.946429,
+       "notifications": {
+        "true": 51,
+        "false": 255,
+        "outcome_unknown": 1
+       },
+       "monitored_days": 255.020833,
+       "fa_per_day": 0.999918,
+       "alert_precision": 0.166667,
+       "lead_min": {
+        "median": 45.0,
+        "q25": 15.0,
+        "q75": 60.0,
+        "share_ge_30": 0.72549
+       },
+       "abstention": {
+        "readings": 24501,
+        "insufficient_data_share": 0.00853,
+        "warnable_episodes_without_forecast_in_window": 0
+       },
+       "per_patient_distribution": {
+        "patients": 22,
+        "patients_with_episodes": 13,
+        "sensitivity_q25_q50_q75": [
+         0.875,
+         1.0,
+         1.0
+        ],
+        "fa_per_day_q25_q50_q75": [
+         0.288508,
+         0.697744,
+         1.72782
+        ]
+       }
+      },
+      "patient_weighted_sensitivity": 0.94192,
+      "window": {
+       "log_loss": 0.029918,
+       "brier": 0.007236,
+       "auprc": 0.254702,
+       "base_rate": 0.008625
+      },
+      "calibration": {
+       "ece": 0.001105,
+       "slope": 1.045095,
+       "intercept": -0.028691
+      },
+      "reliability": [
+       {
+        "n": 2366,
+        "mean_p": 0.000472,
+        "mean_y": 0.0
+       },
+       {
+        "n": 2365,
+        "mean_p": 0.000607,
+        "mean_y": 0.0
+       },
+       {
+        "n": 2365,
+        "mean_p": 0.000703,
+        "mean_y": 0.0
+       },
+       {
+        "n": 2365,
+        "mean_p": 0.000809,
+        "mean_y": 0.000846
+       },
+       {
+        "n": 2365,
+        "mean_p": 0.000952,
+        "mean_y": 0.0
+       },
+       {
+        "n": 2365,
+        "mean_p": 0.001165,
+        "mean_y": 0.0
+       },
+       {
+        "n": 2365,
+        "mean_p": 0.001512,
+        "mean_y": 0.001268
+       },
+       {
+        "n": 2365,
+        "mean_p": 0.002325,
+        "mean_y": 0.002114
+       },
+       {
+        "n": 2365,
+        "mean_p": 0.005836,
+        "mean_y": 0.00592
+       },
+       {
+        "n": 2365,
+        "mean_p": 0.08269,
+        "mean_y": 0.07611
+       }
+      ],
+      "unique_values": 23564
+     },
+     "M3r": {
+      "sens_at_1fa": 0.892857,
+      "tau_alert": 0.090701,
+      "budget_not_reached": false,
+      "partial_area": 0.889296,
+      "non_monotone_fa_steps": 0,
+      "grid_points": 23595,
+      "operating_point": {
+       "tau": 0.090701,
+       "strict": false,
+       "episodes": 56,
+       "hits": 50,
+       "sensitivity": 0.892857,
+       "missed_episode_rate": 0.107143,
+       "warnable_episodes": 53,
+       "warnable_ceiling": 0.946429,
+       "notifications": {
+        "true": 50,
+        "false": 255,
+        "outcome_unknown": 0
+       },
+       "monitored_days": 255.020833,
+       "fa_per_day": 0.999918,
+       "alert_precision": 0.163934,
+       "lead_min": {
+        "median": 30.0,
+        "q25": 15.0,
+        "q75": 60.0,
+        "share_ge_30": 0.72
+       },
+       "abstention": {
+        "readings": 24501,
+        "insufficient_data_share": 0.00853,
+        "warnable_episodes_without_forecast_in_window": 0
+       },
+       "per_patient_distribution": {
+        "patients": 22,
+        "patients_with_episodes": 13,
+        "sensitivity_q25_q50_q75": [
+         0.875,
+         1.0,
+         1.0
+        ],
+        "fa_per_day_q25_q50_q75": [
+         0.293119,
+         0.827009,
+         1.455052
+        ]
+       }
+      },
+      "patient_weighted_sensitivity": 0.930931,
+      "window": {
+       "log_loss": 0.030608,
+       "brier": 0.007371,
+       "auprc": 0.228967,
+       "base_rate": 0.008625
+      },
+      "calibration": {
+       "ece": 0.001411,
+       "slope": 1.040934,
+       "intercept": -0.063704
+      },
+      "reliability": [
+       {
+        "n": 2366,
+        "mean_p": 0.000493,
+        "mean_y": 0.0
+       },
+       {
+        "n": 2365,
+        "mean_p": 0.000677,
+        "mean_y": 0.0
+       },
+       {
+        "n": 2365,
+        "mean_p": 0.000809,
+        "mean_y": 0.0
+       },
+       {
+        "n": 2365,
+        "mean_p": 0.000951,
+        "mean_y": 0.0
+       },
+       {
+        "n": 2365,
+        "mean_p": 0.001141,
+        "mean_y": 0.000423
+       },
+       {
+        "n": 2365,
+        "mean_p": 0.001442,
+        "mean_y": 0.001268
+       },
+       {
+        "n": 2365,
+        "mean_p": 0.001943,
+        "mean_y": 0.000846
+       },
+       {
+        "n": 2365,
+        "mean_p": 0.002812,
+        "mean_y": 0.002114
+       },
+       {
+        "n": 2365,
+        "mean_p": 0.00625,
+        "mean_y": 0.006765
+       },
+       {
+        "n": 2365,
+        "mean_p": 0.082819,
+        "mean_y": 0.074841
+       }
+      ],
+      "unique_values": 23495
+     },
+     "M3": {
+      "sens_at_1fa": 0.928571,
+      "tau_alert": 0.089785,
+      "budget_not_reached": false,
+      "partial_area": 0.91259,
+      "non_monotone_fa_steps": 0,
+      "grid_points": 23610,
+      "operating_point": {
+       "tau": 0.089785,
+       "strict": false,
+       "episodes": 56,
+       "hits": 52,
+       "sensitivity": 0.928571,
+       "missed_episode_rate": 0.071429,
+       "warnable_episodes": 53,
+       "warnable_ceiling": 0.946429,
+       "notifications": {
+        "true": 52,
+        "false": 255,
+        "outcome_unknown": 1
+       },
+       "monitored_days": 255.020833,
+       "fa_per_day": 0.999918,
+       "alert_precision": 0.169381,
+       "lead_min": {
+        "median": 45.0,
+        "q25": 15.0,
+        "q75": 60.0,
+        "share_ge_30": 0.730769
+       },
+       "abstention": {
+        "readings": 24501,
+        "insufficient_data_share": 0.00853,
+        "warnable_episodes_without_forecast_in_window": 0
+       },
+       "per_patient_distribution": {
+        "patients": 22,
+        "patients_with_episodes": 13,
+        "sensitivity_q25_q50_q75": [
+         1.0,
+         1.0,
+         1.0
+        ],
+        "fa_per_day_q25_q50_q75": [
+         0.273797,
+         0.697744,
+         1.560976
+        ]
+       }
+      },
+      "patient_weighted_sensitivity": 0.951536,
+      "window": {
+       "log_loss": 0.029639,
+       "brier": 0.007255,
+       "auprc": 0.257877,
+       "base_rate": 0.008625
+      },
+      "calibration": {
+       "ece": 0.001247,
+       "slope": 1.079838,
+       "intercept": 0.042532
+      },
+      "reliability": [
+       {
+        "n": 2366,
+        "mean_p": 0.000479,
+        "mean_y": 0.0
+       },
+       {
+        "n": 2365,
+        "mean_p": 0.000633,
+        "mean_y": 0.0
+       },
+       {
+        "n": 2365,
+        "mean_p": 0.000759,
+        "mean_y": 0.0
+       },
+       {
+        "n": 2365,
+        "mean_p": 0.000914,
+        "mean_y": 0.0
+       },
+       {
+        "n": 2365,
+        "mean_p": 0.001125,
+        "mean_y": 0.000423
+       },
+       {
+        "n": 2365,
+        "mean_p": 0.001388,
+        "mean_y": 0.001268
+       },
+       {
+        "n": 2365,
+        "mean_p": 0.001791,
+        "mean_y": 0.000846
+       },
+       {
+        "n": 2365,
+        "mean_p": 0.002634,
+        "mean_y": 0.001268
+       },
+       {
+        "n": 2365,
+        "mean_p": 0.006204,
+        "mean_y": 0.00592
+       },
+       {
+        "n": 2365,
+        "mean_p": 0.082803,
+        "mean_y": 0.076533
+       }
+      ],
+      "unique_values": 23509
+     },
+     "M3_compact": {
+      "sens_at_1fa": 0.928571,
+      "tau_alert": 0.089878,
+      "budget_not_reached": false,
+      "partial_area": 0.912263,
+      "non_monotone_fa_steps": 0,
+      "grid_points": 23646,
+      "operating_point": {
+       "tau": 0.089878,
+       "strict": false,
+       "episodes": 56,
+       "hits": 52,
+       "sensitivity": 0.928571,
+       "missed_episode_rate": 0.071429,
+       "warnable_episodes": 53,
+       "warnable_ceiling": 0.946429,
+       "notifications": {
+        "true": 52,
+        "false": 255,
+        "outcome_unknown": 1
+       },
+       "monitored_days": 255.020833,
+       "fa_per_day": 0.999918,
+       "alert_precision": 0.169381,
+       "lead_min": {
+        "median": 30.0,
+        "q25": 15.0,
+        "q75": 60.0,
+        "share_ge_30": 0.730769
+       },
+       "abstention": {
+        "readings": 24501,
+        "insufficient_data_share": 0.00853,
+        "warnable_episodes_without_forecast_in_window": 0
+       },
+       "per_patient_distribution": {
+        "patients": 22,
+        "patients_with_episodes": 13,
+        "sensitivity_q25_q50_q75": [
+         1.0,
+         1.0,
+         1.0
+        ],
+        "fa_per_day_q25_q50_q75": [
+         0.298362,
+         0.78797,
+         1.675958
+        ]
+       }
+      },
+      "patient_weighted_sensitivity": 0.951536,
+      "window": {
+       "log_loss": 0.029682,
+       "brier": 0.007228,
+       "auprc": 0.255607,
+       "base_rate": 0.008625
+      },
+      "calibration": {
+       "ece": 0.001204,
+       "slope": 1.079544,
+       "intercept": 0.047961
+      },
+      "reliability": [
+       {
+        "n": 2366,
+        "mean_p": 0.000498,
+        "mean_y": 0.0
+       },
+       {
+        "n": 2365,
+        "mean_p": 0.000635,
+        "mean_y": 0.0
+       },
+       {
+        "n": 2365,
+        "mean_p": 0.000754,
+        "mean_y": 0.0
+       },
+       {
+        "n": 2365,
+        "mean_p": 0.00091,
+        "mean_y": 0.0
+       },
+       {
+        "n": 2365,
+        "mean_p": 0.001134,
+        "mean_y": 0.000846
+       },
+       {
+        "n": 2365,
+        "mean_p": 0.001411,
+        "mean_y": 0.000423
+       },
+       {
+        "n": 2365,
+        "mean_p": 0.001805,
+        "mean_y": 0.001691
+       },
+       {
+        "n": 2365,
+        "mean_p": 0.002638,
+        "mean_y": 0.001268
+       },
+       {
+        "n": 2365,
+        "mean_p": 0.006127,
+        "mean_y": 0.00592
+       },
+       {
+        "n": 2365,
+        "mean_p": 0.08239,
+        "mean_y": 0.07611
+       }
+      ],
+      "unique_values": 23546
+     },
+     "M1_pb6": {
+      "sens_at_1fa": 0.892857,
+      "tau_alert": 0.118234,
+      "budget_not_reached": false,
+      "partial_area": 0.897724,
+      "non_monotone_fa_steps": 0,
+      "grid_points": 23646,
+      "operating_point": {
+       "tau": 0.118234,
+       "strict": false,
+       "episodes": 56,
+       "hits": 50,
+       "sensitivity": 0.892857,
+       "missed_episode_rate": 0.107143,
+       "warnable_episodes": 53,
+       "warnable_ceiling": 0.946429,
+       "notifications": {
+        "true": 50,
+        "false": 255,
+        "outcome_unknown": 1
+       },
+       "monitored_days": 255.020833,
+       "fa_per_day": 0.999918,
+       "alert_precision": 0.163934,
+       "lead_min": {
+        "median": 45.0,
+        "q25": 18.75,
+        "q75": 60.0,
+        "share_ge_30": 0.74
+       },
+       "abstention": {
+        "readings": 24501,
+        "insufficient_data_share": 0.00853,
+        "warnable_episodes_without_forecast_in_window": 0
+       },
+       "per_patient_distribution": {
+        "patients": 22,
+        "patients_with_episodes": 13,
+        "sensitivity_q25_q50_q75": [
+         0.857143,
+         1.0,
+         1.0
+        ],
+        "fa_per_day_q25_q50_q75": [
+         0.440384,
+         0.702134,
+         1.513589
+        ]
+       }
+      },
+      "patient_weighted_sensitivity": 0.920766,
+      "window": {
+       "log_loss": 0.030354,
+       "brier": 0.007415,
+       "auprc": 0.243715,
+       "base_rate": 0.008625
+      },
+      "calibration": {
+       "ece": 0.003469,
+       "slope": 1.019222,
+       "intercept": -0.372242
+      },
+      "reliability": [
+       {
+        "n": 2366,
+        "mean_p": 0.000502,
+        "mean_y": 0.0
+       },
+       {
+        "n": 2365,
+        "mean_p": 0.000636,
+        "mean_y": 0.0
+       },
+       {
+        "n": 2365,
+        "mean_p": 0.000742,
+        "mean_y": 0.0
+       },
+       {
+        "n": 2365,
+        "mean_p": 0.000866,
+        "mean_y": 0.0
+       },
+       {
+        "n": 2365,
+        "mean_p": 0.001037,
+        "mean_y": 0.000846
+       },
+       {
+        "n": 2365,
+        "mean_p": 0.001286,
+        "mean_y": 0.000423
+       },
+       {
+        "n": 2365,
+        "mean_p": 0.001729,
+        "mean_y": 0.000846
+       },
+       {
+        "n": 2365,
+        "mean_p": 0.002819,
+        "mean_y": 0.001268
+       },
+       {
+        "n": 2365,
+        "mean_p": 0.007065,
+        "mean_y": 0.006765
+       },
+       {
+        "n": 2365,
+        "mean_p": 0.104269,
+        "mean_y": 0.07611
+       }
+      ],
+      "unique_values": 23545
+     }
+    },
+    "comparisons": {
+     "C0_M1-M0:sens1": {
+      "point": 0.266898,
+      "ci95": [
+       0.125394,
+       0.390303
+      ],
+      "undefined_resamples": 0
+     },
+     "C0_M1-M0:area": {
+      "point": 0.197,
+      "ci95": [
+       0.084197,
+       0.364775
+      ],
+      "undefined_resamples": 0
+     },
+     "C1_M2-M1:sens1": {
+      "point": 0.017857,
+      "ci95": [
+       -0.020004,
+       0.051325
+      ],
+      "undefined_resamples": 0
+     },
+     "C1_M2-M1:area": {
+      "point": 0.012861,
+      "ci95": [
+       -0.004189,
+       0.022001
+      ],
+      "undefined_resamples": 0
+     },
+     "C1_M2-M1:logloss": {
+      "point": -0.000445,
+      "ci95": [
+       -0.001157,
+       0.00016
+      ],
+      "undefined_resamples": 0
+     },
+     "C2a_M3r-M2:sens1": {
+      "point": -0.017857,
+      "ci95": [
+       -0.083736,
+       0.019725
+      ],
+      "undefined_resamples": 0
+     },
+     "C2a_M3r-M2:area": {
+      "point": -0.011974,
+      "ci95": [
+       -0.023919,
+       -0.00213
+      ],
+      "undefined_resamples": 0
+     },
+     "C2a_M3r-M2:logloss": {
+      "point": 0.00069,
+      "ci95": [
+       0.000206,
+       0.001142
+      ],
+      "undefined_resamples": 0
+     },
+     "C2b_M3-M3r:sens1": {
+      "point": 0.035714,
+      "ci95": [
+       -0.023485,
+       0.112616
+      ],
+      "undefined_resamples": 0
+     },
+     "C2b_M3-M3r:area": {
+      "point": 0.023294,
+      "ci95": [
+       0.004342,
+       0.034565
+      ],
+      "undefined_resamples": 0
+     },
+     "C2b_M3-M3r:logloss": {
+      "point": -0.000969,
+      "ci95": [
+       -0.001746,
+       -0.000172
+      ],
+      "undefined_resamples": 0
+     },
+     "preview_M3-M2:sens1": {
+      "point": 0.017857,
+      "ci95": [
+       -0.036626,
+       0.065877
+      ],
+      "undefined_resamples": 0
+     },
+     "preview_M3-M2:area": {
+      "point": 0.01132,
+      "ci95": [
+       -0.00838,
+       0.022465
+      ],
+      "undefined_resamples": 0
+     },
+     "preview_M3-M2:logloss": {
+      "point": -0.000278,
+      "ci95": [
+       -0.00114,
+       0.000618
+      ],
+      "undefined_resamples": 0
+     },
+     "PB8_M3compact-M3:sens1": {
+      "point": 0.0,
+      "ci95": [
+       -0.047779,
+       0.035389
+      ],
+      "undefined_resamples": 0
+     },
+     "PB8_M3compact-M3:area": {
+      "point": -0.000328,
+      "ci95": [
+       -0.010531,
+       0.016918
+      ],
+      "undefined_resamples": 0
+     },
+     "PB8_M3compact-M3:logloss": {
+      "point": 4.3e-05,
+      "ci95": [
+       -0.000378,
+       0.00057
+      ],
+      "undefined_resamples": 0
+     },
+     "PB6_M1pb6-M1:sens1": {
+      "point": 0.0,
+      "ci95": [
+       -0.035889,
+       0.10836
+      ],
+      "undefined_resamples": 0
+     },
+     "PB6_M1pb6-M1:area": {
+      "point": 0.009314,
+      "ci95": [
+       -0.026213,
+       0.030358
+      ],
+      "undefined_resamples": 0
+     },
+     "PB6_M1pb6-M1:logloss": {
+      "point": -8e-06,
+      "ci95": [
+       -0.001321,
+       0.001328
+      ],
+      "undefined_resamples": 0
+     }
+    },
+    "intervals": {
+     "M0:sens1": {
+      "point": 0.625959,
+      "ci95": [
+       0.490986,
+       0.781543
+      ],
+      "undefined_resamples": 0
+     },
+     "M0:area": {
+      "point": 0.69141,
+      "ci95": [
+       0.544642,
+       0.81529
+      ],
+      "undefined_resamples": 0
+     },
+     "M1:logloss": {
+      "point": 0.030362,
+      "ci95": [
+       0.018141,
+       0.043286
+      ],
+      "undefined_resamples": 0
+     },
+     "M1:sens1": {
+      "point": 0.892857,
+      "ci95": [
+       0.770183,
+       0.994231
+      ],
+      "undefined_resamples": 0
+     },
+     "M1:area": {
+      "point": 0.888409,
+      "ci95": [
+       0.80173,
+       0.962282
+      ],
+      "undefined_resamples": 0
+     },
+     "M2:logloss": {
+      "point": 0.029918,
+      "ci95": [
+       0.017595,
+       0.04299
+      ],
+      "undefined_resamples": 0
+     },
+     "M2:sens1": {
+      "point": 0.910714,
+      "ci95": [
+       0.78105,
+       0.994231
+      ],
+      "undefined_resamples": 0
+     },
+     "M2:area": {
+      "point": 0.901271,
+      "ci95": [
+       0.816418,
+       0.967853
+      ],
+      "undefined_resamples": 0
+     },
+     "M3r:logloss": {
+      "point": 0.030608,
+      "ci95": [
+       0.018382,
+       0.043782
+      ],
+      "undefined_resamples": 0
+     },
+     "M3r:sens1": {
+      "point": 0.892857,
+      "ci95": [
+       0.774009,
+       0.971855
+      ],
+      "undefined_resamples": 0
+     },
+     "M3r:area": {
+      "point": 0.889296,
+      "ci95": [
+       0.805049,
+       0.957779
+      ],
+      "undefined_resamples": 0
+     },
+     "M3:logloss": {
+      "point": 0.029639,
+      "ci95": [
+       0.017618,
+       0.042437
+      ],
+      "undefined_resamples": 0
+     },
+     "M3:sens1": {
+      "point": 0.928571,
+      "ci95": [
+       0.809474,
+       0.994886
+      ],
+      "undefined_resamples": 0
+     },
+     "M3:area": {
+      "point": 0.91259,
+      "ci95": [
+       0.832648,
+       0.976494
+      ],
+      "undefined_resamples": 0
+     },
+     "M3_compact:logloss": {
+      "point": 0.029682,
+      "ci95": [
+       0.017482,
+       0.042892
+      ],
+      "undefined_resamples": 0
+     },
+     "M3_compact:sens1": {
+      "point": 0.928571,
+      "ci95": [
+       0.825365,
+       0.994886
+      ],
+      "undefined_resamples": 0
+     },
+     "M3_compact:area": {
+      "point": 0.912263,
+      "ci95": [
+       0.839883,
+       0.97729
+      ],
+      "undefined_resamples": 0
+     },
+     "M1_pb6:logloss": {
+      "point": 0.030354,
+      "ci95": [
+       0.01836,
+       0.042817
+      ],
+      "undefined_resamples": 0
+     },
+     "M1_pb6:sens1": {
+      "point": 0.892857,
+      "ci95": [
+       0.779827,
+       0.995982
+      ],
+      "undefined_resamples": 0
+     },
+     "M1_pb6:area": {
+      "point": 0.897724,
+      "ci95": [
+       0.824919,
+       0.964658
+      ],
+      "undefined_resamples": 0
+     }
+    },
+    "patients": 22,
+    "episodes": 56
+   },
+   "all": {
+    "models": {
+     "M0": {
+      "sens_at_1fa": 0.609552,
+      "tau_alert": -52.2,
+      "budget_not_reached": false,
+      "partial_area": 0.680917,
+      "non_monotone_fa_steps": 0,
+      "grid_points": 283,
+      "operating_point": {
+       "tau": -52.2,
+       "strict": true,
+       "episodes": 117,
+       "hits": 71,
+       "sensitivity": 0.606838,
+       "missed_episode_rate": 0.393162,
+       "warnable_episodes": 106,
+       "warnable_ceiling": 0.905983,
+       "notifications": {
+        "true": 66,
+        "false": 346,
+        "outcome_unknown": 2
+       },
+       "monitored_days": 348.302083,
+       "fa_per_day": 0.993391,
+       "alert_precision": 0.160194,
+       "lead_min": {
+        "median": 30.0,
+        "q25": 30.0,
+        "q75": 45.0,
+        "share_ge_30": 0.760563
+       },
+       "abstention": {
+        "readings": 33464,
+        "insufficient_data_share": 0.007859,
+        "warnable_episodes_without_forecast_in_window": 0
+       },
+       "per_patient_distribution": {
+        "patients": 30,
+        "patients_with_episodes": 18,
+        "sensitivity_q25_q50_q75": [
+         0.35,
+         0.5,
+         0.653846
+        ],
+        "fa_per_day_q25_q50_q75": [
+         0.355419,
+         0.889345,
+         1.781575
+        ]
+       }
+      },
+      "patient_weighted_sensitivity": 0.517486
+     },
+     "M1": {
+      "sens_at_1fa": 0.846154,
+      "tau_alert": 0.10741,
+      "budget_not_reached": false,
+      "partial_area": 0.846215,
+      "non_monotone_fa_steps": 0,
+      "grid_points": 31326,
+      "operating_point": {
+       "tau": 0.10741,
+       "strict": false,
+       "episodes": 117,
+       "hits": 99,
+       "sensitivity": 0.846154,
+       "missed_episode_rate": 0.153846,
+       "warnable_episodes": 106,
+       "warnable_ceiling": 0.905983,
+       "notifications": {
+        "true": 99,
+        "false": 348,
+        "outcome_unknown": 2
+       },
+       "monitored_days": 348.302083,
+       "fa_per_day": 0.999133,
+       "alert_precision": 0.221477,
+       "lead_min": {
+        "median": 45.0,
+        "q25": 30.0,
+        "q75": 60.0,
+        "share_ge_30": 0.777778
+       },
+       "abstention": {
+        "readings": 33464,
+        "insufficient_data_share": 0.007859,
+        "warnable_episodes_without_forecast_in_window": 0
+       },
+       "per_patient_distribution": {
+        "patients": 30,
+        "patients_with_episodes": 18,
+        "sensitivity_q25_q50_q75": [
+         0.75,
+         0.919643,
+         1.0
+        ],
+        "fa_per_day_q25_q50_q75": [
+         0.162232,
+         0.62298,
+         1.569715
+        ]
+       }
+      },
+      "patient_weighted_sensitivity": 0.829716,
+      "window": {
+       "log_loss": 0.040037,
+       "brier": 0.010271,
+       "auprc": 0.307478,
+       "base_rate": 0.012879
+      },
+      "calibration": {
+       "ece": 0.001147,
+       "slope": 1.012819,
+       "intercept": 0.081176
+      },
+      "reliability": [
+       {
+        "n": 3130,
+        "mean_p": 0.00037,
+        "mean_y": 0.0
+       },
+       {
+        "n": 3130,
+        "mean_p": 0.000503,
+        "mean_y": 0.000319
+       },
+       {
+        "n": 3129,
+        "mean_p": 0.000627,
+        "mean_y": 0.000959
+       },
+       {
+        "n": 3129,
+        "mean_p": 0.00076,
+        "mean_y": 0.0
+       },
+       {
+        "n": 3129,
+        "mean_p": 0.000914,
+        "mean_y": 0.000959
+       },
+       {
+        "n": 3129,
+        "mean_p": 0.001137,
+        "mean_y": 0.000959
+       },
+       {
+        "n": 3129,
+        "mean_p": 0.001559,
+        "mean_y": 0.00032
+       },
+       {
+        "n": 3129,
+        "mean_p": 0.002705,
+        "mean_y": 0.003516
+       },
+       {
+        "n": 3129,
+        "mean_p": 0.007821,
+        "mean_y": 0.007351
+       },
+       {
+        "n": 3129,
+        "mean_p": 0.107329,
+        "mean_y": 0.114414
+       }
+      ],
+      "unique_values": 31201
+     },
+     "M2": {
+      "sens_at_1fa": 0.846154,
+      "tau_alert": 0.099257,
+      "budget_not_reached": false,
+      "partial_area": 0.854081,
+      "non_monotone_fa_steps": 0,
+      "grid_points": 31298,
+      "operating_point": {
+       "tau": 0.099257,
+       "strict": false,
+       "episodes": 117,
+       "hits": 99,
+       "sensitivity": 0.846154,
+       "missed_episode_rate": 0.153846,
+       "warnable_episodes": 106,
+       "warnable_ceiling": 0.905983,
+       "notifications": {
+        "true": 99,
+        "false": 348,
+        "outcome_unknown": 2
+       },
+       "monitored_days": 348.302083,
+       "fa_per_day": 0.999133,
+       "alert_precision": 0.221477,
+       "lead_min": {
+        "median": 45.0,
+        "q25": 30.0,
+        "q75": 60.0,
+        "share_ge_30": 0.79798
+       },
+       "abstention": {
+        "readings": 33464,
+        "insufficient_data_share": 0.007859,
+        "warnable_episodes_without_forecast_in_window": 0
+       },
+       "per_patient_distribution": {
+        "patients": 30,
+        "patients_with_episodes": 18,
+        "sensitivity_q25_q50_q75": [
+         0.75,
+         0.919643,
+         1.0
+        ],
+        "fa_per_day_q25_q50_q75": [
+         0.179563,
+         0.612026,
+         1.514571
+        ]
+       }
+      },
+      "patient_weighted_sensitivity": 0.829716,
+      "window": {
+       "log_loss": 0.039441,
+       "brier": 0.010147,
+       "auprc": 0.315531,
+       "base_rate": 0.012879
+      },
+      "calibration": {
+       "ece": 0.001314,
+       "slope": 1.028458,
+       "intercept": 0.129314
+      },
+      "reliability": [
+       {
+        "n": 3130,
+        "mean_p": 0.000437,
+        "mean_y": 0.0
+       },
+       {
+        "n": 3130,
+        "mean_p": 0.000584,
+        "mean_y": 0.0
+       },
+       {
+        "n": 3129,
+        "mean_p": 0.000687,
+        "mean_y": 0.0
+       },
+       {
+        "n": 3129,
+        "mean_p": 0.0008,
+        "mean_y": 0.000959
+       },
+       {
+        "n": 3129,
+        "mean_p": 0.000954,
+        "mean_y": 0.001278
+       },
+       {
+        "n": 3129,
+        "mean_p": 0.001185,
+        "mean_y": 0.00032
+       },
+       {
+        "n": 3129,
+        "mean_p": 0.001574,
+        "mean_y": 0.000959
+       },
+       {
+        "n": 3129,
+        "mean_p": 0.002538,
+        "mean_y": 0.002237
+       },
+       {
+        "n": 3129,
+        "mean_p": 0.007184,
+        "mean_y": 0.008949
+       },
+       {
+        "n": 3129,
+        "mean_p": 0.106694,
+        "mean_y": 0.114094
+       }
+      ],
+      "unique_values": 31175
+     },
+     "M3r": {
+      "sens_at_1fa": 0.837607,
+      "tau_alert": 0.099333,
+      "budget_not_reached": false,
+      "partial_area": 0.849601,
+      "non_monotone_fa_steps": 0,
+      "grid_points": 31207,
+      "operating_point": {
+       "tau": 0.099333,
+       "strict": false,
+       "episodes": 117,
+       "hits": 98,
+       "sensitivity": 0.837607,
+       "missed_episode_rate": 0.162393,
+       "warnable_episodes": 106,
+       "warnable_ceiling": 0.905983,
+       "notifications": {
+        "true": 98,
+        "false": 348,
+        "outcome_unknown": 2
+       },
+       "monitored_days": 348.302083,
+       "fa_per_day": 0.999133,
+       "alert_precision": 0.219731,
+       "lead_min": {
+        "median": 45.0,
+        "q25": 30.0,
+        "q75": 60.0,
+        "share_ge_30": 0.806122
+       },
+       "abstention": {
+        "readings": 33464,
+        "insufficient_data_share": 0.007859,
+        "warnable_episodes_without_forecast_in_window": 0
+       },
+       "per_patient_distribution": {
+        "patients": 30,
+        "patients_with_episodes": 18,
+        "sensitivity_q25_q50_q75": [
+         0.719048,
+         0.919643,
+         1.0
+        ],
+        "fa_per_day_q25_q50_q75": [
+         0.151903,
+         0.675135,
+         1.396516
+        ]
+       }
+      },
+      "patient_weighted_sensitivity": 0.82178,
+      "window": {
+       "log_loss": 0.040408,
+       "brier": 0.010405,
+       "auprc": 0.285546,
+       "base_rate": 0.012879
+      },
+      "calibration": {
+       "ece": 0.001276,
+       "slope": 1.016254,
+       "intercept": 0.076211
+      },
+      "reliability": [
+       {
+        "n": 3130,
+        "mean_p": 0.000463,
+        "mean_y": 0.0
+       },
+       {
+        "n": 3130,
+        "mean_p": 0.00064,
+        "mean_y": 0.0
+       },
+       {
+        "n": 3129,
+        "mean_p": 0.000779,
+        "mean_y": 0.0
+       },
+       {
+        "n": 3129,
+        "mean_p": 0.000926,
+        "mean_y": 0.0
+       },
+       {
+        "n": 3129,
+        "mean_p": 0.001122,
+        "mean_y": 0.001598
+       },
+       {
+        "n": 3129,
+        "mean_p": 0.001429,
+        "mean_y": 0.001278
+       },
+       {
+        "n": 3129,
+        "mean_p": 0.001961,
+        "mean_y": 0.000639
+       },
+       {
+        "n": 3129,
+        "mean_p": 0.002993,
+        "mean_y": 0.003835
+       },
+       {
+        "n": 3129,
+        "mean_p": 0.007596,
+        "mean_y": 0.007351
+       },
+       {
+        "n": 3129,
+        "mean_p": 0.107181,
+        "mean_y": 0.114094
+       }
+      ],
+      "unique_values": 31083
+     },
+     "M3": {
+      "sens_at_1fa": 0.863248,
+      "tau_alert": 0.099811,
+      "budget_not_reached": false,
+      "partial_area": 0.859803,
+      "non_monotone_fa_steps": 0,
+      "grid_points": 31213,
+      "operating_point": {
+       "tau": 0.099811,
+       "strict": false,
+       "episodes": 117,
+       "hits": 101,
+       "sensitivity": 0.863248,
+       "missed_episode_rate": 0.136752,
+       "warnable_episodes": 106,
+       "warnable_ceiling": 0.905983,
+       "notifications": {
+        "true": 101,
+        "false": 348,
+        "outcome_unknown": 3
+       },
+       "monitored_days": 348.302083,
+       "fa_per_day": 0.999133,
+       "alert_precision": 0.224944,
+       "lead_min": {
+        "median": 45.0,
+        "q25": 30.0,
+        "q75": 60.0,
+        "share_ge_30": 0.792079
+       },
+       "abstention": {
+        "readings": 33464,
+        "insufficient_data_share": 0.007859,
+        "warnable_episodes_without_forecast_in_window": 0
+       },
+       "per_patient_distribution": {
+        "patients": 30,
+        "patients_with_episodes": 18,
+        "sensitivity_q25_q50_q75": [
+         0.848901,
+         1.0,
+         1.0
+        ],
+        "fa_per_day_q25_q50_q75": [
+         0.177541,
+         0.628813,
+         1.513589
+        ]
+       }
+      },
+      "patient_weighted_sensitivity": 0.896383,
+      "window": {
+       "log_loss": 0.039937,
+       "brier": 0.010419,
+       "auprc": 0.285564,
+       "base_rate": 0.012879
+      },
+      "calibration": {
+       "ece": 0.000707,
+       "slope": 1.004459,
+       "intercept": -0.007675
+      },
+      "reliability": [
+       {
+        "n": 3130,
+        "mean_p": 0.00044,
+        "mean_y": 0.0
+       },
+       {
+        "n": 3130,
+        "mean_p": 0.000596,
+        "mean_y": 0.0
+       },
+       {
+        "n": 3129,
+        "mean_p": 0.000722,
+        "mean_y": 0.0
+       },
+       {
+        "n": 3129,
+        "mean_p": 0.000873,
+        "mean_y": 0.00032
+       },
+       {
+        "n": 3129,
+        "mean_p": 0.001088,
+        "mean_y": 0.000959
+       },
+       {
+        "n": 3129,
+        "mean_p": 0.001371,
+        "mean_y": 0.001598
+       },
+       {
+        "n": 3129,
+        "mean_p": 0.001819,
+        "mean_y": 0.000639
+       },
+       {
+        "n": 3129,
+        "mean_p": 0.00283,
+        "mean_y": 0.001918
+       },
+       {
+        "n": 3129,
+        "mean_p": 0.007635,
+        "mean_y": 0.008309
+       },
+       {
+        "n": 3129,
+        "mean_p": 0.113419,
+        "mean_y": 0.115053
+       }
+      ],
+      "unique_values": 31088
+     },
+     "M3_compact": {
+      "sens_at_1fa": 0.871795,
+      "tau_alert": 0.102515,
+      "budget_not_reached": false,
+      "partial_area": 0.858116,
+      "non_monotone_fa_steps": 0,
+      "grid_points": 31265,
+      "operating_point": {
+       "tau": 0.102515,
+       "strict": false,
+       "episodes": 117,
+       "hits": 102,
+       "sensitivity": 0.871795,
+       "missed_episode_rate": 0.128205,
+       "warnable_episodes": 106,
+       "warnable_ceiling": 0.905983,
+       "notifications": {
+        "true": 102,
+        "false": 348,
+        "outcome_unknown": 3
+       },
+       "monitored_days": 348.302083,
+       "fa_per_day": 0.999133,
+       "alert_precision": 0.226667,
+       "lead_min": {
+        "median": 45.0,
+        "q25": 30.0,
+        "q75": 60.0,
+        "share_ge_30": 0.784314
+       },
+       "abstention": {
+        "readings": 33464,
+        "insufficient_data_share": 0.007859,
+        "warnable_episodes_without_forecast_in_window": 0
+       },
+       "per_patient_distribution": {
+        "patients": 30,
+        "patients_with_episodes": 18,
+        "sensitivity_q25_q50_q75": [
+         0.848901,
+         1.0,
+         1.0
+        ],
+        "fa_per_day_q25_q50_q75": [
+         0.182414,
+         0.612026,
+         1.646058
+        ]
+       }
+      },
+      "patient_weighted_sensitivity": 0.903327,
+      "window": {
+       "log_loss": 0.039552,
+       "brier": 0.010254,
+       "auprc": 0.30616,
+       "base_rate": 0.012879
+      },
+      "calibration": {
+       "ece": 0.00096,
+       "slope": 1.026821,
+       "intercept": 0.079973
+      },
+      "reliability": [
+       {
+        "n": 3130,
+        "mean_p": 0.000456,
+        "mean_y": 0.0
+       },
+       {
+        "n": 3130,
+        "mean_p": 0.000601,
+        "mean_y": 0.0
+       },
+       {
+        "n": 3129,
+        "mean_p": 0.000719,
+        "mean_y": 0.0
+       },
+       {
+        "n": 3129,
+        "mean_p": 0.00087,
+        "mean_y": 0.000639
+       },
+       {
+        "n": 3129,
+        "mean_p": 0.001093,
+        "mean_y": 0.000959
+       },
+       {
+        "n": 3129,
+        "mean_p": 0.00139,
+        "mean_y": 0.000959
+       },
+       {
+        "n": 3129,
+        "mean_p": 0.001829,
+        "mean_y": 0.001598
+       },
+       {
+        "n": 3129,
+        "mean_p": 0.002832,
+        "mean_y": 0.001598
+       },
+       {
+        "n": 3129,
+        "mean_p": 0.007578,
+        "mean_y": 0.00799
+       },
+       {
+        "n": 3129,
+        "mean_p": 0.109901,
+        "mean_y": 0.115053
+       }
+      ],
+      "unique_values": 31141
+     },
+     "M1_pb6": {
+      "sens_at_1fa": 0.846154,
+      "tau_alert": 0.115423,
+      "budget_not_reached": false,
+      "partial_area": 0.834738,
+      "non_monotone_fa_steps": 0,
+      "grid_points": 31282,
+      "operating_point": {
+       "tau": 0.115423,
+       "strict": false,
+       "episodes": 117,
+       "hits": 99,
+       "sensitivity": 0.846154,
+       "missed_episode_rate": 0.153846,
+       "warnable_episodes": 106,
+       "warnable_ceiling": 0.905983,
+       "notifications": {
+        "true": 99,
+        "false": 348,
+        "outcome_unknown": 2
+       },
+       "monitored_days": 348.302083,
+       "fa_per_day": 0.999133,
+       "alert_precision": 0.221477,
+       "lead_min": {
+        "median": 45.0,
+        "q25": 22.5,
+        "q75": 45.0,
+        "share_ge_30": 0.747475
+       },
+       "abstention": {
+        "readings": 33464,
+        "insufficient_data_share": 0.007859,
+        "warnable_episodes_without_forecast_in_window": 0
+       },
+       "per_patient_distribution": {
+        "patients": 30,
+        "patients_with_episodes": 18,
+        "sensitivity_q25_q50_q75": [
+         0.702564,
+         0.982143,
+         1.0
+        ],
+        "fa_per_day_q25_q50_q75": [
+         0.192499,
+         0.678074,
+         1.514571
+        ]
+       }
+      },
+      "patient_weighted_sensitivity": 0.825549,
+      "window": {
+       "log_loss": 0.041346,
+       "brier": 0.010654,
+       "auprc": 0.259699,
+       "base_rate": 0.012879
+      },
+      "calibration": {
+       "ece": 0.000818,
+       "slope": 0.994749,
+       "intercept": -0.009263
+      },
+      "reliability": [
+       {
+        "n": 3130,
+        "mean_p": 0.000466,
+        "mean_y": 0.000319
+       },
+       {
+        "n": 3130,
+        "mean_p": 0.000617,
+        "mean_y": 0.000639
+       },
+       {
+        "n": 3129,
+        "mean_p": 0.000732,
+        "mean_y": 0.0
+       },
+       {
+        "n": 3129,
+        "mean_p": 0.000866,
+        "mean_y": 0.0
+       },
+       {
+        "n": 3129,
+        "mean_p": 0.001048,
+        "mean_y": 0.001278
+       },
+       {
+        "n": 3129,
+        "mean_p": 0.00132,
+        "mean_y": 0.000639
+       },
+       {
+        "n": 3129,
+        "mean_p": 0.001821,
+        "mean_y": 0.000639
+       },
+       {
+        "n": 3129,
+        "mean_p": 0.003115,
+        "mean_y": 0.002876
+       },
+       {
+        "n": 3129,
+        "mean_p": 0.008034,
+        "mean_y": 0.010227
+       },
+       {
+        "n": 3129,
+        "mean_p": 0.110285,
+        "mean_y": 0.112176
+       }
+      ],
+      "unique_values": 31157
+     }
+    },
+    "comparisons": {
+     "C0_M1-M0:sens1": {
+      "point": 0.236602,
+      "ci95": [
+       0.091203,
+       0.34824
+      ],
+      "undefined_resamples": 0
+     },
+     "C0_M1-M0:area": {
+      "point": 0.165298,
+      "ci95": [
+       0.064267,
+       0.264427
+      ],
+      "undefined_resamples": 0
+     },
+     "C1_M2-M1:sens1": {
+      "point": 0.0,
+      "ci95": [
+       -0.019505,
+       0.049672
+      ],
+      "undefined_resamples": 0
+     },
+     "C1_M2-M1:area": {
+      "point": 0.007866,
+      "ci95": [
+       -0.002316,
+       0.01938
+      ],
+      "undefined_resamples": 0
+     },
+     "C1_M2-M1:logloss": {
+      "point": -0.000596,
+      "ci95": [
+       -0.001389,
+       0.000186
+      ],
+      "undefined_resamples": 0
+     },
+     "C2a_M3r-M2:sens1": {
+      "point": -0.008547,
+      "ci95": [
+       -0.059238,
+       0.015763
+      ],
+      "undefined_resamples": 0
+     },
+     "C2a_M3r-M2:area": {
+      "point": -0.00448,
+      "ci95": [
+       -0.018294,
+       0.00204
+      ],
+      "undefined_resamples": 0
+     },
+     "C2a_M3r-M2:logloss": {
+      "point": 0.000967,
+      "ci95": [
+       0.000382,
+       0.00196
+      ],
+      "undefined_resamples": 0
+     },
+     "C2b_M3-M3r:sens1": {
+      "point": 0.025641,
+      "ci95": [
+       -0.028809,
+       0.072546
+      ],
+      "undefined_resamples": 0
+     },
+     "C2b_M3-M3r:area": {
+      "point": 0.010202,
+      "ci95": [
+       -0.007008,
+       0.020816
+      ],
+      "undefined_resamples": 0
+     },
+     "C2b_M3-M3r:logloss": {
+      "point": -0.000471,
+      "ci95": [
+       -0.001558,
+       0.001218
+      ],
+      "undefined_resamples": 0
+     },
+     "preview_M3-M2:sens1": {
+      "point": 0.017094,
+      "ci95": [
+       -0.02915,
+       0.049688
+      ],
+      "undefined_resamples": 0
+     },
+     "preview_M3-M2:area": {
+      "point": 0.005722,
+      "ci95": [
+       -0.024403,
+       0.010662
+      ],
+      "undefined_resamples": 0
+     },
+     "preview_M3-M2:logloss": {
+      "point": 0.000496,
+      "ci95": [
+       -0.000444,
+       0.002319
+      ],
+      "undefined_resamples": 0
+     },
+     "PB8_M3compact-M3:sens1": {
+      "point": 0.008547,
+      "ci95": [
+       -0.04101,
+       0.045268
+      ],
+      "undefined_resamples": 0
+     },
+     "PB8_M3compact-M3:area": {
+      "point": -0.001687,
+      "ci95": [
+       -0.01218,
+       0.017098
+      ],
+      "undefined_resamples": 0
+     },
+     "PB8_M3compact-M3:logloss": {
+      "point": -0.000384,
+      "ci95": [
+       -0.001482,
+       0.000309
+      ],
+      "undefined_resamples": 0
+     },
+     "PB6_M1pb6-M1:sens1": {
+      "point": 0.0,
+      "ci95": [
+       -0.056967,
+       0.059255
+      ],
+      "undefined_resamples": 0
+     },
+     "PB6_M1pb6-M1:area": {
+      "point": -0.011477,
+      "ci95": [
+       -0.0555,
+       0.021342
+      ],
+      "undefined_resamples": 0
+     },
+     "PB6_M1pb6-M1:logloss": {
+      "point": 0.001309,
+      "ci95": [
+       -0.00128,
+       0.005542
+      ],
+      "undefined_resamples": 0
+     }
+    },
+    "intervals": {
+     "M0:sens1": {
+      "point": 0.609552,
+      "ci95": [
+       0.442925,
+       0.824209
+      ],
+      "undefined_resamples": 0
+     },
+     "M0:area": {
+      "point": 0.680917,
+      "ci95": [
+       0.507351,
+       0.845085
+      ],
+      "undefined_resamples": 0
+     },
+     "M1:logloss": {
+      "point": 0.040037,
+      "ci95": [
+       0.020705,
+       0.063558
+      ],
+      "undefined_resamples": 0
+     },
+     "M1:sens1": {
+      "point": 0.846154,
+      "ci95": [
+       0.68006,
+       0.935565
+      ],
+      "undefined_resamples": 0
+     },
+     "M1:area": {
+      "point": 0.846215,
+      "ci95": [
+       0.708899,
+       0.930668
+      ],
+      "undefined_resamples": 0
+     },
+     "M2:logloss": {
+      "point": 0.039441,
+      "ci95": [
+       0.020358,
+       0.062535
+      ],
+      "undefined_resamples": 0
+     },
+     "M2:sens1": {
+      "point": 0.846154,
+      "ci95": [
+       0.719494,
+       0.94685
+      ],
+      "undefined_resamples": 0
+     },
+     "M2:area": {
+      "point": 0.854081,
+      "ci95": [
+       0.729454,
+       0.934163
+      ],
+      "undefined_resamples": 0
+     },
+     "M3r:logloss": {
+      "point": 0.040408,
+      "ci95": [
+       0.020943,
+       0.063414
+      ],
+      "undefined_resamples": 0
+     },
+     "M3r:sens1": {
+      "point": 0.837607,
+      "ci95": [
+       0.698733,
+       0.94875
+      ],
+      "undefined_resamples": 0
+     },
+     "M3r:area": {
+      "point": 0.849601,
+      "ci95": [
+       0.711231,
+       0.935082
+      ],
+      "undefined_resamples": 0
+     },
+     "M3:logloss": {
+      "point": 0.039937,
+      "ci95": [
+       0.020017,
+       0.061861
+      ],
+      "undefined_resamples": 0
+     },
+     "M3:sens1": {
+      "point": 0.863248,
+      "ci95": [
+       0.699622,
+       0.953434
+      ],
+      "undefined_resamples": 0
+     },
+     "M3:area": {
+      "point": 0.859803,
+      "ci95": [
+       0.723535,
+       0.940118
+      ],
+      "undefined_resamples": 0
+     },
+     "M3_compact:logloss": {
+      "point": 0.039552,
+      "ci95": [
+       0.019904,
+       0.062002
+      ],
+      "undefined_resamples": 0
+     },
+     "M3_compact:sens1": {
+      "point": 0.871795,
+      "ci95": [
+       0.70507,
+       0.942544
+      ],
+      "undefined_resamples": 0
+     },
+     "M3_compact:area": {
+      "point": 0.858116,
+      "ci95": [
+       0.727694,
+       0.940559
+      ],
+      "undefined_resamples": 0
+     },
+     "M1_pb6:logloss": {
+      "point": 0.041346,
+      "ci95": [
+       0.020819,
+       0.067702
+      ],
+      "undefined_resamples": 0
+     },
+     "M1_pb6:sens1": {
+      "point": 0.846154,
+      "ci95": [
+       0.668695,
+       0.933901
+      ],
+      "undefined_resamples": 0
+     },
+     "M1_pb6:area": {
+      "point": 0.834738,
+      "ci95": [
+       0.710306,
+       0.914722
+      ],
+      "undefined_resamples": 0
+     }
+    },
+    "patients": 30,
+    "episodes": 117
+   }
+  },
+  "pb1_calibration": {
+   "methods": {
+    "raw": {
+     "log_loss": 0.040065,
+     "brier": 0.010216,
+     "ece": 0.002114,
+     "slope": 0.934674,
+     "intercept": 0.05222,
+     "unique_values": 31201
+    },
+    "isotonic": {
+     "log_loss": 0.042273,
+     "brier": 0.010357,
+     "ece": 0.001396,
+     "slope": 0.938241,
+     "intercept": -0.101282,
+     "unique_values": 149
+    },
+    "platt": {
+     "log_loss": 0.040037,
+     "brier": 0.010271,
+     "ece": 0.001147,
+     "slope": 1.012819,
+     "intercept": 0.081176,
+     "unique_values": 31201
+    },
+    "isotonic_interp": {
+     "log_loss": 0.04136,
+     "brier": 0.010359,
+     "ece": 0.000872,
+     "slope": 0.933018,
+     "intercept": -0.110738,
+     "unique_values": 25880
+    }
+   },
+   "decision": "platt",
+   "band_rule": {
+    "calibrator": "platt",
+    "m1_heldout_slope": 1.012819,
+    "ui": "percentages"
+   }
+  },
+  "pb6": {
+   "m1_logloss_unaffected": 0.029769,
+   "m1_pb6_logloss_unaffected": 0.029491,
+   "relative_improvement": 0.00935,
+   "decision": "KEEP canonical training",
+   "eligible_rows_excluded_floor_window": 1,
+   "recordings_excluded_cbg_contradiction": 2,
+   "contradicted_recordings": 2,
+   "affected_patients": 2,
+   "eligible_rows_excluded_total": 876
+  },
+  "pb8": {
+   "m3_logloss_all": 0.039937,
+   "m3_compact_logloss_all": 0.039552,
+   "m3_sens1_treated": 0.928571,
+   "m3_compact_sens1_treated": 0.928571,
+   "decision": "M3_baseline retained"
+  },
+  "pb7": "NOT RUN: 0 glinide patients in T (identical to baseline by construction)",
+  "diagnostic_simple_rules": {
+   "treated:level_-cgm": {
+    "sens_at_1fa": 0.911296,
+    "tau_alert": -81.0
+   },
+   "treated:level15_-(cgm+15*slope30)": {
+    "sens_at_1fa": 0.917872,
+    "tau_alert": -77.4
+   },
+   "all:level_-cgm": {
+    "sens_at_1fa": 0.8564,
+    "tau_alert": -81.0
+   },
+   "all:level15_-(cgm+15*slope30)": {
+    "sens_at_1fa": 0.873063,
+    "tau_alert": -77.4
+   }
+  },
+  "overfitting": {
+   "M1": {
+    "train_logloss": [
+     0.02524,
+     0.026896,
+     0.01761,
+     0.020192,
+     0.023492
+    ],
+    "heldout_raw_logloss": [
+     0.027293,
+     0.012509,
+     0.081693,
+     0.060373,
+     0.044178
+    ]
+   },
+   "M2": {
+    "train_logloss": [
+     0.024184,
+     0.025388,
+     0.016623,
+     0.01868,
+     0.022265
+    ],
+    "heldout_raw_logloss": [
+     0.027442,
+     0.013002,
+     0.081029,
+     0.05917,
+     0.042757
+    ]
+   },
+   "M3r": {
+    "train_logloss": [
+     0.023181,
+     0.024541,
+     0.016355,
+     0.018379,
+     0.021743
+    ],
+    "heldout_raw_logloss": [
+     0.027864,
+     0.01327,
+     0.081717,
+     0.060819,
+     0.045115
+    ]
+   },
+   "M3": {
+    "train_logloss": [
+     0.023111,
+     0.024329,
+     0.016053,
+     0.018036,
+     0.021225
+    ],
+    "heldout_raw_logloss": [
+     0.026566,
+     0.013399,
+     0.080033,
+     0.06353,
+     0.042871
+    ]
+   },
+   "M3_compact": {
+    "train_logloss": [
+     0.022855,
+     0.024451,
+     0.015994,
+     0.018334,
+     0.021534
+    ],
+    "heldout_raw_logloss": [
+     0.027214,
+     0.01314,
+     0.080923,
+     0.060539,
+     0.04224
+    ]
+   },
+   "M1_pb6": {
+    "train_logloss": [
+     0.017234,
+     0.019685,
+     0.014584,
+     0.013877,
+     0.019251
+    ],
+    "heldout_raw_logloss": [
+     0.0273,
+     0.012901,
+     0.081869,
+     0.057858,
+     0.052472
+    ]
+   }
+  },
+  "grouped_shap_mean_abs": {
+   "M1": {
+    "G3_cgm_history": 1.227454,
+    "G1_cgm_level": 0.876155,
+    "G2_cgm_trend": 0.326078,
+    "G4_time": 0.238066
+   },
+   "M2": {
+    "G3_cgm_history": 1.01253,
+    "G1_cgm_level": 0.883771,
+    "G5_static_context": 0.470632,
+    "G2_cgm_trend": 0.286357,
+    "G4_time": 0.186739,
+    "G6_meal_timing": 0.078623
+   },
+   "M3r": {
+    "G3_cgm_history": 0.99799,
+    "G1_cgm_level": 0.855228,
+    "G5_static_context": 0.394681,
+    "G7_raw_medication_timing": 0.270554,
+    "G2_cgm_trend": 0.267995,
+    "G4_time": 0.195226,
+    "G6_meal_timing": 0.069401,
+    "G78_csii_iv_flags": 0.021504
+   },
+   "M3": {
+    "G3_cgm_history": 0.960339,
+    "G1_cgm_level": 0.887757,
+    "G8_medication_exposure": 0.395639,
+    "G5_static_context": 0.339351,
+    "G2_cgm_trend": 0.250167,
+    "G4_time": 0.203346,
+    "G6_meal_timing": 0.068291,
+    "G78_csii_iv_flags": 0.013185
+   },
+   "M3_compact": {
+    "G3_cgm_history": 0.949017,
+    "G1_cgm_level": 0.889234,
+    "G5_static_context": 0.357977,
+    "G8_medication_exposure": 0.347353,
+    "G2_cgm_trend": 0.270758,
+    "G4_time": 0.183052,
+    "G6_meal_timing": 0.071775,
+    "G78_csii_iv_flags": 0.017555
+   },
+   "M1_pb6": {
+    "G3_cgm_history": 1.267804,
+    "G1_cgm_level": 0.835911,
+    "G2_cgm_trend": 0.386652,
+    "G4_time": 0.198188
+   }
+  },
+  "inert_columns": {
+   "M1": [
+    "cgm_lag15_missing",
+    "cgm_lag30_missing",
+    "cgm_lag45_missing",
+    "cgm_lag60_missing",
+    "cgm_min_since_low70_missing",
+    "cgm_slope30_missing",
+    "cgm_slope60_missing"
+   ],
+   "M2": [
+    "age_y_missing",
+    "bmi_missing",
+    "cgm_lag15_missing",
+    "cgm_lag30_missing",
+    "cgm_lag45_missing",
+    "cgm_lag60_missing",
+    "cgm_min_since_low70_missing",
+    "cgm_slope30_missing",
+    "cgm_slope60_missing",
+    "diabetes_duration_y_missing",
+    "meal_none_logged",
+    "rx_glinide",
+    "rx_glp1",
+    "rx_missing",
+    "rx_sglt2",
+    "rx_tzd",
+    "sex_male_missing",
+    "weight_kg_missing"
+   ],
+   "M3r": [
+    "age_y_missing",
+    "bmi_missing",
+    "cgm_lag15_missing",
+    "cgm_lag30_missing",
+    "cgm_lag45_missing",
+    "cgm_lag60_missing",
+    "cgm_min_since_low70_missing",
+    "cgm_slope30_missing",
+    "cgm_slope60_missing",
+    "diabetes_duration_y_missing",
+    "glinide_dose_24h",
+    "glinide_last_dose",
+    "glinide_min_since_last",
+    "glinide_missing",
+    "glinide_n_24h",
+    "hba1c_mmol_mol_missing",
+    "insulin_basal_missing",
+    "insulin_basal_n_24h",
+    "insulin_bolus_missing",
+    "iv_insulin_recent",
+    "meal_none_logged",
+    "rx_glinide",
+    "rx_glp1",
+    "rx_missing",
+    "rx_premix",
+    "rx_sglt2",
+    "rx_tzd",
+    "sex_male_missing",
+    "su_missing",
+    "su_n_24h",
+    "weight_kg_missing"
+   ],
+   "M3": [
+    "act_glinide",
+    "age_y_missing",
+    "bmi_missing",
+    "cgm_lag15_missing",
+    "cgm_lag30_missing",
+    "cgm_lag45_missing",
+    "cgm_lag60_missing",
+    "cgm_min_since_low70_missing",
+    "cgm_slope30_missing",
+    "cgm_slope60_missing",
+    "diabetes_duration_y_missing",
+    "glinide_p30",
+    "glinide_p60",
+    "iv_insulin_recent",
+    "meal_none_logged",
+    "min_since_glinide",
+    "min_since_glinide_missing",
+    "min_since_insulin_missing",
+    "min_since_su_missing",
+    "quality_glinide",
+    "quality_sulfonylurea",
+    "rx_glinide",
+    "rx_glp1",
+    "rx_missing",
+    "rx_premix",
+    "rx_sglt2",
+    "rx_su",
+    "rx_tzd",
+    "sex_male_missing",
+    "weight_kg_missing"
+   ],
+   "M3_compact": [
+    "act_glinide",
+    "age_y_missing",
+    "bmi_missing",
+    "cgm_lag15_missing",
+    "cgm_lag30_missing",
+    "cgm_lag45_missing",
+    "cgm_lag60_missing",
+    "cgm_slope30_missing",
+    "cgm_slope60_missing",
+    "diabetes_duration_y_missing",
+    "egfr_missing",
+    "hba1c_mmol_mol_missing",
+    "iv_insulin_recent",
+    "meal_none_logged",
+    "min_since_glinide",
+    "min_since_glinide_missing",
+    "min_since_insulin_missing",
+    "min_since_su_missing",
+    "quality_glinide",
+    "rx_glinide",
+    "rx_glp1",
+    "rx_missing",
+    "rx_premix",
+    "rx_sglt2",
+    "rx_su",
+    "rx_tzd",
+    "sex_male_missing",
+    "weight_kg_missing"
+   ],
+   "M1_pb6": [
+    "cgm_lag15_missing",
+    "cgm_lag30_missing",
+    "cgm_lag45_missing",
+    "cgm_lag60_missing",
+    "cgm_slope30_missing",
+    "cgm_slope60_missing"
+   ]
+  },
+  "oof_sha256": "30d78547ed9bc71bf040e49793f75fdb71646fb5aef2c824a00bd47eb0603864"
+ },
+ "timing_s": {
+  "dev_data_s": 6.17,
+  "tuning_s": 5.13,
+  "ladder_fits_s": 40.66,
+  "evaluation_s": 125.35
+ }
+}
