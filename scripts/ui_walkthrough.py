@@ -37,6 +37,9 @@ def main() -> None:
         page = br.new_page(viewport={"width": 1440, "height": 900})
         page.goto(BASE + "/")
         page.wait_for_timeout(1200)
+        if page.get_by_role("button", name="Change cases").count():  # a replay is loaded
+            page.get_by_role("button", name="Change cases").click()
+        page.get_by_role("button", name="Start replay").wait_for()
         page.screenshot(path=str(OUT / "01_select_cases.png"))
         page.get_by_role("button", name="Start replay").click()
         page.wait_for_selector("[role=table]")
