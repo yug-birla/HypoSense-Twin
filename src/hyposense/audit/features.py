@@ -25,10 +25,11 @@ from __future__ import annotations
 
 import math
 import os
+import sys
 import time
 import tracemalloc
-from collections.abc import Sequence
-from concurrent.futures import ProcessPoolExecutor
+from collections.abc import Callable, Sequence
+from concurrent.futures import Future, ProcessPoolExecutor, as_completed
 from dataclasses import replace
 from typing import Any
 
@@ -37,6 +38,7 @@ import numpy.typing as npt
 import pandas as pd
 
 from hyposense.common.config import load_config
+from hyposense.common.runtime import disable_power_throttling, single_threaded_math_env
 from hyposense.data.dataset import AccessScope, load_dataset
 from hyposense.data.records import Recording
 from hyposense.features.build import META_COLUMNS, RecordingFeatures, build_recording
@@ -61,6 +63,7 @@ _W: dict[str, Any] = {}
 
 
 def _init_worker() -> None:
+    disable_power_throttling()  # S4: Windows EcoQoS confined the workers to the E-cores
     cfg, pharma = load_config(), load_config("pharma.yaml")
     ds = load_dataset(AccessScope.TUNING_ONLY)
     _W["cfg"] = cfg
@@ -429,21 +432,60 @@ def tracker_agreement(
 
 
 # ---------------------------------------------------------------- orchestration
+_T_START = time.perf_counter()
+
+
+def _log(msg: str) -> None:
+    """Progress on stderr (stdout carries the JSON summary)."""
+    print(
+        f"[audit features +{time.perf_counter() - _T_START:7.1f}s] {msg}",
+        file=sys.stderr,
+        flush=True,
+    )
+
+
+def _pmap(
+    pool: ProcessPoolExecutor,
+    fn: Callable[[Any], Any],
+    items: Sequence[Any],
+    phase: str,
+    phases: dict[str, float],
+) -> list[Any]:
+    """pool.map with progress logging. Results come back in INPUT order (deterministic)."""
+    t = time.perf_counter()
+    futs: dict[Future[Any], int] = {pool.submit(fn, it): i for i, it in enumerate(items)}
+    out: list[Any] = [None] * len(items)
+    step = max(1, len(items) // 10)
+    _log(f"{phase}: {len(items)} tasks submitted")
+    for done, f in enumerate(as_completed(futs), start=1):
+        out[futs[f]] = f.result()
+        if done % step == 0 or done == len(items):
+            _log(f"{phase}: {done}/{len(items)} done ({time.perf_counter() - t:.1f}s)")
+    phases[phase] = round(time.perf_counter() - t, 1)
+    return out
+
+
 def run_feature_audit(
     workers: int | None = None, perturbation_sample: int = 300, seed: int = 2026
 ) -> dict[str, Any]:
 
+    global _T_START
+    _T_START = time.perf_counter()
+    throttling_off = disable_power_throttling()
+    single_threaded_math_env()  # inherited by the spawned workers (no BLAS oversubscription)
+    phases: dict[str, float] = {}
     cfg = load_config()
     lc = LabelConfig.from_config(cfg)
     workers = workers or max(1, (os.cpu_count() or 2) - 1)
+    _log(f"start: {workers} workers, power throttling disabled={throttling_off}")
     ds = load_dataset(AccessScope.TUNING_ONLY)
     _init_worker()  # the main process also needs the context (streams, event study)
     keys = sorted(_W["recs"])
     t0 = time.perf_counter()
     with ProcessPoolExecutor(workers, initializer=_init_worker) as pool:
-        build_a = dict(zip(keys, pool.map(task_build, keys), strict=True))
+        build_a = dict(zip(keys, _pmap(pool, task_build, keys, "build_a", phases), strict=True))
         t_build = time.perf_counter() - t0
-        build_b = dict(zip(keys, pool.map(task_build, keys), strict=True))
+        build_b = dict(zip(keys, _pmap(pool, task_build, keys, "build_b", phases), strict=True))
         from hyposense.features.build import to_frame
 
         order = [k for k in keys]
@@ -471,7 +513,7 @@ def run_feature_audit(
         y = np.concatenate(y_parts)
 
         # parity
-        par = list(pool.map(task_parity, keys))
+        par = _pmap(pool, task_parity, keys, "parity", phases)
         parity = {
             "comparisons": sum(p["comparisons"] for p in par),
             "mismatches": sum(p["mismatches"] for p in par),
@@ -486,7 +528,7 @@ def run_feature_audit(
                 ch = idx[c : c + 60]
                 tasks.append((k, rf.ts[ch].tolist(), rf.X[ch]))
         t1 = time.perf_counter()
-        tr = list(pool.map(task_truncation, tasks))
+        tr = _pmap(pool, task_truncation, tasks, "truncation", phases)
         t_trunc = time.perf_counter() - t1
         trunc_feats: dict[str, int] = {}
         for x in tr:
@@ -495,7 +537,7 @@ def run_feature_audit(
         truncation = {
             "comparisons": sum(x["comparisons"] for x in tr),
             "mismatches": sum(x["mismatches"] for x in tr),
-            "mismatching_features": trunc_feats,
+            "mismatching_features": dict(sorted(trunc_feats.items())),
             "wall_seconds": _r(t_trunc, 1),
         }
 
@@ -516,7 +558,7 @@ def run_feature_audit(
             k, i = all_el[p]
             by_key.setdefault(k, []).append(i)
         ptasks = [(k, build_a[k].ts[ix].tolist(), build_a[k].X[ix]) for k, ix in by_key.items()]
-        pres = list(pool.map(task_perturbation, ptasks))
+        pres = _pmap(pool, task_perturbation, ptasks, "perturbation", phases)
         perturbation = {
             kind: {
                 "comparisons": sum(p[kind]["comparisons"] for p in pres),
@@ -525,11 +567,14 @@ def run_feature_audit(
             for kind in PERTURBATIONS
         }
 
+    _log("statistics, redundancy, event study, tracker agreement (main process)")
+    t2 = time.perf_counter()
     streams = {k: _stream(_W["recs"][k]) for k in order}
     stats = feature_statistics(df_a, elig, y, cfg)
     red = redundancy(df_a, elig)
     evs = event_study([streams[k] for k in order], build_a)
     trk = tracker_agreement([_W["recs"][k] for k in order], build_a, lc)
+    phases["statistics"] = round(time.perf_counter() - t2, 1)
 
     # performance (single-threaded per recording, measured inside workers)
     upd = sum(p.seconds["update"] for p in build_a.values())
@@ -573,6 +618,9 @@ def run_feature_audit(
     }
     timing = {
         "workers": workers,
+        "power_throttling_disabled": throttling_off,
+        "phase_wall_seconds": phases,
+        "total_wall_seconds": _r(time.perf_counter() - _T_START, 1),
         "build_wall_seconds": _r(t_build, 1),
         "truncation_wall_seconds": truncation["wall_seconds"],
         "update_us_per_event": _r(upd / nev * 1e6, 1),
