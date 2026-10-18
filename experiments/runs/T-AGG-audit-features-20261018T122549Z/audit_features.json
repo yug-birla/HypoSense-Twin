@@ -1,0 +1,3300 @@
+{
+ "run_id": "T-AGG-audit-features-20261018T122549Z",
+ "started_utc": "2026-10-18T12:15:44+00:00",
+ "finished_utc": "2026-10-18T12:25:49+00:00",
+ "provenance": {
+  "generated_utc": "2026-10-18T12:25:49+00:00",
+  "git": {
+   "commit": "df900314755818a5c779d5f40f8d89db75f02c32",
+   "dirty": false,
+   "dirty_paths": []
+  },
+  "dataset_files_sha256": "5f9d65b4e9233d4ecdd05438e80bb94314290cd5e2d9fdd21e353487cd3cc4ab",
+  "partition_sha256": "ccdcbce02b049992b0ca09bd99a2a5b8c49bcf49940f3a68ed6ca69cd2449578",
+  "config_sha256": "f3abfdf2f47d7b3be5e2a4bb0236e564fdc22d403c6e9c661b2a1cc522e0d766",
+  "feature_spec_version": "1.0.0",
+  "feature_spec_sha256": "82fc54e9b3c7e3ed8638c282be253251c3bdd9b2fe8b0de9b1dda1afc0ac76d1",
+  "drug_dictionary_sha256": "7a948a61c924c36f143546621beb86b3ca6028fda534d3fb364ee45bd1c53319",
+  "pharma_version": "1.0.0",
+  "pharma_sha256": "4a34a789ddab03622cd22717dd9431d94e3345b97856d373b793c46d8e9659dd",
+  "environment": {
+   "hyposense": "0.0.1",
+   "python": "3.11.9",
+   "platform": "Windows-10-10.0.26200-SP0",
+   "packages": {
+    "numpy": "2.4.6",
+    "pandas": "3.0.6",
+    "openpyxl": "3.1.5",
+    "xlrd": "2.0.2",
+    "pyyaml": "6.0.3",
+    "pydantic": "2.14.1",
+    "scikit-learn": "1.9.1",
+    "lightgbm": "4.7.0"
+   },
+   "uv_lock_sha256": "82ba7f45dbb87e3a3c1e25ece7687cbcd14387f8fa7ef04ea6955c251dcfe7da"
+  },
+  "table_sha256": "a5b6ac939c8b956ed161b37fa54aa833046b9d29e16fff8128731c25f5ce806b",
+  "rows": 33464
+ },
+ "results_sha256": "db39f39a28cc93a09a0621e05f5f7626f912369bae56605c466a416e08fdcde4",
+ "deterministic": {
+  "scope": "tuning_only",
+  "recordings": 34,
+  "patients": 30,
+  "readings": 33464,
+  "eligible_rows": 31292,
+  "eligible_positive_rows": 403,
+  "l1_episodes_T": 117,
+  "eligible_rows_with_label_window_overlapping_floor_run": 1,
+  "level_sizes": {
+   "M1": 38,
+   "M2": 72,
+   "M3r": 95,
+   "M3": 100
+  },
+  "table_sha256": "a5b6ac939c8b956ed161b37fa54aa833046b9d29e16fff8128731c25f5ce806b",
+  "determinism_two_builds_identical": true,
+  "parity": {
+   "comparisons": 133856,
+   "mismatches": 0
+  },
+  "truncation": {
+   "comparisons": 31292,
+   "mismatches": 0,
+   "mismatching_features": {}
+  },
+  "perturbation": {
+   "future_cgm": {
+    "comparisons": 300,
+    "mismatches": 0
+   },
+   "future_medication": {
+    "comparisons": 300,
+    "mismatches": 0
+   },
+   "future_meal": {
+    "comparisons": 300,
+    "mismatches": 0
+   },
+   "future_outcome": {
+    "comparisons": 300,
+    "mismatches": 0
+   }
+  },
+  "tracker_vs_label_builder": {
+   "readings": 33464,
+   "mismatches": 0
+  },
+  "metadata_counts": {
+   "sufficient": 32896,
+   "gap_before": 4,
+   "floor": 284,
+   "rapid_change": 4,
+   "warmup": 272,
+   "history_ok": 33248,
+   "sensor_fault_suspected": 146,
+   "in_episode_causal": 1308
+  },
+  "statistics": {
+   "features": {
+    "cgm": {
+     "group": "G1_cgm_level",
+     "n": 31292,
+     "missing_share": 0.0,
+     "zero_share": 0.0,
+     "unique": 227,
+     "min_p1_p5_p25_p50_p75_p95_p99_max": [
+      70.2,
+      73.8,
+      84.6,
+      109.8,
+      135.0,
+      172.8,
+      237.6,
+      286.2,
+      419.4
+     ],
+     "mean": 144.7494,
+     "top_value_share": 0.0205,
+     "patients_with_within_variation": 30,
+     "patients_observed": 30,
+     "within_patient_sd_median": 34.7486,
+     "between_patient_sd_of_means": 25.7521,
+     "univariate_auc": 0.085
+    },
+    "cgm_lag15": {
+     "group": "G1_cgm_level",
+     "n": 31292,
+     "missing_share": 0.0001,
+     "zero_share": 0.0,
+     "unique": 230,
+     "min_p1_p5_p25_p50_p75_p95_p99_max": [
+      64.8,
+      75.6,
+      84.6,
+      109.8,
+      135.0,
+      172.8,
+      237.6,
+      286.2,
+      419.4
+     ],
+     "mean": 144.881,
+     "top_value_share": 0.0206,
+     "patients_with_within_variation": 30,
+     "patients_observed": 30,
+     "within_patient_sd_median": 34.7455,
+     "between_patient_sd_of_means": 25.5867,
+     "univariate_auc": 0.139
+    },
+    "cgm_lag30": {
+     "group": "G1_cgm_level",
+     "n": 31292,
+     "missing_share": 0.0001,
+     "zero_share": 0.0,
+     "unique": 231,
+     "min_p1_p5_p25_p50_p75_p95_p99_max": [
+      64.8,
+      75.6,
+      84.6,
+      109.8,
+      135.0,
+      172.8,
+      237.6,
+      286.2,
+      419.4
+     ],
+     "mean": 144.969,
+     "top_value_share": 0.0207,
+     "patients_with_within_variation": 30,
+     "patients_observed": 30,
+     "within_patient_sd_median": 34.7496,
+     "between_patient_sd_of_means": 25.5133,
+     "univariate_auc": 0.191
+    },
+    "cgm_lag45": {
+     "group": "G1_cgm_level",
+     "n": 31292,
+     "missing_share": 0.0001,
+     "zero_share": 0.0,
+     "unique": 231,
+     "min_p1_p5_p25_p50_p75_p95_p99_max": [
+      64.8,
+      75.6,
+      84.6,
+      109.8,
+      135.0,
+      172.8,
+      237.6,
+      286.2,
+      419.4
+     ],
+     "mean": 145.0118,
+     "top_value_share": 0.0207,
+     "patients_with_within_variation": 30,
+     "patients_observed": 30,
+     "within_patient_sd_median": 34.7636,
+     "between_patient_sd_of_means": 25.5229,
+     "univariate_auc": 0.236
+    },
+    "cgm_lag60": {
+     "group": "G1_cgm_level",
+     "n": 31292,
+     "missing_share": 0.0001,
+     "zero_share": 0.0,
+     "unique": 231,
+     "min_p1_p5_p25_p50_p75_p95_p99_max": [
+      64.8,
+      73.8,
+      84.6,
+      109.8,
+      135.0,
+      172.8,
+      237.6,
+      286.2,
+      419.4
+     ],
+     "mean": 144.9862,
+     "top_value_share": 0.0206,
+     "patients_with_within_variation": 30,
+     "patients_observed": 30,
+     "within_patient_sd_median": 34.7893,
+     "between_patient_sd_of_means": 25.679,
+     "univariate_auc": 0.27
+    },
+    "cgm_m0_proj30": {
+     "group": "G1_cgm_level",
+     "n": 31292,
+     "missing_share": 0.0001,
+     "zero_share": 0.0,
+     "unique": 736,
+     "min_p1_p5_p25_p50_p75_p95_p99_max": [
+      1.8,
+      61.2,
+      77.4,
+      106.2,
+      133.2,
+      172.8,
+      248.4,
+      306.0,
+      459.0
+     ],
+     "mean": 144.5309,
+     "top_value_share": 0.0089,
+     "patients_with_within_variation": 30,
+     "patients_observed": 30,
+     "within_patient_sd_median": 42.8672,
+     "between_patient_sd_of_means": 26.0692,
+     "univariate_auc": 0.059
+    },
+    "cgm_m0_proj60": {
+     "group": "G1_cgm_level",
+     "n": 31292,
+     "missing_share": 0.0001,
+     "zero_share": 0.0001,
+     "unique": 1329,
+     "min_p1_p5_p25_p50_p75_p95_p99_max": [
+      -75.6,
+      32.4,
+      65.43,
+      100.8,
+      133.2,
+      176.4,
+      264.6,
+      340.2,
+      513.0
+     ],
+     "mean": 144.3126,
+     "top_value_share": 0.0066,
+     "patients_with_within_variation": 30,
+     "patients_observed": 30,
+     "within_patient_sd_median": 56.2094,
+     "between_patient_sd_of_means": 26.4565,
+     "univariate_auc": 0.067
+    },
+    "cgm_lag15_missing": {
+     "group": "G1_cgm_level",
+     "n": 31292,
+     "missing_share": 0.0,
+     "zero_share": 0.9999,
+     "unique": 2,
+     "min_p1_p5_p25_p50_p75_p95_p99_max": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      1.0
+     ],
+     "mean": 0.0001,
+     "top_value_share": 0.9999,
+     "patients_with_within_variation": 2,
+     "patients_observed": 30,
+     "within_patient_sd_median": 0.0,
+     "between_patient_sd_of_means": 0.0002,
+     "univariate_auc": 0.5
+    },
+    "cgm_lag30_missing": {
+     "group": "G1_cgm_level",
+     "n": 31292,
+     "missing_share": 0.0,
+     "zero_share": 0.9999,
+     "unique": 2,
+     "min_p1_p5_p25_p50_p75_p95_p99_max": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      1.0
+     ],
+     "mean": 0.0001,
+     "top_value_share": 0.9999,
+     "patients_with_within_variation": 2,
+     "patients_observed": 30,
+     "within_patient_sd_median": 0.0,
+     "between_patient_sd_of_means": 0.0002,
+     "univariate_auc": 0.5
+    },
+    "cgm_lag45_missing": {
+     "group": "G1_cgm_level",
+     "n": 31292,
+     "missing_share": 0.0,
+     "zero_share": 0.9999,
+     "unique": 2,
+     "min_p1_p5_p25_p50_p75_p95_p99_max": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      1.0
+     ],
+     "mean": 0.0001,
+     "top_value_share": 0.9999,
+     "patients_with_within_variation": 2,
+     "patients_observed": 30,
+     "within_patient_sd_median": 0.0,
+     "between_patient_sd_of_means": 0.0002,
+     "univariate_auc": 0.5
+    },
+    "cgm_lag60_missing": {
+     "group": "G1_cgm_level",
+     "n": 31292,
+     "missing_share": 0.0,
+     "zero_share": 0.9999,
+     "unique": 2,
+     "min_p1_p5_p25_p50_p75_p95_p99_max": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      1.0
+     ],
+     "mean": 0.0001,
+     "top_value_share": 0.9999,
+     "patients_with_within_variation": 2,
+     "patients_observed": 30,
+     "within_patient_sd_median": 0.0,
+     "between_patient_sd_of_means": 0.0002,
+     "univariate_auc": 0.5
+    },
+    "cgm_slope30": {
+     "group": "G2_cgm_trend",
+     "n": 31292,
+     "missing_share": 0.0001,
+     "zero_share": 0.0741,
+     "unique": 470,
+     "min_p1_p5_p25_p50_p75_p95_p99_max": [
+      -3.48,
+      -1.38,
+      -0.84,
+      -0.3,
+      0.0,
+      0.24,
+      0.96,
+      1.74,
+      3.96
+     ],
+     "mean": -0.0073,
+     "top_value_share": 0.0741,
+     "patients_with_within_variation": 30,
+     "patients_observed": 30,
+     "within_patient_sd_median": 0.5476,
+     "between_patient_sd_of_means": 0.0474,
+     "univariate_auc": 0.242
+    },
+    "cgm_slope60": {
+     "group": "G2_cgm_trend",
+     "n": 31292,
+     "missing_share": 0.0,
+     "zero_share": 0.0125,
+     "unique": 2309,
+     "min_p1_p5_p25_p50_p75_p95_p99_max": [
+      -3.168,
+      -1.164,
+      -0.72,
+      -0.24,
+      -0.024,
+      0.192,
+      0.816,
+      1.512,
+      3.24
+     ],
+     "mean": -0.0041,
+     "top_value_share": 0.0125,
+     "patients_with_within_variation": 30,
+     "patients_observed": 30,
+     "within_patient_sd_median": 0.4846,
+     "between_patient_sd_of_means": 0.0194,
+     "univariate_auc": 0.24
+    },
+    "cgm_slope120": {
+     "group": "G2_cgm_trend",
+     "n": 31292,
+     "missing_share": 0.0,
+     "zero_share": 0.001,
+     "unique": 7265,
+     "min_p1_p5_p25_p50_p75_p95_p99_max": [
+      -2.696,
+      -0.8922,
+      -0.57,
+      -0.196,
+      -0.008,
+      0.17,
+      0.654,
+      1.098,
+      2.206
+     ],
+     "mean": 0.0023,
+     "top_value_share": 0.001,
+     "patients_with_within_variation": 30,
+     "patients_observed": 30,
+     "within_patient_sd_median": 0.3654,
+     "between_patient_sd_of_means": 0.0404,
+     "univariate_auc": 0.336
+    },
+    "cgm_accel": {
+     "group": "G2_cgm_trend",
+     "n": 31292,
+     "missing_share": 0.0001,
+     "zero_share": 0.0058,
+     "unique": 4777,
+     "min_p1_p5_p25_p50_p75_p95_p99_max": [
+      -2.196,
+      -0.96,
+      -0.516,
+      -0.144,
+      0.0,
+      0.144,
+      0.48,
+      0.852,
+      2.016
+     ],
+     "mean": -0.0032,
+     "top_value_share": 0.0058,
+     "patients_with_within_variation": 30,
+     "patients_observed": 30,
+     "within_patient_sd_median": 0.3053,
+     "between_patient_sd_of_means": 0.0288,
+     "univariate_auc": 0.437
+    },
+    "cgm_n_falling": {
+     "group": "G2_cgm_trend",
+     "n": 31292,
+     "missing_share": 0.0,
+     "zero_share": 0.5329,
+     "unique": 26,
+     "min_p1_p5_p25_p50_p75_p95_p99_max": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      2.0,
+      8.0,
+      13.0,
+      25.0
+     ],
+     "mean": 1.6892,
+     "top_value_share": 0.5329,
+     "patients_with_within_variation": 30,
+     "patients_observed": 30,
+     "within_patient_sd_median": 2.5689,
+     "between_patient_sd_of_means": 0.4632,
+     "univariate_auc": 0.736
+    },
+    "cgm_slope30_missing": {
+     "group": "G2_cgm_trend",
+     "n": 31292,
+     "missing_share": 0.0,
+     "zero_share": 0.9999,
+     "unique": 2,
+     "min_p1_p5_p25_p50_p75_p95_p99_max": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      1.0
+     ],
+     "mean": 0.0001,
+     "top_value_share": 0.9999,
+     "patients_with_within_variation": 2,
+     "patients_observed": 30,
+     "within_patient_sd_median": 0.0,
+     "between_patient_sd_of_means": 0.0005,
+     "univariate_auc": 0.5
+    },
+    "cgm_slope60_missing": {
+     "group": "G2_cgm_trend",
+     "n": 31292,
+     "missing_share": 0.0,
+     "zero_share": 1.0,
+     "unique": 1,
+     "min_p1_p5_p25_p50_p75_p95_p99_max": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+     ],
+     "mean": 0.0,
+     "top_value_share": 1.0,
+     "patients_with_within_variation": 0,
+     "patients_observed": 30,
+     "within_patient_sd_median": 0.0,
+     "between_patient_sd_of_means": 0.0,
+     "univariate_auc": 0.5
+    },
+    "cgm_min_2h": {
+     "group": "G3_cgm_history",
+     "n": 31292,
+     "missing_share": 0.0,
+     "zero_share": 0.0,
+     "unique": 216,
+     "min_p1_p5_p25_p50_p75_p95_p99_max": [
+      39.6,
+      68.4,
+      75.6,
+      97.2,
+      118.8,
+      149.4,
+      208.8,
+      257.4,
+      397.8
+     ],
+     "mean": 128.1274,
+     "top_value_share": 0.0248,
+     "patients_with_within_variation": 30,
+     "patients_observed": 30,
+     "within_patient_sd_median": 26.6617,
+     "between_patient_sd_of_means": 24.8829,
+     "univariate_auc": 0.107
+    },
+    "cgm_mean_2h": {
+     "group": "G3_cgm_history",
+     "n": 31292,
+     "missing_share": 0.0,
+     "zero_share": 0.0,
+     "unique": 1557,
+     "min_p1_p5_p25_p50_p75_p95_p99_max": [
+      64.125,
+      76.5,
+      87.075,
+      111.15,
+      136.125,
+      170.55,
+      232.65,
+      279.45,
+      402.75
+     ],
+     "mean": 144.8618,
+     "top_value_share": 0.0027,
+     "patients_with_within_variation": 30,
+     "patients_observed": 30,
+     "within_patient_sd_median": 31.2424,
+     "between_patient_sd_of_means": 25.9174,
+     "univariate_auc": 0.208
+    },
+    "cgm_sd_2h": {
+     "group": "G3_cgm_history",
+     "n": 31292,
+     "missing_share": 0.0,
+     "zero_share": 0.0001,
+     "unique": 14050,
+     "min_p1_p5_p25_p50_p75_p95_p99_max": [
+      0.0,
+      1.3607,
+      2.3071,
+      5.2644,
+      9.5217,
+      16.7686,
+      33.3514,
+      49.0414,
+      103.7507
+     ],
+     "mean": 12.5834,
+     "top_value_share": 0.0013,
+     "patients_with_within_variation": 30,
+     "patients_observed": 30,
+     "within_patient_sd_median": 9.8663,
+     "between_patient_sd_of_means": 3.3476,
+     "univariate_auc": 0.624
+    },
+    "cgm_min_6h": {
+     "group": "G3_cgm_history",
+     "n": 31292,
+     "missing_share": 0.0,
+     "zero_share": 0.0,
+     "unique": 164,
+     "min_p1_p5_p25_p50_p75_p95_p99_max": [
+      39.6,
+      48.6,
+      68.4,
+      86.4,
+      104.4,
+      127.8,
+      178.2,
+      217.8,
+      293.4
+     ],
+     "mean": 111.2617,
+     "top_value_share": 0.0297,
+     "patients_with_within_variation": 30,
+     "patients_observed": 30,
+     "within_patient_sd_median": 20.7044,
+     "between_patient_sd_of_means": 23.5494,
+     "univariate_auc": 0.101
+    },
+    "cgm_mean_6h": {
+     "group": "G3_cgm_history",
+     "n": 31292,
+     "missing_share": 0.0,
+     "zero_share": 0.0,
+     "unique": 3562,
+     "min_p1_p5_p25_p50_p75_p95_p99_max": [
+      51.825,
+      76.1933,
+      90.225,
+      115.5,
+      136.875,
+      166.425,
+      223.875,
+      264.9206,
+      361.5
+     ],
+     "mean": 144.4727,
+     "top_value_share": 0.0015,
+     "patients_with_within_variation": 30,
+     "patients_observed": 30,
+     "within_patient_sd_median": 25.775,
+     "between_patient_sd_of_means": 27.826,
+     "univariate_auc": 0.22
+    },
+    "cgm_sd_6h": {
+     "group": "G3_cgm_history",
+     "n": 31292,
+     "missing_share": 0.0,
+     "zero_share": 0.0,
+     "unique": 26252,
+     "min_p1_p5_p25_p50_p75_p95_p99_max": [
+      1.2911,
+      3.6,
+      5.6991,
+      12.6416,
+      20.9023,
+      31.3429,
+      49.8785,
+      64.6212,
+      137.0042
+     ],
+     "mean": 23.476,
+     "top_value_share": 0.0002,
+     "patients_with_within_variation": 30,
+     "patients_observed": 30,
+     "within_patient_sd_median": 12.55,
+     "between_patient_sd_of_means": 6.3194,
+     "univariate_auc": 0.615
+    },
+    "cgm_min_24h": {
+     "group": "G3_cgm_history",
+     "n": 31292,
+     "missing_share": 0.0,
+     "zero_share": 0.0,
+     "unique": 145,
+     "min_p1_p5_p25_p50_p75_p95_p99_max": [
+      39.6,
+      39.6,
+      55.8,
+      73.8,
+      86.4,
+      106.2,
+      156.6,
+      176.4,
+      293.4
+     ],
+     "mean": 92.994,
+     "top_value_share": 0.0485,
+     "patients_with_within_variation": 30,
+     "patients_observed": 30,
+     "within_patient_sd_median": 14.7648,
+     "between_patient_sd_of_means": 20.4945,
+     "univariate_auc": 0.126
+    },
+    "cgm_mean_24h": {
+     "group": "G3_cgm_history",
+     "n": 31292,
+     "missing_share": 0.0,
+     "zero_share": 0.0,
+     "unique": 9930,
+     "min_p1_p5_p25_p50_p75_p95_p99_max": [
+      57.3,
+      81.8434,
+      99.7365,
+      119.8125,
+      139.1437,
+      161.1937,
+      217.8937,
+      243.2143,
+      323.0
+     ],
+     "mean": 144.9955,
+     "top_value_share": 0.0006,
+     "patients_with_within_variation": 30,
+     "patients_observed": 30,
+     "within_patient_sd_median": 14.559,
+     "between_patient_sd_of_means": 29.6465,
+     "univariate_auc": 0.165
+    },
+    "cgm_sd_24h": {
+     "group": "G3_cgm_history",
+     "n": 31292,
+     "missing_share": 0.0,
+     "zero_share": 0.0,
+     "unique": 29958,
+     "min_p1_p5_p25_p50_p75_p95_p99_max": [
+      2.3904,
+      13.8712,
+      16.7878,
+      24.3664,
+      32.1264,
+      39.0337,
+      54.1578,
+      76.7951,
+      98.571
+     ],
+     "mean": 33.2715,
+     "top_value_share": 0.0002,
+     "patients_with_within_variation": 30,
+     "patients_observed": 30,
+     "within_patient_sd_median": 7.9207,
+     "between_patient_sd_of_means": 8.6818,
+     "univariate_auc": 0.467
+    },
+    "cgm_cv_24h": {
+     "group": "G3_cgm_history",
+     "n": 31292,
+     "missing_share": 0.0,
+     "zero_share": 0.0,
+     "unique": 30430,
+     "min_p1_p5_p25_p50_p75_p95_p99_max": [
+      0.0245,
+      0.1091,
+      0.1316,
+      0.1759,
+      0.2252,
+      0.2808,
+      0.3631,
+      0.465,
+      0.8561
+     ],
+     "mean": 0.233,
+     "top_value_share": 0.0002,
+     "patients_with_within_variation": 30,
+     "patients_observed": 30,
+     "within_patient_sd_median": 0.0526,
+     "between_patient_sd_of_means": 0.0562,
+     "univariate_auc": 0.753
+    },
+    "cgm_min_below80_24h": {
+     "group": "G3_cgm_history",
+     "n": 31292,
+     "missing_share": 0.0,
+     "zero_share": 0.6344,
+     "unique": 87,
+     "min_p1_p5_p25_p50_p75_p95_p99_max": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      45.0,
+      420.0,
+      795.0,
+      1290.0
+     ],
+     "mean": 68.4923,
+     "top_value_share": 0.6344,
+     "patients_with_within_variation": 27,
+     "patients_observed": 30,
+     "within_patient_sd_median": 54.2196,
+     "between_patient_sd_of_means": 206.395,
+     "univariate_auc": 0.876
+    },
+    "cgm_prior_l1_onsets": {
+     "group": "G3_cgm_history",
+     "n": 31292,
+     "missing_share": 0.0,
+     "zero_share": 0.5771,
+     "unique": 27,
+     "min_p1_p5_p25_p50_p75_p95_p99_max": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      2.0,
+      8.0,
+      13.0,
+      27.0
+     ],
+     "mean": 1.4643,
+     "top_value_share": 0.5771,
+     "patients_with_within_variation": 18,
+     "patients_observed": 30,
+     "within_patient_sd_median": 0.4908,
+     "between_patient_sd_of_means": 3.1425,
+     "univariate_auc": 0.795
+    },
+    "cgm_min_since_low70": {
+     "group": "G3_cgm_history",
+     "n": 31292,
+     "missing_share": 0.5292,
+     "zero_share": 0.0,
+     "unique": 96,
+     "min_p1_p5_p25_p50_p75_p95_p99_max": [
+      15.0,
+      75.0,
+      150.0,
+      795.0,
+      1440.0,
+      1440.0,
+      1440.0,
+      1440.0,
+      1440.0
+     ],
+     "mean": 1129.1453,
+     "top_value_share": 0.6264,
+     "patients_with_within_variation": 20,
+     "patients_observed": 20,
+     "within_patient_sd_median": 430.9833,
+     "between_patient_sd_of_means": 294.2508,
+     "univariate_auc": 0.223
+    },
+    "cgm_pct_own": {
+     "group": "G3_cgm_history",
+     "n": 31292,
+     "missing_share": 0.0866,
+     "zero_share": 0.0,
+     "unique": 25992,
+     "min_p1_p5_p25_p50_p75_p95_p99_max": [
+      0.0429,
+      0.7289,
+      4.6372,
+      22.2337,
+      46.365,
+      72.2624,
+      93.75,
+      98.6309,
+      99.96
+     ],
+     "mean": 47.4965,
+     "top_value_share": 0.0014,
+     "patients_with_within_variation": 30,
+     "patients_observed": 30,
+     "within_patient_sd_median": 27.0113,
+     "between_patient_sd_of_means": 10.5109,
+     "univariate_auc": 0.384
+    },
+    "sensor_day": {
+     "group": "G3_cgm_history",
+     "n": 31292,
+     "missing_share": 0.0,
+     "zero_share": 0.0,
+     "unique": 14,
+     "min_p1_p5_p25_p50_p75_p95_p99_max": [
+      1.0,
+      1.0,
+      1.0,
+      3.0,
+      6.0,
+      10.0,
+      13.0,
+      14.0,
+      14.0
+     ],
+     "mean": 6.4507,
+     "top_value_share": 0.0999,
+     "patients_with_within_variation": 30,
+     "patients_observed": 30,
+     "within_patient_sd_median": 3.3133,
+     "between_patient_sd_of_means": 1.9998,
+     "univariate_auc": 0.42
+    },
+    "cgm_min_since_low70_missing": {
+     "group": "G3_cgm_history",
+     "n": 31292,
+     "missing_share": 0.0,
+     "zero_share": 0.4708,
+     "unique": 2,
+     "min_p1_p5_p25_p50_p75_p95_p99_max": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0
+     ],
+     "mean": 0.5292,
+     "top_value_share": 0.5292,
+     "patients_with_within_variation": 17,
+     "patients_observed": 30,
+     "within_patient_sd_median": 0.1333,
+     "between_patient_sd_of_means": 0.4164,
+     "univariate_auc": 0.304
+    },
+    "cgm_pct_own_missing": {
+     "group": "G3_cgm_history",
+     "n": 31292,
+     "missing_share": 0.0,
+     "zero_share": 0.9134,
+     "unique": 2,
+     "min_p1_p5_p25_p50_p75_p95_p99_max": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      1.0,
+      1.0,
+      1.0
+     ],
+     "mean": 0.0866,
+     "top_value_share": 0.9134,
+     "patients_with_within_variation": 30,
+     "patients_observed": 30,
+     "within_patient_sd_median": 0.2604,
+     "between_patient_sd_of_means": 0.0814,
+     "univariate_auc": 0.537
+    },
+    "hour_sin": {
+     "group": "G4_time",
+     "n": 31292,
+     "missing_share": 0.0,
+     "zero_share": 0.0005,
+     "unique": 1147,
+     "min_p1_p5_p25_p50_p75_p95_p99_max": [
+      -1.0,
+      -0.9995,
+      -0.9884,
+      -0.7133,
+      -0.0131,
+      0.704,
+      0.9877,
+      0.9995,
+      1.0
+     ],
+     "mean": -0.0055,
+     "top_value_share": 0.0025,
+     "patients_with_within_variation": 30,
+     "patients_observed": 30,
+     "within_patient_sd_median": 0.7079,
+     "between_patient_sd_of_means": 0.0684,
+     "univariate_auc": 0.469
+    },
+    "hour_cos": {
+     "group": "G4_time",
+     "n": 31292,
+     "missing_share": 0.0,
+     "zero_share": 0.0,
+     "unique": 1156,
+     "min_p1_p5_p25_p50_p75_p95_p99_max": [
+      -1.0,
+      -0.9995,
+      -0.987,
+      -0.6947,
+      0.0218,
+      0.7133,
+      0.988,
+      0.9995,
+      1.0
+     ],
+     "mean": 0.0106,
+     "top_value_share": 0.0024,
+     "patients_with_within_variation": 30,
+     "patients_observed": 30,
+     "within_patient_sd_median": 0.7056,
+     "between_patient_sd_of_means": 0.0786,
+     "univariate_auc": 0.488
+    },
+    "night": {
+     "group": "G4_time",
+     "n": 31292,
+     "missing_share": 0.0,
+     "zero_share": 0.7502,
+     "unique": 2,
+     "min_p1_p5_p25_p50_p75_p95_p99_max": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      1.0,
+      1.0,
+      1.0
+     ],
+     "mean": 0.2498,
+     "top_value_share": 0.7502,
+     "patients_with_within_variation": 29,
+     "patients_observed": 30,
+     "within_patient_sd_median": 0.4357,
+     "between_patient_sd_of_means": 0.0501,
+     "univariate_auc": 0.48
+    },
+    "age_y": {
+     "group": "G5_static_context",
+     "n": 31292,
+     "missing_share": 0.0,
+     "zero_share": 0.0,
+     "unique": 23,
+     "p25_p50_p75": [
+      50.0,
+      65.0,
+      69.0
+     ],
+     "mean": 62.4144,
+     "top_value_share": 0.116,
+     "patients_with_within_variation": 0,
+     "patients_observed": 30,
+     "within_patient_sd_median": 0.0,
+     "between_patient_sd_of_means": 13.6821,
+     "univariate_auc": 0.337
+    },
+    "sex_male": {
+     "group": "G5_static_context",
+     "n": 31292,
+     "missing_share": 0.0,
+     "zero_share": 0.6349,
+     "unique": 2,
+     "p25_p50_p75": [
+      0.0,
+      0.0,
+      1.0
+     ],
+     "mean": 0.3651,
+     "top_value_share": 0.6349,
+     "patients_with_within_variation": 0,
+     "patients_observed": 30,
+     "within_patient_sd_median": 0.0,
+     "between_patient_sd_of_means": 0.5,
+     "univariate_auc": 0.522
+    },
+    "bmi": {
+     "group": "G5_static_context",
+     "n": 31292,
+     "missing_share": 0.0,
+     "zero_share": 0.0,
+     "unique": 32,
+     "p25_p50_p75": [
+      22.2222,
+      24.2123,
+      25.3
+     ],
+     "mean": 24.5174,
+     "top_value_share": 0.116,
+     "patients_with_within_variation": 2,
+     "patients_observed": 30,
+     "within_patient_sd_median": 0.0,
+     "between_patient_sd_of_means": 3.7219,
+     "univariate_auc": 0.633
+    },
+    "weight_kg": {
+     "group": "G5_static_context",
+     "n": 31292,
+     "missing_share": 0.0,
+     "zero_share": 0.0,
+     "unique": 23,
+     "p25_p50_p75": [
+      53.2,
+      64.0,
+      76.0
+     ],
+     "mean": 64.7353,
+     "top_value_share": 0.116,
+     "patients_with_within_variation": 2,
+     "patients_observed": 30,
+     "within_patient_sd_median": 0.0,
+     "between_patient_sd_of_means": 12.7333,
+     "univariate_auc": 0.626
+    },
+    "diabetes_duration_y": {
+     "group": "G5_static_context",
+     "n": 31292,
+     "missing_share": 0.0,
+     "zero_share": 0.0,
+     "unique": 18,
+     "p25_p50_p75": [
+      5.0,
+      8.0,
+      16.0
+     ],
+     "mean": 10.1848,
+     "top_value_share": 0.1335,
+     "patients_with_within_variation": 1,
+     "patients_observed": 30,
+     "within_patient_sd_median": 0.0,
+     "between_patient_sd_of_means": 8.5523,
+     "univariate_auc": 0.35
+    },
+    "hba1c_mmol_mol": {
+     "group": "G5_static_context",
+     "n": 31292,
+     "missing_share": 0.1188,
+     "zero_share": 0.0,
+     "unique": 26,
+     "p25_p50_p75": [
+      53.01,
+      62.847,
+      74.87
+     ],
+     "mean": 68.2413,
+     "top_value_share": 0.1316,
+     "patients_with_within_variation": 2,
+     "patients_observed": 27,
+     "within_patient_sd_median": 0.0,
+     "between_patient_sd_of_means": 25.572,
+     "univariate_auc": 0.314
+    },
+    "egfr": {
+     "group": "G5_static_context",
+     "n": 31292,
+     "missing_share": 0.2863,
+     "zero_share": 0.0,
+     "unique": 22,
+     "p25_p50_p75": [
+      99.0,
+      105.0,
+      144.0
+     ],
+     "mean": 119.3649,
+     "top_value_share": 0.1625,
+     "patients_with_within_variation": 2,
+     "patients_observed": 23,
+     "within_patient_sd_median": 0.0,
+     "between_patient_sd_of_means": 41.5663,
+     "univariate_auc": 0.528
+    },
+    "c_peptide_fasting_nmol_l": {
+     "group": "G5_static_context",
+     "n": 31292,
+     "missing_share": 0.1001,
+     "zero_share": 0.0,
+     "unique": 23,
+     "p25_p50_p75": [
+      0.31,
+      0.48,
+      0.626
+     ],
+     "mean": 0.4854,
+     "top_value_share": 0.2189,
+     "patients_with_within_variation": 2,
+     "patients_observed": 27,
+     "within_patient_sd_median": 0.0,
+     "between_patient_sd_of_means": 0.2193,
+     "univariate_auc": 0.542
+    },
+    "rx_insulin": {
+     "group": "G5_static_context",
+     "n": 31292,
+     "missing_share": 0.0,
+     "zero_share": 0.4639,
+     "unique": 2,
+     "p25_p50_p75": [
+      0.0,
+      1.0,
+      1.0
+     ],
+     "mean": 0.5361,
+     "top_value_share": 0.5361,
+     "patients_with_within_variation": 1,
+     "patients_observed": 30,
+     "within_patient_sd_median": 0.0,
+     "between_patient_sd_of_means": 0.4907,
+     "univariate_auc": 0.402
+    },
+    "rx_premix": {
+     "group": "G5_static_context",
+     "n": 31292,
+     "missing_share": 0.0,
+     "zero_share": 0.7062,
+     "unique": 2,
+     "p25_p50_p75": [
+      0.0,
+      0.0,
+      1.0
+     ],
+     "mean": 0.2938,
+     "top_value_share": 0.7062,
+     "patients_with_within_variation": 1,
+     "patients_observed": 30,
+     "within_patient_sd_median": 0.0,
+     "between_patient_sd_of_means": 0.4549,
+     "univariate_auc": 0.453
+    },
+    "rx_basal": {
+     "group": "G5_static_context",
+     "n": 31292,
+     "missing_share": 0.0,
+     "zero_share": 0.7655,
+     "unique": 2,
+     "p25_p50_p75": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "mean": 0.2345,
+     "top_value_share": 0.7655,
+     "patients_with_within_variation": 1,
+     "patients_observed": 30,
+     "within_patient_sd_median": 0.0,
+     "between_patient_sd_of_means": 0.3724,
+     "univariate_auc": 0.443
+    },
+    "rx_short_rapid": {
+     "group": "G5_static_context",
+     "n": 31292,
+     "missing_share": 0.0,
+     "zero_share": 0.9058,
+     "unique": 2,
+     "p25_p50_p75": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "mean": 0.0942,
+     "top_value_share": 0.9058,
+     "patients_with_within_variation": 0,
+     "patients_observed": 30,
+     "within_patient_sd_median": 0.0,
+     "between_patient_sd_of_means": 0.3399,
+     "univariate_auc": 0.503
+    },
+    "rx_su": {
+     "group": "G5_static_context",
+     "n": 31292,
+     "missing_share": 0.0,
+     "zero_share": 0.8248,
+     "unique": 2,
+     "p25_p50_p75": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "mean": 0.1752,
+     "top_value_share": 0.8248,
+     "patients_with_within_variation": 1,
+     "patients_observed": 30,
+     "within_patient_sd_median": 0.0,
+     "between_patient_sd_of_means": 0.3167,
+     "univariate_auc": 0.464
+    },
+    "rx_glinide": {
+     "group": "G5_static_context",
+     "n": 31292,
+     "missing_share": 0.0,
+     "zero_share": 1.0,
+     "unique": 1,
+     "p25_p50_p75": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "mean": 0.0,
+     "top_value_share": 1.0,
+     "patients_with_within_variation": 0,
+     "patients_observed": 30,
+     "within_patient_sd_median": 0.0,
+     "between_patient_sd_of_means": 0.0,
+     "univariate_auc": 0.5
+    },
+    "rx_metformin": {
+     "group": "G5_static_context",
+     "n": 31292,
+     "missing_share": 0.0,
+     "zero_share": 0.4893,
+     "unique": 2,
+     "p25_p50_p75": [
+      0.0,
+      1.0,
+      1.0
+     ],
+     "mean": 0.5107,
+     "top_value_share": 0.5107,
+     "patients_with_within_variation": 1,
+     "patients_observed": 30,
+     "within_patient_sd_median": 0.0,
+     "between_patient_sd_of_means": 0.4923,
+     "univariate_auc": 0.53
+    },
+    "rx_agi": {
+     "group": "G5_static_context",
+     "n": 31292,
+     "missing_share": 0.0,
+     "zero_share": 0.7291,
+     "unique": 2,
+     "p25_p50_p75": [
+      0.0,
+      0.0,
+      1.0
+     ],
+     "mean": 0.2709,
+     "top_value_share": 0.7291,
+     "patients_with_within_variation": 1,
+     "patients_observed": 30,
+     "within_patient_sd_median": 0.0,
+     "between_patient_sd_of_means": 0.4592,
+     "univariate_auc": 0.47
+    },
+    "rx_dpp4": {
+     "group": "G5_static_context",
+     "n": 31292,
+     "missing_share": 0.0,
+     "zero_share": 0.8533,
+     "unique": 2,
+     "p25_p50_p75": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "mean": 0.1467,
+     "top_value_share": 0.8533,
+     "patients_with_within_variation": 1,
+     "patients_observed": 30,
+     "within_patient_sd_median": 0.0,
+     "between_patient_sd_of_means": 0.341,
+     "univariate_auc": 0.566
+    },
+    "rx_sglt2": {
+     "group": "G5_static_context",
+     "n": 31292,
+     "missing_share": 0.0,
+     "zero_share": 1.0,
+     "unique": 1,
+     "p25_p50_p75": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "mean": 0.0,
+     "top_value_share": 1.0,
+     "patients_with_within_variation": 0,
+     "patients_observed": 30,
+     "within_patient_sd_median": 0.0,
+     "between_patient_sd_of_means": 0.0,
+     "univariate_auc": 0.5
+    },
+    "rx_glp1": {
+     "group": "G5_static_context",
+     "n": 31292,
+     "missing_share": 0.0,
+     "zero_share": 0.9916,
+     "unique": 2,
+     "p25_p50_p75": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "mean": 0.0084,
+     "top_value_share": 0.9916,
+     "patients_with_within_variation": 0,
+     "patients_observed": 30,
+     "within_patient_sd_median": 0.0,
+     "between_patient_sd_of_means": 0.1795,
+     "univariate_auc": 0.506
+    },
+    "rx_tzd": {
+     "group": "G5_static_context",
+     "n": 31292,
+     "missing_share": 0.0,
+     "zero_share": 0.9844,
+     "unique": 2,
+     "p25_p50_p75": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "mean": 0.0156,
+     "top_value_share": 0.9844,
+     "patients_with_within_variation": 0,
+     "patients_observed": 30,
+     "within_patient_sd_median": 0.0,
+     "between_patient_sd_of_means": 0.1795,
+     "univariate_auc": 0.507
+    },
+    "age_y_missing": {
+     "group": "G5_static_context",
+     "n": 31292,
+     "missing_share": 0.0,
+     "zero_share": 1.0,
+     "unique": 1,
+     "p25_p50_p75": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "mean": 0.0,
+     "top_value_share": 1.0,
+     "patients_with_within_variation": 0,
+     "patients_observed": 30,
+     "within_patient_sd_median": 0.0,
+     "between_patient_sd_of_means": 0.0,
+     "univariate_auc": 0.5
+    },
+    "sex_male_missing": {
+     "group": "G5_static_context",
+     "n": 31292,
+     "missing_share": 0.0,
+     "zero_share": 1.0,
+     "unique": 1,
+     "p25_p50_p75": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "mean": 0.0,
+     "top_value_share": 1.0,
+     "patients_with_within_variation": 0,
+     "patients_observed": 30,
+     "within_patient_sd_median": 0.0,
+     "between_patient_sd_of_means": 0.0,
+     "univariate_auc": 0.5
+    },
+    "bmi_missing": {
+     "group": "G5_static_context",
+     "n": 31292,
+     "missing_share": 0.0,
+     "zero_share": 1.0,
+     "unique": 1,
+     "p25_p50_p75": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "mean": 0.0,
+     "top_value_share": 1.0,
+     "patients_with_within_variation": 0,
+     "patients_observed": 30,
+     "within_patient_sd_median": 0.0,
+     "between_patient_sd_of_means": 0.0,
+     "univariate_auc": 0.5
+    },
+    "weight_kg_missing": {
+     "group": "G5_static_context",
+     "n": 31292,
+     "missing_share": 0.0,
+     "zero_share": 1.0,
+     "unique": 1,
+     "p25_p50_p75": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "mean": 0.0,
+     "top_value_share": 1.0,
+     "patients_with_within_variation": 0,
+     "patients_observed": 30,
+     "within_patient_sd_median": 0.0,
+     "between_patient_sd_of_means": 0.0,
+     "univariate_auc": 0.5
+    },
+    "diabetes_duration_y_missing": {
+     "group": "G5_static_context",
+     "n": 31292,
+     "missing_share": 0.0,
+     "zero_share": 1.0,
+     "unique": 1,
+     "p25_p50_p75": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "mean": 0.0,
+     "top_value_share": 1.0,
+     "patients_with_within_variation": 0,
+     "patients_observed": 30,
+     "within_patient_sd_median": 0.0,
+     "between_patient_sd_of_means": 0.0,
+     "univariate_auc": 0.5
+    },
+    "hba1c_mmol_mol_missing": {
+     "group": "G5_static_context",
+     "n": 31292,
+     "missing_share": 0.0,
+     "zero_share": 0.8812,
+     "unique": 2,
+     "p25_p50_p75": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "mean": 0.1188,
+     "top_value_share": 0.8812,
+     "patients_with_within_variation": 0,
+     "patients_observed": 30,
+     "within_patient_sd_median": 0.0,
+     "between_patient_sd_of_means": 0.3,
+     "univariate_auc": 0.498
+    },
+    "egfr_missing": {
+     "group": "G5_static_context",
+     "n": 31292,
+     "missing_share": 0.0,
+     "zero_share": 0.7137,
+     "unique": 2,
+     "p25_p50_p75": [
+      0.0,
+      0.0,
+      1.0
+     ],
+     "mean": 0.2863,
+     "top_value_share": 0.7137,
+     "patients_with_within_variation": 0,
+     "patients_observed": 30,
+     "within_patient_sd_median": 0.0,
+     "between_patient_sd_of_means": 0.423,
+     "univariate_auc": 0.434
+    },
+    "c_peptide_fasting_nmol_l_missing": {
+     "group": "G5_static_context",
+     "n": 31292,
+     "missing_share": 0.0,
+     "zero_share": 0.8999,
+     "unique": 2,
+     "p25_p50_p75": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "mean": 0.1001,
+     "top_value_share": 0.8999,
+     "patients_with_within_variation": 0,
+     "patients_observed": 30,
+     "within_patient_sd_median": 0.0,
+     "between_patient_sd_of_means": 0.3,
+     "univariate_auc": 0.536
+    },
+    "rx_missing": {
+     "group": "G5_static_context",
+     "n": 31292,
+     "missing_share": 0.0,
+     "zero_share": 1.0,
+     "unique": 1,
+     "p25_p50_p75": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "mean": 0.0,
+     "top_value_share": 1.0,
+     "patients_with_within_variation": 0,
+     "patients_observed": 30,
+     "within_patient_sd_median": 0.0,
+     "between_patient_sd_of_means": 0.0,
+     "univariate_auc": 0.5
+    },
+    "meal_min_since": {
+     "group": "G6_meal_timing",
+     "n": 31292,
+     "missing_share": 0.0037,
+     "zero_share": 0.0333,
+     "unique": 49,
+     "min_p1_p5_p25_p50_p75_p95_p99_max": [
+      0.0,
+      0.0,
+      15.0,
+      105.0,
+      225.0,
+      435.0,
+      720.0,
+      720.0,
+      720.0
+     ],
+     "mean": 282.8372,
+     "top_value_share": 0.061,
+     "patients_with_within_variation": 30,
+     "patients_observed": 30,
+     "within_patient_sd_median": 220.9392,
+     "between_patient_sd_of_means": 39.7785,
+     "univariate_auc": 0.464
+    },
+    "meal_last_3h": {
+     "group": "G6_meal_timing",
+     "n": 31292,
+     "missing_share": 0.0,
+     "zero_share": 0.6061,
+     "unique": 2,
+     "min_p1_p5_p25_p50_p75_p95_p99_max": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0
+     ],
+     "mean": 0.3939,
+     "top_value_share": 0.6061,
+     "patients_with_within_variation": 30,
+     "patients_observed": 30,
+     "within_patient_sd_median": 0.4848,
+     "between_patient_sd_of_means": 0.079,
+     "univariate_auc": 0.523
+    },
+    "meals_today": {
+     "group": "G6_meal_timing",
+     "n": 31292,
+     "missing_share": 0.0,
+     "zero_share": 0.2931,
+     "unique": 7,
+     "min_p1_p5_p25_p50_p75_p95_p99_max": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      2.0,
+      3.0,
+      4.0,
+      4.0,
+      6.0
+     ],
+     "mean": 1.5536,
+     "top_value_share": 0.2931,
+     "patients_with_within_variation": 30,
+     "patients_observed": 30,
+     "within_patient_sd_median": 1.1891,
+     "between_patient_sd_of_means": 0.2224,
+     "univariate_auc": 0.521
+    },
+    "meal_last_content_unknown": {
+     "group": "G6_meal_timing",
+     "n": 31292,
+     "missing_share": 0.0037,
+     "zero_share": 0.8069,
+     "unique": 2,
+     "min_p1_p5_p25_p50_p75_p95_p99_max": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      1.0,
+      1.0,
+      1.0
+     ],
+     "mean": 0.1931,
+     "top_value_share": 0.8069,
+     "patients_with_within_variation": 27,
+     "patients_observed": 30,
+     "within_patient_sd_median": 0.3338,
+     "between_patient_sd_of_means": 0.2608,
+     "univariate_auc": 0.512
+    },
+    "meal_none_logged": {
+     "group": "G6_meal_timing",
+     "n": 31292,
+     "missing_share": 0.0,
+     "zero_share": 0.9963,
+     "unique": 2,
+     "min_p1_p5_p25_p50_p75_p95_p99_max": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      1.0
+     ],
+     "mean": 0.0037,
+     "top_value_share": 0.9963,
+     "patients_with_within_variation": 7,
+     "patients_observed": 30,
+     "within_patient_sd_median": 0.0,
+     "between_patient_sd_of_means": 0.0069,
+     "univariate_auc": 0.504
+    },
+    "insulin_bolus_min_since_last": {
+     "group": "G7_raw_medication_timing",
+     "n": 31292,
+     "missing_share": 0.531,
+     "zero_share": 0.0245,
+     "unique": 97,
+     "min_p1_p5_p25_p50_p75_p95_p99_max": [
+      0.0,
+      0.0,
+      30.0,
+      150.0,
+      315.0,
+      555.0,
+      885.0,
+      1305.0,
+      1440.0
+     ],
+     "mean": 376.4687,
+     "top_value_share": 0.025,
+     "patients_with_within_variation": 18,
+     "patients_observed": 18,
+     "within_patient_sd_median": 235.8911,
+     "between_patient_sd_of_means": 68.9653,
+     "univariate_auc": 0.443
+    },
+    "insulin_bolus_last_dose": {
+     "group": "G7_raw_medication_timing",
+     "n": 31292,
+     "missing_share": 0.531,
+     "zero_share": 0.0,
+     "unique": 17,
+     "min_p1_p5_p25_p50_p75_p95_p99_max": [
+      2.0,
+      3.0,
+      4.0,
+      5.0,
+      7.0,
+      9.0,
+      17.0,
+      28.0,
+      28.0
+     ],
+     "mean": 8.3551,
+     "top_value_share": 0.1922,
+     "patients_with_within_variation": 16,
+     "patients_observed": 18,
+     "within_patient_sd_median": 1.6924,
+     "between_patient_sd_of_means": 3.8128,
+     "univariate_auc": 0.491
+    },
+    "insulin_bolus_dose_24h": {
+     "group": "G7_raw_medication_timing",
+     "n": 31292,
+     "missing_share": 0.0035,
+     "zero_share": 0.5297,
+     "unique": 40,
+     "min_p1_p5_p25_p50_p75_p95_p99_max": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      16.0,
+      30.0,
+      42.0,
+      70.0
+     ],
+     "mean": 8.7844,
+     "top_value_share": 0.5297,
+     "patients_with_within_variation": 18,
+     "patients_observed": 30,
+     "within_patient_sd_median": 2.6223,
+     "between_patient_sd_of_means": 10.6838,
+     "univariate_auc": 0.43
+    },
+    "insulin_bolus_n_24h": {
+     "group": "G7_raw_medication_timing",
+     "n": 31292,
+     "missing_share": 0.0,
+     "zero_share": 0.5314,
+     "unique": 7,
+     "min_p1_p5_p25_p50_p75_p95_p99_max": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      2.0,
+      3.0,
+      4.0,
+      6.0
+     ],
+     "mean": 1.0901,
+     "top_value_share": 0.5314,
+     "patients_with_within_variation": 18,
+     "patients_observed": 30,
+     "within_patient_sd_median": 0.3551,
+     "between_patient_sd_of_means": 1.2596,
+     "univariate_auc": 0.428
+    },
+    "insulin_basal_min_since_last": {
+     "group": "G7_raw_medication_timing",
+     "n": 31292,
+     "missing_share": 0.795,
+     "zero_share": 0.0111,
+     "unique": 97,
+     "min_p1_p5_p25_p50_p75_p95_p99_max": [
+      0.0,
+      0.0,
+      60.0,
+      345.0,
+      690.0,
+      1065.0,
+      1365.0,
+      1425.0,
+      1440.0
+     ],
+     "mean": 699.537,
+     "top_value_share": 0.0111,
+     "patients_with_within_variation": 6,
+     "patients_observed": 6,
+     "within_patient_sd_median": 416.4329,
+     "between_patient_sd_of_means": 162.1203,
+     "univariate_auc": 0.425
+    },
+    "insulin_basal_last_dose": {
+     "group": "G7_raw_medication_timing",
+     "n": 31292,
+     "missing_share": 0.795,
+     "zero_share": 0.0,
+     "unique": 7,
+     "min_p1_p5_p25_p50_p75_p95_p99_max": [
+      4.0,
+      4.0,
+      4.0,
+      6.0,
+      6.0,
+      8.0,
+      15.0,
+      16.0,
+      16.0
+     ],
+     "mean": 7.9885,
+     "top_value_share": 0.312,
+     "patients_with_within_variation": 1,
+     "patients_observed": 6,
+     "within_patient_sd_median": 0.0,
+     "between_patient_sd_of_means": 4.2433,
+     "univariate_auc": 0.78
+    },
+    "insulin_basal_dose_24h": {
+     "group": "G7_raw_medication_timing",
+     "n": 31292,
+     "missing_share": 0.0035,
+     "zero_share": 0.7963,
+     "unique": 12,
+     "min_p1_p5_p25_p50_p75_p95_p99_max": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      10.0,
+      15.0,
+      30.0
+     ],
+     "mean": 1.6464,
+     "top_value_share": 0.7963,
+     "patients_with_within_variation": 6,
+     "patients_observed": 30,
+     "within_patient_sd_median": 0.0,
+     "between_patient_sd_of_means": 2.5928,
+     "univariate_auc": 0.447
+    },
+    "insulin_basal_n_24h": {
+     "group": "G7_raw_medication_timing",
+     "n": 31292,
+     "missing_share": 0.0,
+     "zero_share": 0.797,
+     "unique": 3,
+     "min_p1_p5_p25_p50_p75_p95_p99_max": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      1.0,
+      1.0,
+      2.0
+     ],
+     "mean": 0.2052,
+     "top_value_share": 0.797,
+     "patients_with_within_variation": 6,
+     "patients_observed": 30,
+     "within_patient_sd_median": 0.0,
+     "between_patient_sd_of_means": 0.307,
+     "univariate_auc": 0.442
+    },
+    "su_min_since_last": {
+     "group": "G7_raw_medication_timing",
+     "n": 31292,
+     "missing_share": 0.8216,
+     "zero_share": 0.0134,
+     "unique": 97,
+     "min_p1_p5_p25_p50_p75_p95_p99_max": [
+      0.0,
+      0.0,
+      45.0,
+      285.0,
+      570.0,
+      1185.0,
+      1440.0,
+      1440.0,
+      1440.0
+     ],
+     "mean": 693.9052,
+     "top_value_share": 0.1881,
+     "patients_with_within_variation": 4,
+     "patients_observed": 4,
+     "within_patient_sd_median": 367.2037,
+     "between_patient_sd_of_means": 346.1798,
+     "univariate_auc": 0.404
+    },
+    "su_last_dose": {
+     "group": "G7_raw_medication_timing",
+     "n": 31292,
+     "missing_share": 0.8216,
+     "zero_share": 0.0,
+     "unique": 1,
+     "min_p1_p5_p25_p50_p75_p95_p99_max": [
+      30.0,
+      30.0,
+      30.0,
+      30.0,
+      30.0,
+      30.0,
+      30.0,
+      30.0,
+      30.0
+     ],
+     "mean": 30.0,
+     "top_value_share": 1.0,
+     "patients_with_within_variation": 0,
+     "patients_observed": 4,
+     "within_patient_sd_median": 0.0,
+     "between_patient_sd_of_means": 0.0,
+     "univariate_auc": 0.5
+    },
+    "su_dose_24h": {
+     "group": "G7_raw_medication_timing",
+     "n": 31292,
+     "missing_share": 0.0344,
+     "zero_share": 0.85,
+     "unique": 4,
+     "min_p1_p5_p25_p50_p75_p95_p99_max": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      60.0,
+      60.0,
+      90.0
+     ],
+     "mean": 6.8015,
+     "top_value_share": 0.85,
+     "patients_with_within_variation": 4,
+     "patients_observed": 29,
+     "within_patient_sd_median": 0.0,
+     "between_patient_sd_of_means": 10.0342,
+     "univariate_auc": 0.469
+    },
+    "su_n_24h": {
+     "group": "G7_raw_medication_timing",
+     "n": 31292,
+     "missing_share": 0.0,
+     "zero_share": 0.8552,
+     "unique": 4,
+     "min_p1_p5_p25_p50_p75_p95_p99_max": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      2.0,
+      2.0,
+      3.0
+     ],
+     "mean": 0.2189,
+     "top_value_share": 0.8552,
+     "patients_with_within_variation": 4,
+     "patients_observed": 30,
+     "within_patient_sd_median": 0.0,
+     "between_patient_sd_of_means": 0.2994,
+     "univariate_auc": 0.471
+    },
+    "glinide_min_since_last": {
+     "group": "G7_raw_medication_timing",
+     "n": 31292,
+     "missing_share": 1.0,
+     "zero_share": null,
+     "unique": 0
+    },
+    "glinide_last_dose": {
+     "group": "G7_raw_medication_timing",
+     "n": 31292,
+     "missing_share": 1.0,
+     "zero_share": null,
+     "unique": 0
+    },
+    "glinide_dose_24h": {
+     "group": "G7_raw_medication_timing",
+     "n": 31292,
+     "missing_share": 0.0,
+     "zero_share": 1.0,
+     "unique": 1,
+     "min_p1_p5_p25_p50_p75_p95_p99_max": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+     ],
+     "mean": 0.0,
+     "top_value_share": 1.0,
+     "patients_with_within_variation": 0,
+     "patients_observed": 30,
+     "within_patient_sd_median": 0.0,
+     "between_patient_sd_of_means": 0.0,
+     "univariate_auc": 0.5
+    },
+    "glinide_n_24h": {
+     "group": "G7_raw_medication_timing",
+     "n": 31292,
+     "missing_share": 0.0,
+     "zero_share": 1.0,
+     "unique": 1,
+     "min_p1_p5_p25_p50_p75_p95_p99_max": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+     ],
+     "mean": 0.0,
+     "top_value_share": 1.0,
+     "patients_with_within_variation": 0,
+     "patients_observed": 30,
+     "within_patient_sd_median": 0.0,
+     "between_patient_sd_of_means": 0.0,
+     "univariate_auc": 0.5
+    },
+    "insulin_bolus_missing": {
+     "group": "G7_raw_medication_timing",
+     "n": 31292,
+     "missing_share": 0.0,
+     "zero_share": 0.469,
+     "unique": 2,
+     "min_p1_p5_p25_p50_p75_p95_p99_max": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0
+     ],
+     "mean": 0.531,
+     "top_value_share": 0.531,
+     "patients_with_within_variation": 6,
+     "patients_observed": 30,
+     "within_patient_sd_median": 0.0,
+     "between_patient_sd_of_means": 0.4778,
+     "univariate_auc": 0.567
+    },
+    "insulin_basal_missing": {
+     "group": "G7_raw_medication_timing",
+     "n": 31292,
+     "missing_share": 0.0,
+     "zero_share": 0.205,
+     "unique": 2,
+     "min_p1_p5_p25_p50_p75_p95_p99_max": [
+      0.0,
+      0.0,
+      0.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0
+     ],
+     "mean": 0.795,
+     "top_value_share": 0.795,
+     "patients_with_within_variation": 6,
+     "patients_observed": 30,
+     "within_patient_sd_median": 0.0,
+     "between_patient_sd_of_means": 0.3071,
+     "univariate_auc": 0.557
+    },
+    "su_missing": {
+     "group": "G7_raw_medication_timing",
+     "n": 31292,
+     "missing_share": 0.0,
+     "zero_share": 0.1784,
+     "unique": 2,
+     "min_p1_p5_p25_p50_p75_p95_p99_max": [
+      0.0,
+      0.0,
+      0.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0
+     ],
+     "mean": 0.8216,
+     "top_value_share": 0.8216,
+     "patients_with_within_variation": 4,
+     "patients_observed": 30,
+     "within_patient_sd_median": 0.0,
+     "between_patient_sd_of_means": 0.2421,
+     "univariate_auc": 0.533
+    },
+    "glinide_missing": {
+     "group": "G7_raw_medication_timing",
+     "n": 31292,
+     "missing_share": 0.0,
+     "zero_share": 0.0,
+     "unique": 1,
+     "min_p1_p5_p25_p50_p75_p95_p99_max": [
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0
+     ],
+     "mean": 1.0,
+     "top_value_share": 1.0,
+     "patients_with_within_variation": 0,
+     "patients_observed": 30,
+     "within_patient_sd_median": 0.0,
+     "between_patient_sd_of_means": 0.0,
+     "univariate_auc": 0.5
+    },
+    "csii_active": {
+     "group": "G78_csii_iv_flags",
+     "n": 31292,
+     "missing_share": 0.0,
+     "zero_share": 0.8414,
+     "unique": 2,
+     "min_p1_p5_p25_p50_p75_p95_p99_max": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      1.0,
+      1.0,
+      1.0
+     ],
+     "mean": 0.1586,
+     "top_value_share": 0.8414,
+     "patients_with_within_variation": 7,
+     "patients_observed": 30,
+     "within_patient_sd_median": 0.0,
+     "between_patient_sd_of_means": 0.4241,
+     "univariate_auc": 0.485
+    },
+    "csii_rate_iu_h": {
+     "group": "G78_csii_iv_flags",
+     "n": 31292,
+     "missing_share": 0.0,
+     "zero_share": 0.8414,
+     "unique": 13,
+     "min_p1_p5_p25_p50_p75_p95_p99_max": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.6,
+      0.8,
+      0.9
+     ],
+     "mean": 0.0839,
+     "top_value_share": 0.8414,
+     "patients_with_within_variation": 12,
+     "patients_observed": 30,
+     "within_patient_sd_median": 0.0,
+     "between_patient_sd_of_means": 0.2215,
+     "univariate_auc": 0.483
+    },
+    "iv_insulin_recent": {
+     "group": "G78_csii_iv_flags",
+     "n": 31292,
+     "missing_share": 0.0,
+     "zero_share": 0.9995,
+     "unique": 2,
+     "min_p1_p5_p25_p50_p75_p95_p99_max": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      1.0
+     ],
+     "mean": 0.0005,
+     "top_value_share": 0.9995,
+     "patients_with_within_variation": 1,
+     "patients_observed": 30,
+     "within_patient_sd_median": 0.0,
+     "between_patient_sd_of_means": 0.0051,
+     "univariate_auc": 0.5
+    },
+    "act_prandial": {
+     "group": "G8_medication_exposure",
+     "n": 31292,
+     "missing_share": 0.0035,
+     "zero_share": 0.693,
+     "unique": 3724,
+     "min_p1_p5_p25_p50_p75_p95_p99_max": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.3281,
+      1.8456,
+      2.6555,
+      3.9719
+     ],
+     "mean": 0.32,
+     "top_value_share": 0.693,
+     "patients_with_within_variation": 18,
+     "patients_observed": 30,
+     "within_patient_sd_median": 0.4006,
+     "between_patient_sd_of_means": 0.5296,
+     "univariate_auc": 0.486
+    },
+    "act_intermediate": {
+     "group": "G8_medication_exposure",
+     "n": 31292,
+     "missing_share": 0.0035,
+     "zero_share": 0.7704,
+     "unique": 3194,
+     "min_p1_p5_p25_p50_p75_p95_p99_max": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.9109,
+      1.5172,
+      1.7121
+     ],
+     "mean": 0.1383,
+     "top_value_share": 0.7704,
+     "patients_with_within_variation": 10,
+     "patients_observed": 30,
+     "within_patient_sd_median": 0.0,
+     "between_patient_sd_of_means": 0.2696,
+     "univariate_auc": 0.472
+    },
+    "act_basal": {
+     "group": "G8_medication_exposure",
+     "n": 31292,
+     "missing_share": 0.0035,
+     "zero_share": 0.7962,
+     "unique": 16,
+     "min_p1_p5_p25_p50_p75_p95_p99_max": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.381,
+      0.625,
+      1.25
+     ],
+     "mean": 0.0674,
+     "top_value_share": 0.7962,
+     "patients_with_within_variation": 6,
+     "patients_observed": 30,
+     "within_patient_sd_median": 0.0,
+     "between_patient_sd_of_means": 0.1053,
+     "univariate_auc": 0.449
+    },
+    "act_insulin_total": {
+     "group": "G8_medication_exposure",
+     "n": 31292,
+     "missing_share": 0.0035,
+     "zero_share": 0.4052,
+     "unique": 6617,
+     "min_p1_p5_p25_p50_p75_p95_p99_max": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.2381,
+      0.7424,
+      2.1559,
+      3.0232,
+      4.3761
+     ],
+     "mean": 0.5256,
+     "top_value_share": 0.4052,
+     "patients_with_within_variation": 20,
+     "patients_observed": 30,
+     "within_patient_sd_median": 0.422,
+     "between_patient_sd_of_means": 0.5942,
+     "univariate_auc": 0.429
+    },
+    "iob_insulin": {
+     "group": "G8_medication_exposure",
+     "n": 31292,
+     "missing_share": 0.0035,
+     "zero_share": 0.4041,
+     "unique": 8594,
+     "min_p1_p5_p25_p50_p75_p95_p99_max": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      1.865,
+      5.596,
+      12.2118,
+      18.5669,
+      31.423
+     ],
+     "mean": 3.4811,
+     "top_value_share": 0.4041,
+     "patients_with_within_variation": 20,
+     "patients_observed": 30,
+     "within_patient_sd_median": 2.4533,
+     "between_patient_sd_of_means": 3.2428,
+     "univariate_auc": 0.409
+    },
+    "insulin_p30": {
+     "group": "G8_medication_exposure",
+     "n": 31292,
+     "missing_share": 0.0035,
+     "zero_share": 0.4054,
+     "unique": 6500,
+     "min_p1_p5_p25_p50_p75_p95_p99_max": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.238,
+      0.7127,
+      2.1512,
+      2.994,
+      4.3761
+     ],
+     "mean": 0.5203,
+     "top_value_share": 0.4054,
+     "patients_with_within_variation": 20,
+     "patients_observed": 30,
+     "within_patient_sd_median": 0.4239,
+     "between_patient_sd_of_means": 0.5889,
+     "univariate_auc": 0.427
+    },
+    "insulin_p60": {
+     "group": "G8_medication_exposure",
+     "n": 31292,
+     "missing_share": 0.0035,
+     "zero_share": 0.4064,
+     "unique": 6254,
+     "min_p1_p5_p25_p50_p75_p95_p99_max": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.2275,
+      0.6667,
+      2.0799,
+      2.9572,
+      4.3761
+     ],
+     "mean": 0.4977,
+     "top_value_share": 0.4064,
+     "patients_with_within_variation": 20,
+     "patients_observed": 30,
+     "within_patient_sd_median": 0.4188,
+     "between_patient_sd_of_means": 0.5667,
+     "univariate_auc": 0.426
+    },
+    "act_su": {
+     "group": "G8_medication_exposure",
+     "n": 31292,
+     "missing_share": 0.0344,
+     "zero_share": 0.8356,
+     "unique": 3596,
+     "min_p1_p5_p25_p50_p75_p95_p99_max": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.6657,
+      0.7459,
+      0.7874
+     ],
+     "mean": 0.0762,
+     "top_value_share": 0.8356,
+     "patients_with_within_variation": 4,
+     "patients_observed": 29,
+     "within_patient_sd_median": 0.0,
+     "between_patient_sd_of_means": 0.1126,
+     "univariate_auc": 0.466
+    },
+    "su_p30": {
+     "group": "G8_medication_exposure",
+     "n": 31292,
+     "missing_share": 0.0344,
+     "zero_share": 0.8355,
+     "unique": 3596,
+     "min_p1_p5_p25_p50_p75_p95_p99_max": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.6657,
+      0.7462,
+      0.7874
+     ],
+     "mean": 0.0763,
+     "top_value_share": 0.8355,
+     "patients_with_within_variation": 4,
+     "patients_observed": 29,
+     "within_patient_sd_median": 0.0,
+     "between_patient_sd_of_means": 0.1126,
+     "univariate_auc": 0.466
+    },
+    "su_p60": {
+     "group": "G8_medication_exposure",
+     "n": 31292,
+     "missing_share": 0.0344,
+     "zero_share": 0.8356,
+     "unique": 3587,
+     "min_p1_p5_p25_p50_p75_p95_p99_max": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.6639,
+      0.747,
+      0.7874
+     ],
+     "mean": 0.0762,
+     "top_value_share": 0.8356,
+     "patients_with_within_variation": 4,
+     "patients_observed": 29,
+     "within_patient_sd_median": 0.0,
+     "between_patient_sd_of_means": 0.1125,
+     "univariate_auc": 0.467
+    },
+    "act_glinide": {
+     "group": "G8_medication_exposure",
+     "n": 31292,
+     "missing_share": 0.0,
+     "zero_share": 1.0,
+     "unique": 1,
+     "min_p1_p5_p25_p50_p75_p95_p99_max": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+     ],
+     "mean": 0.0,
+     "top_value_share": 1.0,
+     "patients_with_within_variation": 0,
+     "patients_observed": 30,
+     "within_patient_sd_median": 0.0,
+     "between_patient_sd_of_means": 0.0,
+     "univariate_auc": 0.5
+    },
+    "glinide_p30": {
+     "group": "G8_medication_exposure",
+     "n": 31292,
+     "missing_share": 0.0,
+     "zero_share": 1.0,
+     "unique": 1,
+     "min_p1_p5_p25_p50_p75_p95_p99_max": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+     ],
+     "mean": 0.0,
+     "top_value_share": 1.0,
+     "patients_with_within_variation": 0,
+     "patients_observed": 30,
+     "within_patient_sd_median": 0.0,
+     "between_patient_sd_of_means": 0.0,
+     "univariate_auc": 0.5
+    },
+    "glinide_p60": {
+     "group": "G8_medication_exposure",
+     "n": 31292,
+     "missing_share": 0.0,
+     "zero_share": 1.0,
+     "unique": 1,
+     "min_p1_p5_p25_p50_p75_p95_p99_max": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+     ],
+     "mean": 0.0,
+     "top_value_share": 1.0,
+     "patients_with_within_variation": 0,
+     "patients_observed": 30,
+     "within_patient_sd_median": 0.0,
+     "between_patient_sd_of_means": 0.0,
+     "univariate_auc": 0.5
+    },
+    "min_since_insulin": {
+     "group": "G8_medication_exposure",
+     "n": 31292,
+     "missing_share": 0.405,
+     "zero_share": 0.0395,
+     "unique": 97,
+     "min_p1_p5_p25_p50_p75_p95_p99_max": [
+      0.0,
+      0.0,
+      15.0,
+      90.0,
+      240.0,
+      570.0,
+      1185.0,
+      1380.0,
+      1440.0
+     ],
+     "mean": 373.8978,
+     "top_value_share": 0.0395,
+     "patients_with_within_variation": 20,
+     "patients_observed": 20,
+     "within_patient_sd_median": 172.6166,
+     "between_patient_sd_of_means": 197.9604,
+     "univariate_auc": 0.434
+    },
+    "min_since_su": {
+     "group": "G8_medication_exposure",
+     "n": 31292,
+     "missing_share": 0.811,
+     "zero_share": 0.0127,
+     "unique": 97,
+     "min_p1_p5_p25_p50_p75_p95_p99_max": [
+      0.0,
+      0.0,
+      45.0,
+      300.0,
+      600.0,
+      1365.0,
+      1440.0,
+      1440.0,
+      1440.0
+     ],
+     "mean": 735.7965,
+     "top_value_share": 0.2337,
+     "patients_with_within_variation": 4,
+     "patients_observed": 4,
+     "within_patient_sd_median": 367.2037,
+     "between_patient_sd_of_means": 354.4561,
+     "univariate_auc": 0.386
+    },
+    "min_since_glinide": {
+     "group": "G8_medication_exposure",
+     "n": 31292,
+     "missing_share": 1.0,
+     "zero_share": null,
+     "unique": 0
+    },
+    "delta_insulin_60": {
+     "group": "G8_medication_exposure",
+     "n": 31292,
+     "missing_share": 0.0035,
+     "zero_share": 0.5516,
+     "unique": 6656,
+     "min_p1_p5_p25_p50_p75_p95_p99_max": [
+      -1.2444,
+      -0.7284,
+      -0.3962,
+      -0.04,
+      0.0,
+      0.0,
+      0.1472,
+      1.0221,
+      3.4619
+     ],
+     "mean": -0.0279,
+     "top_value_share": 0.5516,
+     "patients_with_within_variation": 20,
+     "patients_observed": 30,
+     "within_patient_sd_median": 0.2059,
+     "between_patient_sd_of_means": 0.0352,
+     "univariate_auc": 0.499
+    },
+    "delta_su_60": {
+     "group": "G8_medication_exposure",
+     "n": 31292,
+     "missing_share": 0.0344,
+     "zero_share": 0.8354,
+     "unique": 3604,
+     "min_p1_p5_p25_p50_p75_p95_p99_max": [
+      -0.0256,
+      -0.0208,
+      -0.0117,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.042,
+      0.0735
+     ],
+     "mean": -0.0,
+     "top_value_share": 0.8354,
+     "patients_with_within_variation": 4,
+     "patients_observed": 29,
+     "within_patient_sd_median": 0.0,
+     "between_patient_sd_of_means": 0.0002,
+     "univariate_auc": 0.553
+    },
+    "act_insulin_total_per_kg": {
+     "group": "G8_medication_exposure",
+     "n": 31292,
+     "missing_share": 0.0035,
+     "zero_share": 0.4052,
+     "unique": 7200,
+     "min_p1_p5_p25_p50_p75_p95_p99_max": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0032,
+      0.0125,
+      0.0331,
+      0.0467,
+      0.0567
+     ],
+     "mean": 0.008,
+     "top_value_share": 0.4052,
+     "patients_with_within_variation": 20,
+     "patients_observed": 30,
+     "within_patient_sd_median": 0.0066,
+     "between_patient_sd_of_means": 0.0088,
+     "univariate_auc": 0.431
+    },
+    "quality_insulin": {
+     "group": "G8_medication_exposure",
+     "n": 31292,
+     "missing_share": 0.0,
+     "zero_share": 0.5768,
+     "unique": 4,
+     "min_p1_p5_p25_p50_p75_p95_p99_max": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      5.0,
+      5.0,
+      5.0,
+      5.0
+     ],
+     "mean": null,
+     "top_value_share": 0.5768,
+     "patients_with_within_variation": 13,
+     "patients_observed": 30,
+     "within_patient_sd_median": 0.0,
+     "between_patient_sd_of_means": 2.3227,
+     "univariate_auc": 0.599
+    },
+    "quality_sulfonylurea": {
+     "group": "G8_medication_exposure",
+     "n": 31292,
+     "missing_share": 0.0,
+     "zero_share": 0.1484,
+     "unique": 3,
+     "min_p1_p5_p25_p50_p75_p95_p99_max": [
+      0.0,
+      0.0,
+      0.0,
+      5.0,
+      5.0,
+      5.0,
+      5.0,
+      5.0,
+      5.0
+     ],
+     "mean": null,
+     "top_value_share": 0.8171,
+     "patients_with_within_variation": 4,
+     "patients_observed": 30,
+     "within_patient_sd_median": 0.0,
+     "between_patient_sd_of_means": 1.3507,
+     "univariate_auc": 0.539
+    },
+    "quality_glinide": {
+     "group": "G8_medication_exposure",
+     "n": 31292,
+     "missing_share": 0.0,
+     "zero_share": 0.0,
+     "unique": 1,
+     "min_p1_p5_p25_p50_p75_p95_p99_max": [
+      5.0,
+      5.0,
+      5.0,
+      5.0,
+      5.0,
+      5.0,
+      5.0,
+      5.0,
+      5.0
+     ],
+     "mean": null,
+     "top_value_share": 1.0,
+     "patients_with_within_variation": 0,
+     "patients_observed": 30,
+     "within_patient_sd_median": 0.0,
+     "between_patient_sd_of_means": 0.0,
+     "univariate_auc": 0.5
+    },
+    "min_since_insulin_missing": {
+     "group": "G8_medication_exposure",
+     "n": 31292,
+     "missing_share": 0.0,
+     "zero_share": 0.595,
+     "unique": 2,
+     "min_p1_p5_p25_p50_p75_p95_p99_max": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0
+     ],
+     "mean": 0.405,
+     "top_value_share": 0.595,
+     "patients_with_within_variation": 5,
+     "patients_observed": 30,
+     "within_patient_sd_median": 0.0,
+     "between_patient_sd_of_means": 0.4699,
+     "univariate_auc": 0.599
+    },
+    "min_since_su_missing": {
+     "group": "G8_medication_exposure",
+     "n": 31292,
+     "missing_share": 0.0,
+     "zero_share": 0.189,
+     "unique": 2,
+     "min_p1_p5_p25_p50_p75_p95_p99_max": [
+      0.0,
+      0.0,
+      0.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0
+     ],
+     "mean": 0.811,
+     "top_value_share": 0.811,
+     "patients_with_within_variation": 4,
+     "patients_observed": 30,
+     "within_patient_sd_median": 0.0,
+     "between_patient_sd_of_means": 0.2683,
+     "univariate_auc": 0.538
+    },
+    "min_since_glinide_missing": {
+     "group": "G8_medication_exposure",
+     "n": 31292,
+     "missing_share": 0.0,
+     "zero_share": 0.0,
+     "unique": 1,
+     "min_p1_p5_p25_p50_p75_p95_p99_max": [
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0
+     ],
+     "mean": 1.0,
+     "top_value_share": 1.0,
+     "patients_with_within_variation": 0,
+     "patients_observed": 30,
+     "within_patient_sd_median": 0.0,
+     "between_patient_sd_of_means": 0.0,
+     "univariate_auc": 0.5
+    }
+   },
+   "flags": {
+    "constant": [
+     "cgm_slope60_missing",
+     "rx_glinide",
+     "rx_sglt2",
+     "age_y_missing",
+     "sex_male_missing",
+     "bmi_missing",
+     "weight_kg_missing",
+     "diabetes_duration_y_missing",
+     "rx_missing",
+     "su_last_dose",
+     "glinide_min_since_last",
+     "glinide_last_dose",
+     "glinide_dose_24h",
+     "glinide_n_24h",
+     "glinide_missing",
+     "act_glinide",
+     "glinide_p30",
+     "glinide_p60",
+     "min_since_glinide",
+     "quality_glinide",
+     "min_since_glinide_missing"
+    ],
+    "near_constant": [
+     "cgm_lag15_missing",
+     "cgm_lag30_missing",
+     "cgm_lag45_missing",
+     "cgm_lag60_missing",
+     "cgm_slope30_missing",
+     "rx_glp1",
+     "meal_none_logged",
+     "iv_insulin_recent"
+    ],
+    "mostly_missing": [
+     "glinide_min_since_last",
+     "glinide_last_dose",
+     "min_since_glinide"
+    ],
+    "required_violation": [],
+    "impossible_values": [],
+    "no_within_patient_variation": [
+     "age_y",
+     "sex_male",
+     "rx_short_rapid",
+     "rx_glp1",
+     "rx_tzd",
+     "hba1c_mmol_mol_missing",
+     "egfr_missing",
+     "c_peptide_fasting_nmol_l_missing"
+    ],
+    "smell_auc": []
+   }
+  },
+  "redundancy": {
+   "pairs_abs_ge_0.95": [
+    {
+     "a": "cgm",
+     "b": "cgm_lag15",
+     "spearman": 0.979
+    },
+    {
+     "a": "cgm",
+     "b": "cgm_m0_proj30",
+     "spearman": 0.952
+    },
+    {
+     "a": "cgm_lag15",
+     "b": "cgm_lag30",
+     "spearman": 0.979
+    },
+    {
+     "a": "cgm_lag30",
+     "b": "cgm_lag45",
+     "spearman": 0.979
+    },
+    {
+     "a": "cgm_lag30",
+     "b": "cgm_mean_2h",
+     "spearman": 0.965
+    },
+    {
+     "a": "cgm_lag45",
+     "b": "cgm_lag60",
+     "spearman": 0.978
+    },
+    {
+     "a": "cgm_lag45",
+     "b": "cgm_mean_2h",
+     "spearman": 0.98
+    },
+    {
+     "a": "cgm_lag60",
+     "b": "cgm_mean_2h",
+     "spearman": 0.978
+    },
+    {
+     "a": "cgm_m0_proj30",
+     "b": "cgm_m0_proj60",
+     "spearman": 0.973
+    },
+    {
+     "a": "rx_su",
+     "b": "su_dose_24h",
+     "spearman": 0.967
+    },
+    {
+     "a": "rx_su",
+     "b": "quality_sulfonylurea",
+     "spearman": -0.969
+    },
+    {
+     "a": "insulin_basal_dose_24h",
+     "b": "insulin_basal_n_24h",
+     "spearman": 0.992
+    },
+    {
+     "a": "insulin_basal_dose_24h",
+     "b": "insulin_basal_missing",
+     "spearman": -0.986
+    },
+    {
+     "a": "insulin_basal_dose_24h",
+     "b": "act_basal",
+     "spearman": 0.986
+    },
+    {
+     "a": "insulin_basal_n_24h",
+     "b": "insulin_basal_missing",
+     "spearman": -0.994
+    },
+    {
+     "a": "insulin_basal_n_24h",
+     "b": "act_basal",
+     "spearman": 0.981
+    },
+    {
+     "a": "su_min_since_last",
+     "b": "min_since_su",
+     "spearman": 1.0
+    },
+    {
+     "a": "su_dose_24h",
+     "b": "su_n_24h",
+     "spearman": 1.0
+    },
+    {
+     "a": "su_dose_24h",
+     "b": "act_su",
+     "spearman": 0.96
+    },
+    {
+     "a": "su_dose_24h",
+     "b": "su_p30",
+     "spearman": 0.961
+    },
+    {
+     "a": "su_dose_24h",
+     "b": "su_p60",
+     "spearman": 0.961
+    },
+    {
+     "a": "su_dose_24h",
+     "b": "quality_sulfonylurea",
+     "spearman": -0.982
+    },
+    {
+     "a": "su_n_24h",
+     "b": "act_su",
+     "spearman": 0.96
+    },
+    {
+     "a": "su_n_24h",
+     "b": "su_p30",
+     "spearman": 0.961
+    },
+    {
+     "a": "su_n_24h",
+     "b": "su_p60",
+     "spearman": 0.961
+    },
+    {
+     "a": "insulin_basal_missing",
+     "b": "act_basal",
+     "spearman": -0.986
+    },
+    {
+     "a": "su_missing",
+     "b": "min_since_su_missing",
+     "spearman": 0.965
+    },
+    {
+     "a": "csii_active",
+     "b": "csii_rate_iu_h",
+     "spearman": 0.995
+    },
+    {
+     "a": "act_insulin_total",
+     "b": "insulin_p30",
+     "spearman": 0.993
+    },
+    {
+     "a": "act_insulin_total",
+     "b": "insulin_p60",
+     "spearman": 0.987
+    },
+    {
+     "a": "act_insulin_total",
+     "b": "act_insulin_total_per_kg",
+     "spearman": 0.996
+    },
+    {
+     "a": "insulin_p30",
+     "b": "insulin_p60",
+     "spearman": 0.998
+    },
+    {
+     "a": "insulin_p30",
+     "b": "act_insulin_total_per_kg",
+     "spearman": 0.989
+    },
+    {
+     "a": "insulin_p60",
+     "b": "act_insulin_total_per_kg",
+     "spearman": 0.983
+    },
+    {
+     "a": "act_su",
+     "b": "su_p30",
+     "spearman": 0.999
+    },
+    {
+     "a": "act_su",
+     "b": "su_p60",
+     "spearman": 0.999
+    },
+    {
+     "a": "act_su",
+     "b": "quality_sulfonylurea",
+     "spearman": -0.967
+    },
+    {
+     "a": "su_p30",
+     "b": "su_p60",
+     "spearman": 1.0
+    },
+    {
+     "a": "su_p30",
+     "b": "quality_sulfonylurea",
+     "spearman": -0.968
+    },
+    {
+     "a": "su_p60",
+     "b": "quality_sulfonylurea",
+     "spearman": -0.968
+    },
+    {
+     "a": "quality_insulin",
+     "b": "min_since_insulin_missing",
+     "spearman": 0.986
+    }
+   ],
+   "identical_columns": [],
+   "m3_feature_best_m3r_match": {
+    "act_prandial": {
+     "best_g7": "insulin_bolus_n_24h",
+     "abs_spearman": 0.748
+    },
+    "act_intermediate": {
+     "best_g7": "insulin_bolus_last_dose",
+     "abs_spearman": 0.707
+    },
+    "act_basal": {
+     "best_g7": "insulin_basal_dose_24h",
+     "abs_spearman": 0.986
+    },
+    "act_insulin_total": {
+     "best_g7": "insulin_bolus_dose_24h",
+     "abs_spearman": 0.86
+    },
+    "iob_insulin": {
+     "best_g7": "insulin_bolus_dose_24h",
+     "abs_spearman": 0.694
+    },
+    "insulin_p30": {
+     "best_g7": "insulin_bolus_dose_24h",
+     "abs_spearman": 0.859
+    },
+    "insulin_p60": {
+     "best_g7": "insulin_bolus_dose_24h",
+     "abs_spearman": 0.854
+    },
+    "act_su": {
+     "best_g7": "su_dose_24h",
+     "abs_spearman": 0.96
+    },
+    "su_p30": {
+     "best_g7": "su_n_24h",
+     "abs_spearman": 0.961
+    },
+    "su_p60": {
+     "best_g7": "su_n_24h",
+     "abs_spearman": 0.961
+    },
+    "min_since_insulin": {
+     "best_g7": "insulin_bolus_min_since_last",
+     "abs_spearman": 0.751
+    },
+    "min_since_su": {
+     "best_g7": "su_min_since_last",
+     "abs_spearman": 1.0
+    },
+    "delta_insulin_60": {
+     "best_g7": "insulin_bolus_dose_24h",
+     "abs_spearman": 0.488
+    },
+    "delta_su_60": {
+     "best_g7": "su_min_since_last",
+     "abs_spearman": 0.578
+    },
+    "act_insulin_total_per_kg": {
+     "best_g7": "insulin_bolus_missing",
+     "abs_spearman": 0.86
+    },
+    "quality_insulin": {
+     "best_g7": "insulin_bolus_missing",
+     "abs_spearman": 0.755
+    },
+    "quality_sulfonylurea": {
+     "best_g7": "su_dose_24h",
+     "abs_spearman": 0.982
+    },
+    "min_since_insulin_missing": {
+     "best_g7": "insulin_bolus_missing",
+     "abs_spearman": 0.775
+    },
+    "min_since_su_missing": {
+     "best_g7": "su_missing",
+     "abs_spearman": 0.965
+    }
+   },
+   "named": {
+    "insulin_p60~act_insulin_total": 0.987,
+    "insulin_p30~act_insulin_total": 0.993,
+    "su_p60~act_su": 0.999,
+    "act_insulin_total~insulin_bolus_dose_24h": 0.86,
+    "act_su~su_min_since_last": -0.606,
+    "cgm_m0_proj60~cgm_slope30": 0.557,
+    "act_insulin_total~act_insulin_total_per_kg": 0.996
+   }
+  },
+  "event_study": {
+   "insulin_bolus_sc": {
+    "administrations": 227,
+    "median_by_offset_min": {
+     "act_insulin_total": {
+      "-15": 0.4519,
+      "0": 0.407,
+      "30": 1.833,
+      "60": 2.388,
+      "120": 2.1468,
+      "240": 0.9509
+     },
+     "iob_insulin": {
+      "-15": 2.4907,
+      "0": 9.985,
+      "30": 9.4686,
+      "60": 9.1658,
+      "120": 7.8341,
+      "240": 6.4146
+     },
+     "insulin_bolus_min_since_last": {
+      "-15": 690.0,
+      "0": 0.0,
+      "30": 30.0,
+      "60": 60.0,
+      "120": 120.0,
+      "240": 240.0
+     }
+    }
+   },
+   "sulfonylurea": {
+    "administrations": 75,
+    "median_by_offset_min": {
+     "act_su": {
+      "-15": 0.6066,
+      "0": 0.5909,
+      "30": 0.6195,
+      "60": 0.6431,
+      "120": 0.6773,
+      "240": 0.707
+     },
+     "su_min_since_last": {
+      "-15": 795.0,
+      "0": 0.0,
+      "30": 30.0,
+      "60": 60.0,
+      "120": 120.0,
+      "240": 240.0
+     }
+    }
+   }
+  }
+ },
+ "timing": {
+  "workers": 15,
+  "power_throttling_disabled": true,
+  "phase_wall_seconds": {
+   "build_a": 22.7,
+   "build_b": 10.9,
+   "parity": 49.5,
+   "truncation": 483.0,
+   "perturbation": 23.5,
+   "statistics": 3.5
+  },
+  "total_wall_seconds": 604.2,
+  "build_wall_seconds": 22.7,
+  "truncation_wall_seconds": 483.0,
+  "update_us_per_event": 406.1,
+  "features_ms_per_reading": 3.792,
+  "combined_ms_per_reading": 4.248,
+  "events": 37570,
+  "longest_recording_events": 1539,
+  "replay_peak_traced_memory_mb": 0.1,
+  "table_memory_mb": 32.7
+ },
+ "matrix_path": "data/processed/features/v1.0.0/tuning_features.parquet"
+}
