@@ -96,18 +96,18 @@ Once a remote exists, a GitHub Actions workflow runs on every push: `uv sync --f
 mypy, pytest (no data, so `requires_data` tests skip), the frontend lint and build, and the
 E2E tests on the main branch.
 
-## 8. Current status (updated 2026-10-18, end of S6)
+## 8. Current status (updated 2026-10-18, end of S7)
 
-Command: `uv run pytest -q` → **421 passed, 0 failed**. ruff clean; `mypy --strict src` clean (83 files).
+Command: `uv run pytest -q` → **479 passed, 0 failed**. ruff clean; `mypy --strict src` clean (92 files).
 
-| Category | Tests | Passing | Notable additions in S6 |
+| Category | Tests | Passing | Notable additions in S7 |
 |---|---|---|---|
-| Unit | 372 | 372 | S6 rules on SYNTHETIC fixtures (label, P-B6 masks, P-B1/B6/B8 decisions, OOF assembly); grouped folds (deterministic, balanced, stratified); calibrators (monotone, bounded, serialisable, resolution); LightGBM wrapper (determinism, feature-spec check, early stopping, class weighting refused) |
-| Leakage / static guards | 18 | 18 | unchanged. The S6 runner asserts nested-fold isolation at run time |
+| Unit | 419 | 419 | policy `decide` (Table 14.1 rows via gate, inclusive boundaries, cooldown / persistence, tags never downgrade — property test, malformed inference, staleness, invariants, texts never "safe" / no treatment words); strict artefact loader (hash, missing, compatibility, corrupt, level, thresholds, pin, CONFIRMATORY guard); runner (rejected events never poison later state, inference failure, circuit breaker, EVENT_REJECTED tag); session (log determinism, seek = uninterrupted log) |
+| Leakage / static guards | 18 | 18 | unchanged |
 | Regression | 10 | 10 | unchanged |
-| Integration (real data) | 21 | 21 | development dataset: alignment, 403 positives, strata, P-B6 mask counts, fold sizes |
+| Integration (real data) | 32 | 32 | S7 on T: bitwise offline/live parity, decision-log determinism, long run ×600, refusal to start, API contract + acknowledgement, bounds and safe errors, stale bed → INSUFFICIENT + `bed_state` stream, SSE typing, slow-subscriber disconnect |
 
-The S6 workflow itself runs as `hyposense dev s6`; its reproducibility comes from two identical runs.
+Engineering evidence (all T recordings): `hyposense dev s7` (two identical runs).
 
 All synthetic fixtures are generated at test time (`tests/conftest.py`, labelled SYNTHETIC). No
 binary fixtures or real patient data are committed.

@@ -1,14 +1,15 @@
 # HypoSense Twin — Current Project State
 
-_Last updated: 2026-10-18 (end of S6). This is the canonical snapshot. Read it first, then
+_Last updated: 2026-10-18 (end of S7). This is the canonical snapshot. Read it first, then
 [NEXT_STEPS.md](NEXT_STEPS.md) and [PROGRESS.md](PROGRESS.md)._
 
 ## Current Phase
-**S6 — complete and reviewed.** Next: **S7** (policy, replay, API). Owner decisions are pending
-before freeze. S7 has **not** been started.
+**S7 — complete and reviewed.** Next: **S8** (frontend). S8 has **not** been started. Freeze is
+NOT ready (owner decisions pending).
 
 ## Overall Status
-**IMPLEMENTATION.** Learned models have been developed on T. G4 PASS. E is still sealed.
+**IMPLEMENTATION.** Deterministic backend (policy, replay, API) runs end-to-end on T with a
+DEVELOPMENT model. E is still sealed.
 
 ## Completed Components
 | Component | Status | Key files | Evidence |
@@ -21,6 +22,7 @@ before freeze. S7 has **not** been started.
 | **S4 feature specification v1.0.0** | **DONE, locked** | `features/spec.py` → `artifacts/features/feature_spec.json` (v1.0.1, sha256 `90329804…`) | regression lock; docs/FEATURE_DICTIONARY.md |
 | **S5 evaluation harness + policy core + M0 + bootstrap** | **DONE** | `src/hyposense/evaluation/`, `policy/decide.py`, `models/m0.py`, `artifacts/evaluation/metric_registry.json` | Table A.2 7 MATCH + 1 EXPECTED; `T-AGG-eval-m0-20261018T1406*`/`T1407*` (results `7864a0d0…`, identical) |
 | **S6 learned-model development (T)** | **DONE; G4 PASS** | `models/lgbm.py`, `calibration/methods.py`, `evaluation/{folds,devdata,s6_run}.py` | `T-AGG-dev-s6-20261018T1444*`/`T1500*` (results `e81268ae…`, identical); `artifacts/gates/G4.json` |
+| **S7 policy, replay, API** | **DONE** | `policy/{decide,messages}.py`, `models/artifact.py`, `replay/{runner,session}.py`, `api/{app,schemas,service}.py`, `evaluation/{s7_artifact,s7_bench}.py` | `T-AGG-s7-engineering-20261018T163321Z` / `T-AGG-s7-engineering-20261018T163810Z` (results `6d2517cd…`, identical); DEC-2026-10-18-J |
 | **S4 feature audit (T only)** | **DONE** | `audit/features.py`, `hyposense audit features` | `T-AGG-audit-features-20261018T1215*`, `T1225*` (results_sha256 `db39f39a…`, identical in runs 2–5) |
 
 ## Model Feature Contracts (verified from features/spec.py)
@@ -60,6 +62,7 @@ None. S4 ended at a clean boundary.
 | M0 (DEVELOPMENT, T) | sens@1FA 0.626 (95 % CI 0.491–0.837) treated, 0.610 (0.418–0.810) all; θA 54.0 / 52.2 mg/dL; precision 0.12 / 0.16; median lead 45 / 30 min |
 | Gates | **G4 PASS** (tests, pipeline on T, M1 curve) |
 | Ladder (DEVELOPMENT, treated T, sens@1FA) | M0 0.626 · M1 0.857 · M2 0.875 · M3r 0.929 · M3 0.911 (ceiling 0.946). C0 +0.231 (0.094–0.437). C1 / C2a / C2b / M3−M2 intervals include 0 |
+| DEVELOPMENT artefact (S7) | `M3-development-9590a582b0c1` (T only; τA 0.123, τW 0.025); rebuild bitwise identical |
 | Frozen candidates (S6) | shared LightGBM hyperparameters (trial #20), 113 rounds, calibrator isotonic_interp (rule-selected, FRAGILE → P-B10), quality codes categorical. P-B6 exclusion: rule met, PENDING implementation and owner decision |
 | Sealed evaluation (E) | **SEALED.** S4 used TUNING_ONLY only. Feature generation refuses other scopes, and the adapter refuses E patients (`assert_not_sealed`). No E feature, prediction or per-patient analysis exists. |
 
@@ -73,16 +76,23 @@ None. S4 ended at a clean boundary.
 ## Testing Status
 | Category | Status |
 |---|---|
-| Unit | 372/372 |
+| Unit | 419/419 |
 | Leakage / static guards | 18/18 |
 | Regression | 10/10 |
-| Integration (real data, T / aggregate) | 21/21 |
-| Lint / format / types | ruff clean; mypy --strict clean (83 files) |
+| Integration (real data, T / aggregate) | 32/32 |
+| Lint / format / types | ruff clean; mypy --strict clean (92 files) |
 
-Last full run: `uv run pytest -q` → **421 passed** (2026-10-18, after the S6 review fixes).
+Last full run: `uv run pytest -q` → **479 passed** (2026-10-18, after the S7 review fixes).
+
+## Engineering (S7, T)
+- **Latency:** per reading p50 1.5 ms / p99 4.5 ms; API ward p50
+  3.2 ms.
+- **Parity:** offline vs live, 0 mismatches.
+- **Determinism:** identical decision logs.
+- **Error injection:** no poisoning.
 
 ## UI Status
-Not started (S7/S8).
+Not started (S8). The backend API contract is in ARCHITECTURE §4.10.
 
 ## Open Issues
 | Issue | Severity | Proposed solution |
@@ -98,14 +108,19 @@ Not started (S7/S8).
 | Model-fit variance ≥ M2/M3r/M3 differences on T; ladder ordering uninformative (review F3) | MEDIUM (interpretation) | P-B11 |
 | Hyperparameters weakly identified (30 trials within 0.004 log-loss) | LOW | shared set frozen; R4 retuning is a robustness analysis |
 | S6 evaluation / bootstrap runtime 11–14 min | LOW | acceptable offline |
-| Live path: one malformed / back-dated event ends the twin (SYSTEM_ERROR) | LOW (S7) | recovery policy for the replay service in S7 |
+| LOW_CONFIDENCE tag on 16.1% of forecasts (per-feature 0.5–99.5 % rule) | LOW (display) | P-B12 |
+| Rejected non-CGM event shows SYSTEM ERROR until the next reading | LOW (display) | P-C10 |
+| C: drive nearly full on the development machine (tool temp files) | LOW (environment) | free space; S7 work used E: for temp files |
 | Kernel assumptions; pharmacist review | MEDIUM | review packet; SA6 |
-| P-C7 warm-up after sensor change | LOW | hook implemented; decide before S7 |
+| P-C7 warm-up after sensor change | LOW | not implemented in S7 (blueprint rule active); decide before freeze |
 
 ## Open Decisions
 | Decision | Recommendation | Approval required? | Blocking? |
 |---|---|---|---|
-| P-C7 warm-up restart after gap > 120 min | Approve | Yes | Before S7 |
+| P-C7 warm-up restart after gap > 120 min | Approve | Yes | Before freeze (S7 shipped without it) |
+| P-C10 display after a rejected non-CGM event | Option (b): keep state + INPUT REJECTED badge | Yes | Before S8 UI |
+| P-B12 LOW CONFIDENCE definition | Run (Class B, T) | No | Before freeze |
+| Optional LLM/API layer (owner idea) | Architectural opinion delivered after S7; no code | Yes | No |
 | P-B1, P-B2, P-B6, P-B7, P-B8, P-B9 | Run as planned S6 experiments | No (Class B) | — |
 | ANALYSIS_PLAN §5 draft | Approve | Yes | Before freeze |
 | P-C9 level-rule reference baseline | Approve (secondary) | Yes | Before freeze |
@@ -115,8 +130,10 @@ Not started (S7/S8).
 | Pharmacist review | Use the packet when a reviewer is available | — | No |
 
 ## Last Verified Commit
-- Code: `fd34ecf` (S6). The official development runs ran on it, clean and identical.
+- Code: `9b154bf` (S7 + review fixes). The official engineering runs ran on it, clean and
+  identical.
 - Documentation commit: see `git log -1`.
 
 ## Next Recommended Task
-**S7: policy, replay and API.** Owner decisions are pending before freeze.
+**S8: professional frontend** on the S7 API (T replay, DEVELOPMENT labels). Owner decisions are
+pending before freeze.

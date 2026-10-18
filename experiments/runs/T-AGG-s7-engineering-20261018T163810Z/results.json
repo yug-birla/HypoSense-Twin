@@ -1,0 +1,187 @@
+{
+ "run_id": "T-AGG-s7-engineering-20261018T163810Z",
+ "created_utc": "2026-10-18T16:33:24+00:00",
+ "finished_utc": "2026-10-18T16:38:10+00:00",
+ "status": "DEVELOPMENT (engineering)",
+ "partition": "T",
+ "results_sha256": "6d2517cdd5d579e8c51251644be27b0df951475de59a35a54ef515172c1b33f7",
+ "provenance": {
+  "git": {
+   "commit": "9b154bf2a38e09b362c845a8ef8398b529a0df23",
+   "dirty": false,
+   "dirty_paths": []
+  },
+  "environment": {
+   "hyposense": "0.0.1",
+   "python": "3.11.9",
+   "platform": "Windows-10-10.0.26200-SP0",
+   "packages": {
+    "numpy": "2.4.6",
+    "pandas": "3.0.6",
+    "openpyxl": "3.1.5",
+    "xlrd": "2.0.2",
+    "pyyaml": "6.0.3",
+    "pydantic": "2.14.1",
+    "scikit-learn": "1.9.1",
+    "lightgbm": "4.7.0"
+   },
+   "uv_lock_sha256": "ad1c19ff8ea68ed52509ff6b4496c91d8f282d43c5e1cb26785883d5ad560567"
+  },
+  "config_sha256": "700ad6121d7a00d3574bc070b5ad343c8f8e02b4857e5c3e55b713c79202d110",
+  "partition_sha256": "ccdcbce02b049992b0ca09bd99a2a5b8c49bcf49940f3a68ed6ca69cd2449578",
+  "label_config_sha256": "92e24a777897ab727c410433f5c218bf45b9819d322d940678084918e7284f7f",
+  "analysis_plan_sha256": "435c6b5eb6982b1e4306c0932125371f128a660a9f68f6e455795b728e7085ad",
+  "analysis_plan_version": "v0.5",
+  "metric_registry_sha256": "cf01baeb30d2ae7afaddbcc4c399a170fec56699b800c29d585fea3dadc5f685",
+  "feature_spec_sha256": "90329804c62df16a6a24198e61a56b1df3b41a9f05be95036e19bbf3cf2e5f49",
+  "reference_sha256": "8631cd7edf2d01c16cd3532aea2d33800964ce4c28418fa8c4dd37c62d9bdab3",
+  "treated_population_sha256": "2016d3e3025b66081889e4fe64c3359c280f2be79534b57fb82e31db4050c5ef",
+  "dataset_v5_files_sha256": "5f9d65b4e9233d4ecdd05438e80bb94314290cd5e2d9fdd21e353487cd3cc4ab",
+  "artifact_manifest_sha256": "6e236fb27680dd4b1d500380b4d120492e905cc5f8e46ec5fa1b8690ea07ac59",
+  "model_version": "M3-development-9590a582b0c1"
+ },
+ "results": {
+  "model_version": "M3-development-9590a582b0c1",
+  "model_status": "DEVELOPMENT",
+  "artifact_rebuild": {
+   "identical_files": true,
+   "matches_deployed": true
+  },
+  "parity": {
+   "recordings": 34,
+   "readings": 33464,
+   "ts_mismatch": 0,
+   "forecast_set_mismatch": 0,
+   "probability_mismatch": 0,
+   "notification_mismatch": 0,
+   "gate_state_mismatch": 0
+  },
+  "determinism": {
+   "sessions": 3,
+   "decision_log_sha256": [
+    "faccae3022965d8eae2916b6d6e0d3aab486eb1943769740f5a5594fb289a476",
+    "3cebf687cdfcacf85eacccaf3ffe8ccff7e0e5e74baf5e29e33e2749dd0220ff",
+    "d171b4de389b36f0ba8c88f46408ac4f27a8660e8b34a2ac83fb124d75825c68"
+   ],
+   "identical": true
+  },
+  "in_sample_description": {
+   "note": "DEVELOPMENT model fitted on all of T: in-sample, engineering description only",
+   "events": 37570,
+   "decisions": 33464,
+   "states": {
+    "ALERT": 1006,
+    "INSUFFICIENT_DATA": 263,
+    "LOW_NOW": 1785,
+    "NO_ALERT": 28684,
+    "WATCH": 1726
+   },
+   "forecasts": 31416,
+   "tag_rate_per_forecast": {
+    "LOW_CONFIDENCE": 0.1613,
+    "MED_TIMING_UNKNOWN": 0.0381
+   },
+   "notifications_per_day": 1.186,
+   "recording_days": 348.3
+  },
+  "error_injection": {
+   "recordings": 6,
+   "injected": 30,
+   "rejected": 30,
+   "system_error_records": 30,
+   "later_decisions_changed": 0,
+   "final_state_equal": 6
+  },
+  "long_run": {
+   "recording_days": 13.94,
+   "events": 1521,
+   "rejected": 0,
+   "retained_growth_second_replay": true
+  }
+ },
+ "timing": {
+  "load_streams_s": 2.05,
+  "parity_s": 82.3,
+  "full_replay_0_s": 56.9,
+  "full_replay_1_s": 55.9,
+  "per_reading_end_to_end": {
+   "n": 33464,
+   "p50_ms": 1.5283,
+   "p95_ms": 3.0875,
+   "p99_ms": 4.14,
+   "max_ms": 86.4816
+  },
+  "replay_events_per_s": 672.1,
+  "components": {
+   "state_update": {
+    "n": 4125,
+    "p50_ms": 0.0698,
+    "p95_ms": 0.107,
+    "p99_ms": 0.1713,
+    "max_ms": 0.4797
+   },
+   "gate": {
+    "n": 3585,
+    "p50_ms": 0.006,
+    "p95_ms": 0.0088,
+    "p99_ms": 0.0139,
+    "max_ms": 0.1584
+   },
+   "snapshot": {
+    "n": 2000,
+    "p50_ms": 0.844,
+    "p95_ms": 1.2521,
+    "p99_ms": 1.5817,
+    "max_ms": 1.9838
+   },
+   "predict": {
+    "n": 2000,
+    "p50_ms": 0.1048,
+    "p95_ms": 0.1686,
+    "p99_ms": 0.2438,
+    "max_ms": 1.0795
+   },
+   "decide": {
+    "n": 2000,
+    "p50_ms": 0.0072,
+    "p95_ms": 0.0108,
+    "p99_ms": 0.0151,
+    "max_ms": 0.0874
+   }
+  },
+  "api_testclient": {
+   "ward": {
+    "n": 200,
+    "p50_ms": 2.8017,
+    "p95_ms": 4.8296,
+    "p99_ms": 5.5742,
+    "max_ms": 6.3524
+   },
+   "patient": {
+    "n": 200,
+    "p50_ms": 3.664,
+    "p95_ms": 6.4193,
+    "p99_ms": 7.399,
+    "max_ms": 7.6709
+   },
+   "step_1": {
+    "n": 200,
+    "p50_ms": 5.5714,
+    "p95_ms": 9.9576,
+    "p99_ms": 11.4286,
+    "max_ms": 12.6665
+   },
+   "meta": {
+    "n": 200,
+    "p50_ms": 2.3101,
+    "p95_ms": 4.0357,
+    "p99_ms": 4.6342,
+    "max_ms": 5.4653
+   }
+  },
+  "long_run_traced_mb": [
+   1.0,
+   1.0
+  ]
+ }
+}

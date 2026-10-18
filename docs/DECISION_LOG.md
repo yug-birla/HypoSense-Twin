@@ -838,3 +838,105 @@ Evidence: T-AGG-dev-s6-20261018T144427Z and T150030Z on clean fd34ecf; identical
 - **Verification run:** `T-AGG-dev-s6-20261018T153341Z` on clean fce4c4b gave the same results_sha256 `e81268ae…` as
   the official runs. The refactor leaves results unchanged.
 - **Class**: A (code / tests / docs); B (P-B10, P-B11 proposals) · **Date**: 2026-10-18 · **Commit**: fce4c4b
+
+## DEC-2026-10-18-J · S7: policy, replay and API (implementation decisions + review outcome)
+
+Class A unless marked. Code: 457b770 (S7), 9b154bf (review fixes). No protocol change.
+
+- **Single policy implementation.**
+  - `policy.decide.gate` (S5) is shared by the live runner and the offline evaluation replay.
+  - `decide()` composes `gate`, `classify` and `should_notify`. It never raises; a malformed
+    inference response (None, NaN, outside [0, 1]) becomes SYSTEM_ERROR.
+  - Tags (LOW_CONFIDENCE, MED_TIMING_UNKNOWN:<class>, EVENT_REJECTED) qualify forecast states
+    only and never change the state or the notification (property-tested).
+  - `current()` turns a decision older than 20 min into INSUFFICIENT DATA (NO_RECENT_READING),
+    so a stale prediction is never shown as current.
+  - Display texts are fixed in `policy/messages.py`: never "safe", no treatment advice.
+  - Probability text is `<1%` / `>99%` at the extremes, so 0 % is never shown (DEC-2026-10-18-I
+    F1).
+  - Offline evaluation uses vectorised equivalents of `classify` / `should_notify`. Equivalence
+    is shown by tests and by the measured parity below (review F8; the docstring is corrected).
+- **Strict artefact (ADR-009 realised; `models/artifact.py`).**
+  - Contents: model.txt, calibrator.json, policy.json, feature_range.json, manifest.json.
+  - Refusal conditions:
+    - any file hash differs;
+    - a file is missing;
+    - the feature-spec, config, pharma or dictionary hash differs from the running system;
+    - the level or feature list differs;
+    - the content is corrupt;
+    - thresholds fall outside 0 ≤ τW ≤ τA ≤ 1, or the strict comparator is set;
+    - the calibrator is not a monotone map into [0, 1].
+  - `--expect-sha` pins the manifest. A CONFIRMATORY artefact must be pinned, so a manifest
+    edit cannot relabel a DEVELOPMENT model (review F1).
+- **DEVELOPMENT artefact (T only; `evaluation/s7_artifact.py`).** It mirrors the deployment
+  procedure on T with the frozen S6 choices:
+  - S6 hyperparameters and 113 rounds, verified against results hash `e81268ae…`;
+  - grouped OOF over T (S6 outer folds);
+  - isotonic_interp fitted on the OOF predictions;
+  - τA and τW by ANALYSIS_PLAN §3.5–3.6 on all T patients;
+  - final fit on all eligible T rows;
+  - P-B6 not applied (pending); M3_baseline.
+
+  `M3-development-9590a582b0c1`: τA = 0.1230, τW = 0.0251. Rebuilds are bitwise identical. It is labelled
+  DEVELOPMENT everywhere and is never evidence.
+- **Replay.**
+  - Recordings share a RELATIVE clock (offset from each recording's first event).
+  - Total order: (offset, event rank, recording_key, stream position).
+  - Speed affects pacing only.
+  - Seek rebuilds from the start into a new log segment.
+  - Logs go to logs/replay/<session>/ as decisions.jsonl, acks.jsonl, rejected.jsonl and
+    session.json. Only session.json holds wall-clock fields, so the decision-log SHA-256 is the
+    determinism fingerprint.
+- **Error recovery** (resolves the S4 finding "one malformed event ends the twin"):
+  - Live input check: glucose must lie in [20, 600] mg/dL (Table 25.1).
+  - A rejected event (malformed, implausible, out-of-order, duplicate or foreign) is
+    quarantined. It yields a SYSTEM_ERROR record at its time, and the previous immutable state
+    is kept, so later state is never poisoned.
+  - A rejected dose, meal or CBG adds the EVENT_REJECTED tag for 36 h.
+  - An inference, gate or snapshot exception is SYSTEM_ERROR for that reading only.
+  - After 5 consecutive rejections the runner halts until reset (circuit breaker).
+- **API** (FastAPI + SSE, ADR-008; contract in ARCHITECTURE §4.10).
+  - Typed, `extra=forbid` requests, with every control bounded.
+  - Recordings come from the T catalogue only, addressed by key, never by path.
+  - Errors are typed with no stack trace; binds to 127.0.0.1; no network calls.
+  - All service access is serialised by one asyncio lock. Mutations (seek/step/advance/select)
+    run off the event loop, and the clock tick is capped at 1 s (review F3).
+  - The stream is versioned (v1) with message types session / tick / decision / notification /
+    error / bed_state / acknowledgement. `bed_state` pushes every change of the DISPLAYED state,
+    including staleness (review F4).
+  - Explanations (top-3 grouped TreeSHAP on the raw margin) are given for the current forecast
+    only (review F5).
+  - Slow subscribers are disconnected; at most 16 subscribers.
+- **Acknowledgement.** Exactly the four reason codes, with user_role ∈ {nurse, physician,
+  researcher}. Only notifications can be acknowledged, once each; acknowledgements are logged
+  to acks.jsonl.
+  - **Deviation from Table 25.1:** no free-text `note` field. This is privacy-safe and nothing
+    downstream reads it.
+- **P-C7 (Class C, pending).** Not implemented. The blueprint warm-up rule stays active
+  (`warmup_restart_after_gap_min: null`) and the hook is ready.
+- **Measured (`T-AGG-s7-engineering-20261018T163321Z`, `T-AGG-s7-engineering-20261018T163810Z`; clean 9b154bf; results `6d2517cd…`, identical):**
+  - **Parity:** offline vs live on all 34 T recordings (33,464
+    readings): 0 time, forecast-set, probability (bitwise), notification and gate-state
+    mismatches.
+  - **Determinism:** identical decision-log hashes across two full replays.
+  - **Error injection:** 30 events on 6 real records; 0 later
+    decisions changed; final states equal.
+  - **Long run:** 13.94 days at ×600 with no retained memory growth.
+  - **Latency:**
+    - per reading end-to-end p50 1.5 ms / p99 4.5 ms (target
+      < 200 ms);
+    - snapshot 0.89 ms, predict 0.11 ms,
+      decide 0.007 ms;
+    - API (TestClient) ward 3.2 ms, patient
+      4.0 ms;
+    - replay throughput 629 events/s.
+  - **In-sample description only:** LOW_CONFIDENCE on 16.1% of forecasts (→ P-B12);
+    MED_TIMING_UNKNOWN on 3.8%.
+- **Negative / superseded:** `T-AGG-s7-engineering-20261018T161559Z` (clean 457b770). Its error-injection design put 5 bad
+  events back to back, which tripped the circuit breaker, so later events were refused. That
+  is correct behaviour, but an invalid poisoning test. The benchmark was fixed (injections
+  spaced) and rerun.
+- **Review** (independent, 457b770): no CRITICAL or HIGH findings.
+  - F1, F2, F3, F4, F5, F6, F8, F9 and F10 are fixed in 9b154bf, with tests.
+  - F7, the display semantics of a rejected non-CGM event, is raised as P-C10 for the owner.
+- **Class**: A (+ P-C10 / P-B12 raised) · **Date**: 2026-10-18 · **Commit**: 457b770, 9b154bf

@@ -90,15 +90,15 @@ Update this file whenever a requirement's status changes. Module paths are relat
 
 | ID | Requirement | Kind | Source | Implementation | Verification | Status |
 |---|---|---|---|---|---|---|
-| P-01 | Table 14.1 states and priority (+ approved P-C1) | C | Table 14.1, ANALYSIS_PLAN §1 | `policy/decide.py` | `test_policy_table` | PENDING (S7) |
+| P-01 | Table 14.1 states and priority (+ approved P-C1) | C | Table 14.1, ANALYSIS_PLAN §1 | `policy/decide.py` | `test_policy_table` | **PASS** (S7: `decide`; P-C1, P-C8b; `test_policy_decide`, S5 gate tests) |
 | P-02 | τA rule (dev FA ≤1.0), τW rule (≤3.0) | C | §14.3, ANALYSIS_PLAN §3.5–3.6 | `evaluation/thresholds.py` | unit tests | PENDING (S5; rules approved) |
-| P-03 | 60-min cooldown; ALERT persists | C | Table 5.1 | `policy/` | `test_cooldown` | PENDING |
-| P-04 | LOW CONFIDENCE / timing tags never downgrade ALERT | REQ | §14.3 | `policy/` | `test_uncertainty_never_silences` | PENDING |
-| P-05 | Gap → INSUFFICIENT DATA, no probability | REQ | §10.4 | `policy/` | `test_missing_abstains` | PENDING |
-| P-06 | SYSTEM ERROR on exception/hash mismatch; never stale | REQ | §14.2, §18 | `policy/`, `api/` | unit + API tests | PENDING |
-| P-07 | JSONL decision and ack logs with listed fields | REQ | §14.3 | `policy/`, `api/` | log schema test | PENDING |
-| P-08 | 4 acknowledgement reason codes | REQ | §16.4 | `api/`, frontend | API + E2E | PENDING |
-| P-09 | Never the word "safe"; no dose advice | REQ | §16.3 | policy, UI | UI string scan | PENDING |
+| P-03 | 60-min cooldown; ALERT persists | C | Table 5.1 | `policy/` | `test_cooldown` | **PASS** (S7: `test_cooldown_and_alert_persistence`) |
+| P-04 | LOW CONFIDENCE / timing tags never downgrade ALERT | REQ | §14.3 | `policy/` | `test_uncertainty_never_silences` | **PASS** (S7: property test `test_tags_never_change_state_or_notification`) |
+| P-05 | Gap → INSUFFICIENT DATA, no probability | REQ | §10.4 | `policy/` | `test_missing_abstains` | **PASS** (S7: gate + `current()` staleness; API stale-bed test) |
+| P-06 | SYSTEM ERROR on exception/hash mismatch; never stale | REQ | §14.2, §18 | `policy/`, `api/` | unit + API tests | **PASS** (S7: artefact refusal tests; inference / malformed → SYSTEM_ERROR; no stale reuse) |
+| P-07 | JSONL decision and ack logs with listed fields | REQ | §14.3 | `policy/`, `api/` | log schema test | **PASS** (S7: decisions.jsonl / acks.jsonl; deterministic log hash) |
+| P-08 | 4 acknowledgement reason codes | REQ | §16.4 | `api/`, frontend | API + E2E | **PASS** (API: enum of 4; frontend S8) |
+| P-09 | Never the word "safe"; no dose advice | REQ | §16.3 | policy, UI | UI string scan | **PASS** (backend texts scanned; UI strings S8) |
 
 ## Evaluation and statistics
 
@@ -229,3 +229,16 @@ Update this file whenever a requirement's status changes. Module paths are relat
 | D6-06 | Pre-registered experiments P-B1/B6/B8/B9 (P-B7 justified not run) | B | DEC-2026-10-18-G | `s6_run` | DEC-2026-10-18-H | **PASS** |
 | D6-07 | Grouped TreeSHAP (descriptive) | REQ | §16.1 | `s6_run.task_outer` (pred_contrib) | results.json | **PASS** |
 | D6-08 | Gate G4 | Gate | Table 21.1 | `artifacts/gates/G4.json` | 415 tests; pipeline; M1 curve | **PASS** |
+
+## S7 additions
+
+| ID | Requirement | Kind | Source | Implementation | Verification | Status |
+|---|---|---|---|---|---|---|
+| D7-01 | One policy implementation for live and offline | REQ | CLAUDE.md §19; ANALYSIS_PLAN §2 | `policy/decide.py` | parity 33,464 readings, 0 mismatches | **PASS** |
+| D7-02 | Strict artefact loader; refuse on mismatch | REQ | §18 Table 18.1; ADR-009 | `models/artifact.py` | `test_artifact` (hash, missing, compatibility, corrupt, level, thresholds, pin) | **PASS** |
+| D7-03 | Deterministic replay; identical decision-log hash | REQ | Table 18.1 | `replay/session.py` | `test_replay_determinism…`; bench | **PASS** |
+| D7-04 | Error recovery without state poisoning; no stale prediction | REQ | §14.2; CLAUDE.md §29 | `replay/runner.py` | unit injections; bench 30 injections, 0 changed | **PASS** |
+| D7-05 | 14-day replay at ×600 without exceptions or memory growth | REQ | App. test_long_run | integration + bench | 13.94 days | **PASS** |
+| D7-06 | Latency < 200 ms per reading on a laptop CPU | REQ | Table 18.1 | — | p99 4.5 ms | **PASS** |
+| D7-07 | API contract, bounded inputs, no stack traces, offline | REQ | §17, ADR-008 | `api/` | `test_replay_api` | **PASS** |
+| D7-08 | E sealed in S7 (T catalogue only) | C | §12 | `tuning_streams`, `assert_not_sealed` | catalogue test | **PASS** |

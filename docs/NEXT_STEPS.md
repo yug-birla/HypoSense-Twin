@@ -1,6 +1,6 @@
 # Next Steps
 
-Ordered execution queue. Updated: 2026-10-18 (end of S6).
+Ordered execution queue. Updated: 2026-10-18 (end of S7).
 Each item lists: objective · dependency · acceptance criteria · difficulty · parallel? ·
 approval needed?
 
@@ -17,23 +17,19 @@ approval needed?
      population, metric clip, raw vs calibrated scores for P-B6).
    - Recommended Class B runs on T before freeze: **P-B10** (floored calibrator) and
      **P-B11** (fit-variance repeat).
-2. **S7 — Policy, replay, API**  ← *next engineering task (not started)*:
-   - extend `policy/decide.py` (tags, P-C8b, decision log, acknowledgements);
-   - replay service on `PatientState.try_update` + `FeatureBuilder.snapshot` + frozen M3 /
-     calibrator;
-   - SYSTEM_ERROR recovery;
-   - FastAPI + SSE;
-   - `OutcomeLedger.finalize`.
+2. **S8 — Professional frontend**  ← *next engineering task (not started)*:
+   - Ward Board, Patient Review and Evidence View on the S7 API (ARCHITECTURE §4.10);
+   - types generated from OpenAPI;
+   - render state only from `/api/ward` and `bed_state` (no UI-side policy);
+   - DEVELOPMENT labels;
+   - P-C10 display once decided.
+3. Owner decisions (CURRENT_STATE "Open Decisions"): P-C7, P-C9, P-C10, P-B6, P-B8,
+   ANALYSIS_PLAN §5, pharmacist review.
+4. Class B runs on T before freeze: P-B10, P-B11, P-B12.
 
 ## P1 — Core
 
-1. **S7 — Policy** (P-C1; **P-C8b** LOW NOW + SENSOR FAULT SUSPECTED; P-C7 if approved), replay,
-   FastAPI + SSE. Parallel from S4.
-   - Replay service on `PatientState.try_update` + `FeatureBuilder.snapshot`.
-   - Define a recovery policy after SYSTEM_ERROR, e.g. a late or back-dated chart entry (S4
-     review finding 6).
-   - Use `OutcomeLedger.finalize` at recording end.
-   - Extend `policy/decide.py` (S5 core): tags, decision log, acknowledgements.
+1. S7 done (DEC-2026-10-18-J). Freeze machinery next after S8 (IMPLEMENTATION_PLAN).
 
 ## P2 — Product / Demo
 

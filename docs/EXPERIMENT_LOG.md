@@ -345,6 +345,28 @@ Log-loss differences are all within ±0.0012, and every CI includes 0.
   P-B9 adopted; M3_compact = candidate (owner); G4 PASS.
 - Owner decisions: P-C9, P-B8 compact, ANALYSIS_PLAN §5, P-C7.
 
+## T-AGG-s7-engineering (S7) — live pipeline engineering evidence on T
+
+| Run | Commit (clean?) | results_sha256 | Status |
+|---|---|---|---|
+| T-AGG-s7-engineering-20261018T161559Z | 457b770 (clean) | — | SUPERSEDED: its error-injection design tripped the circuit breaker (5 back-to-back bad events). Other sections are unchanged in the official runs |
+| **T-AGG-s7-engineering-20261018T163321Z** | **9b154bf (clean)** | **`6d2517cd…`** | **OFFICIAL** |
+| **T-AGG-s7-engineering-20261018T163810Z** | **9b154bf (clean)** | **`6d2517cd…`** | **OFFICIAL reproduction (identical)** |
+
+- **Model:** `M3-development-9590a582b0c1` (DEVELOPMENT, fitted on all of T). Rebuild bitwise identical.
+- **Parity:** offline vs live on 34 recordings / 33,464 readings:
+  all mismatch counts 0 (probabilities bitwise).
+- **Determinism:** decision-log hashes identical across replays.
+- **Error injection:** 30 injected / 30 rejected / 0 later
+  decisions changed.
+- **Long run:** 13.94 days, retained memory flat.
+- **Latency:** per reading p50 1.5 / p99 4.5 ms; API ward p50
+  3.2 ms; throughput 629 events/s.
+- **In-sample (not evidence):**
+  - states {'ALERT': 1006, 'INSUFFICIENT_DATA': 263, 'LOW_NOW': 1785, 'NO_ALERT': 28684, 'WATCH': 1726};
+  - 1.186 notifications / patient-day;
+  - LOW_CONFIDENCE 16.1% of forecasts (P-B12).
+
 ## Evidence inherited from the blueprint (not reproduced here)
 
 | Item | Source | Status in this repo |

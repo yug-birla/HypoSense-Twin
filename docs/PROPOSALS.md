@@ -197,7 +197,7 @@ Status values: **AWAITING APPROVAL** · **APPROVED** · **REJECTED** · **EXPERI
 8. **Recommendation.** Approve.
 
 ### P-C7 · Sensor replacement within a recording should restart the warm-up period
-**Status: AWAITING APPROVAL (low impact, not blocking S2)** · raised 2026-10-18 (S1 audit)
+**Status: AWAITING APPROVAL (low impact).** S7 shipped WITHOUT it: the blueprint warm-up rule is active and the config hook is ready (DEC-2026-10-18-J) · raised 2026-10-18 (S1 audit)
 
 1. **Current specification.** Warm-up = "first 2 hours of a recording" (§10.1; policy priority 2).
 2. **Problem.** Recording 2029_0_20210526 contains a documented CGM device replacement (the
@@ -280,7 +280,42 @@ Status values: **AWAITING APPROVAL** · **APPROVED** · **REJECTED** · **EXPERI
 7. **Risk of bias.** Low. It is fixed now, before E is opened, and no parameter is chosen on E.
 8. **Recommendation.** Approve as a secondary analysis (S8 in Table 20.3 numbering, or "C0b").
 
+### P-C10 · Display state after a rejected NON-CGM input event (S7 review F7)
+**Status: AWAITING DECISION (display semantics; does not affect any endpoint)**
+1. **Current specification.** Table 14.1 priority 1: SYSTEM ERROR on an inference exception or
+   artefact mismatch. S7 also treats a rejected input event (malformed, late, duplicate) as
+   SYSTEM_ERROR at its time.
+2. **Problem.** A rejected dose, meal or CBG leaves the twin state valid. Showing SYSTEM ERROR
+   until the next CGM reading hides an active LOW NOW or ALERT for up to 15 min. `current()`
+   never expires SYSTEM_ERROR, so if readings stop it stays hidden.
+3. **Evidence.** The S7 review reproduced this (runner `_reject`).
+4. **Options.**
+   - (a) Keep the current behaviour: conservative, since priority 1 wins.
+   - (b) Keep the current clinical state and add a prominent "INPUT REJECTED" badge plus the
+     EVENT_REJECTED tag.
+   - (c) As (a), but the SYSTEM_ERROR caused by a non-CGM event expires at the next decision
+     time.
+5. **Consequences.** None for any endpoint, because the offline evaluation has no live input
+   errors. The difference is display only.
+6–7. **Comparability / bias.** None.
+8. **Recommendation.** Option (b): it never hides an observed low, and the rejection stays
+   visible. Option (a) remains until a decision is made.
+
 ## Class B — experiments or a-priori decisions on development data (T) before freeze
+
+### P-B12 · Operational definition of the LOW CONFIDENCE tag (S7 measurement)
+**Status: PROPOSED (T only; display tag, never changes a state)**
+- **Problem.** Table 14.1 says "any input outside the development 0.5th–99.5th percentile".
+  Applied per feature, it tags 16.1% of forecasts in-sample on T. A tag that common
+  carries little information.
+- **Alternatives.**
+  - (i) Restrict the check to the key inputs (CGM level, trend, exposure).
+  - (ii) Use a 0.1th–99.9th range.
+  - (iii) Keep the spec and report the rate.
+- **Evaluation.** Rate of tagged forecasts on T OOF, and the calibration of tagged vs untagged
+  forecasts. Decided on T before freeze; no endpoint impact.
+- **Decision.** EXPERIMENT (Class B).
+
 
 ### P-B10 · Floored calibrator (S6 review F1)
 **Status: PROPOSED (T only; before freeze)**

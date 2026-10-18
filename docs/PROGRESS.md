@@ -584,3 +584,42 @@ S7: policy, replay and API (not started). Owner decisions are pending before fre
   - P-B11 (fit-variance repeat);
   - P-B6 status reset to PENDING implementation.
 - **Verification run `T-AGG-dev-s6-20261018T153341Z`** on clean fce4c4b: results_sha256 `e81268ae…`, identical.
+
+## 2026-10-18 — S7: Policy, replay and API
+
+### Objective
+Turn the validated research pipeline into a deterministic, safe, offline backend. E stays
+sealed.
+
+### Work Completed
+- **Policy.** `policy.decide`: `decide`, `current` and fixed texts. One implementation shared
+  with the offline evaluation (gate verbatim).
+- **Artefacts.**
+  - Strict loader `models/artifact.py`.
+  - DEVELOPMENT M3 artefact on T: `hyposense dev artifact`.
+- **Replay.** `replay/runner.py` and `replay/session.py`: recovery, circuit breaker,
+  deterministic relative-clock merge, seek, JSONL logs.
+- **API.** `api/` (FastAPI + SSE), started with `hyposense serve`.
+- **Engineering evidence.** `hyposense dev s7`.
+- **Independent review.** No CRITICAL or HIGH findings. Nine findings fixed (9b154bf); F7
+  became P-C10.
+
+### Results (engineering, T)
+- **Parity:** 33,464 readings, 0 mismatches.
+- **Determinism:** identical.
+- **Error injection:** 0 later decisions changed.
+- **Long run:** 13.94 days, flat memory.
+- **Latency:** p99 4.5 ms per reading.
+- **Runs:** `T-AGG-s7-engineering-20261018T163321Z` and `T-AGG-s7-engineering-20261018T163810Z` (`6d2517cd…`, identical).
+
+### Problems Found and Fixed
+- **Unknown model level leaked the wrong exception.**
+- **The EVENT_REJECTED window started at a late event's old timestamp.** It now starts at the
+  processing time.
+- **Event-loop closure with threaded publishing.**
+- **The benchmark's error-injection design tripped the circuit breaker.** The run is recorded
+  as superseded.
+- **Review F1–F10** (see DEC-2026-10-18-J).
+
+### Next Task
+S8: professional frontend (not started). Owner decisions are listed in CURRENT_STATE.

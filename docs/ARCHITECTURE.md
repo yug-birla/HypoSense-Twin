@@ -302,18 +302,26 @@ from the state, never from the model.
   ordering. **Seek** recomputes from the recording start, so it stays deterministic.
 - Before freeze, replay may use T patients only, with live M0/M1–M3 predictions labelled
   DEVELOPMENT. After S9, it uses E patients with their **out-of-fold** predictions (§15).
-- API (FastAPI + Pydantic; ADR-008). This is a draft contract to be fixed in S7:
+- API (FastAPI + Pydantic; ADR-008). **Contract as implemented in S7** (`api/app.py`,
+  `api/schemas.py`; DEC-2026-10-18-J). Every view carries `model_status`.
 
 | Method | Path | Returns |
 |---|---|---|
-| GET | `/api/health` | liveness + artefact hash check |
-| GET | `/api/meta` | model version, config hash, protocol/freeze status, data provenance, replay source label |
-| GET | `/api/ward` | `WardBoard` — patients with state, p, last reading time, badges, server-computed sort rank |
-| GET | `/api/patients/{key}` | `PatientView` — state, CGM trace, doses, exposure curves (+projections), quality, factor groups, ledger |
-| POST | `/api/acknowledgements` | stores `Acknowledgement` (reason code ∈ 4) |
-| GET | `/api/evidence` | `results.json` content + provenance + status (DEVELOPMENT / CONFIRMATORY / PENDING) |
-| GET/POST | `/api/replay/*` | status · play · pause · speed · seek · select case |
-| GET | `/api/stream` | server-sent events: `tick`, `decision`, `notification`, `error` |
+| GET | `/api/health` | liveness; the service only exists with a verified artefact |
+| GET | `/api/meta` | model version / status, manifest hash, compatibility hashes, provenance, thresholds, policy rules, source label, caveat |
+| GET | `/api/evidence` | S6 development ladder + comparisons + provenance; status DEVELOPMENT; confirmatory PENDING |
+| GET | `/api/replay/cases` | T recordings (key, patient, days, readings) |
+| GET | `/api/replay/status` | session, recordings, playing, speed, offset, duration, finished |
+| POST | `/api/replay/select` | 1–12 recording keys; new session and log segment |
+| POST | `/api/replay/play` · `pause` · `reset` | clock control |
+| POST | `/api/replay/speed` | 1–3600× |
+| POST | `/api/replay/step` | 1–2000 events |
+| POST | `/api/replay/advance` | 0–6 h of data time |
+| POST | `/api/replay/seek` | offset; deterministic rebuild from the start |
+| GET | `/api/ward` | `Ward`: beds sorted by state (SYSTEM_ERROR, LOW_NOW, ALERT, WATCH, INSUFFICIENT, NO_ALERT), then p, then key; badges; unacknowledged notifications |
+| GET | `/api/patients/{recording_key}` | `PatientView`: current decision (+texts), last forecast with `is_current`, 24 h CGM / CBG / meals / doses, exposure (+ts), medication and data quality, factor groups (current forecast only), notifications, ledger counts, rejected events, halted |
+| POST | `/api/acknowledgements` | `{decision_id, reason ∈ 4 codes, user_role}` → 201; 404 unknown; 409 not a notification / already acknowledged |
+| GET | `/api/stream` | SSE v1: `session`, `tick`, `decision`, `notification`, `error`, `bed_state`, `acknowledgement` |
 
 - Frontend TypeScript types are **generated from the OpenAPI schema** (openapi-typescript), so
   contracts are never duplicated by hand.

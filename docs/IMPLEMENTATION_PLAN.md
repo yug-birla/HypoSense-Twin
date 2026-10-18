@@ -158,7 +158,7 @@ The event reportedly ends **20 Nov 2026**. The Phase-1 deadline is unknown.
   computed. On failure → M0 becomes the operational baseline; fix the pipeline.
 
 ## S7 · Policy engine, replay and backend API (parallel track)
-**Status: NEXT** (not started).
+**Status: COMPLETE (2026-10-18).** DEC-2026-10-18-J; evidence `T-AGG-s7-engineering-20261018T163321Z` / `T-AGG-s7-engineering-20261018T163810Z`.
 - **Work**: `policy.decide` (Table 14.1 + approved P-C1); cooldown; tags; JSONL logs; replay
   service (ordering, speed, seek, case selection); FastAPI routes + SSE (ADR-008);
   acknowledgement store; artefact hash check at start-up; SYSTEM ERROR path.
@@ -169,6 +169,7 @@ The event reportedly ends **20 Nov 2026**. The Phase-1 deadline is unknown.
   (14-day replay at ×600); API contract tests.
 
 ## S8 · Professional frontend (parallel track)
+**Status: NEXT** (not started).
 - **Work**: Next.js app (ADR-007): Ward Board, Patient Review, Evidence view; replay controls;
   event timeline/ledger; provenance strip; data-quality and timing badges; acknowledgement
   panel; loading, error, insufficient-data and stale states; honesty card. Types are generated
