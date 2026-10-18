@@ -218,7 +218,7 @@ Status values: **AWAITING APPROVAL** · **APPROVED** · **REJECTED** · **EXPERI
    is negligible.
 
 ### P-C8 · Sensor-failure handling: a rule-based flag, a policy tag and sensitivity analysis SA9
-**Status: AWAITING APPROVAL (not blocking S3; needed before S6 tuning and S7 policy)** · raised 2026-10-18 (S2)
+**Status: APPROVED 2026-10-18** (owner; all three parts) → ANALYSIS_PLAN §0c; causal flag implemented (S3); policy and UI handling in S7/S8 · raised 2026-10-18 (S2)
 
 1. **Current specification.** Labels come from CGM only. Sensor floor readings (≤ 40 mg/dL) are
    valid lows. Under P-C1 a current reading < 70 is LOW NOW. SA4 (compression) and SA5
@@ -285,7 +285,7 @@ Status values: **AWAITING APPROVAL** · **APPROVED** · **REJECTED** · **EXPERI
   record in DECISION_LOG.
 
 ### P-B3 · CSII basal infusion in exposure projections
-**Status: OPEN (S3)**
+**Status: RESOLVED (S3, a priori): option (b) — continue the current programmed rate (ADR-026)**
 - **Current**: projections to t+30 and t+60 "assume no further doses" (§10.2, §12.2). The
   basal rate is modelled as 15-min micro-boluses "until the next rate entry".
 - **Problem**: a running CSII basal rate is a known, ongoing administration at t. Projecting
@@ -298,7 +298,7 @@ Status values: **AWAITING APPROVAL** · **APPROVED** · **REJECTED** · **EXPERI
 - **Classification**: B · **Action**: a-priori decision at S3, before any M3 result exists.
 
 ### P-B4 · Kernel specification details to pin with the pharmacist
-**Status: OPEN (S3)**
+**Status: RESOLVED for engineering (ADR-027): flat window [lag, lag + duration); D_max per drug from labels; pharmacist review still pending**
 - Basal-analogue flat window: does "flat after a 1-h lag over 24 h" mean active on [60, 1440)
   or on [60, 1500) min? Normalisation must integrate to 1 either way.
 - Bateman D_max per drug and formulation (gliclazide IR vs MR, glimepiride, gliquidone,
@@ -307,7 +307,7 @@ Status values: **AWAITING APPROVAL** · **APPROVED** · **REJECTED** · **EXPERI
   exists, and record them in `pharma.yaml`.
 
 ### P-B5 · Intravenous column carries IV fluids, including 5% glucose (S1 finding)
-**Status: OPEN (S3 a-priori decision)**
+**Status: RESOLVED (S3): FLAG ONLY (ADR-028)**. 3 events, E only, rate unknown
 - **Finding (MEASURED, S1 vocabulary)**: the "Insulin dose - i.v." column contains Novolin R
   infusions (9 components), **5% glucose** (2), 5% glucose + sodium chloride (1), 10% potassium
   chloride (9), 0.9% sodium chloride (6), and one misplaced CSII-basal entry. These come from 10
@@ -342,6 +342,33 @@ Status values: **AWAITING APPROVAL** · **APPROVED** · **REJECTED** · **EXPERI
   improves development held-out log-loss on the unaffected T patients by a pre-set margin.
 - **Classification**: B.
 
+### P-B7 · Secretagogue representation: separate SU and glinide vs combined (S6)
+**Status: EXPERIMENT PLANNED (S6)**
+- **Evidence (MEASURED, S3)**: there are 0 glinide patients in T and 3 in E, so `act_glinide` is 100 %
+  zero in T. A separate glinide channel cannot be learned on development data and adds
+  near-empty dimensions.
+- **Candidate**: `M3_candidate_secretagogue` combines SU and glinide into one
+  dose/D_max-normalised exposure (the shared scale already exists by design), against
+  `M3_baseline` (separate, as in the blueprint).
+- **Rule**: decide on T inner-CV log-loss with a pre-written margin. M3_baseline stays the
+  confirmatory definition unless the owner approves a change before freeze.
+- **Classification**: B.
+
+### P-B8 · Compact M3 (redundancy) and product-specific basal durations (S6)
+**Status: EXPERIMENT PLANNED (S6)**
+- **Evidence (MEASURED, S3; T only)**:
+  - Spearman ρ(insulin_p60, act_insulin_total) = 0.974, so the projections are nearly redundant
+    with current activity; only the Δ carries information.
+  - ρ(act_insulin_total, insulin_bolus_dose_24h) = 0.80 and ρ(act_su, su_min_since_last) = −0.69,
+    so M3 and M3r overlap substantially. C2b may well find M3 ≈ M3r.
+- **Candidates**:
+  - (a) compact M3: family activities, total IOB, Δ60 insulin, SU exposure, Δ60 SU, minutes-since,
+    flags (≈ 12 variables instead of ≈ 21);
+  - (b) detemir duration shortened to the dose-dependent ~14–20 h, a kernel sensitivity variant
+    within SA6.
+- **Rule**: T inner CV only, with a pre-written decision margin. M3_baseline is preserved.
+- **Classification**: B.
+
 ---
 
 ## Class A — engineering (implemented or scheduled; see DECISION_LOG)
@@ -368,7 +395,10 @@ Status values: **AWAITING APPROVAL** · **APPROVED** · **REJECTED** · **EXPERI
 | ADR-020 | Aggregate-only audit evidence committed to git | IMPLEMENTED |
 | ADR-021 | `ruff format` adopted repository-wide | IMPLEMENTED |
 | ADR-022 | Label package: explicit state machine, typed outputs, differential tests vs executable spec | IMPLEMENTED |
-| ADR-023 | Legacy treated definition isolated in `audit/legacy.py` (reproduction + provisional G2 only) | IMPLEMENTED |
+| ADR-023 | Legacy treated definition isolated in `audit/legacy.py` (reproduction + provisional G2 only) | IMPLEMENTED; superseded for science by DEC-2026-10-18-D |
+| ADR-024 | Content-aware medication parsing | IMPLEMENTED |
+| ADR-025 | Exact summation (bitwise causality) | IMPLEMENTED |
+| ADR-029 | Provenance porcelain parsing fix | IMPLEMENTED |
 
 ---
 

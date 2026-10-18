@@ -103,7 +103,7 @@ The event reportedly ends **20 Nov 2026**. The Phase-1 deadline is unknown.
 - **Approval needed**: P-C4 decision.
 
 ## S3 · Medication normalisation and exposure engine (Gate G3)
-**Status: NEXT.** It also delivers the production treated status and a G2 re-check (ADR-023).
+**Status: COMPLETE (2026-10-18).** G3 PASS; G2 re-check PASS (production treated set: 72; 2078 corrected). Kernels label-sourced (pharma.yaml v1.0.0); exposure engine causal (bitwise); M3r/M3 contracts in docs/FEATURE_DICTIONARY.md. Evidence: experiments/runs/ALL-AGG-audit-medication-20261018T0952*.
 
 - **Work**: `configs/drug_dictionary.csv` (versioned); `parse_dose` (multi-component text,
   units, plausible ranges, gliclazide formulation rule, unknown → class `unknown`); CSII
@@ -123,6 +123,8 @@ The event reportedly ends **20 Nov 2026**. The Phase-1 deadline is unknown.
   model card.
 
 ## S4 · Patient State Engine and causal Feature Builder
+**Status: NEXT.**
+
 - **Work**: `state/` (sub-states, deterministic `update`, causal episode tracker, ledger);
   `features/` (App. D groups 1–8, level gating, `feature_spec.json`); offline snapshot
   generation for **T patients only** → Parquet; profile throughput (ADR-004).

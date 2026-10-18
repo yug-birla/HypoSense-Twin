@@ -36,7 +36,7 @@ Update this file whenever a requirement's status changes. Module paths are relat
 | L-03 | Single-reading rule (SA1 only) | REQ | Table 5.1 | `labels/episodes.py` (min_run=1) | F01, F04, F05, F09, F13a; v2 430/67 exact | **PASS** |
 | L-04 | Prediction-time eligibility (≥70, not in episode, refractory 60, 7/8, follow-up) | C | Table 5.1, ANALYSIS_PLAN §0 | `labels/eligibility.py` | E01–E11 fixtures (incl. half-open window, +60 boundary, refractory edges); differential test; v2 107,041/1,188 exact | **PASS** |
 | L-05 | Readings <80 not excluded | C | Table 5.1 | `labels/eligibility.py` (no such rule) | `prior_reading_lt80` 307 episodes retained (v2/v5) | **PASS** |
-| L-06 | Treated definition = population only, never a feature | C | Table 5.1 | provisional: `audit/legacy.py` (ADR-023); production: S3 parser | v2 73 treated exact; feature test S4 | PARTIAL |
+| L-06 | Treated definition = population only, never a feature | C | Table 5.1, ANALYSIS_PLAN §0b | `medication/recording.treatment_status`; artifacts/population/treated_patients.csv | `test_treatment_status`, `test_production_treated_population` (72; 2078 untreated) | **PASS** |
 | L-07 | Patient-level partition T 30% / E 70%, seed 2026, stratified | C | §8.6, §10.3 | `configs/partition.csv` (ADR-016), `data/partition.py` | `test_official_partition_is_pinned_and_immutable`, `test_split_*`, `partition verify` | **PASS** (stratum re-checks S2/S3 pending) |
 | L-08 | 5 grouped folds within E; training = T ∪ E∖k | C | §15 | `evaluation/folds.py` | fold tests | PENDING |
 | L-09 | E sealed until freeze; scripts refuse E access | C | §15, R8 | `data/dataset.py` scopes (ADR-018) | `test_tuning_scope_never_opens_sealed_patients`, `test_all_scope_is_refused_before_freeze`, `test_aggregate_audit_scope_is_confined`; `test_freeze_guard` at Freeze | PARTIAL |
@@ -46,19 +46,19 @@ Update this file whenever a requirement's status changes. Module paths are relat
 
 | ID | Requirement | Kind | Source | Implementation | Verification | Status |
 |---|---|---|---|---|---|---|
-| M-01 | Versioned drug dictionary; raw text preserved | REQ | §12.1, App. B | `configs/drug_dictionary.csv`, `medication/dictionary.py` | coverage ≥99% | PENDING |
-| M-02 | parse_dose never raises; unknown → class `unknown`, excluded, counted | REQ | §25.3 | `medication/parse.py` | unit tests | PENDING |
-| M-03 | Plausible-dose range check per drug | REQ | App. B | `medication/parse.py` | unit tests | PENDING |
-| M-04 | Gliclazide formulation rule + flag | REQ (ASSUMPTION) | App. B | `medication/parse.py` | unit tests | PENDING |
-| M-05 | Insulin exponential kernel Eq. 3–4; ∫ = 1 ± 0.01 | REQ | §12.2 | `medication/kernels.py` | `test_kernel_integrals` | PARTIAL (shape constraint on config tested) |
-| M-06 | Premix = weighted sum; basal flat after lag; CSII micro-boluses; i.v. flag 4 h | REQ | §12.2 | `medication/kernels.py`, `exposure.py` | unit tests | PENDING |
-| M-07 | Bateman SU/glinide, dose / D_max | REQ | Eq. 5–6 | `medication/kernels.py` | unit tests | PENDING |
-| M-08 | Exposure uses only doses ≤ t; projections t+30/60 from past doses | REQ | §10.2, §25.3 | `medication/exposure.py` | `test_exposure_causal` | PENDING |
-| M-09 | Missing timing → NaN + timing-unknown indicator (not zero); UI badge | REQ | Table 12.1 | `medication/`, `state/` | unit tests | PENDING |
-| M-10 | Logged-not-prescribed → logged used + conflict flag | REQ | Table 12.1 | `medication/` | unit tests | PENDING |
-| M-11 | Kernel parameters label-sourced, pharmacist-reviewed before freeze | REQ | §12.3, App. C | `configs/pharma.yaml` | freeze precondition test | PENDING (all ILLUSTRATIVE) |
-| M-12 | G3 medication usability | REQ | Table 21.1 | medication audit | audit report | PENDING |
-| M-13 | Never fabricate administration times | REQ | CLAUDE.md §15 | `medication/` | code review + tests | PENDING |
+| M-01 | Versioned drug dictionary; raw text preserved | REQ | §12.1, App. B | `configs/drug_dictionary.csv`, `medication/dictionary.py`, `events.py` (raw_text, component_text, source_column) | `test_medication_parse.py`; real-data: 4,653/4,653 recognised | **PASS** |
+| M-02 | parse_dose never raises; unknown → class `unknown`, excluded, counted | REQ | §25.3 | `medication/parse.py` (UNPARSEABLE status) | `test_unknown_product_is_unparseable`; real data 0 unparseable | **PASS** |
+| M-03 | Plausible-dose range check per drug | REQ | App. B | dictionary plausible_min/max → DOSE_IMPLAUSIBLE | `test_implausible_units_are_kept_and_flagged` | **PASS** |
+| M-04 | Gliclazide formulation rule + flag | REQ (ASSUMPTION) | App. B | `pharma.yaml formulation_rules`; `parse.apply_formulation_rule` | `test_gliclazide_formulation_rule` (15 → INFERRED) | **PASS** |
+| M-05 | Insulin exponential kernel Eq. 3–4; ∫ = 1 ± 0.01 | REQ | §12.2 | `medication/kernels.py` | `test_exponential_kernel_shape` | **PASS** |
+| M-06 | Premix = weighted sum; basal flat after lag; CSII micro-boluses; i.v. flag 4 h | REQ | §12.2 | `exposure.py` | `test_premix_split_and_basal_group`, `test_csii_basal_reconstruction_suspend_and_cap`, `test_iv_insulin_flag_only` | **PASS** (6-h cap: ADR-026) |
+| M-07 | Bateman SU/glinide, dose / D_max | REQ | Eq. 5–6 | `kernels.BatemanKernel`, `exposure.py` | `test_bateman_kernel`, `test_secretagogue_scaled_by_dmax` | **PASS** |
+| M-08 | Exposure uses only doses ≤ t; projections t+30/60 from past doses | REQ | §10.2, §25.3 | `exposure.py`, `timing.py` | `test_truncation_equality` (Hypothesis), `test_future_dose_does_not_change_the_past`, real-data bitwise truncation | **PASS** |
+| M-09 | Missing timing → NaN + timing-unknown indicator (not zero); UI badge | REQ | Table 12.1 | `exposure.QualityState` | `test_quality_states` | **PASS** (UI badge S8) |
+| M-10 | Logged-not-prescribed → logged used + conflict flag | REQ | Table 12.1 | `audit/medication.py` (prescribed_vs_logged) | real data: insulin 8, SU 4/4 | **PASS** |
+| M-11 | Kernel parameters label-sourced, pharmacist-reviewed before freeze | REQ | §12.3, App. C | `configs/pharma.yaml` v1.0.0, PARAMETER_SOURCES.md | `test_pharma_parameters_have_provenance_and_none_is_illustrative` | PARTIAL (sourced; pharmacist review PENDING) |
+| M-12 | G3 medication usability | REQ | Table 21.1 | `audit/gates.evaluate_g3`, `med_run.py` | `test_g3_thresholds`; artifacts/gates/G3.json | **PASS** |
+| M-13 | Never fabricate administration times | REQ | CLAUDE.md §15 | untimed rows skipped and counted; 6-h pump cap | `parse_recording` skip counter; ADR-026 | **PASS** |
 
 ## State engine and features
 
@@ -172,3 +172,17 @@ Update this file whenever a requirement's status changes. Module paths are relat
 | L-14 | P-C7 warm-up restart hook without rewriting labels | REQ | owner S2.11 | `LabelConfig.warmup_restart_after_gap_s` | E10/E10b fixtures | **PASS** (hook off) |
 | L-15 | Episode annotations for SA2/SA4/SA5 (+ SA9 candidate) | REQ | Table 20.3 | `labels/annotations.py`, `labels/validity.py` | unit tests; v2 counts exact (115/69/9/65/11) | **PASS** |
 | L-16 | Event audit reproducible | REQ | owner S2.12 | `hyposense audit events` | two runs identical results_sha256; `test_event_audit_is_deterministic` | **PASS** |
+
+## S3 additions
+
+| ID | Requirement | Kind | Source | Implementation | Verification | Status |
+|---|---|---|---|---|---|---|
+| M-14 | Complete raw medication inventory (machine-readable) | REQ | owner S3.1 | `audit/medication.inventory` → medication_inventory.json | real-data run | **PASS** |
+| M-15 | Content-aware i.v. column (fluids ≠ insulin) | REQ | owner S3.5C | `parse._parse_iv` | `test_iv_column_is_content_aware` | **PASS** |
+| M-16 | Pump suspension and misplaced entries classified by content | REQ | owner S3.5A/B | `parse.parse_text` | `test_csii_cells` | **PASS** |
+| M-17 | i.v. glucose investigation and decision | REQ | owner S3.6 | `audit/medication` iv_glucose | ADR-028 (FLAG ONLY) | **PASS** |
+| M-18 | M3r and M3 representation contracts | REQ | owner S3.12 | `timing.raw_timing`, `ExposureEngine.compute`; docs/FEATURE_DICTIONARY.md | unit tests; representation QA (T) | **PASS** (feature builder S4) |
+| M-19 | G2 re-check with the production treated definition | REQ | owner S3.7 | `med_run.py` | artifacts/gates/G2.json (PASS, unchanged 154/30) | **PASS** |
+| S-03 | P-C8a sensor-failure flag (never alters labels) | C (approved) | ANALYSIS_PLAN §0c | `data.quality.sensor_fault_suspected`; `labels.annotations.floor_runs` | `test_sensor_fault_suspected_is_causal_and_needs_8_readings`, `test_floor_runs_require_8_consecutive_readings` | **PASS** |
+| S-04 | P-C8b keep LOW NOW + SENSOR FAULT warning | C (approved) | ANALYSIS_PLAN §0c | policy (S7) | policy tests (S7) | PENDING |
+| S-05 | P-C8c SA9 sensitivity analysis | C (approved) | ANALYSIS_PLAN §0c | evaluation (S5/S9) | — | PENDING |

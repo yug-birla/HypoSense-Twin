@@ -61,6 +61,34 @@ Run-ID convention: `<partition>-<model|task>-<seq>`, e.g. `T-M0-001`, `T-M1-tune
 - Artefacts: `experiments/runs/ALL-AGG-audit-events-20261017T2212*/`,
   `artifacts/gates/G2.json`, `artifacts/gates/G3b.json`
 
+## ALL-AGG-audit-medication-20261018T095210Z and -20261018T095243Z — S3 medication audit
+- Date (UTC): 2026-10-18 09:52 (two identical runs)
+- Partition / patients: ALL-AGG (P-C5) for parsing, coverage and gates; TUNING only for representation QA
+- Git commit (clean?): `88cdeac114` (dirty=False in both)
+- Hashes: manifest `5f9d65b4…`; partition `ccdcbce0…`; drug dictionary and pharma hashes in provenance;
+  treated_patients.csv `2016d3e3025b66081889e4fe64c3359c280f2be79534b57fb82e31db4050c5ef`
+- Purpose: parser coverage, production treated set, G3, G2 re-check, i.v. glucose and pump
+  investigations, representation QA
+- Pre-specified rules: Blueprint Table 21.1 (G3: ≥ 90 % parse; ≥ 80 % treated recording-days;
+  ≤ 15-min resolution; ≥ 20 treated E patients with exposure variation); G2 as in S2
+- Result (MEASURED): results_sha256 `29148c8eeba8f0dfbb1f58825a1611dbe21087c2fbbc5f927f211ab001e3ac91` (both runs).
+  - Parsing: 4,653 cells, 0 unparseable / ambiguous; insulin s.c. 828/828; oral 2,171/2,171.
+  - Treated: 72 patients (T 22 / E 50); legacy 73, the difference being 2078 (misplaced acarbose).
+  - **G3 PASS**: parse 1.0; median day coverage 1.0 (q1 0.93; 4/79 recordings < 0.8); 99.93 %
+    of administrations on CGM timestamps; 50 E-treated patients with variation.
+  - **G2 PASS** (unchanged: 154 / 30 / m_w 9.23).
+  - i.v. glucose: 3 events (E only), rate unknown → FLAG ONLY.
+  - CSII: 34 recordings; 4/1,055 pump intervals > 6 h; 21/21 early pump ends followed by s.c.
+    insulin.
+  - Representation QA (T, 23,651 eligible readings): insulin activity p99 3.1 IU/h, max 4.4;
+    IOB max 31 IU; all 22 treated T recordings vary.
+  - Redundancy: ρ(p60, current) 0.974; ρ(activity, bolus dose 24 h) 0.80.
+  - Glinide channel 100 % zero in T. Cost 0.24 ms per reading.
+- Decision: representation accepted for S4; P-B7/P-B8 experiments planned for S6
+- Artefacts: `experiments/runs/ALL-AGG-audit-medication-20261018T0952*/` (audit_medication.json/.md,
+  medication_inventory.json), `artifacts/gates/G3.json`, `artifacts/gates/G2.json` (superseding
+  S2's provisional result), `artifacts/population/treated_patients.csv`
+
 ## Evidence inherited from the blueprint (not reproduced here)
 
 | Item | Source | Status in this repo |
@@ -74,7 +102,7 @@ Run-ID convention: `<partition>-<model|task>-<seq>`, e.g. `T-M0-001`, `T-M1-tune
 |---|---|---|---|---|---|
 | ALL-AGG-audit-structural-20261017T2135* | ALL-AGG | — | G0/G1 structural audit | S1 | **DONE** (G0 PASS, G1 PASS) |
 | ALL-AGG-audit-events-20261017T2212* | ALL-AGG | — | G2/G3b event audit + legacy reproduction | S2 | **DONE** (G2 PASS provisional, G3b TRIGGERED, 48/48) |
-| ALL-AGG-audit-meds-001 | ALL-AGG | — | G3 medication audit | S3 | PENDING |
+| ALL-AGG-audit-medication-20261018T0952* | ALL-AGG (+T for QA) | — | G3 medication audit + G2 re-check | S3 | **DONE** (G3 PASS, G2 PASS) |
 | T-M0-001 | T | M0 | exploratory operating curve (compare Table A.2) | S5 | PENDING |
 | T-M1-tune-001 | T | M1 | Optuna ≤30 trials, inner log-loss; num_boost_round rule (P-B2) | S6 | PENDING |
 | T-calib-bench-001 | T | M1–M3 | calibration benchmark (P-B1) | S6 | PENDING |

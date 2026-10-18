@@ -96,24 +96,17 @@ Once a remote exists, a GitHub Actions workflow runs on every push: `uv sync --f
 mypy, pytest (no data, so `requires_data` tests skip), the frontend lint and build, and the
 E2E tests on the main branch.
 
-## 8. Current status (updated 2026-10-18, end of S2)
+## 8. Current status (updated 2026-10-18, end of S3)
 
-Command: `uv run pytest -q` → **194 passed**. `ruff check` + `ruff format` clean; `mypy --strict` clean
-(43 source files).
+Command: `uv run pytest -q` → **281 passed**. `ruff check` + `ruff format` clean; `mypy --strict` clean
+(52 source files).
 
-| Category | Files | Tests | Passing |
+| Category | Tests | Passing | Notable additions in S3 |
 |---|---|---|---|
-| Unit | loader, identity/schema, integrity, partition, gates/reconcile, structural audit, **labels (34 trace fixtures + 4 loader-path cases + invariants + differential), label validity/events/G2/G3b** | 165 | 165 |
-| Leakage / static guards | test_import_boundaries | 12 | 12 |
-| Regression | test_protocol_constants (now also locks label eligibility keys, G2, G3b) | 9 | 9 |
-| Integration (`requires_data`) | test_real_data (+ v5 event counts, event determinism, v2 48/48 reproduction) | 8 | 8 |
+| Unit | 249 | 249 | Parser: every vocabulary pattern, malformed, ambiguous and misplaced cases. Kernels: shape, integral, peak, decay, invalid parameters. Exposure: zero before dose, dose-at-t convention, additivity, repeated doses, quality states, CSII cap / suspension / projection, i.v. flag. **Hypothesis truncation-equality property test** (exposure and raw timing, bitwise). G3 thresholds. Causal sensor-fault flag. Porcelain regression |
+| Leakage / static guards | 12 | 12 | medication/ is live path (no labels or audit imports) |
+| Regression | 9 | 9 | pharma provenance: no ILLUSTRATIVE parameter, sources present |
+| Integration (real data) | 11 | 11 | 4,653/4,653 recognised; treated set 72 (2078 untreated); **bitwise exposure truncation equality on real T records** |
 
-Label-specific evidence:
-- Test-first: 74 failures against stubs before implementation.
-- Mutation check: 7/7 injected boundary errors killed (gap ≥30, onset spacing ≥20, low ≤70,
-  closed refractory, closed history window, open horizon at +60, warnable lead ignored).
-- Hypothesis differential tests against a verbatim transcription of the executable spec: 400
-  random traces each, with irregular intervals 5–130 min and values on the 1.8 grid around both
-  thresholds.
 All synthetic fixtures are generated at test time (`tests/conftest.py`, labelled SYNTHETIC). No
 binary fixtures or real patient data are committed.

@@ -1,0 +1,6858 @@
+[
+ {
+  "column": "csii_basal",
+  "raw_text": "0.6",
+  "n": 243,
+  "patients": 27,
+  "recordings": 27,
+  "n_T": 74,
+  "n_E": 169,
+  "on_cgm_grid": 243,
+  "entry_status": "PARSED",
+  "components": [
+   {
+    "canonical": "regular_human_insulin",
+    "class": "insulin",
+    "kind": "pump_basal_rate",
+    "route": "csii",
+    "formulation": "solution",
+    "formulation_basis": "DICTIONARY",
+    "dose": 0.6,
+    "unit": "IU/h",
+    "status": "PARSED",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "csii_basal",
+  "raw_text": "0.5",
+  "n": 213,
+  "patients": 32,
+  "recordings": 32,
+  "n_T": 66,
+  "n_E": 147,
+  "on_cgm_grid": 213,
+  "entry_status": "PARSED",
+  "components": [
+   {
+    "canonical": "regular_human_insulin",
+    "class": "insulin",
+    "kind": "pump_basal_rate",
+    "route": "csii",
+    "formulation": "solution",
+    "formulation_basis": "DICTIONARY",
+    "dose": 0.5,
+    "unit": "IU/h",
+    "status": "PARSED",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "csii_basal",
+  "raw_text": "0.4",
+  "n": 172,
+  "patients": 31,
+  "recordings": 31,
+  "n_T": 56,
+  "n_E": 116,
+  "on_cgm_grid": 172,
+  "entry_status": "PARSED",
+  "components": [
+   {
+    "canonical": "regular_human_insulin",
+    "class": "insulin",
+    "kind": "pump_basal_rate",
+    "route": "csii",
+    "formulation": "solution",
+    "formulation_basis": "DICTIONARY",
+    "dose": 0.4,
+    "unit": "IU/h",
+    "status": "PARSED",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "csii_basal",
+  "raw_text": "0.3",
+  "n": 137,
+  "patients": 22,
+  "recordings": 22,
+  "n_T": 41,
+  "n_E": 96,
+  "on_cgm_grid": 137,
+  "entry_status": "PARSED",
+  "components": [
+   {
+    "canonical": "regular_human_insulin",
+    "class": "insulin",
+    "kind": "pump_basal_rate",
+    "route": "csii",
+    "formulation": "solution",
+    "formulation_basis": "DICTIONARY",
+    "dose": 0.3,
+    "unit": "IU/h",
+    "status": "PARSED",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "csii_basal",
+  "raw_text": "0.7",
+  "n": 128,
+  "patients": 18,
+  "recordings": 18,
+  "n_T": 33,
+  "n_E": 95,
+  "on_cgm_grid": 127,
+  "entry_status": "PARSED",
+  "components": [
+   {
+    "canonical": "regular_human_insulin",
+    "class": "insulin",
+    "kind": "pump_basal_rate",
+    "route": "csii",
+    "formulation": "solution",
+    "formulation_basis": "DICTIONARY",
+    "dose": 0.7,
+    "unit": "IU/h",
+    "status": "PARSED",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "csii_basal",
+  "raw_text": "0.8",
+  "n": 57,
+  "patients": 9,
+  "recordings": 9,
+  "n_T": 17,
+  "n_E": 40,
+  "on_cgm_grid": 57,
+  "entry_status": "PARSED",
+  "components": [
+   {
+    "canonical": "regular_human_insulin",
+    "class": "insulin",
+    "kind": "pump_basal_rate",
+    "route": "csii",
+    "formulation": "solution",
+    "formulation_basis": "DICTIONARY",
+    "dose": 0.8,
+    "unit": "IU/h",
+    "status": "PARSED",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "csii_basal",
+  "raw_text": "0.9",
+  "n": 32,
+  "patients": 5,
+  "recordings": 5,
+  "n_T": 14,
+  "n_E": 18,
+  "on_cgm_grid": 32,
+  "entry_status": "PARSED",
+  "components": [
+   {
+    "canonical": "regular_human_insulin",
+    "class": "insulin",
+    "kind": "pump_basal_rate",
+    "route": "csii",
+    "formulation": "solution",
+    "formulation_basis": "DICTIONARY",
+    "dose": 0.9,
+    "unit": "IU/h",
+    "status": "PARSED",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "csii_basal",
+  "raw_text": "0.1",
+  "n": 31,
+  "patients": 7,
+  "recordings": 7,
+  "n_T": 4,
+  "n_E": 27,
+  "on_cgm_grid": 31,
+  "entry_status": "PARSED",
+  "components": [
+   {
+    "canonical": "regular_human_insulin",
+    "class": "insulin",
+    "kind": "pump_basal_rate",
+    "route": "csii",
+    "formulation": "solution",
+    "formulation_basis": "DICTIONARY",
+    "dose": 0.1,
+    "unit": "IU/h",
+    "status": "PARSED",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "csii_basal",
+  "raw_text": "0.2",
+  "n": 27,
+  "patients": 7,
+  "recordings": 7,
+  "n_T": 5,
+  "n_E": 22,
+  "on_cgm_grid": 27,
+  "entry_status": "PARSED",
+  "components": [
+   {
+    "canonical": "regular_human_insulin",
+    "class": "insulin",
+    "kind": "pump_basal_rate",
+    "route": "csii",
+    "formulation": "solution",
+    "formulation_basis": "DICTIONARY",
+    "dose": 0.2,
+    "unit": "IU/h",
+    "status": "PARSED",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "csii_basal",
+  "raw_text": "0.65",
+  "n": 11,
+  "patients": 2,
+  "recordings": 2,
+  "n_T": 0,
+  "n_E": 11,
+  "on_cgm_grid": 11,
+  "entry_status": "PARSED",
+  "components": [
+   {
+    "canonical": "regular_human_insulin",
+    "class": "insulin",
+    "kind": "pump_basal_rate",
+    "route": "csii",
+    "formulation": "solution",
+    "formulation_basis": "DICTIONARY",
+    "dose": 0.65,
+    "unit": "IU/h",
+    "status": "PARSED",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "csii_basal",
+  "raw_text": "0.25",
+  "n": 10,
+  "patients": 3,
+  "recordings": 3,
+  "n_T": 7,
+  "n_E": 3,
+  "on_cgm_grid": 10,
+  "entry_status": "PARSED",
+  "components": [
+   {
+    "canonical": "regular_human_insulin",
+    "class": "insulin",
+    "kind": "pump_basal_rate",
+    "route": "csii",
+    "formulation": "solution",
+    "formulation_basis": "DICTIONARY",
+    "dose": 0.25,
+    "unit": "IU/h",
+    "status": "PARSED",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "csii_basal",
+  "raw_text": "0.45",
+  "n": 10,
+  "patients": 4,
+  "recordings": 4,
+  "n_T": 3,
+  "n_E": 7,
+  "on_cgm_grid": 10,
+  "entry_status": "PARSED",
+  "components": [
+   {
+    "canonical": "regular_human_insulin",
+    "class": "insulin",
+    "kind": "pump_basal_rate",
+    "route": "csii",
+    "formulation": "solution",
+    "formulation_basis": "DICTIONARY",
+    "dose": 0.45,
+    "unit": "IU/h",
+    "status": "PARSED",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "csii_basal",
+  "raw_text": "0.15",
+  "n": 5,
+  "patients": 2,
+  "recordings": 2,
+  "n_T": 5,
+  "n_E": 0,
+  "on_cgm_grid": 5,
+  "entry_status": "PARSED",
+  "components": [
+   {
+    "canonical": "regular_human_insulin",
+    "class": "insulin",
+    "kind": "pump_basal_rate",
+    "route": "csii",
+    "formulation": "solution",
+    "formulation_basis": "DICTIONARY",
+    "dose": 0.15,
+    "unit": "IU/h",
+    "status": "PARSED",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "csii_basal",
+  "raw_text": "0.0",
+  "n": 4,
+  "patients": 1,
+  "recordings": 1,
+  "n_T": 0,
+  "n_E": 4,
+  "on_cgm_grid": 4,
+  "entry_status": "PARSED_WITH_WARNING",
+  "components": [
+   {
+    "canonical": "regular_human_insulin",
+    "class": "insulin",
+    "kind": "pump_basal_rate",
+    "route": "csii",
+    "formulation": "solution",
+    "formulation_basis": "DICTIONARY",
+    "dose": 0.0,
+    "unit": "IU/h",
+    "status": "PARSED_WITH_WARNING",
+    "flags": [
+     "ZERO_DOSE"
+    ]
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "csii_basal",
+  "raw_text": "0.35",
+  "n": 4,
+  "patients": 2,
+  "recordings": 2,
+  "n_T": 0,
+  "n_E": 4,
+  "on_cgm_grid": 4,
+  "entry_status": "PARSED",
+  "components": [
+   {
+    "canonical": "regular_human_insulin",
+    "class": "insulin",
+    "kind": "pump_basal_rate",
+    "route": "csii",
+    "formulation": "solution",
+    "formulation_basis": "DICTIONARY",
+    "dose": 0.35,
+    "unit": "IU/h",
+    "status": "PARSED",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "csii_basal",
+  "raw_text": "0.75",
+  "n": 3,
+  "patients": 1,
+  "recordings": 1,
+  "n_T": 0,
+  "n_E": 3,
+  "on_cgm_grid": 3,
+  "entry_status": "PARSED",
+  "components": [
+   {
+    "canonical": "regular_human_insulin",
+    "class": "insulin",
+    "kind": "pump_basal_rate",
+    "route": "csii",
+    "formulation": "solution",
+    "formulation_basis": "DICTIONARY",
+    "dose": 0.75,
+    "unit": "IU/h",
+    "status": "PARSED",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "csii_basal",
+  "raw_text": "temporarily suspend insulin delivery",
+  "n": 2,
+  "patients": 2,
+  "recordings": 2,
+  "n_T": 0,
+  "n_E": 2,
+  "on_cgm_grid": 2,
+  "entry_status": "PARSED",
+  "components": [
+   {
+    "canonical": null,
+    "class": "insulin",
+    "kind": "pump_suspend",
+    "route": "csii",
+    "formulation": null,
+    "formulation_basis": null,
+    "dose": 0.0,
+    "unit": "IU/h",
+    "status": "PARSED",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "csii_bolus",
+  "raw_text": "4.0",
+  "n": 132,
+  "patients": 26,
+  "recordings": 26,
+  "n_T": 38,
+  "n_E": 94,
+  "on_cgm_grid": 131,
+  "entry_status": "PARSED",
+  "components": [
+   {
+    "canonical": "regular_human_insulin",
+    "class": "insulin",
+    "kind": "administration",
+    "route": "csii",
+    "formulation": "solution",
+    "formulation_basis": "DICTIONARY",
+    "dose": 4.0,
+    "unit": "IU",
+    "status": "PARSED",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "csii_bolus",
+  "raw_text": "6.0",
+  "n": 101,
+  "patients": 27,
+  "recordings": 27,
+  "n_T": 27,
+  "n_E": 74,
+  "on_cgm_grid": 101,
+  "entry_status": "PARSED",
+  "components": [
+   {
+    "canonical": "regular_human_insulin",
+    "class": "insulin",
+    "kind": "administration",
+    "route": "csii",
+    "formulation": "solution",
+    "formulation_basis": "DICTIONARY",
+    "dose": 6.0,
+    "unit": "IU",
+    "status": "PARSED",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "csii_bolus",
+  "raw_text": "5.0",
+  "n": 96,
+  "patients": 19,
+  "recordings": 19,
+  "n_T": 29,
+  "n_E": 67,
+  "on_cgm_grid": 96,
+  "entry_status": "PARSED",
+  "components": [
+   {
+    "canonical": "regular_human_insulin",
+    "class": "insulin",
+    "kind": "administration",
+    "route": "csii",
+    "formulation": "solution",
+    "formulation_basis": "DICTIONARY",
+    "dose": 5.0,
+    "unit": "IU",
+    "status": "PARSED",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "csii_bolus",
+  "raw_text": "7.0",
+  "n": 60,
+  "patients": 15,
+  "recordings": 15,
+  "n_T": 20,
+  "n_E": 40,
+  "on_cgm_grid": 60,
+  "entry_status": "PARSED",
+  "components": [
+   {
+    "canonical": "regular_human_insulin",
+    "class": "insulin",
+    "kind": "administration",
+    "route": "csii",
+    "formulation": "solution",
+    "formulation_basis": "DICTIONARY",
+    "dose": 7.0,
+    "unit": "IU",
+    "status": "PARSED",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "csii_bolus",
+  "raw_text": "8.0",
+  "n": 59,
+  "patients": 21,
+  "recordings": 21,
+  "n_T": 21,
+  "n_E": 38,
+  "on_cgm_grid": 59,
+  "entry_status": "PARSED",
+  "components": [
+   {
+    "canonical": "regular_human_insulin",
+    "class": "insulin",
+    "kind": "administration",
+    "route": "csii",
+    "formulation": "solution",
+    "formulation_basis": "DICTIONARY",
+    "dose": 8.0,
+    "unit": "IU",
+    "status": "PARSED",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "csii_bolus",
+  "raw_text": "3.0",
+  "n": 29,
+  "patients": 11,
+  "recordings": 11,
+  "n_T": 14,
+  "n_E": 15,
+  "on_cgm_grid": 29,
+  "entry_status": "PARSED",
+  "components": [
+   {
+    "canonical": "regular_human_insulin",
+    "class": "insulin",
+    "kind": "administration",
+    "route": "csii",
+    "formulation": "solution",
+    "formulation_basis": "DICTIONARY",
+    "dose": 3.0,
+    "unit": "IU",
+    "status": "PARSED",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "csii_bolus",
+  "raw_text": "0.0",
+  "n": 19,
+  "patients": 2,
+  "recordings": 2,
+  "n_T": 0,
+  "n_E": 19,
+  "on_cgm_grid": 19,
+  "entry_status": "PARSED_WITH_WARNING",
+  "components": [
+   {
+    "canonical": "regular_human_insulin",
+    "class": "insulin",
+    "kind": "administration",
+    "route": "csii",
+    "formulation": "solution",
+    "formulation_basis": "DICTIONARY",
+    "dose": 0.0,
+    "unit": "IU",
+    "status": "PARSED_WITH_WARNING",
+    "flags": [
+     "ZERO_DOSE"
+    ]
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "csii_bolus",
+  "raw_text": "2.0",
+  "n": 13,
+  "patients": 9,
+  "recordings": 9,
+  "n_T": 2,
+  "n_E": 11,
+  "on_cgm_grid": 13,
+  "entry_status": "PARSED",
+  "components": [
+   {
+    "canonical": "regular_human_insulin",
+    "class": "insulin",
+    "kind": "administration",
+    "route": "csii",
+    "formulation": "solution",
+    "formulation_basis": "DICTIONARY",
+    "dose": 2.0,
+    "unit": "IU",
+    "status": "PARSED",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "csii_bolus",
+  "raw_text": "12.0",
+  "n": 11,
+  "patients": 5,
+  "recordings": 5,
+  "n_T": 2,
+  "n_E": 9,
+  "on_cgm_grid": 11,
+  "entry_status": "PARSED",
+  "components": [
+   {
+    "canonical": "regular_human_insulin",
+    "class": "insulin",
+    "kind": "administration",
+    "route": "csii",
+    "formulation": "solution",
+    "formulation_basis": "DICTIONARY",
+    "dose": 12.0,
+    "unit": "IU",
+    "status": "PARSED",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "csii_bolus",
+  "raw_text": "9.0",
+  "n": 10,
+  "patients": 5,
+  "recordings": 5,
+  "n_T": 2,
+  "n_E": 8,
+  "on_cgm_grid": 10,
+  "entry_status": "PARSED",
+  "components": [
+   {
+    "canonical": "regular_human_insulin",
+    "class": "insulin",
+    "kind": "administration",
+    "route": "csii",
+    "formulation": "solution",
+    "formulation_basis": "DICTIONARY",
+    "dose": 9.0,
+    "unit": "IU",
+    "status": "PARSED",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "csii_bolus",
+  "raw_text": "10.0",
+  "n": 8,
+  "patients": 4,
+  "recordings": 4,
+  "n_T": 0,
+  "n_E": 8,
+  "on_cgm_grid": 8,
+  "entry_status": "PARSED",
+  "components": [
+   {
+    "canonical": "regular_human_insulin",
+    "class": "insulin",
+    "kind": "administration",
+    "route": "csii",
+    "formulation": "solution",
+    "formulation_basis": "DICTIONARY",
+    "dose": 10.0,
+    "unit": "IU",
+    "status": "PARSED",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "csii_bolus",
+  "raw_text": "14.0",
+  "n": 5,
+  "patients": 1,
+  "recordings": 1,
+  "n_T": 5,
+  "n_E": 0,
+  "on_cgm_grid": 5,
+  "entry_status": "PARSED",
+  "components": [
+   {
+    "canonical": "regular_human_insulin",
+    "class": "insulin",
+    "kind": "administration",
+    "route": "csii",
+    "formulation": "solution",
+    "formulation_basis": "DICTIONARY",
+    "dose": 14.0,
+    "unit": "IU",
+    "status": "PARSED",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "csii_bolus",
+  "raw_text": "13.0",
+  "n": 4,
+  "patients": 1,
+  "recordings": 1,
+  "n_T": 0,
+  "n_E": 4,
+  "on_cgm_grid": 4,
+  "entry_status": "PARSED",
+  "components": [
+   {
+    "canonical": "regular_human_insulin",
+    "class": "insulin",
+    "kind": "administration",
+    "route": "csii",
+    "formulation": "solution",
+    "formulation_basis": "DICTIONARY",
+    "dose": 13.0,
+    "unit": "IU",
+    "status": "PARSED",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "csii_bolus",
+  "raw_text": "1.0",
+  "n": 3,
+  "patients": 1,
+  "recordings": 1,
+  "n_T": 0,
+  "n_E": 3,
+  "on_cgm_grid": 3,
+  "entry_status": "PARSED",
+  "components": [
+   {
+    "canonical": "regular_human_insulin",
+    "class": "insulin",
+    "kind": "administration",
+    "route": "csii",
+    "formulation": "solution",
+    "formulation_basis": "DICTIONARY",
+    "dose": 1.0,
+    "unit": "IU",
+    "status": "PARSED",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "csii_bolus",
+  "raw_text": "11.0",
+  "n": 2,
+  "patients": 1,
+  "recordings": 1,
+  "n_T": 2,
+  "n_E": 0,
+  "on_cgm_grid": 2,
+  "entry_status": "PARSED",
+  "components": [
+   {
+    "canonical": "regular_human_insulin",
+    "class": "insulin",
+    "kind": "administration",
+    "route": "csii",
+    "formulation": "solution",
+    "formulation_basis": "DICTIONARY",
+    "dose": 11.0,
+    "unit": "IU",
+    "status": "PARSED",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "csii_bolus",
+  "raw_text": "15.0",
+  "n": 2,
+  "patients": 1,
+  "recordings": 1,
+  "n_T": 0,
+  "n_E": 2,
+  "on_cgm_grid": 2,
+  "entry_status": "PARSED",
+  "components": [
+   {
+    "canonical": "regular_human_insulin",
+    "class": "insulin",
+    "kind": "administration",
+    "route": "csii",
+    "formulation": "solution",
+    "formulation_basis": "DICTIONARY",
+    "dose": 15.0,
+    "unit": "IU",
+    "status": "PARSED",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "csii_bolus",
+  "raw_text": "acarbose 50 mg",
+  "n": 1,
+  "patients": 1,
+  "recordings": 1,
+  "n_T": 0,
+  "n_E": 1,
+  "on_cgm_grid": 1,
+  "entry_status": "NON_TARGET_MEDICATION",
+  "components": [
+   {
+    "canonical": "acarbose",
+    "class": "agi",
+    "kind": "administration",
+    "route": "oral",
+    "formulation": "tablet",
+    "formulation_basis": "DICTIONARY",
+    "dose": 50.0,
+    "unit": "mg",
+    "status": "NON_TARGET_MEDICATION",
+    "flags": [
+     "MISPLACED_COLUMN"
+    ]
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "insulin_iv",
+  "raw_text": "500ml 0.9% sodium chloride, 15 IU Novolin R, 10 ml 10% potassium chloride",
+  "n": 2,
+  "patients": 2,
+  "recordings": 2,
+  "n_T": 1,
+  "n_E": 1,
+  "on_cgm_grid": 2,
+  "entry_status": "PARSED_WITH_WARNING",
+  "components": [
+   {
+    "canonical": "sodium_chloride",
+    "class": "iv_fluid",
+    "kind": "iv_fluid",
+    "route": "iv",
+    "formulation": "infusion",
+    "formulation_basis": "DICTIONARY",
+    "dose": 500.0,
+    "unit": "ml",
+    "status": "NON_TARGET_MEDICATION",
+    "flags": []
+   },
+   {
+    "canonical": "regular_human_insulin",
+    "class": "insulin",
+    "kind": "administration",
+    "route": "iv",
+    "formulation": "solution",
+    "formulation_basis": "DICTIONARY",
+    "dose": 15.0,
+    "unit": "IU",
+    "status": "PARSED_WITH_WARNING",
+    "flags": [
+     "RATE_UNKNOWN"
+    ]
+   },
+   {
+    "canonical": "potassium_chloride",
+    "class": "electrolyte",
+    "kind": "iv_fluid",
+    "route": "iv",
+    "formulation": "infusion",
+    "formulation_basis": "DICTIONARY",
+    "dose": 10.0,
+    "unit": "ml",
+    "status": "NON_TARGET_MEDICATION",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "insulin_iv",
+  "raw_text": "500ml 0.9% sodium chloride, 8 IU Novolin R, 10 ml 10% potassium chloride",
+  "n": 2,
+  "patients": 1,
+  "recordings": 1,
+  "n_T": 0,
+  "n_E": 2,
+  "on_cgm_grid": 2,
+  "entry_status": "PARSED_WITH_WARNING",
+  "components": [
+   {
+    "canonical": "sodium_chloride",
+    "class": "iv_fluid",
+    "kind": "iv_fluid",
+    "route": "iv",
+    "formulation": "infusion",
+    "formulation_basis": "DICTIONARY",
+    "dose": 500.0,
+    "unit": "ml",
+    "status": "NON_TARGET_MEDICATION",
+    "flags": []
+   },
+   {
+    "canonical": "regular_human_insulin",
+    "class": "insulin",
+    "kind": "administration",
+    "route": "iv",
+    "formulation": "solution",
+    "formulation_basis": "DICTIONARY",
+    "dose": 8.0,
+    "unit": "IU",
+    "status": "PARSED_WITH_WARNING",
+    "flags": [
+     "RATE_UNKNOWN"
+    ]
+   },
+   {
+    "canonical": "potassium_chloride",
+    "class": "electrolyte",
+    "kind": "iv_fluid",
+    "route": "iv",
+    "formulation": "infusion",
+    "formulation_basis": "DICTIONARY",
+    "dose": 10.0,
+    "unit": "ml",
+    "status": "NON_TARGET_MEDICATION",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "insulin_iv",
+  "raw_text": "250 ml 5% glucose and sodium chloride, 6 IU Novolin R,  5 ml 10% potassium chloride",
+  "n": 1,
+  "patients": 1,
+  "recordings": 1,
+  "n_T": 0,
+  "n_E": 1,
+  "on_cgm_grid": 1,
+  "entry_status": "PARSED_WITH_WARNING",
+  "components": [
+   {
+    "canonical": "glucose_sodium_chloride",
+    "class": "iv_glucose",
+    "kind": "iv_fluid",
+    "route": "iv",
+    "formulation": "infusion",
+    "formulation_basis": "DICTIONARY",
+    "dose": 250.0,
+    "unit": "ml",
+    "status": "NON_TARGET_MEDICATION",
+    "flags": [
+     "GLUCOSE_INFUSION"
+    ]
+   },
+   {
+    "canonical": "regular_human_insulin",
+    "class": "insulin",
+    "kind": "administration",
+    "route": "iv",
+    "formulation": "solution",
+    "formulation_basis": "DICTIONARY",
+    "dose": 6.0,
+    "unit": "IU",
+    "status": "PARSED_WITH_WARNING",
+    "flags": [
+     "RATE_UNKNOWN"
+    ]
+   },
+   {
+    "canonical": "potassium_chloride",
+    "class": "electrolyte",
+    "kind": "iv_fluid",
+    "route": "iv",
+    "formulation": "infusion",
+    "formulation_basis": "DICTIONARY",
+    "dose": 5.0,
+    "unit": "ml",
+    "status": "NON_TARGET_MEDICATION",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "insulin_iv",
+  "raw_text": "250ml 0.9% sodium chloride, 12 IU Novolin R, 7.5 ml 10% potassium chloride",
+  "n": 1,
+  "patients": 1,
+  "recordings": 1,
+  "n_T": 0,
+  "n_E": 1,
+  "on_cgm_grid": 1,
+  "entry_status": "PARSED_WITH_WARNING",
+  "components": [
+   {
+    "canonical": "sodium_chloride",
+    "class": "iv_fluid",
+    "kind": "iv_fluid",
+    "route": "iv",
+    "formulation": "infusion",
+    "formulation_basis": "DICTIONARY",
+    "dose": 250.0,
+    "unit": "ml",
+    "status": "NON_TARGET_MEDICATION",
+    "flags": []
+   },
+   {
+    "canonical": "regular_human_insulin",
+    "class": "insulin",
+    "kind": "administration",
+    "route": "iv",
+    "formulation": "solution",
+    "formulation_basis": "DICTIONARY",
+    "dose": 12.0,
+    "unit": "IU",
+    "status": "PARSED_WITH_WARNING",
+    "flags": [
+     "RATE_UNKNOWN"
+    ]
+   },
+   {
+    "canonical": "potassium_chloride",
+    "class": "electrolyte",
+    "kind": "iv_fluid",
+    "route": "iv",
+    "formulation": "infusion",
+    "formulation_basis": "DICTIONARY",
+    "dose": 7.5,
+    "unit": "ml",
+    "status": "NON_TARGET_MEDICATION",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "insulin_iv",
+  "raw_text": "500ml 0.9% sodium chloride, 12 IU Novolin R, 10 ml 10% potassium chloride",
+  "n": 1,
+  "patients": 1,
+  "recordings": 1,
+  "n_T": 0,
+  "n_E": 1,
+  "on_cgm_grid": 1,
+  "entry_status": "PARSED_WITH_WARNING",
+  "components": [
+   {
+    "canonical": "sodium_chloride",
+    "class": "iv_fluid",
+    "kind": "iv_fluid",
+    "route": "iv",
+    "formulation": "infusion",
+    "formulation_basis": "DICTIONARY",
+    "dose": 500.0,
+    "unit": "ml",
+    "status": "NON_TARGET_MEDICATION",
+    "flags": []
+   },
+   {
+    "canonical": "regular_human_insulin",
+    "class": "insulin",
+    "kind": "administration",
+    "route": "iv",
+    "formulation": "solution",
+    "formulation_basis": "DICTIONARY",
+    "dose": 12.0,
+    "unit": "IU",
+    "status": "PARSED_WITH_WARNING",
+    "flags": [
+     "RATE_UNKNOWN"
+    ]
+   },
+   {
+    "canonical": "potassium_chloride",
+    "class": "electrolyte",
+    "kind": "iv_fluid",
+    "route": "iv",
+    "formulation": "infusion",
+    "formulation_basis": "DICTIONARY",
+    "dose": 10.0,
+    "unit": "ml",
+    "status": "NON_TARGET_MEDICATION",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "insulin_iv",
+  "raw_text": "500ml 5% glucose, 12 IU Novolin R, 10 ml 10% potassium chloride",
+  "n": 1,
+  "patients": 1,
+  "recordings": 1,
+  "n_T": 0,
+  "n_E": 1,
+  "on_cgm_grid": 1,
+  "entry_status": "PARSED_WITH_WARNING",
+  "components": [
+   {
+    "canonical": "glucose",
+    "class": "iv_glucose",
+    "kind": "iv_fluid",
+    "route": "iv",
+    "formulation": "infusion",
+    "formulation_basis": "DICTIONARY",
+    "dose": 500.0,
+    "unit": "ml",
+    "status": "NON_TARGET_MEDICATION",
+    "flags": [
+     "GLUCOSE_INFUSION"
+    ]
+   },
+   {
+    "canonical": "regular_human_insulin",
+    "class": "insulin",
+    "kind": "administration",
+    "route": "iv",
+    "formulation": "solution",
+    "formulation_basis": "DICTIONARY",
+    "dose": 12.0,
+    "unit": "IU",
+    "status": "PARSED_WITH_WARNING",
+    "flags": [
+     "RATE_UNKNOWN"
+    ]
+   },
+   {
+    "canonical": "potassium_chloride",
+    "class": "electrolyte",
+    "kind": "iv_fluid",
+    "route": "iv",
+    "formulation": "infusion",
+    "formulation_basis": "DICTIONARY",
+    "dose": 10.0,
+    "unit": "ml",
+    "status": "NON_TARGET_MEDICATION",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "insulin_iv",
+  "raw_text": "500ml 5% glucose, 6 IU Novolin R, 10 ml 10% potassium chloride",
+  "n": 1,
+  "patients": 1,
+  "recordings": 1,
+  "n_T": 0,
+  "n_E": 1,
+  "on_cgm_grid": 1,
+  "entry_status": "PARSED_WITH_WARNING",
+  "components": [
+   {
+    "canonical": "glucose",
+    "class": "iv_glucose",
+    "kind": "iv_fluid",
+    "route": "iv",
+    "formulation": "infusion",
+    "formulation_basis": "DICTIONARY",
+    "dose": 500.0,
+    "unit": "ml",
+    "status": "NON_TARGET_MEDICATION",
+    "flags": [
+     "GLUCOSE_INFUSION"
+    ]
+   },
+   {
+    "canonical": "regular_human_insulin",
+    "class": "insulin",
+    "kind": "administration",
+    "route": "iv",
+    "formulation": "solution",
+    "formulation_basis": "DICTIONARY",
+    "dose": 6.0,
+    "unit": "IU",
+    "status": "PARSED_WITH_WARNING",
+    "flags": [
+     "RATE_UNKNOWN"
+    ]
+   },
+   {
+    "canonical": "potassium_chloride",
+    "class": "electrolyte",
+    "kind": "iv_fluid",
+    "route": "iv",
+    "formulation": "infusion",
+    "formulation_basis": "DICTIONARY",
+    "dose": 10.0,
+    "unit": "ml",
+    "status": "NON_TARGET_MEDICATION",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "insulin_iv",
+  "raw_text": "CSII - basal insulin (Novolin R, IU / H)",
+  "n": 1,
+  "patients": 1,
+  "recordings": 1,
+  "n_T": 0,
+  "n_E": 1,
+  "on_cgm_grid": 1,
+  "entry_status": "NON_MEDICATION",
+  "components": [
+   {
+    "canonical": null,
+    "class": null,
+    "kind": "non_medication_text",
+    "route": null,
+    "formulation": null,
+    "formulation_basis": null,
+    "dose": null,
+    "unit": null,
+    "status": "NON_MEDICATION",
+    "flags": [
+     "HEADER_ARTEFACT"
+    ]
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "insulin_sc",
+  "raw_text": "insulin aspart 70/30, 14 IU",
+  "n": 43,
+  "patients": 7,
+  "recordings": 7,
+  "n_T": 33,
+  "n_E": 10,
+  "on_cgm_grid": 43,
+  "entry_status": "PARSED",
+  "components": [
+   {
+    "canonical": "insulin_aspart_biphasic_30",
+    "class": "insulin",
+    "kind": "administration",
+    "route": "sc",
+    "formulation": "premix 30% soluble aspart / 70% protamine aspart",
+    "formulation_basis": "DICTIONARY",
+    "dose": 14.0,
+    "unit": "IU",
+    "status": "PARSED",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "insulin_sc",
+  "raw_text": "insulin glulisine, 6 IU",
+  "n": 42,
+  "patients": 1,
+  "recordings": 1,
+  "n_T": 42,
+  "n_E": 0,
+  "on_cgm_grid": 42,
+  "entry_status": "PARSED",
+  "components": [
+   {
+    "canonical": "insulin_glulisine",
+    "class": "insulin",
+    "kind": "administration",
+    "route": "sc",
+    "formulation": "solution",
+    "formulation_basis": "DICTIONARY",
+    "dose": 6.0,
+    "unit": "IU",
+    "status": "PARSED",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "insulin_sc",
+  "raw_text": "insulin aspart 70/30, 16 IU",
+  "n": 41,
+  "patients": 7,
+  "recordings": 7,
+  "n_T": 6,
+  "n_E": 35,
+  "on_cgm_grid": 41,
+  "entry_status": "PARSED",
+  "components": [
+   {
+    "canonical": "insulin_aspart_biphasic_30",
+    "class": "insulin",
+    "kind": "administration",
+    "route": "sc",
+    "formulation": "premix 30% soluble aspart / 70% protamine aspart",
+    "formulation_basis": "DICTIONARY",
+    "dose": 16.0,
+    "unit": "IU",
+    "status": "PARSED",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "insulin_sc",
+  "raw_text": "insulin aspart, 5 IU",
+  "n": 38,
+  "patients": 1,
+  "recordings": 1,
+  "n_T": 38,
+  "n_E": 0,
+  "on_cgm_grid": 38,
+  "entry_status": "PARSED",
+  "components": [
+   {
+    "canonical": "insulin_aspart",
+    "class": "insulin",
+    "kind": "administration",
+    "route": "sc",
+    "formulation": "solution",
+    "formulation_basis": "DICTIONARY",
+    "dose": 5.0,
+    "unit": "IU",
+    "status": "PARSED",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "insulin_sc",
+  "raw_text": "insulin degludec, 6 IU",
+  "n": 37,
+  "patients": 3,
+  "recordings": 4,
+  "n_T": 8,
+  "n_E": 29,
+  "on_cgm_grid": 37,
+  "entry_status": "PARSED",
+  "components": [
+   {
+    "canonical": "insulin_degludec",
+    "class": "insulin",
+    "kind": "administration",
+    "route": "sc",
+    "formulation": "solution",
+    "formulation_basis": "DICTIONARY",
+    "dose": 6.0,
+    "unit": "IU",
+    "status": "PARSED",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "insulin_sc",
+  "raw_text": "insulin aspart 70/30, 12 IU",
+  "n": 35,
+  "patients": 7,
+  "recordings": 7,
+  "n_T": 3,
+  "n_E": 32,
+  "on_cgm_grid": 35,
+  "entry_status": "PARSED",
+  "components": [
+   {
+    "canonical": "insulin_aspart_biphasic_30",
+    "class": "insulin",
+    "kind": "administration",
+    "route": "sc",
+    "formulation": "premix 30% soluble aspart / 70% protamine aspart",
+    "formulation_basis": "DICTIONARY",
+    "dose": 12.0,
+    "unit": "IU",
+    "status": "PARSED",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "insulin_sc",
+  "raw_text": "insulin aspart 70/30, 8 IU",
+  "n": 30,
+  "patients": 7,
+  "recordings": 7,
+  "n_T": 11,
+  "n_E": 19,
+  "on_cgm_grid": 30,
+  "entry_status": "PARSED",
+  "components": [
+   {
+    "canonical": "insulin_aspart_biphasic_30",
+    "class": "insulin",
+    "kind": "administration",
+    "route": "sc",
+    "formulation": "premix 30% soluble aspart / 70% protamine aspart",
+    "formulation_basis": "DICTIONARY",
+    "dose": 8.0,
+    "unit": "IU",
+    "status": "PARSED",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "insulin_sc",
+  "raw_text": "insulin degludec, 4 IU",
+  "n": 30,
+  "patients": 3,
+  "recordings": 4,
+  "n_T": 15,
+  "n_E": 15,
+  "on_cgm_grid": 30,
+  "entry_status": "PARSED",
+  "components": [
+   {
+    "canonical": "insulin_degludec",
+    "class": "insulin",
+    "kind": "administration",
+    "route": "sc",
+    "formulation": "solution",
+    "formulation_basis": "DICTIONARY",
+    "dose": 4.0,
+    "unit": "IU",
+    "status": "PARSED",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "insulin_sc",
+  "raw_text": "insulin degludec, 8 IU",
+  "n": 28,
+  "patients": 3,
+  "recordings": 3,
+  "n_T": 16,
+  "n_E": 12,
+  "on_cgm_grid": 28,
+  "entry_status": "PARSED",
+  "components": [
+   {
+    "canonical": "insulin_degludec",
+    "class": "insulin",
+    "kind": "administration",
+    "route": "sc",
+    "formulation": "solution",
+    "formulation_basis": "DICTIONARY",
+    "dose": 8.0,
+    "unit": "IU",
+    "status": "PARSED",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "insulin_sc",
+  "raw_text": "Novolin 30R, 14 IU",
+  "n": 20,
+  "patients": 3,
+  "recordings": 3,
+  "n_T": 1,
+  "n_E": 19,
+  "on_cgm_grid": 20,
+  "entry_status": "PARSED",
+  "components": [
+   {
+    "canonical": "premix_human_30_70",
+    "class": "insulin",
+    "kind": "administration",
+    "route": "sc",
+    "formulation": "premix 30% regular / 70% NPH",
+    "formulation_basis": "DICTIONARY",
+    "dose": 14.0,
+    "unit": "IU",
+    "status": "PARSED",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "insulin_sc",
+  "raw_text": "insulin degludec, 10 IU",
+  "n": 20,
+  "patients": 2,
+  "recordings": 3,
+  "n_T": 3,
+  "n_E": 17,
+  "on_cgm_grid": 20,
+  "entry_status": "PARSED",
+  "components": [
+   {
+    "canonical": "insulin_degludec",
+    "class": "insulin",
+    "kind": "administration",
+    "route": "sc",
+    "formulation": "solution",
+    "formulation_basis": "DICTIONARY",
+    "dose": 10.0,
+    "unit": "IU",
+    "status": "PARSED",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "insulin_sc",
+  "raw_text": "Novolin 30R, 8 IU",
+  "n": 17,
+  "patients": 4,
+  "recordings": 4,
+  "n_T": 1,
+  "n_E": 16,
+  "on_cgm_grid": 17,
+  "entry_status": "PARSED",
+  "components": [
+   {
+    "canonical": "premix_human_30_70",
+    "class": "insulin",
+    "kind": "administration",
+    "route": "sc",
+    "formulation": "premix 30% regular / 70% NPH",
+    "formulation_basis": "DICTIONARY",
+    "dose": 8.0,
+    "unit": "IU",
+    "status": "PARSED",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "insulin_sc",
+  "raw_text": "Novolin 30R, 6 IU",
+  "n": 16,
+  "patients": 3,
+  "recordings": 3,
+  "n_T": 1,
+  "n_E": 15,
+  "on_cgm_grid": 16,
+  "entry_status": "PARSED",
+  "components": [
+   {
+    "canonical": "premix_human_30_70",
+    "class": "insulin",
+    "kind": "administration",
+    "route": "sc",
+    "formulation": "premix 30% regular / 70% NPH",
+    "formulation_basis": "DICTIONARY",
+    "dose": 6.0,
+    "unit": "IU",
+    "status": "PARSED",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "insulin_sc",
+  "raw_text": "Novolin R, 10 IU",
+  "n": 16,
+  "patients": 2,
+  "recordings": 2,
+  "n_T": 0,
+  "n_E": 16,
+  "on_cgm_grid": 16,
+  "entry_status": "PARSED",
+  "components": [
+   {
+    "canonical": "regular_human_insulin",
+    "class": "insulin",
+    "kind": "administration",
+    "route": "sc",
+    "formulation": "solution",
+    "formulation_basis": "DICTIONARY",
+    "dose": 10.0,
+    "unit": "IU",
+    "status": "PARSED",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "insulin_sc",
+  "raw_text": "insulin aspart 70/30, 9 IU",
+  "n": 16,
+  "patients": 2,
+  "recordings": 2,
+  "n_T": 0,
+  "n_E": 16,
+  "on_cgm_grid": 16,
+  "entry_status": "PARSED",
+  "components": [
+   {
+    "canonical": "insulin_aspart_biphasic_30",
+    "class": "insulin",
+    "kind": "administration",
+    "route": "sc",
+    "formulation": "premix 30% soluble aspart / 70% protamine aspart",
+    "formulation_basis": "DICTIONARY",
+    "dose": 9.0,
+    "unit": "IU",
+    "status": "PARSED",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "insulin_sc",
+  "raw_text": "insulin aspart 70/30, 28 IU",
+  "n": 15,
+  "patients": 2,
+  "recordings": 2,
+  "n_T": 14,
+  "n_E": 1,
+  "on_cgm_grid": 15,
+  "entry_status": "PARSED",
+  "components": [
+   {
+    "canonical": "insulin_aspart_biphasic_30",
+    "class": "insulin",
+    "kind": "administration",
+    "route": "sc",
+    "formulation": "premix 30% soluble aspart / 70% protamine aspart",
+    "formulation_basis": "DICTIONARY",
+    "dose": 28.0,
+    "unit": "IU",
+    "status": "PARSED",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "insulin_sc",
+  "raw_text": "insulin detemir, 15 IU",
+  "n": 15,
+  "patients": 2,
+  "recordings": 2,
+  "n_T": 13,
+  "n_E": 2,
+  "on_cgm_grid": 15,
+  "entry_status": "PARSED",
+  "components": [
+   {
+    "canonical": "insulin_detemir",
+    "class": "insulin",
+    "kind": "administration",
+    "route": "sc",
+    "formulation": "solution",
+    "formulation_basis": "DICTIONARY",
+    "dose": 15.0,
+    "unit": "IU",
+    "status": "PARSED",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "insulin_sc",
+  "raw_text": "Gansulin 40R, 10 IU",
+  "n": 14,
+  "patients": 1,
+  "recordings": 1,
+  "n_T": 0,
+  "n_E": 14,
+  "on_cgm_grid": 14,
+  "entry_status": "PARSED",
+  "components": [
+   {
+    "canonical": "premix_human_40_60",
+    "class": "insulin",
+    "kind": "administration",
+    "route": "sc",
+    "formulation": "premix 40% regular / 60% NPH",
+    "formulation_basis": "DICTIONARY",
+    "dose": 10.0,
+    "unit": "IU",
+    "status": "PARSED",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "insulin_sc",
+  "raw_text": "insulin degludec, 18 IU",
+  "n": 14,
+  "patients": 1,
+  "recordings": 1,
+  "n_T": 0,
+  "n_E": 14,
+  "on_cgm_grid": 14,
+  "entry_status": "PARSED",
+  "components": [
+   {
+    "canonical": "insulin_degludec",
+    "class": "insulin",
+    "kind": "administration",
+    "route": "sc",
+    "formulation": "solution",
+    "formulation_basis": "DICTIONARY",
+    "dose": 18.0,
+    "unit": "IU",
+    "status": "PARSED",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "insulin_sc",
+  "raw_text": "insulin detemir, 8 IU",
+  "n": 14,
+  "patients": 2,
+  "recordings": 2,
+  "n_T": 0,
+  "n_E": 14,
+  "on_cgm_grid": 14,
+  "entry_status": "PARSED",
+  "components": [
+   {
+    "canonical": "insulin_detemir",
+    "class": "insulin",
+    "kind": "administration",
+    "route": "sc",
+    "formulation": "solution",
+    "formulation_basis": "DICTIONARY",
+    "dose": 8.0,
+    "unit": "IU",
+    "status": "PARSED",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "insulin_sc",
+  "raw_text": "insulin glargine, 14 IU, Humulin 70/30, 12 IU",
+  "n": 14,
+  "patients": 1,
+  "recordings": 1,
+  "n_T": 0,
+  "n_E": 14,
+  "on_cgm_grid": 14,
+  "entry_status": "PARSED",
+  "components": [
+   {
+    "canonical": "insulin_glargine",
+    "class": "insulin",
+    "kind": "administration",
+    "route": "sc",
+    "formulation": "solution",
+    "formulation_basis": "DICTIONARY",
+    "dose": 14.0,
+    "unit": "IU",
+    "status": "PARSED",
+    "flags": []
+   },
+   {
+    "canonical": "premix_human_30_70",
+    "class": "insulin",
+    "kind": "administration",
+    "route": "sc",
+    "formulation": "premix 30% regular / 70% NPH",
+    "formulation_basis": "DICTIONARY",
+    "dose": 12.0,
+    "unit": "IU",
+    "status": "PARSED",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "insulin_sc",
+  "raw_text": "insulin glargine, 6 IU",
+  "n": 14,
+  "patients": 1,
+  "recordings": 1,
+  "n_T": 14,
+  "n_E": 0,
+  "on_cgm_grid": 14,
+  "entry_status": "PARSED",
+  "components": [
+   {
+    "canonical": "insulin_glargine",
+    "class": "insulin",
+    "kind": "administration",
+    "route": "sc",
+    "formulation": "solution",
+    "formulation_basis": "DICTIONARY",
+    "dose": 6.0,
+    "unit": "IU",
+    "status": "PARSED",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "insulin_sc",
+  "raw_text": "Humulin 70/30  8 IU",
+  "n": 13,
+  "patients": 1,
+  "recordings": 1,
+  "n_T": 13,
+  "n_E": 0,
+  "on_cgm_grid": 13,
+  "entry_status": "PARSED",
+  "components": [
+   {
+    "canonical": "premix_human_30_70",
+    "class": "insulin",
+    "kind": "administration",
+    "route": "sc",
+    "formulation": "premix 30% regular / 70% NPH",
+    "formulation_basis": "DICTIONARY",
+    "dose": 8.0,
+    "unit": "IU",
+    "status": "PARSED",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "insulin_sc",
+  "raw_text": "Humulin 70/30, 3 IU",
+  "n": 13,
+  "patients": 1,
+  "recordings": 1,
+  "n_T": 0,
+  "n_E": 13,
+  "on_cgm_grid": 13,
+  "entry_status": "PARSED",
+  "components": [
+   {
+    "canonical": "premix_human_30_70",
+    "class": "insulin",
+    "kind": "administration",
+    "route": "sc",
+    "formulation": "premix 30% regular / 70% NPH",
+    "formulation_basis": "DICTIONARY",
+    "dose": 3.0,
+    "unit": "IU",
+    "status": "PARSED",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "insulin_sc",
+  "raw_text": "Humulin 70/30, 5 IU",
+  "n": 13,
+  "patients": 1,
+  "recordings": 1,
+  "n_T": 0,
+  "n_E": 13,
+  "on_cgm_grid": 13,
+  "entry_status": "PARSED",
+  "components": [
+   {
+    "canonical": "premix_human_30_70",
+    "class": "insulin",
+    "kind": "administration",
+    "route": "sc",
+    "formulation": "premix 30% regular / 70% NPH",
+    "formulation_basis": "DICTIONARY",
+    "dose": 5.0,
+    "unit": "IU",
+    "status": "PARSED",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "insulin_sc",
+  "raw_text": "Gansulin R, 4 IU",
+  "n": 12,
+  "patients": 1,
+  "recordings": 1,
+  "n_T": 0,
+  "n_E": 12,
+  "on_cgm_grid": 12,
+  "entry_status": "PARSED",
+  "components": [
+   {
+    "canonical": "regular_human_insulin",
+    "class": "insulin",
+    "kind": "administration",
+    "route": "sc",
+    "formulation": "solution",
+    "formulation_basis": "DICTIONARY",
+    "dose": 4.0,
+    "unit": "IU",
+    "status": "PARSED",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "insulin_sc",
+  "raw_text": "insulin aspart 70/30, 18 IU",
+  "n": 12,
+  "patients": 7,
+  "recordings": 7,
+  "n_T": 0,
+  "n_E": 12,
+  "on_cgm_grid": 12,
+  "entry_status": "PARSED",
+  "components": [
+   {
+    "canonical": "insulin_aspart_biphasic_30",
+    "class": "insulin",
+    "kind": "administration",
+    "route": "sc",
+    "formulation": "premix 30% soluble aspart / 70% protamine aspart",
+    "formulation_basis": "DICTIONARY",
+    "dose": 18.0,
+    "unit": "IU",
+    "status": "PARSED",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "insulin_sc",
+  "raw_text": "Gansulin 40R, 6 IU",
+  "n": 11,
+  "patients": 1,
+  "recordings": 1,
+  "n_T": 0,
+  "n_E": 11,
+  "on_cgm_grid": 11,
+  "entry_status": "PARSED",
+  "components": [
+   {
+    "canonical": "premix_human_40_60",
+    "class": "insulin",
+    "kind": "administration",
+    "route": "sc",
+    "formulation": "premix 40% regular / 60% NPH",
+    "formulation_basis": "DICTIONARY",
+    "dose": 6.0,
+    "unit": "IU",
+    "status": "PARSED",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "insulin_sc",
+  "raw_text": "Novolin R, 8 IU",
+  "n": 11,
+  "patients": 3,
+  "recordings": 3,
+  "n_T": 1,
+  "n_E": 10,
+  "on_cgm_grid": 11,
+  "entry_status": "PARSED",
+  "components": [
+   {
+    "canonical": "regular_human_insulin",
+    "class": "insulin",
+    "kind": "administration",
+    "route": "sc",
+    "formulation": "solution",
+    "formulation_basis": "DICTIONARY",
+    "dose": 8.0,
+    "unit": "IU",
+    "status": "PARSED",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "insulin_sc",
+  "raw_text": "insulin aspart 70/30, 10 IU",
+  "n": 11,
+  "patients": 7,
+  "recordings": 7,
+  "n_T": 6,
+  "n_E": 5,
+  "on_cgm_grid": 11,
+  "entry_status": "PARSED",
+  "components": [
+   {
+    "canonical": "insulin_aspart_biphasic_30",
+    "class": "insulin",
+    "kind": "administration",
+    "route": "sc",
+    "formulation": "premix 30% soluble aspart / 70% protamine aspart",
+    "formulation_basis": "DICTIONARY",
+    "dose": 10.0,
+    "unit": "IU",
+    "status": "PARSED",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "insulin_sc",
+  "raw_text": "insulin detemir, 12 IU",
+  "n": 11,
+  "patients": 1,
+  "recordings": 2,
+  "n_T": 0,
+  "n_E": 11,
+  "on_cgm_grid": 11,
+  "entry_status": "PARSED",
+  "components": [
+   {
+    "canonical": "insulin_detemir",
+    "class": "insulin",
+    "kind": "administration",
+    "route": "sc",
+    "formulation": "solution",
+    "formulation_basis": "DICTIONARY",
+    "dose": 12.0,
+    "unit": "IU",
+    "status": "PARSED",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "insulin_sc",
+  "raw_text": "Gansulin R, 8 IU",
+  "n": 10,
+  "patients": 1,
+  "recordings": 1,
+  "n_T": 0,
+  "n_E": 10,
+  "on_cgm_grid": 10,
+  "entry_status": "PARSED",
+  "components": [
+   {
+    "canonical": "regular_human_insulin",
+    "class": "insulin",
+    "kind": "administration",
+    "route": "sc",
+    "formulation": "solution",
+    "formulation_basis": "DICTIONARY",
+    "dose": 8.0,
+    "unit": "IU",
+    "status": "PARSED",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "insulin_sc",
+  "raw_text": "Novolin R, 6 IU",
+  "n": 10,
+  "patients": 3,
+  "recordings": 3,
+  "n_T": 4,
+  "n_E": 6,
+  "on_cgm_grid": 10,
+  "entry_status": "PARSED",
+  "components": [
+   {
+    "canonical": "regular_human_insulin",
+    "class": "insulin",
+    "kind": "administration",
+    "route": "sc",
+    "formulation": "solution",
+    "formulation_basis": "DICTIONARY",
+    "dose": 6.0,
+    "unit": "IU",
+    "status": "PARSED",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "insulin_sc",
+  "raw_text": "Gansulin R, 6 IU",
+  "n": 9,
+  "patients": 1,
+  "recordings": 1,
+  "n_T": 0,
+  "n_E": 9,
+  "on_cgm_grid": 9,
+  "entry_status": "PARSED",
+  "components": [
+   {
+    "canonical": "regular_human_insulin",
+    "class": "insulin",
+    "kind": "administration",
+    "route": "sc",
+    "formulation": "solution",
+    "formulation_basis": "DICTIONARY",
+    "dose": 6.0,
+    "unit": "IU",
+    "status": "PARSED",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "insulin_sc",
+  "raw_text": "insulin degludec, 12 IU",
+  "n": 9,
+  "patients": 1,
+  "recordings": 2,
+  "n_T": 0,
+  "n_E": 9,
+  "on_cgm_grid": 9,
+  "entry_status": "PARSED",
+  "components": [
+   {
+    "canonical": "insulin_degludec",
+    "class": "insulin",
+    "kind": "administration",
+    "route": "sc",
+    "formulation": "solution",
+    "formulation_basis": "DICTIONARY",
+    "dose": 12.0,
+    "unit": "IU",
+    "status": "PARSED",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "insulin_sc",
+  "raw_text": "Humulin 70/30, 4 IU",
+  "n": 8,
+  "patients": 1,
+  "recordings": 1,
+  "n_T": 8,
+  "n_E": 0,
+  "on_cgm_grid": 8,
+  "entry_status": "PARSED",
+  "components": [
+   {
+    "canonical": "premix_human_30_70",
+    "class": "insulin",
+    "kind": "administration",
+    "route": "sc",
+    "formulation": "premix 30% regular / 70% NPH",
+    "formulation_basis": "DICTIONARY",
+    "dose": 4.0,
+    "unit": "IU",
+    "status": "PARSED",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "insulin_sc",
+  "raw_text": "Humulin 70/30, 8 IU",
+  "n": 8,
+  "patients": 1,
+  "recordings": 1,
+  "n_T": 8,
+  "n_E": 0,
+  "on_cgm_grid": 8,
+  "entry_status": "PARSED",
+  "components": [
+   {
+    "canonical": "premix_human_30_70",
+    "class": "insulin",
+    "kind": "administration",
+    "route": "sc",
+    "formulation": "premix 30% regular / 70% NPH",
+    "formulation_basis": "DICTIONARY",
+    "dose": 8.0,
+    "unit": "IU",
+    "status": "PARSED",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "insulin_sc",
+  "raw_text": "Novolin 30R, 16 IU",
+  "n": 8,
+  "patients": 2,
+  "recordings": 2,
+  "n_T": 0,
+  "n_E": 8,
+  "on_cgm_grid": 8,
+  "entry_status": "PARSED",
+  "components": [
+   {
+    "canonical": "premix_human_30_70",
+    "class": "insulin",
+    "kind": "administration",
+    "route": "sc",
+    "formulation": "premix 30% regular / 70% NPH",
+    "formulation_basis": "DICTIONARY",
+    "dose": 16.0,
+    "unit": "IU",
+    "status": "PARSED",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "insulin_sc",
+  "raw_text": "Novolin 30R, 9 IU",
+  "n": 8,
+  "patients": 2,
+  "recordings": 2,
+  "n_T": 8,
+  "n_E": 0,
+  "on_cgm_grid": 8,
+  "entry_status": "PARSED",
+  "components": [
+   {
+    "canonical": "premix_human_30_70",
+    "class": "insulin",
+    "kind": "administration",
+    "route": "sc",
+    "formulation": "premix 30% regular / 70% NPH",
+    "formulation_basis": "DICTIONARY",
+    "dose": 9.0,
+    "unit": "IU",
+    "status": "PARSED",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "insulin_sc",
+  "raw_text": "insulin aspart 70/30, 22 IU",
+  "n": 8,
+  "patients": 2,
+  "recordings": 2,
+  "n_T": 1,
+  "n_E": 7,
+  "on_cgm_grid": 8,
+  "entry_status": "PARSED",
+  "components": [
+   {
+    "canonical": "insulin_aspart_biphasic_30",
+    "class": "insulin",
+    "kind": "administration",
+    "route": "sc",
+    "formulation": "premix 30% soluble aspart / 70% protamine aspart",
+    "formulation_basis": "DICTIONARY",
+    "dose": 22.0,
+    "unit": "IU",
+    "status": "PARSED",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "insulin_sc",
+  "raw_text": "insulin aspart 70/30, 5 IU",
+  "n": 8,
+  "patients": 1,
+  "recordings": 1,
+  "n_T": 8,
+  "n_E": 0,
+  "on_cgm_grid": 8,
+  "entry_status": "PARSED",
+  "components": [
+   {
+    "canonical": "insulin_aspart_biphasic_30",
+    "class": "insulin",
+    "kind": "administration",
+    "route": "sc",
+    "formulation": "premix 30% soluble aspart / 70% protamine aspart",
+    "formulation_basis": "DICTIONARY",
+    "dose": 5.0,
+    "unit": "IU",
+    "status": "PARSED",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "insulin_sc",
+  "raw_text": "insulin detemir, 14 IU",
+  "n": 8,
+  "patients": 2,
+  "recordings": 2,
+  "n_T": 0,
+  "n_E": 8,
+  "on_cgm_grid": 8,
+  "entry_status": "PARSED",
+  "components": [
+   {
+    "canonical": "insulin_detemir",
+    "class": "insulin",
+    "kind": "administration",
+    "route": "sc",
+    "formulation": "solution",
+    "formulation_basis": "DICTIONARY",
+    "dose": 14.0,
+    "unit": "IU",
+    "status": "PARSED",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "insulin_sc",
+  "raw_text": "insulin detemir, 16 IU",
+  "n": 7,
+  "patients": 3,
+  "recordings": 3,
+  "n_T": 2,
+  "n_E": 5,
+  "on_cgm_grid": 7,
+  "entry_status": "PARSED",
+  "components": [
+   {
+    "canonical": "insulin_detemir",
+    "class": "insulin",
+    "kind": "administration",
+    "route": "sc",
+    "formulation": "solution",
+    "formulation_basis": "DICTIONARY",
+    "dose": 16.0,
+    "unit": "IU",
+    "status": "PARSED",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "insulin_sc",
+  "raw_text": "insulin glarigine, 12 IU",
+  "n": 6,
+  "patients": 1,
+  "recordings": 1,
+  "n_T": 0,
+  "n_E": 6,
+  "on_cgm_grid": 6,
+  "entry_status": "PARSED",
+  "components": [
+   {
+    "canonical": "insulin_glargine",
+    "class": "insulin",
+    "kind": "administration",
+    "route": "sc",
+    "formulation": "solution",
+    "formulation_basis": "DICTIONARY",
+    "dose": 12.0,
+    "unit": "IU",
+    "status": "PARSED",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "insulin_sc",
+  "raw_text": "Novolin 30R, 17 IU",
+  "n": 5,
+  "patients": 2,
+  "recordings": 2,
+  "n_T": 5,
+  "n_E": 0,
+  "on_cgm_grid": 5,
+  "entry_status": "PARSED",
+  "components": [
+   {
+    "canonical": "premix_human_30_70",
+    "class": "insulin",
+    "kind": "administration",
+    "route": "sc",
+    "formulation": "premix 30% regular / 70% NPH",
+    "formulation_basis": "DICTIONARY",
+    "dose": 17.0,
+    "unit": "IU",
+    "status": "PARSED",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "insulin_sc",
+  "raw_text": "Novolin R, 4 IU",
+  "n": 5,
+  "patients": 2,
+  "recordings": 2,
+  "n_T": 0,
+  "n_E": 5,
+  "on_cgm_grid": 5,
+  "entry_status": "PARSED",
+  "components": [
+   {
+    "canonical": "regular_human_insulin",
+    "class": "insulin",
+    "kind": "administration",
+    "route": "sc",
+    "formulation": "solution",
+    "formulation_basis": "DICTIONARY",
+    "dose": 4.0,
+    "unit": "IU",
+    "status": "PARSED",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "insulin_sc",
+  "raw_text": "Novolin R, 5 IU",
+  "n": 5,
+  "patients": 2,
+  "recordings": 2,
+  "n_T": 1,
+  "n_E": 4,
+  "on_cgm_grid": 5,
+  "entry_status": "PARSED",
+  "components": [
+   {
+    "canonical": "regular_human_insulin",
+    "class": "insulin",
+    "kind": "administration",
+    "route": "sc",
+    "formulation": "solution",
+    "formulation_basis": "DICTIONARY",
+    "dose": 5.0,
+    "unit": "IU",
+    "status": "PARSED",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "insulin_sc",
+  "raw_text": "insulin detemir, 20 IU",
+  "n": 5,
+  "patients": 1,
+  "recordings": 1,
+  "n_T": 0,
+  "n_E": 5,
+  "on_cgm_grid": 5,
+  "entry_status": "PARSED",
+  "components": [
+   {
+    "canonical": "insulin_detemir",
+    "class": "insulin",
+    "kind": "administration",
+    "route": "sc",
+    "formulation": "solution",
+    "formulation_basis": "DICTIONARY",
+    "dose": 20.0,
+    "unit": "IU",
+    "status": "PARSED",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "insulin_sc",
+  "raw_text": "Humulin 70/30, 10 IU",
+  "n": 4,
+  "patients": 1,
+  "recordings": 1,
+  "n_T": 4,
+  "n_E": 0,
+  "on_cgm_grid": 4,
+  "entry_status": "PARSED",
+  "components": [
+   {
+    "canonical": "premix_human_30_70",
+    "class": "insulin",
+    "kind": "administration",
+    "route": "sc",
+    "formulation": "premix 30% regular / 70% NPH",
+    "formulation_basis": "DICTIONARY",
+    "dose": 10.0,
+    "unit": "IU",
+    "status": "PARSED",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "insulin_sc",
+  "raw_text": "Novolin R, 15 IU",
+  "n": 4,
+  "patients": 1,
+  "recordings": 1,
+  "n_T": 0,
+  "n_E": 4,
+  "on_cgm_grid": 4,
+  "entry_status": "PARSED",
+  "components": [
+   {
+    "canonical": "regular_human_insulin",
+    "class": "insulin",
+    "kind": "administration",
+    "route": "sc",
+    "formulation": "solution",
+    "formulation_basis": "DICTIONARY",
+    "dose": 15.0,
+    "unit": "IU",
+    "status": "PARSED",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "insulin_sc",
+  "raw_text": "Novolin R, 3 IU",
+  "n": 4,
+  "patients": 1,
+  "recordings": 1,
+  "n_T": 0,
+  "n_E": 4,
+  "on_cgm_grid": 4,
+  "entry_status": "PARSED",
+  "components": [
+   {
+    "canonical": "regular_human_insulin",
+    "class": "insulin",
+    "kind": "administration",
+    "route": "sc",
+    "formulation": "solution",
+    "formulation_basis": "DICTIONARY",
+    "dose": 3.0,
+    "unit": "IU",
+    "status": "PARSED",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "insulin_sc",
+  "raw_text": "insulin aspart 70/30, 8 IU ",
+  "n": 4,
+  "patients": 1,
+  "recordings": 1,
+  "n_T": 4,
+  "n_E": 0,
+  "on_cgm_grid": 4,
+  "entry_status": "PARSED",
+  "components": [
+   {
+    "canonical": "insulin_aspart_biphasic_30",
+    "class": "insulin",
+    "kind": "administration",
+    "route": "sc",
+    "formulation": "premix 30% soluble aspart / 70% protamine aspart",
+    "formulation_basis": "DICTIONARY",
+    "dose": 8.0,
+    "unit": "IU",
+    "status": "PARSED",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "insulin_sc",
+  "raw_text": "Novolin R, 13 IU",
+  "n": 3,
+  "patients": 2,
+  "recordings": 2,
+  "n_T": 1,
+  "n_E": 2,
+  "on_cgm_grid": 3,
+  "entry_status": "PARSED",
+  "components": [
+   {
+    "canonical": "regular_human_insulin",
+    "class": "insulin",
+    "kind": "administration",
+    "route": "sc",
+    "formulation": "solution",
+    "formulation_basis": "DICTIONARY",
+    "dose": 13.0,
+    "unit": "IU",
+    "status": "PARSED",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "insulin_sc",
+  "raw_text": "Novolin R, 14 IU",
+  "n": 3,
+  "patients": 2,
+  "recordings": 2,
+  "n_T": 1,
+  "n_E": 2,
+  "on_cgm_grid": 3,
+  "entry_status": "PARSED",
+  "components": [
+   {
+    "canonical": "regular_human_insulin",
+    "class": "insulin",
+    "kind": "administration",
+    "route": "sc",
+    "formulation": "solution",
+    "formulation_basis": "DICTIONARY",
+    "dose": 14.0,
+    "unit": "IU",
+    "status": "PARSED",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "insulin_sc",
+  "raw_text": "insulin aspart 70/30, 20 IU",
+  "n": 3,
+  "patients": 2,
+  "recordings": 2,
+  "n_T": 0,
+  "n_E": 3,
+  "on_cgm_grid": 3,
+  "entry_status": "PARSED",
+  "components": [
+   {
+    "canonical": "insulin_aspart_biphasic_30",
+    "class": "insulin",
+    "kind": "administration",
+    "route": "sc",
+    "formulation": "premix 30% soluble aspart / 70% protamine aspart",
+    "formulation_basis": "DICTIONARY",
+    "dose": 20.0,
+    "unit": "IU",
+    "status": "PARSED",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "insulin_sc",
+  "raw_text": "insulin aspart 70/30, 6 IU",
+  "n": 3,
+  "patients": 3,
+  "recordings": 3,
+  "n_T": 1,
+  "n_E": 2,
+  "on_cgm_grid": 3,
+  "entry_status": "PARSED",
+  "components": [
+   {
+    "canonical": "insulin_aspart_biphasic_30",
+    "class": "insulin",
+    "kind": "administration",
+    "route": "sc",
+    "formulation": "premix 30% soluble aspart / 70% protamine aspart",
+    "formulation_basis": "DICTIONARY",
+    "dose": 6.0,
+    "unit": "IU",
+    "status": "PARSED",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "insulin_sc",
+  "raw_text": "Gansulin 40R, 8 IU",
+  "n": 2,
+  "patients": 1,
+  "recordings": 1,
+  "n_T": 0,
+  "n_E": 2,
+  "on_cgm_grid": 2,
+  "entry_status": "PARSED",
+  "components": [
+   {
+    "canonical": "premix_human_40_60",
+    "class": "insulin",
+    "kind": "administration",
+    "route": "sc",
+    "formulation": "premix 40% regular / 60% NPH",
+    "formulation_basis": "DICTIONARY",
+    "dose": 8.0,
+    "unit": "IU",
+    "status": "PARSED",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "insulin_sc",
+  "raw_text": "Humulin 70/30, 6 IU",
+  "n": 2,
+  "patients": 1,
+  "recordings": 1,
+  "n_T": 2,
+  "n_E": 0,
+  "on_cgm_grid": 2,
+  "entry_status": "PARSED",
+  "components": [
+   {
+    "canonical": "premix_human_30_70",
+    "class": "insulin",
+    "kind": "administration",
+    "route": "sc",
+    "formulation": "premix 30% regular / 70% NPH",
+    "formulation_basis": "DICTIONARY",
+    "dose": 6.0,
+    "unit": "IU",
+    "status": "PARSED",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "insulin_sc",
+  "raw_text": "Novolin 30R, 10 IU",
+  "n": 2,
+  "patients": 1,
+  "recordings": 1,
+  "n_T": 0,
+  "n_E": 2,
+  "on_cgm_grid": 2,
+  "entry_status": "PARSED",
+  "components": [
+   {
+    "canonical": "premix_human_30_70",
+    "class": "insulin",
+    "kind": "administration",
+    "route": "sc",
+    "formulation": "premix 30% regular / 70% NPH",
+    "formulation_basis": "DICTIONARY",
+    "dose": 10.0,
+    "unit": "IU",
+    "status": "PARSED",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "insulin_sc",
+  "raw_text": "Novolin 30R, 12 IU",
+  "n": 2,
+  "patients": 1,
+  "recordings": 1,
+  "n_T": 0,
+  "n_E": 2,
+  "on_cgm_grid": 2,
+  "entry_status": "PARSED",
+  "components": [
+   {
+    "canonical": "premix_human_30_70",
+    "class": "insulin",
+    "kind": "administration",
+    "route": "sc",
+    "formulation": "premix 30% regular / 70% NPH",
+    "formulation_basis": "DICTIONARY",
+    "dose": 12.0,
+    "unit": "IU",
+    "status": "PARSED",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "insulin_sc",
+  "raw_text": "Novolin 30R, 18 IU",
+  "n": 2,
+  "patients": 1,
+  "recordings": 1,
+  "n_T": 0,
+  "n_E": 2,
+  "on_cgm_grid": 2,
+  "entry_status": "PARSED",
+  "components": [
+   {
+    "canonical": "premix_human_30_70",
+    "class": "insulin",
+    "kind": "administration",
+    "route": "sc",
+    "formulation": "premix 30% regular / 70% NPH",
+    "formulation_basis": "DICTIONARY",
+    "dose": 18.0,
+    "unit": "IU",
+    "status": "PARSED",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "insulin_sc",
+  "raw_text": "Novolin 30R, 4 IU",
+  "n": 2,
+  "patients": 2,
+  "recordings": 2,
+  "n_T": 1,
+  "n_E": 1,
+  "on_cgm_grid": 2,
+  "entry_status": "PARSED",
+  "components": [
+   {
+    "canonical": "premix_human_30_70",
+    "class": "insulin",
+    "kind": "administration",
+    "route": "sc",
+    "formulation": "premix 30% regular / 70% NPH",
+    "formulation_basis": "DICTIONARY",
+    "dose": 4.0,
+    "unit": "IU",
+    "status": "PARSED",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "insulin_sc",
+  "raw_text": "Novolin 30R, 5 IU",
+  "n": 2,
+  "patients": 1,
+  "recordings": 1,
+  "n_T": 0,
+  "n_E": 2,
+  "on_cgm_grid": 2,
+  "entry_status": "PARSED",
+  "components": [
+   {
+    "canonical": "premix_human_30_70",
+    "class": "insulin",
+    "kind": "administration",
+    "route": "sc",
+    "formulation": "premix 30% regular / 70% NPH",
+    "formulation_basis": "DICTIONARY",
+    "dose": 5.0,
+    "unit": "IU",
+    "status": "PARSED",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "insulin_sc",
+  "raw_text": "SciLin M30, 25 IU",
+  "n": 2,
+  "patients": 1,
+  "recordings": 1,
+  "n_T": 0,
+  "n_E": 2,
+  "on_cgm_grid": 2,
+  "entry_status": "PARSED",
+  "components": [
+   {
+    "canonical": "premix_human_30_70",
+    "class": "insulin",
+    "kind": "administration",
+    "route": "sc",
+    "formulation": "premix 30% soluble / 70% isophane",
+    "formulation_basis": "DICTIONARY",
+    "dose": 25.0,
+    "unit": "IU",
+    "status": "PARSED",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "insulin_sc",
+  "raw_text": "insulin aspart 70/30, 24 IU",
+  "n": 2,
+  "patients": 1,
+  "recordings": 1,
+  "n_T": 0,
+  "n_E": 2,
+  "on_cgm_grid": 2,
+  "entry_status": "PARSED",
+  "components": [
+   {
+    "canonical": "insulin_aspart_biphasic_30",
+    "class": "insulin",
+    "kind": "administration",
+    "route": "sc",
+    "formulation": "premix 30% soluble aspart / 70% protamine aspart",
+    "formulation_basis": "DICTIONARY",
+    "dose": 24.0,
+    "unit": "IU",
+    "status": "PARSED",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "insulin_sc",
+  "raw_text": "insulin detemir, 10 IU",
+  "n": 2,
+  "patients": 1,
+  "recordings": 1,
+  "n_T": 0,
+  "n_E": 2,
+  "on_cgm_grid": 2,
+  "entry_status": "PARSED",
+  "components": [
+   {
+    "canonical": "insulin_detemir",
+    "class": "insulin",
+    "kind": "administration",
+    "route": "sc",
+    "formulation": "solution",
+    "formulation_basis": "DICTIONARY",
+    "dose": 10.0,
+    "unit": "IU",
+    "status": "PARSED",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "insulin_sc",
+  "raw_text": "insulin detemir, 6 IU",
+  "n": 2,
+  "patients": 1,
+  "recordings": 1,
+  "n_T": 0,
+  "n_E": 2,
+  "on_cgm_grid": 2,
+  "entry_status": "PARSED",
+  "components": [
+   {
+    "canonical": "insulin_detemir",
+    "class": "insulin",
+    "kind": "administration",
+    "route": "sc",
+    "formulation": "solution",
+    "formulation_basis": "DICTIONARY",
+    "dose": 6.0,
+    "unit": "IU",
+    "status": "PARSED",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "insulin_sc",
+  "raw_text": "insulin detemir, 7 IU",
+  "n": 2,
+  "patients": 1,
+  "recordings": 1,
+  "n_T": 0,
+  "n_E": 2,
+  "on_cgm_grid": 2,
+  "entry_status": "PARSED",
+  "components": [
+   {
+    "canonical": "insulin_detemir",
+    "class": "insulin",
+    "kind": "administration",
+    "route": "sc",
+    "formulation": "solution",
+    "formulation_basis": "DICTIONARY",
+    "dose": 7.0,
+    "unit": "IU",
+    "status": "PARSED",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "insulin_sc",
+  "raw_text": "insulin glargine, 18 IU",
+  "n": 2,
+  "patients": 1,
+  "recordings": 1,
+  "n_T": 0,
+  "n_E": 2,
+  "on_cgm_grid": 2,
+  "entry_status": "PARSED",
+  "components": [
+   {
+    "canonical": "insulin_glargine",
+    "class": "insulin",
+    "kind": "administration",
+    "route": "sc",
+    "formulation": "solution",
+    "formulation_basis": "DICTIONARY",
+    "dose": 18.0,
+    "unit": "IU",
+    "status": "PARSED",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "insulin_sc",
+  "raw_text": "Gansulin 40R, 7 IU",
+  "n": 1,
+  "patients": 1,
+  "recordings": 1,
+  "n_T": 0,
+  "n_E": 1,
+  "on_cgm_grid": 1,
+  "entry_status": "PARSED",
+  "components": [
+   {
+    "canonical": "premix_human_40_60",
+    "class": "insulin",
+    "kind": "administration",
+    "route": "sc",
+    "formulation": "premix 40% regular / 60% NPH",
+    "formulation_basis": "DICTIONARY",
+    "dose": 7.0,
+    "unit": "IU",
+    "status": "PARSED",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "insulin_sc",
+  "raw_text": "Novolin 30R, 11 IU",
+  "n": 1,
+  "patients": 1,
+  "recordings": 1,
+  "n_T": 0,
+  "n_E": 1,
+  "on_cgm_grid": 1,
+  "entry_status": "PARSED",
+  "components": [
+   {
+    "canonical": "premix_human_30_70",
+    "class": "insulin",
+    "kind": "administration",
+    "route": "sc",
+    "formulation": "premix 30% regular / 70% NPH",
+    "formulation_basis": "DICTIONARY",
+    "dose": 11.0,
+    "unit": "IU",
+    "status": "PARSED",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "insulin_sc",
+  "raw_text": "Novolin 30R, 22 IU",
+  "n": 1,
+  "patients": 1,
+  "recordings": 1,
+  "n_T": 0,
+  "n_E": 1,
+  "on_cgm_grid": 1,
+  "entry_status": "PARSED",
+  "components": [
+   {
+    "canonical": "premix_human_30_70",
+    "class": "insulin",
+    "kind": "administration",
+    "route": "sc",
+    "formulation": "premix 30% regular / 70% NPH",
+    "formulation_basis": "DICTIONARY",
+    "dose": 22.0,
+    "unit": "IU",
+    "status": "PARSED",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "insulin_sc",
+  "raw_text": "Novolin R, 12 IU",
+  "n": 1,
+  "patients": 1,
+  "recordings": 1,
+  "n_T": 0,
+  "n_E": 1,
+  "on_cgm_grid": 1,
+  "entry_status": "PARSED",
+  "components": [
+   {
+    "canonical": "regular_human_insulin",
+    "class": "insulin",
+    "kind": "administration",
+    "route": "sc",
+    "formulation": "solution",
+    "formulation_basis": "DICTIONARY",
+    "dose": 12.0,
+    "unit": "IU",
+    "status": "PARSED",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "insulin_sc",
+  "raw_text": "Novolin R, 16 IU",
+  "n": 1,
+  "patients": 1,
+  "recordings": 1,
+  "n_T": 0,
+  "n_E": 1,
+  "on_cgm_grid": 1,
+  "entry_status": "PARSED",
+  "components": [
+   {
+    "canonical": "regular_human_insulin",
+    "class": "insulin",
+    "kind": "administration",
+    "route": "sc",
+    "formulation": "solution",
+    "formulation_basis": "DICTIONARY",
+    "dose": 16.0,
+    "unit": "IU",
+    "status": "PARSED",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "insulin_sc",
+  "raw_text": "Novolin R, 9 IU",
+  "n": 1,
+  "patients": 1,
+  "recordings": 1,
+  "n_T": 0,
+  "n_E": 1,
+  "on_cgm_grid": 1,
+  "entry_status": "PARSED",
+  "components": [
+   {
+    "canonical": "regular_human_insulin",
+    "class": "insulin",
+    "kind": "administration",
+    "route": "sc",
+    "formulation": "solution",
+    "formulation_basis": "DICTIONARY",
+    "dose": 9.0,
+    "unit": "IU",
+    "status": "PARSED",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "insulin_sc",
+  "raw_text": "insulin aspart 70/30, 15 IU",
+  "n": 1,
+  "patients": 1,
+  "recordings": 1,
+  "n_T": 0,
+  "n_E": 1,
+  "on_cgm_grid": 1,
+  "entry_status": "PARSED",
+  "components": [
+   {
+    "canonical": "insulin_aspart_biphasic_30",
+    "class": "insulin",
+    "kind": "administration",
+    "route": "sc",
+    "formulation": "premix 30% soluble aspart / 70% protamine aspart",
+    "formulation_basis": "DICTIONARY",
+    "dose": 15.0,
+    "unit": "IU",
+    "status": "PARSED",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "insulin_sc",
+  "raw_text": "insulin aspart 70/30, 25 IU",
+  "n": 1,
+  "patients": 1,
+  "recordings": 1,
+  "n_T": 0,
+  "n_E": 1,
+  "on_cgm_grid": 1,
+  "entry_status": "PARSED",
+  "components": [
+   {
+    "canonical": "insulin_aspart_biphasic_30",
+    "class": "insulin",
+    "kind": "administration",
+    "route": "sc",
+    "formulation": "premix 30% soluble aspart / 70% protamine aspart",
+    "formulation_basis": "DICTIONARY",
+    "dose": 25.0,
+    "unit": "IU",
+    "status": "PARSED",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "insulin_sc",
+  "raw_text": "insulin aspart 70/30, 4 IU",
+  "n": 1,
+  "patients": 1,
+  "recordings": 1,
+  "n_T": 0,
+  "n_E": 1,
+  "on_cgm_grid": 1,
+  "entry_status": "PARSED",
+  "components": [
+   {
+    "canonical": "insulin_aspart_biphasic_30",
+    "class": "insulin",
+    "kind": "administration",
+    "route": "sc",
+    "formulation": "premix 30% soluble aspart / 70% protamine aspart",
+    "formulation_basis": "DICTIONARY",
+    "dose": 4.0,
+    "unit": "IU",
+    "status": "PARSED",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "insulin_sc",
+  "raw_text": "insulin degludec, 14 IU",
+  "n": 1,
+  "patients": 1,
+  "recordings": 1,
+  "n_T": 0,
+  "n_E": 1,
+  "on_cgm_grid": 1,
+  "entry_status": "PARSED",
+  "components": [
+   {
+    "canonical": "insulin_degludec",
+    "class": "insulin",
+    "kind": "administration",
+    "route": "sc",
+    "formulation": "solution",
+    "formulation_basis": "DICTIONARY",
+    "dose": 14.0,
+    "unit": "IU",
+    "status": "PARSED",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "insulin_sc",
+  "raw_text": "insulin glargine, 13 IU",
+  "n": 1,
+  "patients": 1,
+  "recordings": 1,
+  "n_T": 1,
+  "n_E": 0,
+  "on_cgm_grid": 1,
+  "entry_status": "PARSED",
+  "components": [
+   {
+    "canonical": "insulin_glargine",
+    "class": "insulin",
+    "kind": "administration",
+    "route": "sc",
+    "formulation": "solution",
+    "formulation_basis": "DICTIONARY",
+    "dose": 13.0,
+    "unit": "IU",
+    "status": "PARSED",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "oral_agents",
+  "raw_text": "acarbose 50 mg",
+  "n": 458,
+  "patients": 32,
+  "recordings": 33,
+  "n_T": 83,
+  "n_E": 375,
+  "on_cgm_grid": 458,
+  "entry_status": "NON_TARGET_MEDICATION",
+  "components": [
+   {
+    "canonical": "acarbose",
+    "class": "agi",
+    "kind": "administration",
+    "route": "oral",
+    "formulation": "tablet",
+    "formulation_basis": "DICTIONARY",
+    "dose": 50.0,
+    "unit": "mg",
+    "status": "NON_TARGET_MEDICATION",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "oral_agents",
+  "raw_text": "metformin 0.5 g",
+  "n": 261,
+  "patients": 21,
+  "recordings": 21,
+  "n_T": 90,
+  "n_E": 171,
+  "on_cgm_grid": 261,
+  "entry_status": "NON_TARGET_MEDICATION",
+  "components": [
+   {
+    "canonical": "metformin",
+    "class": "biguanide",
+    "kind": "administration",
+    "route": "oral",
+    "formulation": "tablet",
+    "formulation_basis": "DICTIONARY",
+    "dose": 500.0,
+    "unit": "mg",
+    "status": "NON_TARGET_MEDICATION",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "oral_agents",
+  "raw_text": "metformin 850 mg",
+  "n": 136,
+  "patients": 5,
+  "recordings": 7,
+  "n_T": 77,
+  "n_E": 59,
+  "on_cgm_grid": 136,
+  "entry_status": "NON_TARGET_MEDICATION",
+  "components": [
+   {
+    "canonical": "metformin",
+    "class": "biguanide",
+    "kind": "administration",
+    "route": "oral",
+    "formulation": "tablet",
+    "formulation_basis": "DICTIONARY",
+    "dose": 850.0,
+    "unit": "mg",
+    "status": "NON_TARGET_MEDICATION",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "oral_agents",
+  "raw_text": "metformin 0.5 g, acarbose 50 mg",
+  "n": 116,
+  "patients": 11,
+  "recordings": 11,
+  "n_T": 46,
+  "n_E": 70,
+  "on_cgm_grid": 116,
+  "entry_status": "NON_TARGET_MEDICATION",
+  "components": [
+   {
+    "canonical": "metformin",
+    "class": "biguanide",
+    "kind": "administration",
+    "route": "oral",
+    "formulation": "tablet",
+    "formulation_basis": "DICTIONARY",
+    "dose": 500.0,
+    "unit": "mg",
+    "status": "NON_TARGET_MEDICATION",
+    "flags": []
+   },
+   {
+    "canonical": "acarbose",
+    "class": "agi",
+    "kind": "administration",
+    "route": "oral",
+    "formulation": "tablet",
+    "formulation_basis": "DICTIONARY",
+    "dose": 50.0,
+    "unit": "mg",
+    "status": "NON_TARGET_MEDICATION",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "oral_agents",
+  "raw_text": "metformin 500 mg",
+  "n": 114,
+  "patients": 8,
+  "recordings": 8,
+  "n_T": 41,
+  "n_E": 73,
+  "on_cgm_grid": 114,
+  "entry_status": "NON_TARGET_MEDICATION",
+  "components": [
+   {
+    "canonical": "metformin",
+    "class": "biguanide",
+    "kind": "administration",
+    "route": "oral",
+    "formulation": "tablet",
+    "formulation_basis": "DICTIONARY",
+    "dose": 500.0,
+    "unit": "mg",
+    "status": "NON_TARGET_MEDICATION",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "oral_agents",
+  "raw_text": "acarbose 100 mg",
+  "n": 65,
+  "patients": 4,
+  "recordings": 4,
+  "n_T": 42,
+  "n_E": 23,
+  "on_cgm_grid": 65,
+  "entry_status": "NON_TARGET_MEDICATION",
+  "components": [
+   {
+    "canonical": "acarbose",
+    "class": "agi",
+    "kind": "administration",
+    "route": "oral",
+    "formulation": "tablet",
+    "formulation_basis": "DICTIONARY",
+    "dose": 100.0,
+    "unit": "mg",
+    "status": "NON_TARGET_MEDICATION",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "oral_agents",
+  "raw_text": "sitagliptin 100 mg",
+  "n": 56,
+  "patients": 4,
+  "recordings": 4,
+  "n_T": 28,
+  "n_E": 28,
+  "on_cgm_grid": 56,
+  "entry_status": "NON_TARGET_MEDICATION",
+  "components": [
+   {
+    "canonical": "sitagliptin",
+    "class": "dpp4",
+    "kind": "administration",
+    "route": "oral",
+    "formulation": "tablet",
+    "formulation_basis": "DICTIONARY",
+    "dose": 100.0,
+    "unit": "mg",
+    "status": "NON_TARGET_MEDICATION",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "oral_agents",
+  "raw_text": " voglibose 0.2 g",
+  "n": 41,
+  "patients": 1,
+  "recordings": 1,
+  "n_T": 0,
+  "n_E": 41,
+  "on_cgm_grid": 41,
+  "entry_status": "NON_TARGET_MEDICATION",
+  "components": [
+   {
+    "canonical": "voglibose",
+    "class": "agi",
+    "kind": "administration",
+    "route": "oral",
+    "formulation": "tablet",
+    "formulation_basis": "DICTIONARY",
+    "dose": 200.0,
+    "unit": "mg",
+    "status": "NON_TARGET_MEDICATION",
+    "flags": [
+     "DOSE_IMPLAUSIBLE"
+    ]
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "oral_agents",
+  "raw_text": "metformin 425 mg",
+  "n": 40,
+  "patients": 3,
+  "recordings": 4,
+  "n_T": 26,
+  "n_E": 14,
+  "on_cgm_grid": 40,
+  "entry_status": "NON_TARGET_MEDICATION",
+  "components": [
+   {
+    "canonical": "metformin",
+    "class": "biguanide",
+    "kind": "administration",
+    "route": "oral",
+    "formulation": "tablet",
+    "formulation_basis": "DICTIONARY",
+    "dose": 425.0,
+    "unit": "mg",
+    "status": "NON_TARGET_MEDICATION",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "oral_agents",
+  "raw_text": "metformin 500 mg,  voglibose 0.2 mg",
+  "n": 40,
+  "patients": 1,
+  "recordings": 1,
+  "n_T": 40,
+  "n_E": 0,
+  "on_cgm_grid": 40,
+  "entry_status": "NON_TARGET_MEDICATION",
+  "components": [
+   {
+    "canonical": "metformin",
+    "class": "biguanide",
+    "kind": "administration",
+    "route": "oral",
+    "formulation": "tablet",
+    "formulation_basis": "DICTIONARY",
+    "dose": 500.0,
+    "unit": "mg",
+    "status": "NON_TARGET_MEDICATION",
+    "flags": []
+   },
+   {
+    "canonical": "voglibose",
+    "class": "agi",
+    "kind": "administration",
+    "route": "oral",
+    "formulation": "tablet",
+    "formulation_basis": "DICTIONARY",
+    "dose": 0.2,
+    "unit": "mg",
+    "status": "NON_TARGET_MEDICATION",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "oral_agents",
+  "raw_text": "acarbose 50 mg, metformin 0.5 g",
+  "n": 35,
+  "patients": 3,
+  "recordings": 3,
+  "n_T": 10,
+  "n_E": 25,
+  "on_cgm_grid": 35,
+  "entry_status": "NON_TARGET_MEDICATION",
+  "components": [
+   {
+    "canonical": "acarbose",
+    "class": "agi",
+    "kind": "administration",
+    "route": "oral",
+    "formulation": "tablet",
+    "formulation_basis": "DICTIONARY",
+    "dose": 50.0,
+    "unit": "mg",
+    "status": "NON_TARGET_MEDICATION",
+    "flags": []
+   },
+   {
+    "canonical": "metformin",
+    "class": "biguanide",
+    "kind": "administration",
+    "route": "oral",
+    "formulation": "tablet",
+    "formulation_basis": "DICTIONARY",
+    "dose": 500.0,
+    "unit": "mg",
+    "status": "NON_TARGET_MEDICATION",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "oral_agents",
+  "raw_text": "gliclazide 30 mg",
+  "n": 30,
+  "patients": 4,
+  "recordings": 4,
+  "n_T": 30,
+  "n_E": 0,
+  "on_cgm_grid": 30,
+  "entry_status": "PARSED",
+  "components": [
+   {
+    "canonical": "gliclazide",
+    "class": "sulfonylurea",
+    "kind": "administration",
+    "route": "oral",
+    "formulation": "modified-release",
+    "formulation_basis": "DOSE_RULE",
+    "dose": 30.0,
+    "unit": "mg",
+    "status": "PARSED",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "oral_agents",
+  "raw_text": " voglibose 0.2 g",
+  "n": 29,
+  "patients": 1,
+  "recordings": 1,
+  "n_T": 0,
+  "n_E": 29,
+  "on_cgm_grid": 29,
+  "entry_status": "NON_TARGET_MEDICATION",
+  "components": [
+   {
+    "canonical": "voglibose",
+    "class": "agi",
+    "kind": "administration",
+    "route": "oral",
+    "formulation": "tablet",
+    "formulation_basis": "DICTIONARY",
+    "dose": 200.0,
+    "unit": "mg",
+    "status": "NON_TARGET_MEDICATION",
+    "flags": [
+     "DOSE_IMPLAUSIBLE"
+    ]
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "oral_agents",
+  "raw_text": "metformin 500 mg, glimepiride 2 mg",
+  "n": 28,
+  "patients": 1,
+  "recordings": 1,
+  "n_T": 0,
+  "n_E": 28,
+  "on_cgm_grid": 28,
+  "entry_status": "PARSED",
+  "components": [
+   {
+    "canonical": "metformin",
+    "class": "biguanide",
+    "kind": "administration",
+    "route": "oral",
+    "formulation": "tablet",
+    "formulation_basis": "DICTIONARY",
+    "dose": 500.0,
+    "unit": "mg",
+    "status": "NON_TARGET_MEDICATION",
+    "flags": []
+   },
+   {
+    "canonical": "glimepiride",
+    "class": "sulfonylurea",
+    "kind": "administration",
+    "route": "oral",
+    "formulation": "tablet",
+    "formulation_basis": "DICTIONARY",
+    "dose": 2.0,
+    "unit": "mg",
+    "status": "PARSED",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "oral_agents",
+  "raw_text": "metformin 50 mg, acarbose 50 mg",
+  "n": 27,
+  "patients": 1,
+  "recordings": 1,
+  "n_T": 0,
+  "n_E": 27,
+  "on_cgm_grid": 26,
+  "entry_status": "NON_TARGET_MEDICATION",
+  "components": [
+   {
+    "canonical": "metformin",
+    "class": "biguanide",
+    "kind": "administration",
+    "route": "oral",
+    "formulation": "tablet",
+    "formulation_basis": "DICTIONARY",
+    "dose": 50.0,
+    "unit": "mg",
+    "status": "NON_TARGET_MEDICATION",
+    "flags": [
+     "DOSE_IMPLAUSIBLE"
+    ]
+   },
+   {
+    "canonical": "acarbose",
+    "class": "agi",
+    "kind": "administration",
+    "route": "oral",
+    "formulation": "tablet",
+    "formulation_basis": "DICTIONARY",
+    "dose": 50.0,
+    "unit": "mg",
+    "status": "NON_TARGET_MEDICATION",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "oral_agents",
+  "raw_text": "repaglinide 0.5 mg",
+  "n": 27,
+  "patients": 2,
+  "recordings": 2,
+  "n_T": 0,
+  "n_E": 27,
+  "on_cgm_grid": 27,
+  "entry_status": "PARSED",
+  "components": [
+   {
+    "canonical": "repaglinide",
+    "class": "glinide",
+    "kind": "administration",
+    "route": "oral",
+    "formulation": "tablet",
+    "formulation_basis": "DICTIONARY",
+    "dose": 0.5,
+    "unit": "mg",
+    "status": "PARSED",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "oral_agents",
+  "raw_text": "gliclazide 15 mg, voglibose 100 mg, metformin 250 mg",
+  "n": 26,
+  "patients": 1,
+  "recordings": 1,
+  "n_T": 0,
+  "n_E": 26,
+  "on_cgm_grid": 26,
+  "entry_status": "PARSED_WITH_WARNING",
+  "components": [
+   {
+    "canonical": "gliclazide",
+    "class": "sulfonylurea",
+    "kind": "administration",
+    "route": "oral",
+    "formulation": "modified-release",
+    "formulation_basis": "INFERRED",
+    "dose": 15.0,
+    "unit": "mg",
+    "status": "PARSED_WITH_WARNING",
+    "flags": [
+     "FORMULATION_INFERRED"
+    ]
+   },
+   {
+    "canonical": "voglibose",
+    "class": "agi",
+    "kind": "administration",
+    "route": "oral",
+    "formulation": "tablet",
+    "formulation_basis": "DICTIONARY",
+    "dose": 100.0,
+    "unit": "mg",
+    "status": "NON_TARGET_MEDICATION",
+    "flags": [
+     "DOSE_IMPLAUSIBLE"
+    ]
+   },
+   {
+    "canonical": "metformin",
+    "class": "biguanide",
+    "kind": "administration",
+    "route": "oral",
+    "formulation": "tablet",
+    "formulation_basis": "DICTIONARY",
+    "dose": 250.0,
+    "unit": "mg",
+    "status": "NON_TARGET_MEDICATION",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "oral_agents",
+  "raw_text": "pioglitazone 15 mg, metformin 500 mg",
+  "n": 25,
+  "patients": 1,
+  "recordings": 2,
+  "n_T": 0,
+  "n_E": 25,
+  "on_cgm_grid": 25,
+  "entry_status": "NON_TARGET_MEDICATION",
+  "components": [
+   {
+    "canonical": "pioglitazone",
+    "class": "tzd",
+    "kind": "administration",
+    "route": "oral",
+    "formulation": "tablet",
+    "formulation_basis": "DICTIONARY",
+    "dose": 15.0,
+    "unit": "mg",
+    "status": "NON_TARGET_MEDICATION",
+    "flags": []
+   },
+   {
+    "canonical": "metformin",
+    "class": "biguanide",
+    "kind": "administration",
+    "route": "oral",
+    "formulation": "tablet",
+    "formulation_basis": "DICTIONARY",
+    "dose": 500.0,
+    "unit": "mg",
+    "status": "NON_TARGET_MEDICATION",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "oral_agents",
+  "raw_text": "voglibose 0.2 g",
+  "n": 25,
+  "patients": 1,
+  "recordings": 1,
+  "n_T": 0,
+  "n_E": 25,
+  "on_cgm_grid": 25,
+  "entry_status": "NON_TARGET_MEDICATION",
+  "components": [
+   {
+    "canonical": "voglibose",
+    "class": "agi",
+    "kind": "administration",
+    "route": "oral",
+    "formulation": "tablet",
+    "formulation_basis": "DICTIONARY",
+    "dose": 200.0,
+    "unit": "mg",
+    "status": "NON_TARGET_MEDICATION",
+    "flags": [
+     "DOSE_IMPLAUSIBLE"
+    ]
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "oral_agents",
+  "raw_text": "acarbose 50 mg, repaglinide 0.5 mg",
+  "n": 23,
+  "patients": 1,
+  "recordings": 1,
+  "n_T": 0,
+  "n_E": 23,
+  "on_cgm_grid": 23,
+  "entry_status": "PARSED",
+  "components": [
+   {
+    "canonical": "acarbose",
+    "class": "agi",
+    "kind": "administration",
+    "route": "oral",
+    "formulation": "tablet",
+    "formulation_basis": "DICTIONARY",
+    "dose": 50.0,
+    "unit": "mg",
+    "status": "NON_TARGET_MEDICATION",
+    "flags": []
+   },
+   {
+    "canonical": "repaglinide",
+    "class": "glinide",
+    "kind": "administration",
+    "route": "oral",
+    "formulation": "tablet",
+    "formulation_basis": "DICTIONARY",
+    "dose": 0.5,
+    "unit": "mg",
+    "status": "PARSED",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "oral_agents",
+  "raw_text": "metformin 0.25 g",
+  "n": 23,
+  "patients": 4,
+  "recordings": 4,
+  "n_T": 3,
+  "n_E": 20,
+  "on_cgm_grid": 23,
+  "entry_status": "NON_TARGET_MEDICATION",
+  "components": [
+   {
+    "canonical": "metformin",
+    "class": "biguanide",
+    "kind": "administration",
+    "route": "oral",
+    "formulation": "tablet",
+    "formulation_basis": "DICTIONARY",
+    "dose": 250.0,
+    "unit": "mg",
+    "status": "NON_TARGET_MEDICATION",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "oral_agents",
+  "raw_text": "metformin 500 mg, gliclazide 30 mg",
+  "n": 23,
+  "patients": 1,
+  "recordings": 1,
+  "n_T": 0,
+  "n_E": 23,
+  "on_cgm_grid": 23,
+  "entry_status": "PARSED",
+  "components": [
+   {
+    "canonical": "metformin",
+    "class": "biguanide",
+    "kind": "administration",
+    "route": "oral",
+    "formulation": "tablet",
+    "formulation_basis": "DICTIONARY",
+    "dose": 500.0,
+    "unit": "mg",
+    "status": "NON_TARGET_MEDICATION",
+    "flags": []
+   },
+   {
+    "canonical": "gliclazide",
+    "class": "sulfonylurea",
+    "kind": "administration",
+    "route": "oral",
+    "formulation": "modified-release",
+    "formulation_basis": "DOSE_RULE",
+    "dose": 30.0,
+    "unit": "mg",
+    "status": "PARSED",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "oral_agents",
+  "raw_text": "sitagliptinphosphate/metforminhydrochloride tablets 50 mg / 500 mg",
+  "n": 22,
+  "patients": 1,
+  "recordings": 1,
+  "n_T": 22,
+  "n_E": 0,
+  "on_cgm_grid": 22,
+  "entry_status": "NON_TARGET_MEDICATION",
+  "components": [
+   {
+    "canonical": "sitagliptin",
+    "class": "dpp4",
+    "kind": "administration",
+    "route": "oral",
+    "formulation": "tablet",
+    "formulation_basis": "DICTIONARY",
+    "dose": 50.0,
+    "unit": "mg",
+    "status": "NON_TARGET_MEDICATION",
+    "flags": [
+     "COMBINATION_PRODUCT"
+    ]
+   },
+   {
+    "canonical": "metformin",
+    "class": "biguanide",
+    "kind": "administration",
+    "route": "oral",
+    "formulation": "tablet",
+    "formulation_basis": "DICTIONARY",
+    "dose": 500.0,
+    "unit": "mg",
+    "status": "NON_TARGET_MEDICATION",
+    "flags": [
+     "COMBINATION_PRODUCT"
+    ]
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "oral_agents",
+  "raw_text": "repaglinide 3 mg",
+  "n": 19,
+  "patients": 1,
+  "recordings": 1,
+  "n_T": 0,
+  "n_E": 19,
+  "on_cgm_grid": 19,
+  "entry_status": "PARSED",
+  "components": [
+   {
+    "canonical": "repaglinide",
+    "class": "glinide",
+    "kind": "administration",
+    "route": "oral",
+    "formulation": "tablet",
+    "formulation_basis": "DICTIONARY",
+    "dose": 3.0,
+    "unit": "mg",
+    "status": "PARSED",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "oral_agents",
+  "raw_text": "acarbose 50 mg, repaglinide 1 mg",
+  "n": 15,
+  "patients": 1,
+  "recordings": 1,
+  "n_T": 0,
+  "n_E": 15,
+  "on_cgm_grid": 15,
+  "entry_status": "PARSED",
+  "components": [
+   {
+    "canonical": "acarbose",
+    "class": "agi",
+    "kind": "administration",
+    "route": "oral",
+    "formulation": "tablet",
+    "formulation_basis": "DICTIONARY",
+    "dose": 50.0,
+    "unit": "mg",
+    "status": "NON_TARGET_MEDICATION",
+    "flags": []
+   },
+   {
+    "canonical": "repaglinide",
+    "class": "glinide",
+    "kind": "administration",
+    "route": "oral",
+    "formulation": "tablet",
+    "formulation_basis": "DICTIONARY",
+    "dose": 1.0,
+    "unit": "mg",
+    "status": "PARSED",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "oral_agents",
+  "raw_text": "acarbose 25 mg",
+  "n": 14,
+  "patients": 1,
+  "recordings": 1,
+  "n_T": 0,
+  "n_E": 14,
+  "on_cgm_grid": 14,
+  "entry_status": "NON_TARGET_MEDICATION",
+  "components": [
+   {
+    "canonical": "acarbose",
+    "class": "agi",
+    "kind": "administration",
+    "route": "oral",
+    "formulation": "tablet",
+    "formulation_basis": "DICTIONARY",
+    "dose": 25.0,
+    "unit": "mg",
+    "status": "NON_TARGET_MEDICATION",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "oral_agents",
+  "raw_text": "acarbose 50 mg, dapagliflozin 10 mg",
+  "n": 14,
+  "patients": 1,
+  "recordings": 1,
+  "n_T": 0,
+  "n_E": 14,
+  "on_cgm_grid": 14,
+  "entry_status": "NON_TARGET_MEDICATION",
+  "components": [
+   {
+    "canonical": "acarbose",
+    "class": "agi",
+    "kind": "administration",
+    "route": "oral",
+    "formulation": "tablet",
+    "formulation_basis": "DICTIONARY",
+    "dose": 50.0,
+    "unit": "mg",
+    "status": "NON_TARGET_MEDICATION",
+    "flags": []
+   },
+   {
+    "canonical": "dapagliflozin",
+    "class": "sglt2",
+    "kind": "administration",
+    "route": "oral",
+    "formulation": "tablet",
+    "formulation_basis": "DICTIONARY",
+    "dose": 10.0,
+    "unit": "mg",
+    "status": "NON_TARGET_MEDICATION",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "oral_agents",
+  "raw_text": "gliclazide 15 mg, acarbose 50 mg",
+  "n": 14,
+  "patients": 1,
+  "recordings": 1,
+  "n_T": 0,
+  "n_E": 14,
+  "on_cgm_grid": 14,
+  "entry_status": "PARSED_WITH_WARNING",
+  "components": [
+   {
+    "canonical": "gliclazide",
+    "class": "sulfonylurea",
+    "kind": "administration",
+    "route": "oral",
+    "formulation": "modified-release",
+    "formulation_basis": "INFERRED",
+    "dose": 15.0,
+    "unit": "mg",
+    "status": "PARSED_WITH_WARNING",
+    "flags": [
+     "FORMULATION_INFERRED"
+    ]
+   },
+   {
+    "canonical": "acarbose",
+    "class": "agi",
+    "kind": "administration",
+    "route": "oral",
+    "formulation": "tablet",
+    "formulation_basis": "DICTIONARY",
+    "dose": 50.0,
+    "unit": "mg",
+    "status": "NON_TARGET_MEDICATION",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "oral_agents",
+  "raw_text": "sitagliptin 100 mg, gliclazide 15 mg, acarbose 50 mg",
+  "n": 14,
+  "patients": 1,
+  "recordings": 1,
+  "n_T": 0,
+  "n_E": 14,
+  "on_cgm_grid": 14,
+  "entry_status": "PARSED_WITH_WARNING",
+  "components": [
+   {
+    "canonical": "sitagliptin",
+    "class": "dpp4",
+    "kind": "administration",
+    "route": "oral",
+    "formulation": "tablet",
+    "formulation_basis": "DICTIONARY",
+    "dose": 100.0,
+    "unit": "mg",
+    "status": "NON_TARGET_MEDICATION",
+    "flags": []
+   },
+   {
+    "canonical": "gliclazide",
+    "class": "sulfonylurea",
+    "kind": "administration",
+    "route": "oral",
+    "formulation": "modified-release",
+    "formulation_basis": "INFERRED",
+    "dose": 15.0,
+    "unit": "mg",
+    "status": "PARSED_WITH_WARNING",
+    "flags": [
+     "FORMULATION_INFERRED"
+    ]
+   },
+   {
+    "canonical": "acarbose",
+    "class": "agi",
+    "kind": "administration",
+    "route": "oral",
+    "formulation": "tablet",
+    "formulation_basis": "DICTIONARY",
+    "dose": 50.0,
+    "unit": "mg",
+    "status": "NON_TARGET_MEDICATION",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "oral_agents",
+  "raw_text": "  voglibose 100 mg, metformin 250 mg",
+  "n": 13,
+  "patients": 1,
+  "recordings": 1,
+  "n_T": 0,
+  "n_E": 13,
+  "on_cgm_grid": 13,
+  "entry_status": "NON_TARGET_MEDICATION",
+  "components": [
+   {
+    "canonical": "voglibose",
+    "class": "agi",
+    "kind": "administration",
+    "route": "oral",
+    "formulation": "tablet",
+    "formulation_basis": "DICTIONARY",
+    "dose": 100.0,
+    "unit": "mg",
+    "status": "NON_TARGET_MEDICATION",
+    "flags": [
+     "DOSE_IMPLAUSIBLE"
+    ]
+   },
+   {
+    "canonical": "metformin",
+    "class": "biguanide",
+    "kind": "administration",
+    "route": "oral",
+    "formulation": "tablet",
+    "formulation_basis": "DICTIONARY",
+    "dose": 250.0,
+    "unit": "mg",
+    "status": "NON_TARGET_MEDICATION",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "oral_agents",
+  "raw_text": " voglibose 0.4 g",
+  "n": 13,
+  "patients": 1,
+  "recordings": 1,
+  "n_T": 0,
+  "n_E": 13,
+  "on_cgm_grid": 13,
+  "entry_status": "NON_TARGET_MEDICATION",
+  "components": [
+   {
+    "canonical": "voglibose",
+    "class": "agi",
+    "kind": "administration",
+    "route": "oral",
+    "formulation": "tablet",
+    "formulation_basis": "DICTIONARY",
+    "dose": 400.0,
+    "unit": "mg",
+    "status": "NON_TARGET_MEDICATION",
+    "flags": [
+     "DOSE_IMPLAUSIBLE"
+    ]
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "oral_agents",
+  "raw_text": "acarbose 50 mg, sitagliptin 100 mg, gliclazide 30 mg, metformin 0.5 g",
+  "n": 13,
+  "patients": 1,
+  "recordings": 1,
+  "n_T": 13,
+  "n_E": 0,
+  "on_cgm_grid": 13,
+  "entry_status": "PARSED",
+  "components": [
+   {
+    "canonical": "acarbose",
+    "class": "agi",
+    "kind": "administration",
+    "route": "oral",
+    "formulation": "tablet",
+    "formulation_basis": "DICTIONARY",
+    "dose": 50.0,
+    "unit": "mg",
+    "status": "NON_TARGET_MEDICATION",
+    "flags": []
+   },
+   {
+    "canonical": "sitagliptin",
+    "class": "dpp4",
+    "kind": "administration",
+    "route": "oral",
+    "formulation": "tablet",
+    "formulation_basis": "DICTIONARY",
+    "dose": 100.0,
+    "unit": "mg",
+    "status": "NON_TARGET_MEDICATION",
+    "flags": []
+   },
+   {
+    "canonical": "gliclazide",
+    "class": "sulfonylurea",
+    "kind": "administration",
+    "route": "oral",
+    "formulation": "modified-release",
+    "formulation_basis": "DOSE_RULE",
+    "dose": 30.0,
+    "unit": "mg",
+    "status": "PARSED",
+    "flags": []
+   },
+   {
+    "canonical": "metformin",
+    "class": "biguanide",
+    "kind": "administration",
+    "route": "oral",
+    "formulation": "tablet",
+    "formulation_basis": "DICTIONARY",
+    "dose": 500.0,
+    "unit": "mg",
+    "status": "NON_TARGET_MEDICATION",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "oral_agents",
+  "raw_text": "canagliflozin 100 mg, metformin 0.5 g",
+  "n": 13,
+  "patients": 1,
+  "recordings": 1,
+  "n_T": 0,
+  "n_E": 13,
+  "on_cgm_grid": 13,
+  "entry_status": "NON_TARGET_MEDICATION",
+  "components": [
+   {
+    "canonical": "canagliflozin",
+    "class": "sglt2",
+    "kind": "administration",
+    "route": "oral",
+    "formulation": "tablet",
+    "formulation_basis": "DICTIONARY",
+    "dose": 100.0,
+    "unit": "mg",
+    "status": "NON_TARGET_MEDICATION",
+    "flags": []
+   },
+   {
+    "canonical": "metformin",
+    "class": "biguanide",
+    "kind": "administration",
+    "route": "oral",
+    "formulation": "tablet",
+    "formulation_basis": "DICTIONARY",
+    "dose": 500.0,
+    "unit": "mg",
+    "status": "NON_TARGET_MEDICATION",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "oral_agents",
+  "raw_text": "dapagliflozin 10 mg, acarbose 100 mg, gliclazide 120 mg",
+  "n": 13,
+  "patients": 1,
+  "recordings": 1,
+  "n_T": 0,
+  "n_E": 13,
+  "on_cgm_grid": 13,
+  "entry_status": "PARSED",
+  "components": [
+   {
+    "canonical": "dapagliflozin",
+    "class": "sglt2",
+    "kind": "administration",
+    "route": "oral",
+    "formulation": "tablet",
+    "formulation_basis": "DICTIONARY",
+    "dose": 10.0,
+    "unit": "mg",
+    "status": "NON_TARGET_MEDICATION",
+    "flags": []
+   },
+   {
+    "canonical": "acarbose",
+    "class": "agi",
+    "kind": "administration",
+    "route": "oral",
+    "formulation": "tablet",
+    "formulation_basis": "DICTIONARY",
+    "dose": 100.0,
+    "unit": "mg",
+    "status": "NON_TARGET_MEDICATION",
+    "flags": []
+   },
+   {
+    "canonical": "gliclazide",
+    "class": "sulfonylurea",
+    "kind": "administration",
+    "route": "oral",
+    "formulation": "modified-release",
+    "formulation_basis": "DOSE_RULE",
+    "dose": 120.0,
+    "unit": "mg",
+    "status": "PARSED",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "oral_agents",
+  "raw_text": "gliclazide 15 mg",
+  "n": 13,
+  "patients": 1,
+  "recordings": 1,
+  "n_T": 0,
+  "n_E": 13,
+  "on_cgm_grid": 13,
+  "entry_status": "PARSED_WITH_WARNING",
+  "components": [
+   {
+    "canonical": "gliclazide",
+    "class": "sulfonylurea",
+    "kind": "administration",
+    "route": "oral",
+    "formulation": "modified-release",
+    "formulation_basis": "INFERRED",
+    "dose": 15.0,
+    "unit": "mg",
+    "status": "PARSED_WITH_WARNING",
+    "flags": [
+     "FORMULATION_INFERRED"
+    ]
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "oral_agents",
+  "raw_text": "gliclazide 30 mg, sitagliptin 100 mg, acarbose 100 mg",
+  "n": 13,
+  "patients": 1,
+  "recordings": 1,
+  "n_T": 0,
+  "n_E": 13,
+  "on_cgm_grid": 13,
+  "entry_status": "PARSED",
+  "components": [
+   {
+    "canonical": "gliclazide",
+    "class": "sulfonylurea",
+    "kind": "administration",
+    "route": "oral",
+    "formulation": "modified-release",
+    "formulation_basis": "DOSE_RULE",
+    "dose": 30.0,
+    "unit": "mg",
+    "status": "PARSED",
+    "flags": []
+   },
+   {
+    "canonical": "sitagliptin",
+    "class": "dpp4",
+    "kind": "administration",
+    "route": "oral",
+    "formulation": "tablet",
+    "formulation_basis": "DICTIONARY",
+    "dose": 100.0,
+    "unit": "mg",
+    "status": "NON_TARGET_MEDICATION",
+    "flags": []
+   },
+   {
+    "canonical": "acarbose",
+    "class": "agi",
+    "kind": "administration",
+    "route": "oral",
+    "formulation": "tablet",
+    "formulation_basis": "DICTIONARY",
+    "dose": 100.0,
+    "unit": "mg",
+    "status": "NON_TARGET_MEDICATION",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "oral_agents",
+  "raw_text": "liraglutide 1.2 mg, metformin 1 g, empagliflozin 10 g",
+  "n": 13,
+  "patients": 1,
+  "recordings": 1,
+  "n_T": 13,
+  "n_E": 0,
+  "on_cgm_grid": 13,
+  "entry_status": "NON_TARGET_MEDICATION",
+  "components": [
+   {
+    "canonical": "liraglutide",
+    "class": "glp1",
+    "kind": "administration",
+    "route": "sc",
+    "formulation": "injection",
+    "formulation_basis": "DICTIONARY",
+    "dose": 1.2,
+    "unit": "mg",
+    "status": "NON_TARGET_MEDICATION",
+    "flags": []
+   },
+   {
+    "canonical": "metformin",
+    "class": "biguanide",
+    "kind": "administration",
+    "route": "oral",
+    "formulation": "tablet",
+    "formulation_basis": "DICTIONARY",
+    "dose": 1000.0,
+    "unit": "mg",
+    "status": "NON_TARGET_MEDICATION",
+    "flags": []
+   },
+   {
+    "canonical": "empagliflozin",
+    "class": "sglt2",
+    "kind": "administration",
+    "route": "oral",
+    "formulation": "tablet",
+    "formulation_basis": "DICTIONARY",
+    "dose": 10000.0,
+    "unit": "mg",
+    "status": "NON_TARGET_MEDICATION",
+    "flags": [
+     "DOSE_IMPLAUSIBLE"
+    ]
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "oral_agents",
+  "raw_text": "metformin 0.1 g, acarbose 100 mg",
+  "n": 13,
+  "patients": 1,
+  "recordings": 1,
+  "n_T": 13,
+  "n_E": 0,
+  "on_cgm_grid": 13,
+  "entry_status": "NON_TARGET_MEDICATION",
+  "components": [
+   {
+    "canonical": "metformin",
+    "class": "biguanide",
+    "kind": "administration",
+    "route": "oral",
+    "formulation": "tablet",
+    "formulation_basis": "DICTIONARY",
+    "dose": 100.0,
+    "unit": "mg",
+    "status": "NON_TARGET_MEDICATION",
+    "flags": [
+     "DOSE_IMPLAUSIBLE"
+    ]
+   },
+   {
+    "canonical": "acarbose",
+    "class": "agi",
+    "kind": "administration",
+    "route": "oral",
+    "formulation": "tablet",
+    "formulation_basis": "DICTIONARY",
+    "dose": 100.0,
+    "unit": "mg",
+    "status": "NON_TARGET_MEDICATION",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "oral_agents",
+  "raw_text": "metformin 0.1 g, acarbose 100 mg, gliclazide 30 mg",
+  "n": 13,
+  "patients": 1,
+  "recordings": 1,
+  "n_T": 13,
+  "n_E": 0,
+  "on_cgm_grid": 13,
+  "entry_status": "PARSED",
+  "components": [
+   {
+    "canonical": "metformin",
+    "class": "biguanide",
+    "kind": "administration",
+    "route": "oral",
+    "formulation": "tablet",
+    "formulation_basis": "DICTIONARY",
+    "dose": 100.0,
+    "unit": "mg",
+    "status": "NON_TARGET_MEDICATION",
+    "flags": [
+     "DOSE_IMPLAUSIBLE"
+    ]
+   },
+   {
+    "canonical": "acarbose",
+    "class": "agi",
+    "kind": "administration",
+    "route": "oral",
+    "formulation": "tablet",
+    "formulation_basis": "DICTIONARY",
+    "dose": 100.0,
+    "unit": "mg",
+    "status": "NON_TARGET_MEDICATION",
+    "flags": []
+   },
+   {
+    "canonical": "gliclazide",
+    "class": "sulfonylurea",
+    "kind": "administration",
+    "route": "oral",
+    "formulation": "modified-release",
+    "formulation_basis": "DOSE_RULE",
+    "dose": 30.0,
+    "unit": "mg",
+    "status": "PARSED",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "oral_agents",
+  "raw_text": "metformin 0.1 g, acarbose 100 mg, gliclazide 30 mg, linagliptin 0.1 g",
+  "n": 13,
+  "patients": 1,
+  "recordings": 1,
+  "n_T": 13,
+  "n_E": 0,
+  "on_cgm_grid": 13,
+  "entry_status": "PARSED",
+  "components": [
+   {
+    "canonical": "metformin",
+    "class": "biguanide",
+    "kind": "administration",
+    "route": "oral",
+    "formulation": "tablet",
+    "formulation_basis": "DICTIONARY",
+    "dose": 100.0,
+    "unit": "mg",
+    "status": "NON_TARGET_MEDICATION",
+    "flags": [
+     "DOSE_IMPLAUSIBLE"
+    ]
+   },
+   {
+    "canonical": "acarbose",
+    "class": "agi",
+    "kind": "administration",
+    "route": "oral",
+    "formulation": "tablet",
+    "formulation_basis": "DICTIONARY",
+    "dose": 100.0,
+    "unit": "mg",
+    "status": "NON_TARGET_MEDICATION",
+    "flags": []
+   },
+   {
+    "canonical": "gliclazide",
+    "class": "sulfonylurea",
+    "kind": "administration",
+    "route": "oral",
+    "formulation": "modified-release",
+    "formulation_basis": "DOSE_RULE",
+    "dose": 30.0,
+    "unit": "mg",
+    "status": "PARSED",
+    "flags": []
+   },
+   {
+    "canonical": "linagliptin",
+    "class": "dpp4",
+    "kind": "administration",
+    "route": "oral",
+    "formulation": "tablet",
+    "formulation_basis": "DICTIONARY",
+    "dose": 100.0,
+    "unit": "mg",
+    "status": "NON_TARGET_MEDICATION",
+    "flags": [
+     "DOSE_IMPLAUSIBLE"
+    ]
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "oral_agents",
+  "raw_text": "repaglinide 0.5 mg, metformin 0.5 g",
+  "n": 13,
+  "patients": 1,
+  "recordings": 1,
+  "n_T": 0,
+  "n_E": 13,
+  "on_cgm_grid": 13,
+  "entry_status": "PARSED",
+  "components": [
+   {
+    "canonical": "repaglinide",
+    "class": "glinide",
+    "kind": "administration",
+    "route": "oral",
+    "formulation": "tablet",
+    "formulation_basis": "DICTIONARY",
+    "dose": 0.5,
+    "unit": "mg",
+    "status": "PARSED",
+    "flags": []
+   },
+   {
+    "canonical": "metformin",
+    "class": "biguanide",
+    "kind": "administration",
+    "route": "oral",
+    "formulation": "tablet",
+    "formulation_basis": "DICTIONARY",
+    "dose": 500.0,
+    "unit": "mg",
+    "status": "NON_TARGET_MEDICATION",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "oral_agents",
+  "raw_text": "acarbose 100 mg, gliclazide 120 mg",
+  "n": 12,
+  "patients": 1,
+  "recordings": 1,
+  "n_T": 0,
+  "n_E": 12,
+  "on_cgm_grid": 12,
+  "entry_status": "PARSED",
+  "components": [
+   {
+    "canonical": "acarbose",
+    "class": "agi",
+    "kind": "administration",
+    "route": "oral",
+    "formulation": "tablet",
+    "formulation_basis": "DICTIONARY",
+    "dose": 100.0,
+    "unit": "mg",
+    "status": "NON_TARGET_MEDICATION",
+    "flags": []
+   },
+   {
+    "canonical": "gliclazide",
+    "class": "sulfonylurea",
+    "kind": "administration",
+    "route": "oral",
+    "formulation": "modified-release",
+    "formulation_basis": "DOSE_RULE",
+    "dose": 120.0,
+    "unit": "mg",
+    "status": "PARSED",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "oral_agents",
+  "raw_text": "gliclazide 40 mg, voglibose 0.2 mg, metformin 0.5 g",
+  "n": 12,
+  "patients": 1,
+  "recordings": 1,
+  "n_T": 0,
+  "n_E": 12,
+  "on_cgm_grid": 12,
+  "entry_status": "PARSED",
+  "components": [
+   {
+    "canonical": "gliclazide",
+    "class": "sulfonylurea",
+    "kind": "administration",
+    "route": "oral",
+    "formulation": "immediate-release",
+    "formulation_basis": "DOSE_RULE",
+    "dose": 40.0,
+    "unit": "mg",
+    "status": "PARSED",
+    "flags": []
+   },
+   {
+    "canonical": "voglibose",
+    "class": "agi",
+    "kind": "administration",
+    "route": "oral",
+    "formulation": "tablet",
+    "formulation_basis": "DICTIONARY",
+    "dose": 0.2,
+    "unit": "mg",
+    "status": "NON_TARGET_MEDICATION",
+    "flags": []
+   },
+   {
+    "canonical": "metformin",
+    "class": "biguanide",
+    "kind": "administration",
+    "route": "oral",
+    "formulation": "tablet",
+    "formulation_basis": "DICTIONARY",
+    "dose": 500.0,
+    "unit": "mg",
+    "status": "NON_TARGET_MEDICATION",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "oral_agents",
+  "raw_text": "liraglutide 1.2 mg, metformin 0.25 g, dapagliflozin 10 mg",
+  "n": 12,
+  "patients": 1,
+  "recordings": 1,
+  "n_T": 0,
+  "n_E": 12,
+  "on_cgm_grid": 12,
+  "entry_status": "NON_TARGET_MEDICATION",
+  "components": [
+   {
+    "canonical": "liraglutide",
+    "class": "glp1",
+    "kind": "administration",
+    "route": "sc",
+    "formulation": "injection",
+    "formulation_basis": "DICTIONARY",
+    "dose": 1.2,
+    "unit": "mg",
+    "status": "NON_TARGET_MEDICATION",
+    "flags": []
+   },
+   {
+    "canonical": "metformin",
+    "class": "biguanide",
+    "kind": "administration",
+    "route": "oral",
+    "formulation": "tablet",
+    "formulation_basis": "DICTIONARY",
+    "dose": 250.0,
+    "unit": "mg",
+    "status": "NON_TARGET_MEDICATION",
+    "flags": []
+   },
+   {
+    "canonical": "dapagliflozin",
+    "class": "sglt2",
+    "kind": "administration",
+    "route": "oral",
+    "formulation": "tablet",
+    "formulation_basis": "DICTIONARY",
+    "dose": 10.0,
+    "unit": "mg",
+    "status": "NON_TARGET_MEDICATION",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "oral_agents",
+  "raw_text": "metformin 0.25 g, acarbose 50 mg",
+  "n": 12,
+  "patients": 2,
+  "recordings": 2,
+  "n_T": 6,
+  "n_E": 6,
+  "on_cgm_grid": 12,
+  "entry_status": "NON_TARGET_MEDICATION",
+  "components": [
+   {
+    "canonical": "metformin",
+    "class": "biguanide",
+    "kind": "administration",
+    "route": "oral",
+    "formulation": "tablet",
+    "formulation_basis": "DICTIONARY",
+    "dose": 250.0,
+    "unit": "mg",
+    "status": "NON_TARGET_MEDICATION",
+    "flags": []
+   },
+   {
+    "canonical": "acarbose",
+    "class": "agi",
+    "kind": "administration",
+    "route": "oral",
+    "formulation": "tablet",
+    "formulation_basis": "DICTIONARY",
+    "dose": 50.0,
+    "unit": "mg",
+    "status": "NON_TARGET_MEDICATION",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "oral_agents",
+  "raw_text": "sitagliptin 100 mg, acarbose 50 mg",
+  "n": 12,
+  "patients": 1,
+  "recordings": 2,
+  "n_T": 0,
+  "n_E": 12,
+  "on_cgm_grid": 12,
+  "entry_status": "NON_TARGET_MEDICATION",
+  "components": [
+   {
+    "canonical": "sitagliptin",
+    "class": "dpp4",
+    "kind": "administration",
+    "route": "oral",
+    "formulation": "tablet",
+    "formulation_basis": "DICTIONARY",
+    "dose": 100.0,
+    "unit": "mg",
+    "status": "NON_TARGET_MEDICATION",
+    "flags": []
+   },
+   {
+    "canonical": "acarbose",
+    "class": "agi",
+    "kind": "administration",
+    "route": "oral",
+    "formulation": "tablet",
+    "formulation_basis": "DICTIONARY",
+    "dose": 50.0,
+    "unit": "mg",
+    "status": "NON_TARGET_MEDICATION",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "oral_agents",
+  "raw_text": "acarbose 100 mg, gliclazide 30 mg",
+  "n": 11,
+  "patients": 1,
+  "recordings": 1,
+  "n_T": 0,
+  "n_E": 11,
+  "on_cgm_grid": 11,
+  "entry_status": "PARSED",
+  "components": [
+   {
+    "canonical": "acarbose",
+    "class": "agi",
+    "kind": "administration",
+    "route": "oral",
+    "formulation": "tablet",
+    "formulation_basis": "DICTIONARY",
+    "dose": 100.0,
+    "unit": "mg",
+    "status": "NON_TARGET_MEDICATION",
+    "flags": []
+   },
+   {
+    "canonical": "gliclazide",
+    "class": "sulfonylurea",
+    "kind": "administration",
+    "route": "oral",
+    "formulation": "modified-release",
+    "formulation_basis": "DOSE_RULE",
+    "dose": 30.0,
+    "unit": "mg",
+    "status": "PARSED",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "oral_agents",
+  "raw_text": "dapagliflozin 10 mg, acarbose 25 mg",
+  "n": 11,
+  "patients": 1,
+  "recordings": 1,
+  "n_T": 0,
+  "n_E": 11,
+  "on_cgm_grid": 11,
+  "entry_status": "NON_TARGET_MEDICATION",
+  "components": [
+   {
+    "canonical": "dapagliflozin",
+    "class": "sglt2",
+    "kind": "administration",
+    "route": "oral",
+    "formulation": "tablet",
+    "formulation_basis": "DICTIONARY",
+    "dose": 10.0,
+    "unit": "mg",
+    "status": "NON_TARGET_MEDICATION",
+    "flags": []
+   },
+   {
+    "canonical": "acarbose",
+    "class": "agi",
+    "kind": "administration",
+    "route": "oral",
+    "formulation": "tablet",
+    "formulation_basis": "DICTIONARY",
+    "dose": 25.0,
+    "unit": "mg",
+    "status": "NON_TARGET_MEDICATION",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "oral_agents",
+  "raw_text": "dapagliflozin 10 mg, liraglutide 1.2 mg",
+  "n": 11,
+  "patients": 1,
+  "recordings": 1,
+  "n_T": 0,
+  "n_E": 11,
+  "on_cgm_grid": 11,
+  "entry_status": "NON_TARGET_MEDICATION",
+  "components": [
+   {
+    "canonical": "dapagliflozin",
+    "class": "sglt2",
+    "kind": "administration",
+    "route": "oral",
+    "formulation": "tablet",
+    "formulation_basis": "DICTIONARY",
+    "dose": 10.0,
+    "unit": "mg",
+    "status": "NON_TARGET_MEDICATION",
+    "flags": []
+   },
+   {
+    "canonical": "liraglutide",
+    "class": "glp1",
+    "kind": "administration",
+    "route": "sc",
+    "formulation": "injection",
+    "formulation_basis": "DICTIONARY",
+    "dose": 1.2,
+    "unit": "mg",
+    "status": "NON_TARGET_MEDICATION",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "oral_agents",
+  "raw_text": "metformin 0.85 g",
+  "n": 11,
+  "patients": 1,
+  "recordings": 1,
+  "n_T": 0,
+  "n_E": 11,
+  "on_cgm_grid": 11,
+  "entry_status": "NON_TARGET_MEDICATION",
+  "components": [
+   {
+    "canonical": "metformin",
+    "class": "biguanide",
+    "kind": "administration",
+    "route": "oral",
+    "formulation": "tablet",
+    "formulation_basis": "DICTIONARY",
+    "dose": 850.0,
+    "unit": "mg",
+    "status": "NON_TARGET_MEDICATION",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "oral_agents",
+  "raw_text": "dapagliflozin 10 mg, repaglinide 3 mg",
+  "n": 10,
+  "patients": 1,
+  "recordings": 1,
+  "n_T": 0,
+  "n_E": 10,
+  "on_cgm_grid": 10,
+  "entry_status": "PARSED",
+  "components": [
+   {
+    "canonical": "dapagliflozin",
+    "class": "sglt2",
+    "kind": "administration",
+    "route": "oral",
+    "formulation": "tablet",
+    "formulation_basis": "DICTIONARY",
+    "dose": 10.0,
+    "unit": "mg",
+    "status": "NON_TARGET_MEDICATION",
+    "flags": []
+   },
+   {
+    "canonical": "repaglinide",
+    "class": "glinide",
+    "kind": "administration",
+    "route": "oral",
+    "formulation": "tablet",
+    "formulation_basis": "DICTIONARY",
+    "dose": 3.0,
+    "unit": "mg",
+    "status": "PARSED",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "oral_agents",
+  "raw_text": "liraglutide 1.2 mg, acarbose 50 mg, metformin 0.5 g",
+  "n": 10,
+  "patients": 1,
+  "recordings": 1,
+  "n_T": 10,
+  "n_E": 0,
+  "on_cgm_grid": 10,
+  "entry_status": "NON_TARGET_MEDICATION",
+  "components": [
+   {
+    "canonical": "liraglutide",
+    "class": "glp1",
+    "kind": "administration",
+    "route": "sc",
+    "formulation": "injection",
+    "formulation_basis": "DICTIONARY",
+    "dose": 1.2,
+    "unit": "mg",
+    "status": "NON_TARGET_MEDICATION",
+    "flags": []
+   },
+   {
+    "canonical": "acarbose",
+    "class": "agi",
+    "kind": "administration",
+    "route": "oral",
+    "formulation": "tablet",
+    "formulation_basis": "DICTIONARY",
+    "dose": 50.0,
+    "unit": "mg",
+    "status": "NON_TARGET_MEDICATION",
+    "flags": []
+   },
+   {
+    "canonical": "metformin",
+    "class": "biguanide",
+    "kind": "administration",
+    "route": "oral",
+    "formulation": "tablet",
+    "formulation_basis": "DICTIONARY",
+    "dose": 500.0,
+    "unit": "mg",
+    "status": "NON_TARGET_MEDICATION",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "oral_agents",
+  "raw_text": "metformin 0.25 g, glimepiride 1 mg",
+  "n": 9,
+  "patients": 1,
+  "recordings": 1,
+  "n_T": 0,
+  "n_E": 9,
+  "on_cgm_grid": 9,
+  "entry_status": "PARSED",
+  "components": [
+   {
+    "canonical": "metformin",
+    "class": "biguanide",
+    "kind": "administration",
+    "route": "oral",
+    "formulation": "tablet",
+    "formulation_basis": "DICTIONARY",
+    "dose": 250.0,
+    "unit": "mg",
+    "status": "NON_TARGET_MEDICATION",
+    "flags": []
+   },
+   {
+    "canonical": "glimepiride",
+    "class": "sulfonylurea",
+    "kind": "administration",
+    "route": "oral",
+    "formulation": "tablet",
+    "formulation_basis": "DICTIONARY",
+    "dose": 1.0,
+    "unit": "mg",
+    "status": "PARSED",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "oral_agents",
+  "raw_text": "metformin 0.5 g, sitagliptin 0.1 g",
+  "n": 9,
+  "patients": 1,
+  "recordings": 1,
+  "n_T": 0,
+  "n_E": 9,
+  "on_cgm_grid": 9,
+  "entry_status": "NON_TARGET_MEDICATION",
+  "components": [
+   {
+    "canonical": "metformin",
+    "class": "biguanide",
+    "kind": "administration",
+    "route": "oral",
+    "formulation": "tablet",
+    "formulation_basis": "DICTIONARY",
+    "dose": 500.0,
+    "unit": "mg",
+    "status": "NON_TARGET_MEDICATION",
+    "flags": []
+   },
+   {
+    "canonical": "sitagliptin",
+    "class": "dpp4",
+    "kind": "administration",
+    "route": "oral",
+    "formulation": "tablet",
+    "formulation_basis": "DICTIONARY",
+    "dose": 100.0,
+    "unit": "mg",
+    "status": "NON_TARGET_MEDICATION",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "oral_agents",
+  "raw_text": " metformin 0.5 g",
+  "n": 8,
+  "patients": 1,
+  "recordings": 1,
+  "n_T": 0,
+  "n_E": 8,
+  "on_cgm_grid": 8,
+  "entry_status": "NON_TARGET_MEDICATION",
+  "components": [
+   {
+    "canonical": "metformin",
+    "class": "biguanide",
+    "kind": "administration",
+    "route": "oral",
+    "formulation": "tablet",
+    "formulation_basis": "DICTIONARY",
+    "dose": 500.0,
+    "unit": "mg",
+    "status": "NON_TARGET_MEDICATION",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "oral_agents",
+  "raw_text": "metformin 0.5 g,  voglibose 0.2 mg",
+  "n": 8,
+  "patients": 1,
+  "recordings": 1,
+  "n_T": 8,
+  "n_E": 0,
+  "on_cgm_grid": 8,
+  "entry_status": "NON_TARGET_MEDICATION",
+  "components": [
+   {
+    "canonical": "metformin",
+    "class": "biguanide",
+    "kind": "administration",
+    "route": "oral",
+    "formulation": "tablet",
+    "formulation_basis": "DICTIONARY",
+    "dose": 500.0,
+    "unit": "mg",
+    "status": "NON_TARGET_MEDICATION",
+    "flags": []
+   },
+   {
+    "canonical": "voglibose",
+    "class": "agi",
+    "kind": "administration",
+    "route": "oral",
+    "formulation": "tablet",
+    "formulation_basis": "DICTIONARY",
+    "dose": 0.2,
+    "unit": "mg",
+    "status": "NON_TARGET_MEDICATION",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "oral_agents",
+  "raw_text": "gliclazide 60 mg",
+  "n": 7,
+  "patients": 1,
+  "recordings": 1,
+  "n_T": 0,
+  "n_E": 7,
+  "on_cgm_grid": 7,
+  "entry_status": "PARSED",
+  "components": [
+   {
+    "canonical": "gliclazide",
+    "class": "sulfonylurea",
+    "kind": "administration",
+    "route": "oral",
+    "formulation": "modified-release",
+    "formulation_basis": "DOSE_RULE",
+    "dose": 60.0,
+    "unit": "mg",
+    "status": "PARSED",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "oral_agents",
+  "raw_text": "gliquidone 15 mg",
+  "n": 7,
+  "patients": 1,
+  "recordings": 1,
+  "n_T": 0,
+  "n_E": 7,
+  "on_cgm_grid": 7,
+  "entry_status": "PARSED",
+  "components": [
+   {
+    "canonical": "gliquidone",
+    "class": "sulfonylurea",
+    "kind": "administration",
+    "route": "oral",
+    "formulation": "tablet",
+    "formulation_basis": "DICTIONARY",
+    "dose": 15.0,
+    "unit": "mg",
+    "status": "PARSED",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "oral_agents",
+  "raw_text": "acarbose 50 mg, sitagliptin 100 mg, dapagliflozin 5 mg",
+  "n": 6,
+  "patients": 1,
+  "recordings": 1,
+  "n_T": 0,
+  "n_E": 6,
+  "on_cgm_grid": 6,
+  "entry_status": "NON_TARGET_MEDICATION",
+  "components": [
+   {
+    "canonical": "acarbose",
+    "class": "agi",
+    "kind": "administration",
+    "route": "oral",
+    "formulation": "tablet",
+    "formulation_basis": "DICTIONARY",
+    "dose": 50.0,
+    "unit": "mg",
+    "status": "NON_TARGET_MEDICATION",
+    "flags": []
+   },
+   {
+    "canonical": "sitagliptin",
+    "class": "dpp4",
+    "kind": "administration",
+    "route": "oral",
+    "formulation": "tablet",
+    "formulation_basis": "DICTIONARY",
+    "dose": 100.0,
+    "unit": "mg",
+    "status": "NON_TARGET_MEDICATION",
+    "flags": []
+   },
+   {
+    "canonical": "dapagliflozin",
+    "class": "sglt2",
+    "kind": "administration",
+    "route": "oral",
+    "formulation": "tablet",
+    "formulation_basis": "DICTIONARY",
+    "dose": 5.0,
+    "unit": "mg",
+    "status": "NON_TARGET_MEDICATION",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "oral_agents",
+  "raw_text": "gliclazide 30 mg, metformin 0.5 g",
+  "n": 6,
+  "patients": 1,
+  "recordings": 1,
+  "n_T": 6,
+  "n_E": 0,
+  "on_cgm_grid": 6,
+  "entry_status": "PARSED",
+  "components": [
+   {
+    "canonical": "gliclazide",
+    "class": "sulfonylurea",
+    "kind": "administration",
+    "route": "oral",
+    "formulation": "modified-release",
+    "formulation_basis": "DOSE_RULE",
+    "dose": 30.0,
+    "unit": "mg",
+    "status": "PARSED",
+    "flags": []
+   },
+   {
+    "canonical": "metformin",
+    "class": "biguanide",
+    "kind": "administration",
+    "route": "oral",
+    "formulation": "tablet",
+    "formulation_basis": "DICTIONARY",
+    "dose": 500.0,
+    "unit": "mg",
+    "status": "NON_TARGET_MEDICATION",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "oral_agents",
+  "raw_text": "linagliptin 5 mg, metformin 0.5 g",
+  "n": 6,
+  "patients": 1,
+  "recordings": 1,
+  "n_T": 0,
+  "n_E": 6,
+  "on_cgm_grid": 6,
+  "entry_status": "NON_TARGET_MEDICATION",
+  "components": [
+   {
+    "canonical": "linagliptin",
+    "class": "dpp4",
+    "kind": "administration",
+    "route": "oral",
+    "formulation": "tablet",
+    "formulation_basis": "DICTIONARY",
+    "dose": 5.0,
+    "unit": "mg",
+    "status": "NON_TARGET_MEDICATION",
+    "flags": []
+   },
+   {
+    "canonical": "metformin",
+    "class": "biguanide",
+    "kind": "administration",
+    "route": "oral",
+    "formulation": "tablet",
+    "formulation_basis": "DICTIONARY",
+    "dose": 500.0,
+    "unit": "mg",
+    "status": "NON_TARGET_MEDICATION",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "oral_agents",
+  "raw_text": "sitagliptin 100 mg, metformin 500 mg",
+  "n": 6,
+  "patients": 1,
+  "recordings": 1,
+  "n_T": 0,
+  "n_E": 6,
+  "on_cgm_grid": 6,
+  "entry_status": "NON_TARGET_MEDICATION",
+  "components": [
+   {
+    "canonical": "sitagliptin",
+    "class": "dpp4",
+    "kind": "administration",
+    "route": "oral",
+    "formulation": "tablet",
+    "formulation_basis": "DICTIONARY",
+    "dose": 100.0,
+    "unit": "mg",
+    "status": "NON_TARGET_MEDICATION",
+    "flags": []
+   },
+   {
+    "canonical": "metformin",
+    "class": "biguanide",
+    "kind": "administration",
+    "route": "oral",
+    "formulation": "tablet",
+    "formulation_basis": "DICTIONARY",
+    "dose": 500.0,
+    "unit": "mg",
+    "status": "NON_TARGET_MEDICATION",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "oral_agents",
+  "raw_text": "sitagliptin 50 mg, metformin 250 mg",
+  "n": 6,
+  "patients": 1,
+  "recordings": 1,
+  "n_T": 0,
+  "n_E": 6,
+  "on_cgm_grid": 6,
+  "entry_status": "NON_TARGET_MEDICATION",
+  "components": [
+   {
+    "canonical": "sitagliptin",
+    "class": "dpp4",
+    "kind": "administration",
+    "route": "oral",
+    "formulation": "tablet",
+    "formulation_basis": "DICTIONARY",
+    "dose": 50.0,
+    "unit": "mg",
+    "status": "NON_TARGET_MEDICATION",
+    "flags": []
+   },
+   {
+    "canonical": "metformin",
+    "class": "biguanide",
+    "kind": "administration",
+    "route": "oral",
+    "formulation": "tablet",
+    "formulation_basis": "DICTIONARY",
+    "dose": 250.0,
+    "unit": "mg",
+    "status": "NON_TARGET_MEDICATION",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "oral_agents",
+  "raw_text": "metformin 0.25 g, pioglitazone 15 mg, acarbose 50 mg",
+  "n": 5,
+  "patients": 1,
+  "recordings": 1,
+  "n_T": 5,
+  "n_E": 0,
+  "on_cgm_grid": 5,
+  "entry_status": "NON_TARGET_MEDICATION",
+  "components": [
+   {
+    "canonical": "metformin",
+    "class": "biguanide",
+    "kind": "administration",
+    "route": "oral",
+    "formulation": "tablet",
+    "formulation_basis": "DICTIONARY",
+    "dose": 250.0,
+    "unit": "mg",
+    "status": "NON_TARGET_MEDICATION",
+    "flags": []
+   },
+   {
+    "canonical": "pioglitazone",
+    "class": "tzd",
+    "kind": "administration",
+    "route": "oral",
+    "formulation": "tablet",
+    "formulation_basis": "DICTIONARY",
+    "dose": 15.0,
+    "unit": "mg",
+    "status": "NON_TARGET_MEDICATION",
+    "flags": []
+   },
+   {
+    "canonical": "acarbose",
+    "class": "agi",
+    "kind": "administration",
+    "route": "oral",
+    "formulation": "tablet",
+    "formulation_basis": "DICTIONARY",
+    "dose": 50.0,
+    "unit": "mg",
+    "status": "NON_TARGET_MEDICATION",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "oral_agents",
+  "raw_text": "metformin 1 g",
+  "n": 4,
+  "patients": 1,
+  "recordings": 1,
+  "n_T": 4,
+  "n_E": 0,
+  "on_cgm_grid": 4,
+  "entry_status": "NON_TARGET_MEDICATION",
+  "components": [
+   {
+    "canonical": "metformin",
+    "class": "biguanide",
+    "kind": "administration",
+    "route": "oral",
+    "formulation": "tablet",
+    "formulation_basis": "DICTIONARY",
+    "dose": 1000.0,
+    "unit": "mg",
+    "status": "NON_TARGET_MEDICATION",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "oral_agents",
+  "raw_text": "metformin 1 g, acarbose 100 mg",
+  "n": 4,
+  "patients": 1,
+  "recordings": 1,
+  "n_T": 0,
+  "n_E": 4,
+  "on_cgm_grid": 4,
+  "entry_status": "NON_TARGET_MEDICATION",
+  "components": [
+   {
+    "canonical": "metformin",
+    "class": "biguanide",
+    "kind": "administration",
+    "route": "oral",
+    "formulation": "tablet",
+    "formulation_basis": "DICTIONARY",
+    "dose": 1000.0,
+    "unit": "mg",
+    "status": "NON_TARGET_MEDICATION",
+    "flags": []
+   },
+   {
+    "canonical": "acarbose",
+    "class": "agi",
+    "kind": "administration",
+    "route": "oral",
+    "formulation": "tablet",
+    "formulation_basis": "DICTIONARY",
+    "dose": 100.0,
+    "unit": "mg",
+    "status": "NON_TARGET_MEDICATION",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "oral_agents",
+  "raw_text": " voglibose 0.2 mg",
+  "n": 3,
+  "patients": 1,
+  "recordings": 1,
+  "n_T": 3,
+  "n_E": 0,
+  "on_cgm_grid": 3,
+  "entry_status": "NON_TARGET_MEDICATION",
+  "components": [
+   {
+    "canonical": "voglibose",
+    "class": "agi",
+    "kind": "administration",
+    "route": "oral",
+    "formulation": "tablet",
+    "formulation_basis": "DICTIONARY",
+    "dose": 0.2,
+    "unit": "mg",
+    "status": "NON_TARGET_MEDICATION",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "oral_agents",
+  "raw_text": "acarbose 50 mg, metformin 50 mg",
+  "n": 3,
+  "patients": 1,
+  "recordings": 1,
+  "n_T": 3,
+  "n_E": 0,
+  "on_cgm_grid": 3,
+  "entry_status": "NON_TARGET_MEDICATION",
+  "components": [
+   {
+    "canonical": "acarbose",
+    "class": "agi",
+    "kind": "administration",
+    "route": "oral",
+    "formulation": "tablet",
+    "formulation_basis": "DICTIONARY",
+    "dose": 50.0,
+    "unit": "mg",
+    "status": "NON_TARGET_MEDICATION",
+    "flags": []
+   },
+   {
+    "canonical": "metformin",
+    "class": "biguanide",
+    "kind": "administration",
+    "route": "oral",
+    "formulation": "tablet",
+    "formulation_basis": "DICTIONARY",
+    "dose": 50.0,
+    "unit": "mg",
+    "status": "NON_TARGET_MEDICATION",
+    "flags": [
+     "DOSE_IMPLAUSIBLE"
+    ]
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "oral_agents",
+  "raw_text": "acarbose 50 mg, metformin 50 mg, dapagliflozin 5 mg, pioglitazone 15 mg",
+  "n": 3,
+  "patients": 1,
+  "recordings": 1,
+  "n_T": 3,
+  "n_E": 0,
+  "on_cgm_grid": 3,
+  "entry_status": "NON_TARGET_MEDICATION",
+  "components": [
+   {
+    "canonical": "acarbose",
+    "class": "agi",
+    "kind": "administration",
+    "route": "oral",
+    "formulation": "tablet",
+    "formulation_basis": "DICTIONARY",
+    "dose": 50.0,
+    "unit": "mg",
+    "status": "NON_TARGET_MEDICATION",
+    "flags": []
+   },
+   {
+    "canonical": "metformin",
+    "class": "biguanide",
+    "kind": "administration",
+    "route": "oral",
+    "formulation": "tablet",
+    "formulation_basis": "DICTIONARY",
+    "dose": 50.0,
+    "unit": "mg",
+    "status": "NON_TARGET_MEDICATION",
+    "flags": [
+     "DOSE_IMPLAUSIBLE"
+    ]
+   },
+   {
+    "canonical": "dapagliflozin",
+    "class": "sglt2",
+    "kind": "administration",
+    "route": "oral",
+    "formulation": "tablet",
+    "formulation_basis": "DICTIONARY",
+    "dose": 5.0,
+    "unit": "mg",
+    "status": "NON_TARGET_MEDICATION",
+    "flags": []
+   },
+   {
+    "canonical": "pioglitazone",
+    "class": "tzd",
+    "kind": "administration",
+    "route": "oral",
+    "formulation": "tablet",
+    "formulation_basis": "DICTIONARY",
+    "dose": 15.0,
+    "unit": "mg",
+    "status": "NON_TARGET_MEDICATION",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "oral_agents",
+  "raw_text": "dapagliflozin 10 mg",
+  "n": 3,
+  "patients": 1,
+  "recordings": 1,
+  "n_T": 3,
+  "n_E": 0,
+  "on_cgm_grid": 3,
+  "entry_status": "NON_TARGET_MEDICATION",
+  "components": [
+   {
+    "canonical": "dapagliflozin",
+    "class": "sglt2",
+    "kind": "administration",
+    "route": "oral",
+    "formulation": "tablet",
+    "formulation_basis": "DICTIONARY",
+    "dose": 10.0,
+    "unit": "mg",
+    "status": "NON_TARGET_MEDICATION",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "oral_agents",
+  "raw_text": "dapagliflozin 10 mg, metformin 0.5 g",
+  "n": 3,
+  "patients": 1,
+  "recordings": 1,
+  "n_T": 0,
+  "n_E": 3,
+  "on_cgm_grid": 3,
+  "entry_status": "NON_TARGET_MEDICATION",
+  "components": [
+   {
+    "canonical": "dapagliflozin",
+    "class": "sglt2",
+    "kind": "administration",
+    "route": "oral",
+    "formulation": "tablet",
+    "formulation_basis": "DICTIONARY",
+    "dose": 10.0,
+    "unit": "mg",
+    "status": "NON_TARGET_MEDICATION",
+    "flags": []
+   },
+   {
+    "canonical": "metformin",
+    "class": "biguanide",
+    "kind": "administration",
+    "route": "oral",
+    "formulation": "tablet",
+    "formulation_basis": "DICTIONARY",
+    "dose": 500.0,
+    "unit": "mg",
+    "status": "NON_TARGET_MEDICATION",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "oral_agents",
+  "raw_text": "metformin 0.5 g, liraglutide 0.6 mg",
+  "n": 3,
+  "patients": 1,
+  "recordings": 1,
+  "n_T": 3,
+  "n_E": 0,
+  "on_cgm_grid": 3,
+  "entry_status": "NON_TARGET_MEDICATION",
+  "components": [
+   {
+    "canonical": "metformin",
+    "class": "biguanide",
+    "kind": "administration",
+    "route": "oral",
+    "formulation": "tablet",
+    "formulation_basis": "DICTIONARY",
+    "dose": 500.0,
+    "unit": "mg",
+    "status": "NON_TARGET_MEDICATION",
+    "flags": []
+   },
+   {
+    "canonical": "liraglutide",
+    "class": "glp1",
+    "kind": "administration",
+    "route": "sc",
+    "formulation": "injection",
+    "formulation_basis": "DICTIONARY",
+    "dose": 0.6,
+    "unit": "mg",
+    "status": "NON_TARGET_MEDICATION",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "oral_agents",
+  "raw_text": "pioglitazone 15 mg, metformin 0.5 g",
+  "n": 3,
+  "patients": 1,
+  "recordings": 1,
+  "n_T": 0,
+  "n_E": 3,
+  "on_cgm_grid": 3,
+  "entry_status": "NON_TARGET_MEDICATION",
+  "components": [
+   {
+    "canonical": "pioglitazone",
+    "class": "tzd",
+    "kind": "administration",
+    "route": "oral",
+    "formulation": "tablet",
+    "formulation_basis": "DICTIONARY",
+    "dose": 15.0,
+    "unit": "mg",
+    "status": "NON_TARGET_MEDICATION",
+    "flags": []
+   },
+   {
+    "canonical": "metformin",
+    "class": "biguanide",
+    "kind": "administration",
+    "route": "oral",
+    "formulation": "tablet",
+    "formulation_basis": "DICTIONARY",
+    "dose": 500.0,
+    "unit": "mg",
+    "status": "NON_TARGET_MEDICATION",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "oral_agents",
+  "raw_text": "acarbose 50 mg, dapagliflozin 5 mg",
+  "n": 2,
+  "patients": 1,
+  "recordings": 1,
+  "n_T": 0,
+  "n_E": 2,
+  "on_cgm_grid": 2,
+  "entry_status": "NON_TARGET_MEDICATION",
+  "components": [
+   {
+    "canonical": "acarbose",
+    "class": "agi",
+    "kind": "administration",
+    "route": "oral",
+    "formulation": "tablet",
+    "formulation_basis": "DICTIONARY",
+    "dose": 50.0,
+    "unit": "mg",
+    "status": "NON_TARGET_MEDICATION",
+    "flags": []
+   },
+   {
+    "canonical": "dapagliflozin",
+    "class": "sglt2",
+    "kind": "administration",
+    "route": "oral",
+    "formulation": "tablet",
+    "formulation_basis": "DICTIONARY",
+    "dose": 5.0,
+    "unit": "mg",
+    "status": "NON_TARGET_MEDICATION",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "oral_agents",
+  "raw_text": "acarbose 50 mg, gliclazide 30 mg",
+  "n": 2,
+  "patients": 1,
+  "recordings": 1,
+  "n_T": 0,
+  "n_E": 2,
+  "on_cgm_grid": 2,
+  "entry_status": "PARSED",
+  "components": [
+   {
+    "canonical": "acarbose",
+    "class": "agi",
+    "kind": "administration",
+    "route": "oral",
+    "formulation": "tablet",
+    "formulation_basis": "DICTIONARY",
+    "dose": 50.0,
+    "unit": "mg",
+    "status": "NON_TARGET_MEDICATION",
+    "flags": []
+   },
+   {
+    "canonical": "gliclazide",
+    "class": "sulfonylurea",
+    "kind": "administration",
+    "route": "oral",
+    "formulation": "modified-release",
+    "formulation_basis": "DOSE_RULE",
+    "dose": 30.0,
+    "unit": "mg",
+    "status": "PARSED",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "oral_agents",
+  "raw_text": "linagliptin 5 mg",
+  "n": 2,
+  "patients": 2,
+  "recordings": 2,
+  "n_T": 0,
+  "n_E": 2,
+  "on_cgm_grid": 2,
+  "entry_status": "NON_TARGET_MEDICATION",
+  "components": [
+   {
+    "canonical": "linagliptin",
+    "class": "dpp4",
+    "kind": "administration",
+    "route": "oral",
+    "formulation": "tablet",
+    "formulation_basis": "DICTIONARY",
+    "dose": 5.0,
+    "unit": "mg",
+    "status": "NON_TARGET_MEDICATION",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "oral_agents",
+  "raw_text": "metformin 850 mg, acarbose 50 mg",
+  "n": 2,
+  "patients": 1,
+  "recordings": 1,
+  "n_T": 0,
+  "n_E": 2,
+  "on_cgm_grid": 2,
+  "entry_status": "NON_TARGET_MEDICATION",
+  "components": [
+   {
+    "canonical": "metformin",
+    "class": "biguanide",
+    "kind": "administration",
+    "route": "oral",
+    "formulation": "tablet",
+    "formulation_basis": "DICTIONARY",
+    "dose": 850.0,
+    "unit": "mg",
+    "status": "NON_TARGET_MEDICATION",
+    "flags": []
+   },
+   {
+    "canonical": "acarbose",
+    "class": "agi",
+    "kind": "administration",
+    "route": "oral",
+    "formulation": "tablet",
+    "formulation_basis": "DICTIONARY",
+    "dose": 50.0,
+    "unit": "mg",
+    "status": "NON_TARGET_MEDICATION",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "oral_agents",
+  "raw_text": "acarbose 50 mg, sitagliptin 100 mg",
+  "n": 1,
+  "patients": 1,
+  "recordings": 1,
+  "n_T": 0,
+  "n_E": 1,
+  "on_cgm_grid": 1,
+  "entry_status": "NON_TARGET_MEDICATION",
+  "components": [
+   {
+    "canonical": "acarbose",
+    "class": "agi",
+    "kind": "administration",
+    "route": "oral",
+    "formulation": "tablet",
+    "formulation_basis": "DICTIONARY",
+    "dose": 50.0,
+    "unit": "mg",
+    "status": "NON_TARGET_MEDICATION",
+    "flags": []
+   },
+   {
+    "canonical": "sitagliptin",
+    "class": "dpp4",
+    "kind": "administration",
+    "route": "oral",
+    "formulation": "tablet",
+    "formulation_basis": "DICTIONARY",
+    "dose": 100.0,
+    "unit": "mg",
+    "status": "NON_TARGET_MEDICATION",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "oral_agents",
+  "raw_text": "dapagliflozin 10 mg, repaglinide 0.5 mg",
+  "n": 1,
+  "patients": 1,
+  "recordings": 1,
+  "n_T": 0,
+  "n_E": 1,
+  "on_cgm_grid": 1,
+  "entry_status": "PARSED",
+  "components": [
+   {
+    "canonical": "dapagliflozin",
+    "class": "sglt2",
+    "kind": "administration",
+    "route": "oral",
+    "formulation": "tablet",
+    "formulation_basis": "DICTIONARY",
+    "dose": 10.0,
+    "unit": "mg",
+    "status": "NON_TARGET_MEDICATION",
+    "flags": []
+   },
+   {
+    "canonical": "repaglinide",
+    "class": "glinide",
+    "kind": "administration",
+    "route": "oral",
+    "formulation": "tablet",
+    "formulation_basis": "DICTIONARY",
+    "dose": 0.5,
+    "unit": "mg",
+    "status": "PARSED",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "oral_agents",
+  "raw_text": "dapagliflozin 5 mg",
+  "n": 1,
+  "patients": 1,
+  "recordings": 1,
+  "n_T": 1,
+  "n_E": 0,
+  "on_cgm_grid": 1,
+  "entry_status": "NON_TARGET_MEDICATION",
+  "components": [
+   {
+    "canonical": "dapagliflozin",
+    "class": "sglt2",
+    "kind": "administration",
+    "route": "oral",
+    "formulation": "tablet",
+    "formulation_basis": "DICTIONARY",
+    "dose": 5.0,
+    "unit": "mg",
+    "status": "NON_TARGET_MEDICATION",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "oral_agents",
+  "raw_text": "gliclazide 40 mg",
+  "n": 1,
+  "patients": 1,
+  "recordings": 1,
+  "n_T": 0,
+  "n_E": 1,
+  "on_cgm_grid": 1,
+  "entry_status": "PARSED",
+  "components": [
+   {
+    "canonical": "gliclazide",
+    "class": "sulfonylurea",
+    "kind": "administration",
+    "route": "oral",
+    "formulation": "immediate-release",
+    "formulation_basis": "DOSE_RULE",
+    "dose": 40.0,
+    "unit": "mg",
+    "status": "PARSED",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "oral_agents",
+  "raw_text": "liraglutide 1.2 mg",
+  "n": 1,
+  "patients": 1,
+  "recordings": 1,
+  "n_T": 0,
+  "n_E": 1,
+  "on_cgm_grid": 1,
+  "entry_status": "NON_TARGET_MEDICATION",
+  "components": [
+   {
+    "canonical": "liraglutide",
+    "class": "glp1",
+    "kind": "administration",
+    "route": "sc",
+    "formulation": "injection",
+    "formulation_basis": "DICTIONARY",
+    "dose": 1.2,
+    "unit": "mg",
+    "status": "NON_TARGET_MEDICATION",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "oral_agents",
+  "raw_text": "liraglutide 1.8 mg",
+  "n": 1,
+  "patients": 1,
+  "recordings": 1,
+  "n_T": 1,
+  "n_E": 0,
+  "on_cgm_grid": 1,
+  "entry_status": "NON_TARGET_MEDICATION",
+  "components": [
+   {
+    "canonical": "liraglutide",
+    "class": "glp1",
+    "kind": "administration",
+    "route": "sc",
+    "formulation": "injection",
+    "formulation_basis": "DICTIONARY",
+    "dose": 1.8,
+    "unit": "mg",
+    "status": "NON_TARGET_MEDICATION",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "oral_agents",
+  "raw_text": "metformin 0.5 g, acarbose 50 mg, dapagliflozin 10 mg",
+  "n": 1,
+  "patients": 1,
+  "recordings": 1,
+  "n_T": 0,
+  "n_E": 1,
+  "on_cgm_grid": 1,
+  "entry_status": "NON_TARGET_MEDICATION",
+  "components": [
+   {
+    "canonical": "metformin",
+    "class": "biguanide",
+    "kind": "administration",
+    "route": "oral",
+    "formulation": "tablet",
+    "formulation_basis": "DICTIONARY",
+    "dose": 500.0,
+    "unit": "mg",
+    "status": "NON_TARGET_MEDICATION",
+    "flags": []
+   },
+   {
+    "canonical": "acarbose",
+    "class": "agi",
+    "kind": "administration",
+    "route": "oral",
+    "formulation": "tablet",
+    "formulation_basis": "DICTIONARY",
+    "dose": 50.0,
+    "unit": "mg",
+    "status": "NON_TARGET_MEDICATION",
+    "flags": []
+   },
+   {
+    "canonical": "dapagliflozin",
+    "class": "sglt2",
+    "kind": "administration",
+    "route": "oral",
+    "formulation": "tablet",
+    "formulation_basis": "DICTIONARY",
+    "dose": 10.0,
+    "unit": "mg",
+    "status": "NON_TARGET_MEDICATION",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "oral_agents",
+  "raw_text": "metformin 0.5 g, acarbose 50 mg, dapagliflozin 5 mg",
+  "n": 1,
+  "patients": 1,
+  "recordings": 1,
+  "n_T": 0,
+  "n_E": 1,
+  "on_cgm_grid": 1,
+  "entry_status": "NON_TARGET_MEDICATION",
+  "components": [
+   {
+    "canonical": "metformin",
+    "class": "biguanide",
+    "kind": "administration",
+    "route": "oral",
+    "formulation": "tablet",
+    "formulation_basis": "DICTIONARY",
+    "dose": 500.0,
+    "unit": "mg",
+    "status": "NON_TARGET_MEDICATION",
+    "flags": []
+   },
+   {
+    "canonical": "acarbose",
+    "class": "agi",
+    "kind": "administration",
+    "route": "oral",
+    "formulation": "tablet",
+    "formulation_basis": "DICTIONARY",
+    "dose": 50.0,
+    "unit": "mg",
+    "status": "NON_TARGET_MEDICATION",
+    "flags": []
+   },
+   {
+    "canonical": "dapagliflozin",
+    "class": "sglt2",
+    "kind": "administration",
+    "route": "oral",
+    "formulation": "tablet",
+    "formulation_basis": "DICTIONARY",
+    "dose": 5.0,
+    "unit": "mg",
+    "status": "NON_TARGET_MEDICATION",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "oral_agents",
+  "raw_text": "metformin 0.5 g, liraglutide 1.8 mg",
+  "n": 1,
+  "patients": 1,
+  "recordings": 1,
+  "n_T": 1,
+  "n_E": 0,
+  "on_cgm_grid": 1,
+  "entry_status": "NON_TARGET_MEDICATION",
+  "components": [
+   {
+    "canonical": "metformin",
+    "class": "biguanide",
+    "kind": "administration",
+    "route": "oral",
+    "formulation": "tablet",
+    "formulation_basis": "DICTIONARY",
+    "dose": 500.0,
+    "unit": "mg",
+    "status": "NON_TARGET_MEDICATION",
+    "flags": []
+   },
+   {
+    "canonical": "liraglutide",
+    "class": "glp1",
+    "kind": "administration",
+    "route": "sc",
+    "formulation": "injection",
+    "formulation_basis": "DICTIONARY",
+    "dose": 1.8,
+    "unit": "mg",
+    "status": "NON_TARGET_MEDICATION",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "oral_agents",
+  "raw_text": "metformin 500 mg,  voglibose 100 mg",
+  "n": 1,
+  "patients": 1,
+  "recordings": 1,
+  "n_T": 0,
+  "n_E": 1,
+  "on_cgm_grid": 1,
+  "entry_status": "NON_TARGET_MEDICATION",
+  "components": [
+   {
+    "canonical": "metformin",
+    "class": "biguanide",
+    "kind": "administration",
+    "route": "oral",
+    "formulation": "tablet",
+    "formulation_basis": "DICTIONARY",
+    "dose": 500.0,
+    "unit": "mg",
+    "status": "NON_TARGET_MEDICATION",
+    "flags": []
+   },
+   {
+    "canonical": "voglibose",
+    "class": "agi",
+    "kind": "administration",
+    "route": "oral",
+    "formulation": "tablet",
+    "formulation_basis": "DICTIONARY",
+    "dose": 100.0,
+    "unit": "mg",
+    "status": "NON_TARGET_MEDICATION",
+    "flags": [
+     "DOSE_IMPLAUSIBLE"
+    ]
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ },
+ {
+  "column": "oral_agents",
+  "raw_text": "voglibose 0.2 mg, metformin 0.5 g",
+  "n": 1,
+  "patients": 1,
+  "recordings": 1,
+  "n_T": 0,
+  "n_E": 1,
+  "on_cgm_grid": 1,
+  "entry_status": "NON_TARGET_MEDICATION",
+  "components": [
+   {
+    "canonical": "voglibose",
+    "class": "agi",
+    "kind": "administration",
+    "route": "oral",
+    "formulation": "tablet",
+    "formulation_basis": "DICTIONARY",
+    "dose": 0.2,
+    "unit": "mg",
+    "status": "NON_TARGET_MEDICATION",
+    "flags": []
+   },
+   {
+    "canonical": "metformin",
+    "class": "biguanide",
+    "kind": "administration",
+    "route": "oral",
+    "formulation": "tablet",
+    "formulation_basis": "DICTIONARY",
+    "dose": 500.0,
+    "unit": "mg",
+    "status": "NON_TARGET_MEDICATION",
+    "flags": []
+   }
+  ],
+  "mapping_known": true,
+  "ambiguous": false
+ }
+]

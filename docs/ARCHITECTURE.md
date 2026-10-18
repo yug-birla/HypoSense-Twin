@@ -165,6 +165,21 @@ The operational protocol is ANALYSIS_PLAN §0. The event audit (`audit/events.py
 - Kernels are pure, vectorised numpy functions with closed-form parameters. Parameter
   validation enforces t_peak < t_dur/2 (Eq. 3) and t_max solvability (Bateman).
 
+### 4.3a As implemented in S3 (2026-10-18)
+- `medication/events.py`: typed `MedicationEvent` and `EntryParse`, with parse statuses, event
+  kinds and flags.
+- `medication/dictionary.py`: the versioned CSV and normalisation.
+- `medication/parse.py`: column grammars, content-aware.
+- `medication/recording.py`: recording parse, production treated status, prescribed classes.
+- `medication/kernels.py`: exponential, flat and Bateman kernels.
+- `medication/exposure.py`: `ExposureEngine`. It is causal and vectorised, with exact fsum
+  summation, CSII reconstruction with the 6-h cap, projections and `QualityState`.
+- `medication/timing.py`: M3r raw timing.
+- `data/quality.sensor_fault_suspected`: P-C8 causal flag.
+- Audit: `audit/medication.py`, `audit/med_run.py` (`hyposense audit medication`).
+- Contracts: docs/FEATURE_DICTIONARY.md. Parameters: configs/pharma.yaml and
+  docs/medication/PARAMETER_SOURCES.md.
+
 ### 4.4 Patient State Engine (`state/`) — "the twin"
 ```
 PatientState(patient_key, ts)

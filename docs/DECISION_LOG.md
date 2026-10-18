@@ -309,3 +309,100 @@ Commit. Pending scientific decisions are in [PROPOSALS.md](PROPOSALS.md) until a
   i.v. fluids. Partition strata on v5 equal the provenance counts exactly (9/18/30/43; T
   3/5/9/13), so the 2003/2029 re-check passes.
 - **Class**: A · **Date**: 2026-10-18 · **Commit**: 32f3245
+
+---
+
+## DEC-2026-10-18-C · P-C8 approved (sensor-failure handling)
+- **Decision (owner)**: all three parts of P-C8 are approved.
+  - (a) A run of ≥ 8 consecutive CGM readings ≤ 40 mg/dL is flagged SENSOR FAILURE SUSPECTED. It
+    is a measurement-quality annotation that never alters the canonical labels.
+  - (b) During such a run, keep LOW NOW and add the warning "SENSOR FAULT SUSPECTED — verify
+    sensor and obtain capillary glucose". The state is never NO ALERT, the low is never hidden,
+    and no treatment advice is given.
+  - (c) Sensitivity analysis SA9 excludes flagged episodes and intervals.
+- **Recorded in**: ANALYSIS_PLAN §0c (exact SA9 rule); `data.quality.sensor_fault_suspected`
+  (causal flag, tested); `labels.annotations.floor_runs` (offline). UI handling is deferred to S7/S8.
+- **Class**: C (approved) · **Date**: 2026-10-18 · **Commit**: 48941d8
+
+## ADR-024 · Medication parsing: content-aware, column-specific grammars, nothing dropped
+- **Decision**:
+  - The versioned dictionary (`configs/drug_dictionary.csv`) separates SOURCE_FACT mapping from
+    ASSUMPTION modelling.
+  - Deterministic normalisation covers unicode spaces and full-width punctuation.
+  - Each column has a grammar; classification follows CONTENT, and the source column is kept.
+  - Every component gets one of PARSED / PARSED_WITH_WARNING / AMBIGUOUS / NON_TARGET_MEDICATION
+    / NON_MEDICATION / UNPARSEABLE, plus flags.
+  - Doses are never invented, and implausible units are kept and flagged.
+- **Evidence (MEASURED, v5)**:
+  - 4,653 cells; 0 UNPARSEABLE, 0 AMBIGUOUS.
+  - Insulin s.c. 828/828 and oral 2,171/2,171 parsed to drug + dose.
+  - The legacy regex's misses are resolved: "scilin m30", and the misplaced acarbose that it read
+    as insulin.
+- **Class**: A · **Date**: 2026-10-18 · **Commit**: 48941d8
+
+## ADR-025 · Exact summation in the exposure engine (bitwise causality)
+- **Decision**: Row sums use `math.fsum` instead of BLAS matrix-vector products.
+- **Evidence**: With BLAS, full-record vs truncated-record exposure differed by about 1 ulp,
+  because the summation order depends on vector length. In the S3 smoke test this produced
+  bitwise mismatches in most sampled T recordings; the failing checks were not counted. With
+  fsum: 0/5,984 on real T data, and the Hypothesis property test passes.
+- **Reason**: CLAUDE.md §11 requires *identical* feature vectors.
+- **Cost**: 0.24 ms per reading (MEASURED), adequate for replay.
+- **Class**: A · **Date**: 2026-10-18 · **Commit**: 48941d8
+
+## ADR-026 · CSII basal reconstruction with a 6-hour continuation cap (a-priori representation choice)
+- **Decision**:
+  - A programmed basal rate becomes r/4-IU micro-boluses every 15 min until the next pump entry
+    or suspension, **at most 6 h after its entry**; beyond that, pump delivery is UNKNOWN
+    (quality PARTIAL for 24 h).
+  - Projections continue the currently programmed rate (P-B3 resolved: option b).
+- **Context**: Blueprint: "rate persists until the next rate entry".
+- **Evidence (MEASURED)**:
+  - T pump segments are 180–300 min; only 4 of 1,055 pump-entry intervals exceed 6 h.
+  - In **all 21** recordings whose pump entries end early, s.c. insulin follows (a pump→injection
+    transition). The literal blueprint rule would have fabricated a median of 39.5 h (up to
+    168 h) of basal insulin in those recordings.
+- **Class**: B (decided a priori from structure; no outcome data used) · **Date**: 2026-10-18 · **Commit**: 48941d8
+
+## ADR-027 · Kernel parameters sourced from regulatory labels (no ILLUSTRATIVE values remain)
+- **Decision**: pharma.yaml v1.0.0 has per-parameter status, source and note
+  (docs/medication/PARAMETER_SOURCES.md). Changes vs the blueprint's illustrative values:
+  - NPH duration 900 → **1440 min** (labels: ~24 h);
+  - degludec 1440 → **2520 min** (≥ 42 h);
+  - gliclazide split into **MR** (t½ 16 h, tmax 9 h, D_max 120) and **IR** (t½ 11 h, tmax 4 h,
+    D_max 320);
+  - glimepiride t½ 6.5 h / tmax 2.5 h;
+  - gliquidone D_max 120 mg (label); t½ 3 h remains an ASSUMPTION;
+  - basal-analogue window fixed as [lag, lag + duration) (P-B4 resolved).
+- **Evidence**: 15/16 items verified against FDA SPL, EMA SmPC and national SmPCs, with quotes.
+  Unverified items are recorded as ASSUMPTION.
+- **Consequences**: Pharmacist review is still pending (`reviewed_by: null`). No claim of clinical
+  validity is made.
+- **Class**: B (kernel parameters; set before any model result) · **Date**: 2026-10-18 · **Commit**: 48941d8
+
+## DEC-2026-10-18-D · Production treated population (replaces the S2 legacy definition)
+- **Decision**: Treated = ≥ 1 parsed administration of insulin (any route), a sulfonylurea or a
+  glinide (ANALYSIS_PLAN §0b). This gives 72 patients (T 22, E 50). Artefact:
+  `artifacts/population/treated_patients.csv`, sha256 `2016d3e3…`.
+- **Difference from legacy**: patient 2078 (E) is untreated. The legacy rule counted a misplaced
+  "acarbose 50 mg" cell in the CSII column as insulin.
+- **G2 re-check**: PASS and unchanged (154 E-treated L1 episodes in 30 patients; m_w 9.23).
+  2078 has no L1 episode. The partition is not re-split; only the strata label of one patient
+  changes (E:2 → E:0).
+- **Class**: C-clarification (correct application of the approved definition; not a change) ·
+  **Date**: 2026-10-18 · **Commit**: 48941d8
+
+## ADR-028 · i.v. glucose handled as a confounder flag only (P-B5 resolved: FLAG ONLY)
+- **Evidence (MEASURED)**:
+  - 3 events (2 patients), all in E, none in T.
+  - Volume and concentration are known; **rate and duration are never recorded**.
+  - All 3 are co-administered with i.v. insulin in the same bag; 0 have a CGM < 70 within ± 2 h.
+- **Decision**: no feature, and not insulin exposure. Kept as an event with the GLUCOSE_INFUSION
+  flag for audit and future sensitivity analyses.
+- **Class**: B · **Date**: 2026-10-18 · **Commit**: 48941d8
+
+## ADR-029 · Provenance porcelain parsing fix
+- **Defect**: `_git()` stripped stdout, so a leading-space status line lost its first path
+  character. Only false *dirty* flags were possible, so earlier `dirty=False` evidence stands.
+- **Fix**: keep leading spaces; parse with `parse_porcelain`; regression test added.
+- **Class**: A · **Date**: 2026-10-18 · **Commit**: 88cdeac

@@ -278,3 +278,104 @@ S3 onward. P-C8 and P-C7 await the owner.
 
 ### Next Task
 S3: medication normalisation and exposure engine (G3; production treated status; G2 re-check).
+
+---
+
+## 2026-10-18 — S3: Medication normalisation, dose parsing, exposure engine, G3
+
+### Objective
+Turn logged medication into a defensible, causal, time-resolved exposure signal (M3) and a raw
+timing representation (M3r), with the production treated population, G3, and a G2 re-check. No
+model training.
+
+### Work Completed
+- Startup check: HEAD `49e2849`, clean tree, hashes confirmed. P-C8 approval recorded.
+- **Raw inventory first**: 178 distinct strings across 5 columns, inspected before any rule was
+  written; artefact `medication_inventory.json`.
+- **Dictionary and parser**:
+  - versioned CSV; content-aware grammars per column; parse statuses and flags.
+  - Explicit handling:
+    - pump suspension → PUMP_SUSPEND;
+    - misplaced acarbose → oral (MISPLACED_COLUMN);
+    - i.v. bags split into fluids, glucose and insulin (RATE_UNKNOWN);
+    - pasted header → NON_MEDICATION;
+    - SciLin M30, glarigine, NBSP, the combination tablet, implausible units (kept and flagged);
+    - gliclazide formulation rule (15 mg → MR, INFERRED).
+- **Kernel parameter verification**: a background research agent read FDA SPL, EMA SmPC and
+  national SmPCs; 15/16 items verified with quotes (`docs/medication/PARAMETER_SOURCES.md`).
+  `pharma.yaml` v1.0.0 has per-parameter status and none are ILLUSTRATIVE.
+  - Corrected illustrative values: NPH duration 15 h → 24 h; degludec 24 h → 42 h; gliclazide
+    split into MR and IR kernels.
+- **Exposure engine**:
+  - causal; vectorised; exact summation;
+  - family activities, IOB, projections, SU and glinide exposure;
+  - CSII reconstruction with a 6-h cap; i.v. flag; per-class quality states.
+- **M3r** raw timing. **Production treated status.** The **P-C8** causal sensor-fault flag.
+- **Medication audit**: coverage, treated set, pump and i.v. investigations, G3, G2 re-check,
+  representation QA on T only. CLI `hyposense audit medication`.
+- Docs: FEATURE_DICTIONARY (M3r/M3 contracts), PHARMACIST_REVIEW packet, ANALYSIS_PLAN §0b/§0c.
+
+### Tests Executed
+- `uv run pytest -q` → **281 passed** (unit 249, leakage 12, regression 9, integration 11).
+- ruff and format clean; `mypy --strict` clean (52 files).
+- `hyposense audit medication` ×2 at clean commit `88cdeac` → identical results_sha256 `29148c8e…`.
+
+### Results (MEASURED)
+- Parsing: 0 unparseable/ambiguous of 4,653 cells; insulin 828/828; oral 2,171/2,171.
+- Treated: 72 (legacy 73; 2078 explained).
+- **G3 PASS. G2 PASS (unchanged).**
+- i.v. glucose: FLAG ONLY.
+- Representation: plausible ranges; varies in all treated T recordings; 0.24 ms per reading.
+
+### Problems Found and Fixed (verify → diagnose → replan)
+1. **Bitwise truncation failure** (≈1 ulp) caused by BLAS summation order → exact fsum (ADR-025).
+   0/5,984 mismatches afterwards.
+2. **Pump delivery would have been fabricated** by the literal "rate persists" rule (median 39.5 h,
+   up to 168 h, in 21 recordings that switched to injections) → 6-h continuation cap, evidence-backed
+   (ADR-026).
+3. **Legacy treated misclassification** (2078) → the production definition; G2 unchanged.
+4. **Uncapped minutes-since** in the engine (up to 11 days) → capped at 1440, as in the blueprint.
+5. **Provenance defect from S1**: a leading porcelain space mangled the first path, giving false
+   "dirty" flags only. Fixed and regression-tested; earlier evidence remains valid (ADR-029).
+6. A parse-rate counting bug in the audit draft (the `and` of two counts) was fixed before any
+   run was reported.
+7. Two test expectations and one stale hard-coded peak time in tests were corrected.
+8. Lint: escape sequences, Counter annotations.
+
+### Decisions Made
+DEC-2026-10-18-C (P-C8 approved), ADR-024 to ADR-029, DEC-2026-10-18-D (production treated
+set). P-B3, P-B4 and P-B5 resolved. New proposals P-B7 and P-B8.
+
+### Independent Review (fresh eyes)
+| Concern | Finding |
+|---|---|
+| Drug mapping | Matches labels; composition assumptions flagged (Gansulin 40R, SciLin M30) |
+| Units | IU, mg (g→mg) and IU/h correct |
+| Duplicate dose events | None; exact-duplicate rows are skipped and counted, and there are 0 |
+| Future leakage | None; bitwise tests (synthetic property test and real T) |
+| Formulation / route | Gliclazide rule tested; liraglutide s.c. in the non-insulin column; misplaced acarbose → oral |
+| i.v. glucose | Not insulin |
+| Pump suspension | Not a dose |
+| Timestamps | Charted row time (ASSUMPTION; R1 jitter planned) |
+| Kernels | Integrals and peaks tested; Bateman tail truncated at 1 % |
+| Tails | Degludec 42-h flat; IOB includes basal on-board (max 31 IU, plausible) |
+| Pharmacological claims | None beyond label statements; not clinically validated |
+| Conclusion | No outstanding defect |
+
+### What Remains Uncertain
+- Pharmacist review.
+- Gliquidone t½.
+- Basal lag and the flat shape.
+- Protamine-aspart ≈ NPH.
+- Whether dose times reflect administration.
+- Whether exposure adds information beyond M3r (C2b in S6).
+
+### What Should Be Tested in S6
+- P-B1 (calibration), P-B2 (rounds), P-B6 (artefact recordings in T), P-B7 (combined
+  secretagogue), P-B8 (compact M3; detemir duration).
+- C2b (M3 vs M3r).
+- SA6 kernel duration scaling.
+- R1 dose-time jitter.
+
+### Next Task
+S4: patient state engine and causal feature builder.
