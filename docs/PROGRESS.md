@@ -468,3 +468,61 @@ model training.
 
 ### Next Task
 S5: evaluation harness and M0 (not started).
+
+## 2026-10-18 — S5: Evaluation harness, metrics, patient-cluster bootstrap, M0
+
+### Objective
+Build the model-agnostic evaluation machinery every later model uses, prove it on hand-computed
+cases and the blueprint's Table A.2, and measure M0 on the v5 tuning partition. No learned models.
+
+### Work Completed
+- `evaluation/`:
+  - policy-replay accounting (§2);
+  - exact operating curves (per-patient step functions; each resample on its own grid);
+  - first-crossing sens@B, τA/τW, partial area;
+  - operating points (lead, precision, warnable ceiling, abstention, per-patient);
+  - window and calibration metrics (probabilities only);
+  - paired patient-cluster bootstrap;
+  - metric registry;
+  - the `hyposense eval m0` runner, with provenance.
+- `policy/decide.py`: gate (Table 14.1 + P-C1), classify (NaN → INSUFFICIENT DATA),
+  should_notify.
+- `models/m0.py`: M0 via `features.cgm`.
+- Legacy loader: `load_legacy_tuning`.
+- Reference: `configs/reference/blueprint_m0_table_a2.yaml`.
+- Independent review (separate agent): no CRITICAL findings. Fixed:
+  - resample grid under the strict comparator;
+  - a stricter EXPECTED rule with the exact tie bound;
+  - the pairing guard;
+  - the k*=1 flag;
+  - live NaN handling;
+  - a stepwise-vs-vectorised test.
+- Docs:
+  - ANALYSIS_PLAN v0.5 (§5 DRAFT; §0d exactness);
+  - ADR-036..038, DEC-2026-10-18-F;
+  - EXPERIMENT_LOG, TRACEABILITY, TEST_STRATEGY, FEATURE_DICTIONARY (spec v1.0.1).
+
+### Tests Executed
+- `uv run pytest -q` → **410 passed** (unit 362, leakage 18, regression 10, integration 20).
+- ruff clean; mypy --strict clean (78 files).
+- `hyposense eval m0` ×2 on clean 671a7ca: identical results_sha256 `7864a0d0…`.
+- `hyposense audit features` re-run on clean 3487373: 0 mismatches.
+
+### Results (MEASURED; DEVELOPMENT only)
+- **Table A.2:** 7/8 MATCH. θ = 45 EXPECTED DIFFERENCE (44 exact ties; reference bracketed;
+  polyfit replay reproduces the treated row only).
+- **v5 T M0:** sens@1FA 0.626 (0.491–0.837) treated, 0.610 (0.418–0.810) all; θA 54.0 / 52.2
+  mg/dL; precision 0.12 / 0.16; median lead 45 / 30 min.
+
+### Problems Found and Fixed (verify → diagnose → replan)
+- **θ = 45 mismatch:** float noise at exact ties. Fixed with exact rational trend arithmetic
+  (ADR-036); S4 re-verified.
+- **Bootstrap grid deviation** under the strict comparator (review): each resample now uses its
+  own grid exactly; Hypothesis-tested.
+- **Over-permissive EXPECTED rule** (review): tightened; the polyfit evidence is recorded honestly.
+- **CSV line endings:** a sed edit broke a string literal and was committed (0a346dd) because a
+  `| tail` masked the lint exit code. Repaired in 3487373. Verification commands no longer mask
+  exit codes.
+
+### Next Task
+S6: development experiments on T (not started).

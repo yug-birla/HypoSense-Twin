@@ -556,3 +556,74 @@ Commit. Pending scientific decisions are in [PROPOSALS.md](PROPOSALS.md) until a
 - **Scientific effect: none.** results_sha256 `db39f39a…` and table sha256 `a5b6ac93…` are
   identical in runs 2–5 (before and after the change).
 - **Class**: A · **Date**: 2026-10-18 · **Commit**: df90031
+
+## ADR-036 · Exact rational trend arithmetic (S5 finding; feature spec v1.0.1)
+- **Observed:**
+  - The legacy Table A.2 reproduction matched exactly at 7 of 8 θ.
+  - At θ = 45, FA/day was lower by 0.01 (treated 0.72 vs 0.73; all patients 0.78 vs 0.79),
+    with identical warned counts.
+- **Diagnosis:**
+  - 45 is the only Table A.2 threshold on the 1.8 mg/dL data grid. 44 decision readings on v2 T
+    have a projection mathematically equal to 45.
+  - Floating-point sums (ours and np.polyfit alike) put them at 45 ± 1e-13, so float noise
+    decided the strict rule "projection < θ". The same noise split mathematically tied scores
+    into distinct grid values, against ANALYSIS_PLAN §3.4 ("ties switch together").
+- **Fix:** least-squares slope and projection in exact rational arithmetic on the 0.1 mg/dL grid
+  (integer seconds), rounded once (`features.cgm.ls_slope_exact`, `trend_projection`). Off-grid
+  values fall back to the float's exact binary value, which is still deterministic.
+- **Spec:** feature spec v1.0.1 (sha256 `90329804…`); six features changed in the last bits
+  (slopes, acceleration, M0 projections).
+- **Re-verification:** S4 feature audit re-run on clean `3487373`: truncation 31,292/0, parity
+  133,856/0, perturbation 1,200/0, tracker 0 (results `a66c8bd1…`).
+- **Class**: A (numerical correctness of an approved rule) · **Date**: 2026-10-18 · **Commit**: c6734a1
+
+## ADR-037 · Evaluation harness design (S5)
+- **Decision:**
+  - **Model-agnostic input:** `EvalRecording` (per CGM reading: policy gate, scores, label
+    eligibility; onsets and warnable flags from the S2 label builder).
+  - **Policy replay:** exact accounting per ANALYSIS_PLAN §2.
+  - **Operating curve:** exact via per-recording step functions over each recording's distinct
+    scores, aggregated to per-patient arrays on the pooled grid. One code path serves the full
+    sample and every bootstrap resample. A resample keeps exactly its own grid columns (§3.4).
+    The curve is tested against direct replay (Hypothesis) and against explicit resamples.
+  - **Bootstrap:** paired patient-cluster bootstrap with draw-count weights (multiplicity
+    kept); the patient set is verified across paired statistics.
+  - **Metric registry:** one definition per metric, at `artifacts/evaluation/metric_registry.json`.
+- **Rejected:** an ordinary ROC/threshold library (no cooldown, no episode semantics); quantile
+  threshold grids (§3.2 forbids them).
+- **Evidence:**
+  - one threshold evaluates in 13 ms;
+  - the exact M0 curve takes 4.8 s (treated T) and 6.2 s (all T);
+  - 2,000 bootstrap resamples take 1.5–1.7 s.
+- **Class**: A · **Date**: 2026-10-18 · **Commit**: c6734a1, 671a7ca
+
+## ADR-038 · Policy core implemented in S5 (needed by the evaluation's policy replay)
+- **Decision:** `policy/decide.py` implements:
+  - `gate`: Table 14.1 priorities 1–4, with P-C1 (CGM < 70 → LOW NOW before sufficiency), and
+    in-episode / < 60 min after an episode end from the causal tracker;
+  - `classify`: a NaN score → INSUFFICIENT DATA, never NO ALERT;
+  - `should_notify`: ≥ 3600 s since the last notification.
+
+  The offline replay uses the same functions; a stepwise-vs-vectorised test ties them together.
+  Tags, logging and the live service remain S7.
+- **Class**: A · **Date**: 2026-10-18 · **Commit**: c6734a1, 671a7ca
+
+## DEC-2026-10-18-F · Table A.2 reproduction outcome and §3 implementation clarifications
+- **Reproduction** (v2 = mirror-equivalent, TUNING, the executable spec's label-eligible decision
+  times):
+  - 7 of 8 rows MATCH exactly.
+  - θ = 45 is an EXPECTED DIFFERENCE (exact-tie resolution):
+    - episodes, days and lead match;
+    - 44 exact ties;
+    - every reference value lies between the protocol (tie-exclusive) and tie-inclusive values.
+  - The polyfit-replay diagnostic reproduces the treated row exactly (27, 0.73). It does NOT
+    reproduce the all-patients row (62 / 0.78 vs 63 / 0.79). The mechanism is therefore only
+    partly demonstrated: the residual is attributed to the author's numerics / file conversion
+    (HYPOTHESIS).
+- **Reference discrepancy:** the bundled audit2.py hard-codes θ ∈ (60, 70, 80, 90), while its
+  output JSON holds 40–80 and a lead-30 block, so the output came from another version of the
+  script.
+- **Clarifications** are recorded as ANALYSIS_PLAN §5.3 (DRAFT, awaiting the owner): cooldown
+  per recording; exact ties; partial area as a signed clipped path integral; window metrics only
+  for probabilities; operationalised abstention coverage. None changes a number on T.
+- **Class**: C-clarification (pending owner approval; not blocking S6) · **Date**: 2026-10-18 · **Commit**: 671a7ca

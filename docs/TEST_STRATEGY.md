@@ -96,20 +96,20 @@ Once a remote exists, a GitHub Actions workflow runs on every push: `uv sync --f
 mypy, pytest (no data, so `requires_data` tests skip), the frontend lint and build, and the
 E2E tests on the main branch.
 
-## 8. Current status (updated 2026-10-18, end of S4)
+## 8. Current status (updated 2026-10-18, end of S5)
 
-Command: `uv run pytest -q` → **362 passed, 0 failed**. `ruff check` + `ruff format` clean; `mypy --strict src`
-clean (71 source files).
+Command: `uv run pytest -q` → **410 passed, 0 failed**. ruff and format clean; `mypy --strict src`
+clean (78 files).
 
-| Category | Tests | Passing | Notable additions in S4 |
+| Category | Tests | Passing | Notable additions in S5 |
 |---|---|---|---|
-| Unit | 317 | 317 | **State**: append-only history and branching; causal episode tracker, differential against `build_episodes` (400 Hypothesis cases + 22 hand-labelled fixtures); quality state equal to the authoritative `data.quality` functions (Hypothesis); update order, recording boundary, duplicate / malformed input, `try_update` → SYSTEM_ERROR; replay determinism; same past / different future; ledger reconcile and finalize; static context. **Features**: exact window boundaries, M0 = audit2.py, least squares = polyfit, lags, statistics, percentile, time (local clock), meals, G7 / G8 assembly, TIMING_UNKNOWN masking, per-kg, spec contracts, level membership, indicators, spec drift, value-based table hash. Runtime helper |
-| Leakage / static guards | 18 | 18 | **Truncation equality at every CGM time** (Hypothesis, bitwise, all levels); **truncation through the loader** (synthetic workbooks); **future perturbation** (CGM / medication / meal / outcome); offline vs replay parity; features ignore the ledger; `features/` cannot import ledger / labels / audit |
-| Regression | 10 | 10 | feature spec locked (sha256 + level sizes 38 / 72 / 95 / 100) |
-| Integration (real data) | 17 | 17 | T only: 34 streams in time order; sampled truncation (incl. dose times, episode ends), parity (300 readings × 4 levels), tracker = labels, REQUIRED finite on 3 recordings; sealed-scope and E-patient refusal; static context |
+| Unit | 362 | 362 | Hand-computed §2–4 fixtures: hit window edges, outcome classes, cooldown boundary, patient-days, ties, non-monotone FA, first-crossing edge cases, partial area. Curve = direct policy replay and = the resample's own grid (Hypothesis, both comparators). Stepwise policy = vectorised. Bootstrap determinism, multiplicity, pairing, known CI, mis-pairing guard. Window metrics and calibration. Policy gate (P-C1). M0 exact ties. Registry drift |
+| Leakage / static guards | 18 | 18 | unchanged; still pass after the exact-arithmetic change |
+| Regression | 10 | 10 | feature spec v1.0.1 locked |
+| Integration (real data) | 20 | 20 | Table A.2 statuses on v2 T; v5 T M0 invariants (θA, sens@1FA); policy vs label decision sets |
 
-The exhaustive real-data checks (every eligible T time) run in `hyposense audit features` (about
-10 min; EXPERIMENT_LOG), not in the pytest suite.
+The exhaustive checks run as CLI audits: `hyposense audit features` (S4) and
+`hyposense eval m0` (S5).
 
 All synthetic fixtures are generated at test time (`tests/conftest.py`, labelled SYNTHETIC). No
 binary fixtures or real patient data are committed.

@@ -157,6 +157,101 @@ Run-ID convention: `<partition>-<model|task>-<seq>`, e.g. `T-M0-001`, `T-M1-tune
   - `data/processed/features/v1.0.0/tuning_features.parquet` + provenance (row-level,
     git-ignored).
 
+## T-AGG-eval-m0 (S5) — M0 through the shared evaluation harness
+
+### Run IDs
+| Run | Commit (clean?) | results_sha256 | Status |
+|---|---|---|---|
+| T-AGG-eval-m0-20261018T130913Z | 5c7deca + uncommitted S5 code (**dirty**) | `8d6eb3b7…` | DIAGNOSTIC, superseded: θ = 45 UNEXPLAINED before ADR-036 |
+| T-AGG-eval-m0-20261018T131649Z | dirty | — | DIAGNOSTIC, superseded: after exact arithmetic, before tie classification |
+| T-AGG-eval-m0-20261018T131830Z | dirty | — | DIAGNOSTIC, superseded: first tie-bracket rule (tightened after review) |
+| **T-AGG-eval-m0-20261018T140638Z** | **671a7ca (clean)** | **`7864a0d0…`** | **OFFICIAL** |
+| **T-AGG-eval-m0-20261018T140729Z** | **671a7ca (clean)** | **`7864a0d0…`** | **OFFICIAL reproduction (identical)** |
+
+### Purpose
+Prove the evaluation harness by reproducing Blueprint Table A.2, then measure M0 on the
+official v5 TUNING partition under the approved protocol.
+
+### Data / population
+- **Legacy reproduction:** figshare v2 (mirror-equivalent), TUNING, 34 recordings / 30 patients,
+  treated 22.
+- **Official:** v5 TUNING, 34 recordings, 30 patients (22 treated), 33,464 readings, 31,292
+  label-eligible times, 31,416 policy-queried readings.
+- The T recordings are bitwise identical in v2 and v5, so there is no data-version effect on T.
+- E was not accessed.
+
+### Model / baseline
+M0, no fitted parameters (ANALYSIS_PLAN §0d; strict comparator; score = −projection(t + 60)).
+
+### Metrics
+Definitions are in `artifacts/evaluation/metric_registry.json` (sha256 `cf01baeb…`):
+- event L1, H = 60 min, warning window [onset − 60, onset − 15];
+- cooldown 60 min, per recording;
+- FA = FALSE notifications / monitored days;
+- OUTCOME-UNKNOWN reported separately;
+- sens@1FA by first crossing (§3.4).
+
+### Results — legacy reproduction (label-eligible decision times)
+- **θ = 40, 50, 55, 60, 65, 70, 80: MATCH.** Warned, episodes, sensitivity, FA/day and median
+  lead equal the reference.
+- **θ = 45: EXPECTED DIFFERENCE** (exact-tie resolution; ADR-036, DEC-2026-10-18-F).
+
+| Quantity | Reference | Measured | Tie-inclusive |
+|---|---|---|---|
+| Treated warned | 27 | 27 | 28 |
+| Treated FA/day | 0.73 | 0.71 | 0.76 |
+| All warned | 63 | 62 | 64 |
+| All FA/day | 0.79 | 0.77 | 0.81 |
+
+- 44 exact ties.
+- The polyfit replay reproduces the treated row (27, 0.73) but not the all-patients row
+  (62 / 0.78). The mechanism is partly demonstrated; the residual is a HYPOTHESIS.
+
+### Results — official v5 TUNING (DEVELOPMENT / EXPLORATORY; not confirmatory)
+| Population | sens@1FA (95 % CI) | θA | Partial area 0.5–2 (CI) | Lead median (IQR) | Precision | Warnable ceiling |
+|---|---|---|---|---|---|---|
+| Treated (22 pts, 56 episodes) | **0.626** (0.491–0.837) | 54.0 mg/dL | 0.691 (0.558–0.837) | 45 (22.5–60) min | 0.121 | 0.946 |
+| All (30 pts, 117 episodes) | **0.610** (0.418–0.810) | 52.2 mg/dL | 0.681 (0.491–0.830) | 30 (30–45) min | 0.160 | 0.906 |
+
+### Confidence intervals
+- 2,000 paired patient-cluster resamples, seed 2027, percentile 95 %, 0 undefined resamples.
+- Curves have 280 / 283 grid points and 0 non-monotone FA steps.
+- τW (θW) = 73.8 / 72.0 mg/dL.
+- 2 OUTCOME-UNKNOWN notifications at θA; INSUFFICIENT DATA in 0.8 % of readings.
+- At the Table A.2 θ the protocol values equal the label-eligible values, except for 1–5
+  OUTCOME-UNKNOWN notifications at the end of a record.
+
+### Interpretation
+- The harness reproduces the blueprint's exploratory M0 exactly wherever the reference is
+  determinate. The trend rule warns about ~62 % of treated-T episodes at 1 FA/day, with a median
+  lead of 45 min.
+- The intervals are wide (13 treated T patients have episodes).
+- Precision is ~12 %: about 1 in 8 notifications is followed by an onset. This is the C0 bar
+  learned models must beat.
+
+### Limitations
+- Development data (T) only.
+- M0 has no probabilities, so window-level and calibration metrics are N/A, not forced.
+- The θ = 45 residual is not bit-reproducible against the author's numerics.
+
+### Comparison with previous runs
+- The diagnostic runs differed only at θ = 45 (before ADR-036).
+- Official runs 1 and 2 are identical.
+
+### Provenance
+Each `results.json` records:
+- commit and clean flag; environment;
+- config, partition, label-config, analysis-plan, metric-registry, feature-spec, reference and
+  treated-population hashes;
+- v5 manifest and v2 T file hashes;
+- bootstrap settings.
+
+Artefacts: `experiments/runs/T-AGG-eval-m0-20261018T1406*/{results.json, summary.md,
+m0_v5_curve_*.csv}`. The per-patient table is under `data/processed/evaluation/` (git-ignored).
+
+### Decision / next action
+Harness accepted for S6. G4 is NOT YET EVALUABLE: it requires M1 on T inner CV (Table 21.1).
+
 ## Evidence inherited from the blueprint (not reproduced here)
 
 | Item | Source | Status in this repo |
@@ -172,7 +267,8 @@ Run-ID convention: `<partition>-<model|task>-<seq>`, e.g. `T-M0-001`, `T-M1-tune
 | ALL-AGG-audit-events-20261017T2212* | ALL-AGG | — | G2/G3b event audit + legacy reproduction | S2 | **DONE** (G2 PASS provisional, G3b TRIGGERED, 48/48) |
 | ALL-AGG-audit-medication-20261018T0952* | ALL-AGG (+T for QA) | — | G3 medication audit + G2 re-check | S3 | **DONE** (G3 PASS, G2 PASS) |
 | T-AGG-audit-features-20261018T1215* / T1225* | T (+aggregate) | — | S4 state + feature audit (truncation, parity, perturbation) | S4 | **DONE** (0 mismatches; runs 2–5 identical) |
-| T-M0-001 | T | M0 | exploratory operating curve (compare Table A.2) | S5 | PENDING |
+| T-AGG-audit-features-20261018T133142Z | T | — | S4 re-verification after ADR-036 | S5 | **DONE** (0 mismatches) |
+| T-AGG-eval-m0-20261018T1406* / T1407* | T (+v2 T) | M0 | Table A.2 reproduction + v5 development M0 | S5 | **DONE** (7 MATCH + 1 EXPECTED; runs identical) |
 | T-M1-tune-001 | T | M1 | Optuna ≤30 trials, inner log-loss; num_boost_round rule (P-B2) | S6 | PENDING |
 | T-calib-bench-001 | T | M1–M3 | calibration benchmark (P-B1) | S6 | PENDING |
 | T-ladder-001 | T | M1–M3 | development ladder; Gate G4 | S6 | PENDING |

@@ -134,7 +134,7 @@ The event reportedly ends **20 Nov 2026**. The Phase-1 deadline is unknown.
 - **Stop**: any truncation inequality → **STOP model development** (CLAUDE.md §11).
 
 ## S5 · Evaluation harness, metrics and M0
-**Status: NEXT** (not started). M0 must use `features.cgm` (ANALYSIS_PLAN §0d).
+**Status: COMPLETE (2026-10-18).** Harness, policy core, M0, bootstrap, metric registry. Table A.2: 7 MATCH + 1 EXPECTED (θ = 45, exact ties). v5 T M0 (DEVELOPMENT): sens@1FA 0.626 treated. Evidence: `experiments/runs/T-AGG-eval-m0-20261018T1406*`, `T1407*`.
 - **Work**: write `docs/protocol/ANALYSIS_PLAN.md` (after P-C2/P-C3/P-C6 approvals);
   `evaluation/metrics.py` (episode hits, lead time, notifications with cooldown, FA/day,
   operating curve with the first-crossing rule, partial area, per-patient metrics, log-loss,
@@ -146,6 +146,7 @@ The event reportedly ends **20 Nov 2026**. The Phase-1 deadline is unknown.
   are expected to differ if the partition changed (P-C4).
 
 ## S6 · M1 / M2 / M3r / M3 development on T (Gate G4)
+**Status: NEXT** (not started).
 - **Work**: LightGBM wrapper and artefacts (ADR-009); Optuna tuning of M1 on T (≤30 trials,
   inner grouped CV, mean log-loss) and the `num_boost_round` rule (P-B2); M2/M3r/M3 with
   frozen hyperparameters; nested calibration; calibration benchmark (P-B1); the risk-band

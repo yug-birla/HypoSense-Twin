@@ -1,47 +1,40 @@
 # Next Steps
 
-Ordered execution queue. Updated: 2026-10-18 (end of S4).
+Ordered execution queue. Updated: 2026-10-18 (end of S5).
 Each item lists: objective · dependency · acceptance criteria · difficulty · parallel? ·
 approval needed?
 
 ## P0 — Blocking
 
-1. **S5 — Evaluation harness and M0**  ← *next task (not started)*
-   - Objective:
-     - `evaluation/` implementing ANALYSIS_PLAN §2–3 exactly, plus §0c (SA9): causal policy
-       replay semantics, episode hits and lead time, notifications with the 60-min cooldown,
-       TRUE / FALSE / OUTCOME-UNKNOWN classes, FA / patient-day, operating curve with the
-       first-crossing rule, sens@budget;
-     - paired patient-cluster bootstrap (B = 2,000, seed 2027);
-     - M0 using `features.cgm` (ANALYSIS_PLAN §0d) on T, which should reproduce Table A.2.
-   - Dependency: S2 labels, S4 features (done).
-   - Acceptance:
-     - metric unit tests on hand-built fixtures (test-first);
-     - bootstrap determinism;
-     - Table A.2 reproduced on T (or the differences explained);
-     - the freeze guard refuses E.
-   - Difficulty: medium · Approval: none (§5–6 of the plan to be written for owner review).
+1. **S6 — Development experiments on T**  ← *next task (not started)*. Write each decision rule
+   before the experiment runs.
+   - **Inputs:**
+     - the tuning feature table for spec v1.0.1 (`data/processed/features/v1.0.1/`, written by run
+       T-AGG-audit-features-20261018T133142Z);
+     - labels joined offline;
+     - the S5 harness, with `EvalRecording` scores joined on (recording_key, ts).
+   - **Work:**
+     - LightGBM wrapper and artefacts (ADR-009);
+     - M1 tuning (≤ 30 Optuna trials, inner grouped CV, log-loss);
+     - the M2 / M3r / M3 ladder;
+     - P-B1 calibration; P-B2 rounds rule; P-B6 sensor artefacts; P-B7; P-B8; P-B9 (declare the
+       quality codes categorical);
+     - **G4**: M1 vs M0 on T inner CV, with the M1 operating curve computed.
+   - **Acceptance:**
+     - G4 evaluated per Table 21.1;
+     - every result through `hyposense.evaluation` with provenance and status DEVELOPMENT;
+     - window metrics and calibration reported.
+   - **Approval:** none (Class B). The owner should confirm ANALYSIS_PLAN §5 before freeze.
 
 ## P1 — Core
 
-1. **S6 — Development experiments on T**, each with its decision rule written first
-   (input: `data/processed/features/v1.0.0/tuning_features.parquet` + labels joined offline):
-   - M1 tuning;
-   - M2 / M3r / M3 ladder;
-   - P-B1 calibration benchmark;
-   - P-B2 rounds rule;
-   - P-B6 sensor-artefact handling;
-   - **P-B7 combined secretagogue**;
-   - **P-B8 compact M3 / detemir duration** (S4 evidence: keep Δ60, drop the near-duplicate
-     projections and per-kg);
-   - **P-B9 categorical quality codes; report T-inert columns**;
-   - G4.
-2. **S7 — Policy** (P-C1; **P-C8b** LOW NOW + SENSOR FAULT SUSPECTED; P-C7 if approved), replay,
+1. **S7 — Policy** (P-C1; **P-C8b** LOW NOW + SENSOR FAULT SUSPECTED; P-C7 if approved), replay,
    FastAPI + SSE. Parallel from S4.
    - Replay service on `PatientState.try_update` + `FeatureBuilder.snapshot`.
    - Define a recovery policy after SYSTEM_ERROR, e.g. a late or back-dated chart entry (S4
      review finding 6).
    - Use `OutcomeLedger.finalize` at recording end.
+   - Extend `policy/decide.py` (S5 core): tags, decision log, acknowledgements.
 
 ## P2 — Product / Demo
 

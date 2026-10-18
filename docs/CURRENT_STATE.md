@@ -1,15 +1,15 @@
 # HypoSense Twin — Current Project State
 
-_Last updated: 2026-10-18 (end of S4). This is the canonical snapshot. Read it first, then
+_Last updated: 2026-10-18 (end of S5). This is the canonical snapshot. Read it first, then
 [NEXT_STEPS.md](NEXT_STEPS.md) and [PROGRESS.md](PROGRESS.md)._
 
 ## Current Phase
-**S4 — complete and reviewed.** Next: **S5** (evaluation harness + M0). S5 has **not** been
-started, per the owner's instruction.
+**S5 — complete and reviewed.** Next: **S6** (development experiments on T). S6 has **not** been
+started.
 
 ## Overall Status
-**IMPLEMENTATION.** Data, labels, medication, patient state and causal features are verified.
-No model has been fitted.
+**IMPLEMENTATION.** The evaluation harness is verified, including the Table A.2 reproduction. No
+learned model has been fitted.
 
 ## Completed Components
 | Component | Status | Key files | Evidence |
@@ -19,7 +19,8 @@ No model has been fitted.
 | S3 medication (parser, exposure M3, raw timing M3r, treated set) | DONE; G3 PASS, G2 PASS | `src/hyposense/medication/` | `ALL-AGG-audit-medication-20261018T0952*` |
 | **S4 Patient State Engine** | **DONE** | `src/hyposense/state/` (events, history, cgm, quality, medication, context, ledger, patient, stream) | unit + leakage tests; causal tracker = labels (33,464 T readings, 0 mismatches) |
 | **S4 causal Feature Builder** (offline = replay) | **DONE** | `src/hyposense/features/` (spec, cgm, context, medication, snapshot, build, export) | truncation 31,292 / 0; parity 133,856 / 0; perturbation 1,200 / 0 |
-| **S4 feature specification v1.0.0** | **DONE, locked** | `features/spec.py` → `artifacts/features/feature_spec.json` (sha256 `82fc54e9…`) | regression lock; docs/FEATURE_DICTIONARY.md |
+| **S4 feature specification v1.0.0** | **DONE, locked** | `features/spec.py` → `artifacts/features/feature_spec.json` (v1.0.1, sha256 `90329804…`) | regression lock; docs/FEATURE_DICTIONARY.md |
+| **S5 evaluation harness + policy core + M0 + bootstrap** | **DONE** | `src/hyposense/evaluation/`, `policy/decide.py`, `models/m0.py`, `artifacts/evaluation/metric_registry.json` | Table A.2 7 MATCH + 1 EXPECTED; `T-AGG-eval-m0-20261018T1406*`/`T1407*` (results `7864a0d0…`, identical) |
 | **S4 feature audit (T only)** | **DONE** | `audit/features.py`, `hyposense audit features` | `T-AGG-audit-features-20261018T1215*`, `T1225*` (results_sha256 `db39f39a…`, identical in runs 2–5) |
 
 ## Model Feature Contracts (verified from features/spec.py)
@@ -56,7 +57,8 @@ None. S4 ended at a clean boundary.
 | Kernels | label-sourced (15/16 verified); pharmacist review PENDING |
 | Causality (S4) | **bitwise truncation equality at every eligible T time; future perturbation 0 / 1,200; parity 0 / 133,856** |
 | Static context | labs and prescribed regimen are recording-level context (Blueprint §10.2); labs removed in SA8; regimen timing documented (ADR-033) |
-| M0 | operational definition = executable spec (ANALYSIS_PLAN §0d); not yet evaluated (S5) |
+| M0 (DEVELOPMENT, T) | sens@1FA 0.626 (95 % CI 0.491–0.837) treated, 0.610 (0.418–0.810) all; θA 54.0 / 52.2 mg/dL; precision 0.12 / 0.16; median lead 45 / 30 min |
+| Gates | G4 NOT YET EVALUABLE (needs M1 on T inner CV, S6) |
 | Sealed evaluation (E) | **SEALED.** S4 used TUNING_ONLY only. Feature generation refuses other scopes, and the adapter refuses E patients (`assert_not_sealed`). No E feature, prediction or per-patient analysis exists. |
 
 ## Performance
@@ -69,13 +71,13 @@ None. S4 ended at a clean boundary.
 ## Testing Status
 | Category | Status |
 |---|---|
-| Unit | 317/317 |
+| Unit | 362/362 |
 | Leakage / static guards | 18/18 |
-| Regression | 10/10 (incl. feature-spec lock) |
-| Integration (real data, T / aggregate) | 17/17 |
-| Lint / format / types | ruff clean; mypy --strict clean (71 files) |
+| Regression | 10/10 (feature spec v1.0.1 lock) |
+| Integration (real data, T / aggregate) | 20/20 |
+| Lint / format / types | ruff clean; mypy --strict clean (78 files) |
 
-Last full run: `uv run pytest -q` → **362 passed** (2026-10-18).
+Last full run: `uv run pytest -q` → **410 passed** (2026-10-18).
 
 ## UI Status
 Not started (S7/S8).
@@ -87,6 +89,9 @@ Not started (S7/S8).
 | Redundancy: projections ≈ current exposure (ρ 0.987–0.999); M3 ≈ M3r for basal / SU | MEDIUM | P-B8 compact M3 (keep Δ60); C2b |
 | 21 columns constant on eligible T rows (glinide channel, some static indicators, `su_last_dose`) | MEDIUM for S6 tuning | P-B9 (keep the canonical spec; report inert columns) |
 | Quality codes categorical but stored as floats | LOW | P-B9 (declare categorical identically for all models) |
+| ANALYSIS_PLAN §5 (bootstrap + §2–3 implementation clarifications) DRAFT | MEDIUM | owner approval before freeze |
+| Table A.2 θ = 45 all-patients residual (63/0.79 vs 62/0.77) | LOW | exact-tie bracket; partly demonstrated (DEC-2026-10-18-F) |
+| S6 needs the tuning table regenerated for spec v1.0.1 | LOW | `hyposense audit features` writes it |
 | Live path: one malformed / back-dated event ends the twin (SYSTEM_ERROR) | LOW (S7) | recovery policy for the replay service in S7 |
 | Kernel assumptions; pharmacist review | MEDIUM | review packet; SA6 |
 | P-C7 warm-up after sensor change | LOW | hook implemented; decide before S7 |
@@ -96,12 +101,12 @@ Not started (S7/S8).
 |---|---|---|---|
 | P-C7 warm-up restart after gap > 120 min | Approve | Yes | Before S7 |
 | P-B1, P-B2, P-B6, P-B7, P-B8, P-B9 | Run as planned S6 experiments | No (Class B) | — |
+| ANALYSIS_PLAN §5 draft | Approve | Yes | Before freeze (not S6) |
 | Pharmacist review | Use the packet when a reviewer is available | — | No |
 
 ## Last Verified Commit
-- Code: `df90031` (S4 + review fixes + audit runtime fix). Official audits ran on `dcb164f` and
-  `df90031`, with identical results.
+- Code: `671a7ca` (S5 + review fixes). Official evaluation runs ran on it, clean and identical.
 - Documentation commit: see `git log -1`.
 
 ## Next Recommended Task
-**S5: evaluation harness and M0** (ANALYSIS_PLAN §2–3, §0c, §0d). Not started.
+**S6: development experiments on T** (M1 tuning, ladder, G4). Not started.

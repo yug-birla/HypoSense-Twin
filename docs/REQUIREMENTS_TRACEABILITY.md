@@ -202,3 +202,17 @@ Update this file whenever a requirement's status changes. Module paths are relat
 | F-11 | Tuning-set feature audit (distributions, redundancy, sanity) | REQ | owner S4.17–19 | `audit/features.py` | runs T-AGG-audit-features-20261018T1215*/T1225* | **PASS** |
 | F-12 | M0 trend rule = executable spec | C-clarification | ANALYSIS_PLAN §0d | `features/cgm.ls_slope`, `trend_slope` | `test_m0_projection_is_the_executable_spec`, `test_ls_slope_matches_numpy_polyfit` | **PASS** (M0 model S5) |
 
+## S5 additions
+
+| ID | Requirement | Kind | Source | Implementation | Verification | Status |
+|---|---|---|---|---|---|---|
+| E5-01 | Model-agnostic evaluation input; M0 through the same harness | REQ | owner S5.1 | `evaluation/data.py` (EvalRecording) | unit + integration tests | **PASS** |
+| E5-02 | Policy-replay notifications, cooldown, TRUE/FALSE/OUTCOME-UNKNOWN | C (P-C3) | ANALYSIS_PLAN §2 | `evaluation/metrics.py`, `policy/decide.py` | hand fixtures; stepwise-vs-vectorised Hypothesis test | **PASS** |
+| E5-03 | Exact operating curve; first-crossing sens@B; τA/τW; partial area | C (P-C2, P-C6) | ANALYSIS_PLAN §3–4 | `evaluation/metrics.py` | §4 fixtures (non-monotone, budget_not_reached, k*=1, F_a=B, ties, strict); curve = direct replay (Hypothesis) | **PASS** |
+| E5-04 | Paired patient-cluster bootstrap (B 2000, seed 2027, multiplicity, pairing) | REQ | Blueprint §15, Table 20.1 | `evaluation/bootstrap.py` | determinism, duplicated patient, paired difference, known CI, own-grid equivalence, mis-pairing guard | **PASS** |
+| E5-05 | Canonical metric registry | REQ | owner S5 rule | `evaluation/registry.py` → `artifacts/evaluation/metric_registry.json` | drift test | **PASS** |
+| E5-06 | Table A.2 reproduction (hard check) | REQ | owner S5.5/S5.24 | `evaluation/m0_run.py` | 7 MATCH + 1 EXPECTED (θ = 45, exact ties); integration test | **PASS** (θ = 45 residual partly HYPOTHESIS) |
+| E5-07 | Official v5 T M0 development result with provenance | REQ | owner S5.6/S5.20 | `hyposense eval m0` | runs T-AGG-eval-m0-20261018T1406*/1407* identical | **PASS** |
+| E5-08 | Window-level and calibration metrics for probabilistic models only | REQ | Table 20.2 | `metrics.window_metrics`, `calibration` | hand fixtures; probability guard | **PASS** (first use S6) |
+| E5-09 | G4 baseline feasibility | Gate | Table 21.1 | — | needs M1 on T inner CV | NOT YET EVALUABLE (S6) |
+| E5-10 | Exact ties in trend scores | REQ | ANALYSIS_PLAN §3.4, §0d | `features/cgm.ls_slope_exact` (ADR-036) | exact-tie tests; S4 audit re-run 0 mismatches | **PASS** |

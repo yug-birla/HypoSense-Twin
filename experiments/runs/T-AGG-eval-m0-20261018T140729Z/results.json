@@ -1,0 +1,3300 @@
+{
+ "schema_version": "1.0.0",
+ "run_id": "T-AGG-eval-m0-20261018T140729Z",
+ "created_utc": "2026-10-18T14:06:40+00:00",
+ "finished_utc": "2026-10-18T14:07:29+00:00",
+ "status": "EXPLORATORY",
+ "partition": "T",
+ "results_sha256": "7864a0d02d2a59555cda7fc0d0c31b517696ffb602e073fdcf23d3ce2de7bd76",
+ "provenance": {
+  "git": {
+   "commit": "671a7cae7e6103e45934f082e2de5d6580a4a1d5",
+   "dirty": false,
+   "dirty_paths": []
+  },
+  "environment": {
+   "hyposense": "0.0.1",
+   "python": "3.11.9",
+   "platform": "Windows-10-10.0.26200-SP0",
+   "packages": {
+    "numpy": "2.4.6",
+    "pandas": "3.0.6",
+    "openpyxl": "3.1.5",
+    "xlrd": "2.0.2",
+    "pyyaml": "6.0.3",
+    "pydantic": "2.14.1",
+    "scikit-learn": "1.9.1",
+    "lightgbm": "4.7.0"
+   },
+   "uv_lock_sha256": "82ba7f45dbb87e3a3c1e25ece7687cbcd14387f8fa7ef04ea6955c251dcfe7da"
+  },
+  "config_sha256": "700ad6121d7a00d3574bc070b5ad343c8f8e02b4857e5c3e55b713c79202d110",
+  "partition_sha256": "ccdcbce02b049992b0ca09bd99a2a5b8c49bcf49940f3a68ed6ca69cd2449578",
+  "label_config_sha256": "92e24a777897ab727c410433f5c218bf45b9819d322d940678084918e7284f7f",
+  "analysis_plan_sha256": "3bfd297be066ed581fa0623bcc7db94808b61f1c7875a1e5a6a899c3eed45b18",
+  "analysis_plan_version": "v0.4",
+  "metric_registry_sha256": "cf01baeb30d2ae7afaddbcc4c399a170fec56699b800c29d585fea3dadc5f685",
+  "feature_spec_sha256": "90329804c62df16a6a24198e61a56b1df3b41a9f05be95036e19bbf3cf2e5f49",
+  "reference_sha256": "8631cd7edf2d01c16cd3532aea2d33800964ce4c28418fa8c4dd37c62d9bdab3",
+  "treated_population_sha256": "2016d3e3025b66081889e4fe64c3359c280f2be79534b57fb82e31db4050c5ef",
+  "dataset_v5_files_sha256": "5f9d65b4e9233d4ecdd05438e80bb94314290cd5e2d9fdd21e353487cd3cc4ab",
+  "dataset_v2_tuning_files_sha256": "501bf01ce63f8b3dc0d0dee57e9bd3710a5d2d0b14d5ae5e9e9a2196b1c472ac",
+  "bootstrap": {
+   "resamples": 2000,
+   "seed": 2027,
+   "unit": "patient"
+  }
+ },
+ "results": {
+  "status": "EXPLORATORY / DEVELOPMENT (tuning partition only; not confirmatory)",
+  "model": {
+   "id": "M0",
+   "version": "1.0.0",
+   "strict": true,
+   "score": "-projection(t+60); projection = g(t) + 60 x LS slope over (t-35 min, t], >= 3 readings (ANALYSIS_PLAN \u00a70d)"
+  },
+  "event": {
+   "definition": "L1 CGM-detected episode (ANALYSIS_PLAN \u00a70)",
+   "horizon_min": 60,
+   "min_lead_min": 15,
+   "cooldown_min": 60,
+   "fa_budget_per_day": 1.0
+  },
+  "population": {
+   "v5": {
+    "recordings": 34,
+    "patients": 30,
+    "treated_patients": 22,
+    "readings": 33464,
+    "label_eligible_times": 31292,
+    "policy_queried_readings": 31416
+   },
+   "v2": {
+    "recordings": 34,
+    "patients": 30
+   }
+  },
+  "legacy_reproduction": {
+   "data": "figshare v2, TUNING patients",
+   "decision_times": "label-eligible (audit2.py)",
+   "rows": [
+    {
+     "theta": 40,
+     "treated": {
+      "episodes": 56,
+      "hits": 24,
+      "sensitivity": 0.428571,
+      "fa_per_day": 0.59603,
+      "monitored_days": 255.020833,
+      "notifications": {
+       "true": 24,
+       "false": 152,
+       "outcome_unknown": 0
+      },
+      "alert_precision": 0.136364,
+      "lead_min": {
+       "median": 30.0,
+       "q25": 26.25,
+       "q75": 45.0,
+       "share_ge_30": 0.75
+      },
+      "warnable_ceiling": 0.946429
+     },
+     "all": {
+      "episodes": 117,
+      "hits": 58,
+      "sensitivity": 0.495726,
+      "fa_per_day": 0.648862,
+      "monitored_days": 348.302083,
+      "notifications": {
+       "true": 57,
+       "false": 226,
+       "outcome_unknown": 0
+      },
+      "alert_precision": 0.201413,
+      "lead_min": {
+       "median": 30.0,
+       "q25": 15.0,
+       "q75": 45.0,
+       "share_ge_30": 0.689655
+      },
+      "warnable_ceiling": 0.905983
+     }
+    },
+    {
+     "theta": 45,
+     "treated": {
+      "episodes": 56,
+      "hits": 27,
+      "sensitivity": 0.482143,
+      "fa_per_day": 0.713667,
+      "monitored_days": 255.020833,
+      "notifications": {
+       "true": 27,
+       "false": 182,
+       "outcome_unknown": 0
+      },
+      "alert_precision": 0.129187,
+      "lead_min": {
+       "median": 30.0,
+       "q25": 22.5,
+       "q75": 45.0,
+       "share_ge_30": 0.740741
+      },
+      "warnable_ceiling": 0.946429
+     },
+     "all": {
+      "episodes": 117,
+      "hits": 62,
+      "sensitivity": 0.529915,
+      "fa_per_day": 0.766576,
+      "monitored_days": 348.302083,
+      "notifications": {
+       "true": 60,
+       "false": 267,
+       "outcome_unknown": 0
+      },
+      "alert_precision": 0.183486,
+      "lead_min": {
+       "median": 30.0,
+       "q25": 30.0,
+       "q75": 45.0,
+       "share_ge_30": 0.758065
+      },
+      "warnable_ceiling": 0.905983
+     }
+    },
+    {
+     "theta": 50,
+     "treated": {
+      "episodes": 56,
+      "hits": 31,
+      "sensitivity": 0.553571,
+      "fa_per_day": 0.850911,
+      "monitored_days": 255.020833,
+      "notifications": {
+       "true": 31,
+       "false": 217,
+       "outcome_unknown": 0
+      },
+      "alert_precision": 0.125,
+      "lead_min": {
+       "median": 30.0,
+       "q25": 15.0,
+       "q75": 45.0,
+       "share_ge_30": 0.709677
+      },
+      "warnable_ceiling": 0.946429
+     },
+     "all": {
+      "episodes": 117,
+      "hits": 68,
+      "sensitivity": 0.581197,
+      "fa_per_day": 0.918743,
+      "monitored_days": 348.302083,
+      "notifications": {
+       "true": 65,
+       "false": 320,
+       "outcome_unknown": 0
+      },
+      "alert_precision": 0.168831,
+      "lead_min": {
+       "median": 30.0,
+       "q25": 30.0,
+       "q75": 45.0,
+       "share_ge_30": 0.779412
+      },
+      "warnable_ceiling": 0.905983
+     }
+    },
+    {
+     "theta": 55,
+     "treated": {
+      "episodes": 56,
+      "hits": 36,
+      "sensitivity": 0.642857,
+      "fa_per_day": 1.070501,
+      "monitored_days": 255.020833,
+      "notifications": {
+       "true": 36,
+       "false": 273,
+       "outcome_unknown": 0
+      },
+      "alert_precision": 0.116505,
+      "lead_min": {
+       "median": 45.0,
+       "q25": 30.0,
+       "q75": 60.0,
+       "share_ge_30": 0.777778
+      },
+      "warnable_ceiling": 0.946429
+     },
+     "all": {
+      "episodes": 117,
+      "hits": 77,
+      "sensitivity": 0.65812,
+      "fa_per_day": 1.148428,
+      "monitored_days": 348.302083,
+      "notifications": {
+       "true": 74,
+       "false": 400,
+       "outcome_unknown": 0
+      },
+      "alert_precision": 0.156118,
+      "lead_min": {
+       "median": 45.0,
+       "q25": 30.0,
+       "q75": 45.0,
+       "share_ge_30": 0.805195
+      },
+      "warnable_ceiling": 0.905983
+     }
+    },
+    {
+     "theta": 60,
+     "treated": {
+      "episodes": 56,
+      "hits": 43,
+      "sensitivity": 0.767857,
+      "fa_per_day": 1.372437,
+      "monitored_days": 255.020833,
+      "notifications": {
+       "true": 42,
+       "false": 350,
+       "outcome_unknown": 0
+      },
+      "alert_precision": 0.107143,
+      "lead_min": {
+       "median": 45.0,
+       "q25": 30.0,
+       "q75": 60.0,
+       "share_ge_30": 0.767442
+      },
+      "warnable_ceiling": 0.946429
+     },
+     "all": {
+      "episodes": 117,
+      "hits": 90,
+      "sensitivity": 0.769231,
+      "fa_per_day": 1.464246,
+      "monitored_days": 348.302083,
+      "notifications": {
+       "true": 86,
+       "false": 510,
+       "outcome_unknown": 0
+      },
+      "alert_precision": 0.144295,
+      "lead_min": {
+       "median": 45.0,
+       "q25": 30.0,
+       "q75": 45.0,
+       "share_ge_30": 0.777778
+      },
+      "warnable_ceiling": 0.905983
+     }
+    },
+    {
+     "theta": 65,
+     "treated": {
+      "episodes": 56,
+      "hits": 48,
+      "sensitivity": 0.857143,
+      "fa_per_day": 1.835144,
+      "monitored_days": 255.020833,
+      "notifications": {
+       "true": 44,
+       "false": 468,
+       "outcome_unknown": 0
+      },
+      "alert_precision": 0.085938,
+      "lead_min": {
+       "median": 45.0,
+       "q25": 30.0,
+       "q75": 60.0,
+       "share_ge_30": 0.8125
+      },
+      "warnable_ceiling": 0.946429
+     },
+     "all": {
+      "episodes": 117,
+      "hits": 100,
+      "sensitivity": 0.854701,
+      "fa_per_day": 1.926489,
+      "monitored_days": 348.302083,
+      "notifications": {
+       "true": 94,
+       "false": 671,
+       "outcome_unknown": 0
+      },
+      "alert_precision": 0.122876,
+      "lead_min": {
+       "median": 45.0,
+       "q25": 30.0,
+       "q75": 60.0,
+       "share_ge_30": 0.79
+      },
+      "warnable_ceiling": 0.905983
+     }
+    },
+    {
+     "theta": 70,
+     "treated": {
+      "episodes": 56,
+      "hits": 51,
+      "sensitivity": 0.910714,
+      "fa_per_day": 2.219427,
+      "monitored_days": 255.020833,
+      "notifications": {
+       "true": 48,
+       "false": 566,
+       "outcome_unknown": 0
+      },
+      "alert_precision": 0.078176,
+      "lead_min": {
+       "median": 45.0,
+       "q25": 30.0,
+       "q75": 60.0,
+       "share_ge_30": 0.784314
+      },
+      "warnable_ceiling": 0.946429
+     },
+     "all": {
+      "episodes": 117,
+      "hits": 103,
+      "sensitivity": 0.880342,
+      "fa_per_day": 2.308341,
+      "monitored_days": 348.302083,
+      "notifications": {
+       "true": 98,
+       "false": 804,
+       "outcome_unknown": 0
+      },
+      "alert_precision": 0.108647,
+      "lead_min": {
+       "median": 45.0,
+       "q25": 30.0,
+       "q75": 60.0,
+       "share_ge_30": 0.815534
+      },
+      "warnable_ceiling": 0.905983
+     }
+    },
+    {
+     "theta": 80,
+     "treated": {
+      "episodes": 56,
+      "hits": 53,
+      "sensitivity": 0.946429,
+      "fa_per_day": 3.654603,
+      "monitored_days": 255.020833,
+      "notifications": {
+       "true": 52,
+       "false": 932,
+       "outcome_unknown": 0
+      },
+      "alert_precision": 0.052846,
+      "lead_min": {
+       "median": 60.0,
+       "q25": 45.0,
+       "q75": 60.0,
+       "share_ge_30": 0.924528
+      },
+      "warnable_ceiling": 0.946429
+     },
+     "all": {
+      "episodes": 117,
+      "hits": 105,
+      "sensitivity": 0.897436,
+      "fa_per_day": 3.732392,
+      "monitored_days": 348.302083,
+      "notifications": {
+       "true": 103,
+       "false": 1300,
+       "outcome_unknown": 0
+      },
+      "alert_precision": 0.073414,
+      "lead_min": {
+       "median": 60.0,
+       "q25": 45.0,
+       "q75": 60.0,
+       "share_ge_30": 0.933333
+      },
+      "warnable_ceiling": 0.905983
+     }
+    }
+   ],
+   "comparison": [
+    {
+     "theta": 40,
+     "status": "MATCH",
+     "basis": null,
+     "exact_ties_at_theta": 0,
+     "checks": {
+      "treated": {
+       "warned": [
+        24,
+        24
+       ],
+       "episodes": [
+        56,
+        56
+       ],
+       "sensitivity": [
+        0.429,
+        0.429
+       ],
+       "fa_per_day": [
+        0.6,
+        0.6
+       ],
+       "median_lead": [
+        30,
+        30.0
+       ],
+       "days": [
+        255.0,
+        255.0
+       ],
+       "tie_inclusive": {
+        "warned": 24,
+        "fa_per_day": 0.6,
+        "median_lead": 30.0
+       }
+      },
+      "all": {
+       "warned": [
+        58,
+        58
+       ],
+       "episodes": [
+        117,
+        117
+       ],
+       "sensitivity": [
+        0.496,
+        0.496
+       ],
+       "fa_per_day": [
+        0.65,
+        0.65
+       ],
+       "median_lead": [
+        30,
+        30.0
+       ],
+       "days": [
+        348.3,
+        348.3
+       ],
+       "tie_inclusive": {
+        "warned": 58,
+        "fa_per_day": 0.65,
+        "median_lead": 30.0
+       }
+      }
+     }
+    },
+    {
+     "theta": 45,
+     "status": "EXPECTED DIFFERENCE",
+     "basis": "exact ties at theta; reference bracketed by tie-exclusive (protocol) and tie-inclusive values; episodes, days and lead match",
+     "exact_ties_at_theta": 44,
+     "checks": {
+      "treated": {
+       "warned": [
+        27,
+        27
+       ],
+       "episodes": [
+        56,
+        56
+       ],
+       "sensitivity": [
+        0.482,
+        0.482
+       ],
+       "fa_per_day": [
+        0.73,
+        0.71
+       ],
+       "median_lead": [
+        30,
+        30.0
+       ],
+       "days": [
+        255.0,
+        255.0
+       ],
+       "tie_inclusive": {
+        "warned": 28,
+        "fa_per_day": 0.76,
+        "median_lead": 30.0
+       }
+      },
+      "all": {
+       "warned": [
+        63,
+        62
+       ],
+       "episodes": [
+        117,
+        117
+       ],
+       "sensitivity": [
+        0.538,
+        0.53
+       ],
+       "fa_per_day": [
+        0.79,
+        0.77
+       ],
+       "median_lead": [
+        30,
+        30.0
+       ],
+       "days": [
+        348.3,
+        348.3
+       ],
+       "tie_inclusive": {
+        "warned": 64,
+        "fa_per_day": 0.81,
+        "median_lead": 30.0
+       }
+      }
+     }
+    },
+    {
+     "theta": 50,
+     "status": "MATCH",
+     "basis": null,
+     "exact_ties_at_theta": 0,
+     "checks": {
+      "treated": {
+       "warned": [
+        31,
+        31
+       ],
+       "episodes": [
+        56,
+        56
+       ],
+       "sensitivity": [
+        0.554,
+        0.554
+       ],
+       "fa_per_day": [
+        0.85,
+        0.85
+       ],
+       "median_lead": [
+        30,
+        30.0
+       ],
+       "days": [
+        255.0,
+        255.0
+       ],
+       "tie_inclusive": {
+        "warned": 31,
+        "fa_per_day": 0.85,
+        "median_lead": 30.0
+       }
+      },
+      "all": {
+       "warned": [
+        68,
+        68
+       ],
+       "episodes": [
+        117,
+        117
+       ],
+       "sensitivity": [
+        0.581,
+        0.581
+       ],
+       "fa_per_day": [
+        0.92,
+        0.92
+       ],
+       "median_lead": [
+        30,
+        30.0
+       ],
+       "days": [
+        348.3,
+        348.3
+       ],
+       "tie_inclusive": {
+        "warned": 68,
+        "fa_per_day": 0.92,
+        "median_lead": 30.0
+       }
+      }
+     }
+    },
+    {
+     "theta": 55,
+     "status": "MATCH",
+     "basis": null,
+     "exact_ties_at_theta": 0,
+     "checks": {
+      "treated": {
+       "warned": [
+        36,
+        36
+       ],
+       "episodes": [
+        56,
+        56
+       ],
+       "sensitivity": [
+        0.643,
+        0.643
+       ],
+       "fa_per_day": [
+        1.07,
+        1.07
+       ],
+       "median_lead": [
+        45,
+        45.0
+       ],
+       "days": [
+        255.0,
+        255.0
+       ],
+       "tie_inclusive": {
+        "warned": 36,
+        "fa_per_day": 1.07,
+        "median_lead": 45.0
+       }
+      },
+      "all": {
+       "warned": [
+        77,
+        77
+       ],
+       "episodes": [
+        117,
+        117
+       ],
+       "sensitivity": [
+        0.658,
+        0.658
+       ],
+       "fa_per_day": [
+        1.15,
+        1.15
+       ],
+       "median_lead": [
+        45,
+        45.0
+       ],
+       "days": [
+        348.3,
+        348.3
+       ],
+       "tie_inclusive": {
+        "warned": 77,
+        "fa_per_day": 1.15,
+        "median_lead": 45.0
+       }
+      }
+     }
+    },
+    {
+     "theta": 60,
+     "status": "MATCH",
+     "basis": null,
+     "exact_ties_at_theta": 0,
+     "checks": {
+      "treated": {
+       "warned": [
+        43,
+        43
+       ],
+       "episodes": [
+        56,
+        56
+       ],
+       "sensitivity": [
+        0.768,
+        0.768
+       ],
+       "fa_per_day": [
+        1.37,
+        1.37
+       ],
+       "median_lead": [
+        45,
+        45.0
+       ],
+       "days": [
+        255.0,
+        255.0
+       ],
+       "tie_inclusive": {
+        "warned": 43,
+        "fa_per_day": 1.37,
+        "median_lead": 45.0
+       }
+      },
+      "all": {
+       "warned": [
+        90,
+        90
+       ],
+       "episodes": [
+        117,
+        117
+       ],
+       "sensitivity": [
+        0.769,
+        0.769
+       ],
+       "fa_per_day": [
+        1.46,
+        1.46
+       ],
+       "median_lead": [
+        45,
+        45.0
+       ],
+       "days": [
+        348.3,
+        348.3
+       ],
+       "tie_inclusive": {
+        "warned": 90,
+        "fa_per_day": 1.46,
+        "median_lead": 45.0
+       }
+      }
+     }
+    },
+    {
+     "theta": 65,
+     "status": "MATCH",
+     "basis": null,
+     "exact_ties_at_theta": 0,
+     "checks": {
+      "treated": {
+       "warned": [
+        48,
+        48
+       ],
+       "episodes": [
+        56,
+        56
+       ],
+       "sensitivity": [
+        0.857,
+        0.857
+       ],
+       "fa_per_day": [
+        1.84,
+        1.84
+       ],
+       "median_lead": [
+        45,
+        45.0
+       ],
+       "days": [
+        255.0,
+        255.0
+       ],
+       "tie_inclusive": {
+        "warned": 48,
+        "fa_per_day": 1.84,
+        "median_lead": 45.0
+       }
+      },
+      "all": {
+       "warned": [
+        100,
+        100
+       ],
+       "episodes": [
+        117,
+        117
+       ],
+       "sensitivity": [
+        0.855,
+        0.855
+       ],
+       "fa_per_day": [
+        1.93,
+        1.93
+       ],
+       "median_lead": [
+        45,
+        45.0
+       ],
+       "days": [
+        348.3,
+        348.3
+       ],
+       "tie_inclusive": {
+        "warned": 100,
+        "fa_per_day": 1.93,
+        "median_lead": 45.0
+       }
+      }
+     }
+    },
+    {
+     "theta": 70,
+     "status": "MATCH",
+     "basis": null,
+     "exact_ties_at_theta": 0,
+     "checks": {
+      "treated": {
+       "warned": [
+        51,
+        51
+       ],
+       "episodes": [
+        56,
+        56
+       ],
+       "sensitivity": [
+        0.911,
+        0.911
+       ],
+       "fa_per_day": [
+        2.22,
+        2.22
+       ],
+       "median_lead": [
+        45,
+        45.0
+       ],
+       "days": [
+        255.0,
+        255.0
+       ],
+       "tie_inclusive": {
+        "warned": 51,
+        "fa_per_day": 2.22,
+        "median_lead": 45.0
+       }
+      },
+      "all": {
+       "warned": [
+        103,
+        103
+       ],
+       "episodes": [
+        117,
+        117
+       ],
+       "sensitivity": [
+        0.88,
+        0.88
+       ],
+       "fa_per_day": [
+        2.31,
+        2.31
+       ],
+       "median_lead": [
+        45,
+        45.0
+       ],
+       "days": [
+        348.3,
+        348.3
+       ],
+       "tie_inclusive": {
+        "warned": 103,
+        "fa_per_day": 2.31,
+        "median_lead": 45.0
+       }
+      }
+     }
+    },
+    {
+     "theta": 80,
+     "status": "MATCH",
+     "basis": null,
+     "exact_ties_at_theta": 0,
+     "checks": {
+      "treated": {
+       "warned": [
+        53,
+        53
+       ],
+       "episodes": [
+        56,
+        56
+       ],
+       "sensitivity": [
+        0.946,
+        0.946
+       ],
+       "fa_per_day": [
+        3.65,
+        3.65
+       ],
+       "median_lead": [
+        60,
+        60.0
+       ],
+       "days": [
+        255.0,
+        255.0
+       ],
+       "tie_inclusive": {
+        "warned": 53,
+        "fa_per_day": 3.65,
+        "median_lead": 60.0
+       }
+      },
+      "all": {
+       "warned": [
+        105,
+        105
+       ],
+       "episodes": [
+        117,
+        117
+       ],
+       "sensitivity": [
+        0.897,
+        0.897
+       ],
+       "fa_per_day": [
+        3.73,
+        3.73
+       ],
+       "median_lead": [
+        60,
+        60.0
+       ],
+       "days": [
+        348.3,
+        348.3
+       ],
+       "tie_inclusive": {
+        "warned": 105,
+        "fa_per_day": 3.73,
+        "median_lead": 60.0
+       }
+      }
+     }
+    }
+   ],
+   "polyfit_replay_diagnostic": {
+    "purpose": "test the exact-tie explanation with audit2.py's own numerics (np.polyfit); diagnostic only",
+    "rows": [
+     {
+      "theta": 45,
+      "treated": {
+       "episodes": 56,
+       "hits": 27,
+       "sensitivity": 0.482143,
+       "fa_per_day": 0.725431,
+       "monitored_days": 255.020833,
+       "notifications": {
+        "true": 27,
+        "false": 185,
+        "outcome_unknown": 0
+       },
+       "alert_precision": 0.127358,
+       "lead_min": {
+        "median": 30.0,
+        "q25": 22.5,
+        "q75": 45.0,
+        "share_ge_30": 0.740741
+       },
+       "warnable_ceiling": 0.946429
+      },
+      "all": {
+       "episodes": 117,
+       "hits": 62,
+       "sensitivity": 0.529915,
+       "fa_per_day": 0.77806,
+       "monitored_days": 348.302083,
+       "notifications": {
+        "true": 60,
+        "false": 271,
+        "outcome_unknown": 0
+       },
+       "alert_precision": 0.181269,
+       "lead_min": {
+        "median": 30.0,
+        "q25": 30.0,
+        "q75": 45.0,
+        "share_ge_30": 0.758065
+       },
+       "warnable_ceiling": 0.905983
+      }
+     }
+    ]
+   },
+   "summary": {
+    "MATCH": 7,
+    "EXPECTED DIFFERENCE": 1,
+    "UNEXPLAINED DIFFERENCE": 0
+   }
+  },
+  "canonical_v5": {
+   "decision_times": "policy replay (ANALYSIS_PLAN \u00a72)",
+   "table_a2_thetas": [
+    {
+     "theta": 40,
+     "treated": {
+      "episodes": 56,
+      "hits": 24,
+      "sensitivity": 0.428571,
+      "fa_per_day": 0.59603,
+      "monitored_days": 255.020833,
+      "notifications": {
+       "true": 24,
+       "false": 152,
+       "outcome_unknown": 1
+      },
+      "alert_precision": 0.136364,
+      "lead_min": {
+       "median": 30.0,
+       "q25": 26.25,
+       "q75": 45.0,
+       "share_ge_30": 0.75
+      },
+      "warnable_ceiling": 0.946429
+     },
+     "all": {
+      "episodes": 117,
+      "hits": 58,
+      "sensitivity": 0.495726,
+      "fa_per_day": 0.648862,
+      "monitored_days": 348.302083,
+      "notifications": {
+       "true": 57,
+       "false": 226,
+       "outcome_unknown": 1
+      },
+      "alert_precision": 0.201413,
+      "lead_min": {
+       "median": 30.0,
+       "q25": 15.0,
+       "q75": 45.0,
+       "share_ge_30": 0.689655
+      },
+      "warnable_ceiling": 0.905983
+     }
+    },
+    {
+     "theta": 45,
+     "treated": {
+      "episodes": 56,
+      "hits": 27,
+      "sensitivity": 0.482143,
+      "fa_per_day": 0.713667,
+      "monitored_days": 255.020833,
+      "notifications": {
+       "true": 27,
+       "false": 182,
+       "outcome_unknown": 2
+      },
+      "alert_precision": 0.129187,
+      "lead_min": {
+       "median": 30.0,
+       "q25": 22.5,
+       "q75": 45.0,
+       "share_ge_30": 0.740741
+      },
+      "warnable_ceiling": 0.946429
+     },
+     "all": {
+      "episodes": 117,
+      "hits": 62,
+      "sensitivity": 0.529915,
+      "fa_per_day": 0.766576,
+      "monitored_days": 348.302083,
+      "notifications": {
+       "true": 60,
+       "false": 267,
+       "outcome_unknown": 2
+      },
+      "alert_precision": 0.183486,
+      "lead_min": {
+       "median": 30.0,
+       "q25": 30.0,
+       "q75": 45.0,
+       "share_ge_30": 0.758065
+      },
+      "warnable_ceiling": 0.905983
+     }
+    },
+    {
+     "theta": 50,
+     "treated": {
+      "episodes": 56,
+      "hits": 31,
+      "sensitivity": 0.553571,
+      "fa_per_day": 0.850911,
+      "monitored_days": 255.020833,
+      "notifications": {
+       "true": 31,
+       "false": 217,
+       "outcome_unknown": 2
+      },
+      "alert_precision": 0.125,
+      "lead_min": {
+       "median": 30.0,
+       "q25": 15.0,
+       "q75": 45.0,
+       "share_ge_30": 0.709677
+      },
+      "warnable_ceiling": 0.946429
+     },
+     "all": {
+      "episodes": 117,
+      "hits": 68,
+      "sensitivity": 0.581197,
+      "fa_per_day": 0.918743,
+      "monitored_days": 348.302083,
+      "notifications": {
+       "true": 65,
+       "false": 320,
+       "outcome_unknown": 2
+      },
+      "alert_precision": 0.168831,
+      "lead_min": {
+       "median": 30.0,
+       "q25": 30.0,
+       "q75": 45.0,
+       "share_ge_30": 0.779412
+      },
+      "warnable_ceiling": 0.905983
+     }
+    },
+    {
+     "theta": 55,
+     "treated": {
+      "episodes": 56,
+      "hits": 36,
+      "sensitivity": 0.642857,
+      "fa_per_day": 1.070501,
+      "monitored_days": 255.020833,
+      "notifications": {
+       "true": 36,
+       "false": 273,
+       "outcome_unknown": 2
+      },
+      "alert_precision": 0.116505,
+      "lead_min": {
+       "median": 45.0,
+       "q25": 30.0,
+       "q75": 60.0,
+       "share_ge_30": 0.777778
+      },
+      "warnable_ceiling": 0.946429
+     },
+     "all": {
+      "episodes": 117,
+      "hits": 77,
+      "sensitivity": 0.65812,
+      "fa_per_day": 1.148428,
+      "monitored_days": 348.302083,
+      "notifications": {
+       "true": 74,
+       "false": 400,
+       "outcome_unknown": 2
+      },
+      "alert_precision": 0.156118,
+      "lead_min": {
+       "median": 45.0,
+       "q25": 30.0,
+       "q75": 45.0,
+       "share_ge_30": 0.805195
+      },
+      "warnable_ceiling": 0.905983
+     }
+    },
+    {
+     "theta": 60,
+     "treated": {
+      "episodes": 56,
+      "hits": 43,
+      "sensitivity": 0.767857,
+      "fa_per_day": 1.372437,
+      "monitored_days": 255.020833,
+      "notifications": {
+       "true": 42,
+       "false": 350,
+       "outcome_unknown": 3
+      },
+      "alert_precision": 0.107143,
+      "lead_min": {
+       "median": 45.0,
+       "q25": 30.0,
+       "q75": 60.0,
+       "share_ge_30": 0.767442
+      },
+      "warnable_ceiling": 0.946429
+     },
+     "all": {
+      "episodes": 117,
+      "hits": 90,
+      "sensitivity": 0.769231,
+      "fa_per_day": 1.464246,
+      "monitored_days": 348.302083,
+      "notifications": {
+       "true": 86,
+       "false": 510,
+       "outcome_unknown": 3
+      },
+      "alert_precision": 0.144295,
+      "lead_min": {
+       "median": 45.0,
+       "q25": 30.0,
+       "q75": 45.0,
+       "share_ge_30": 0.777778
+      },
+      "warnable_ceiling": 0.905983
+     }
+    },
+    {
+     "theta": 65,
+     "treated": {
+      "episodes": 56,
+      "hits": 48,
+      "sensitivity": 0.857143,
+      "fa_per_day": 1.835144,
+      "monitored_days": 255.020833,
+      "notifications": {
+       "true": 44,
+       "false": 468,
+       "outcome_unknown": 3
+      },
+      "alert_precision": 0.085938,
+      "lead_min": {
+       "median": 45.0,
+       "q25": 30.0,
+       "q75": 60.0,
+       "share_ge_30": 0.8125
+      },
+      "warnable_ceiling": 0.946429
+     },
+     "all": {
+      "episodes": 117,
+      "hits": 100,
+      "sensitivity": 0.854701,
+      "fa_per_day": 1.926489,
+      "monitored_days": 348.302083,
+      "notifications": {
+       "true": 94,
+       "false": 671,
+       "outcome_unknown": 3
+      },
+      "alert_precision": 0.122876,
+      "lead_min": {
+       "median": 45.0,
+       "q25": 30.0,
+       "q75": 60.0,
+       "share_ge_30": 0.79
+      },
+      "warnable_ceiling": 0.905983
+     }
+    },
+    {
+     "theta": 70,
+     "treated": {
+      "episodes": 56,
+      "hits": 51,
+      "sensitivity": 0.910714,
+      "fa_per_day": 2.219427,
+      "monitored_days": 255.020833,
+      "notifications": {
+       "true": 48,
+       "false": 566,
+       "outcome_unknown": 3
+      },
+      "alert_precision": 0.078176,
+      "lead_min": {
+       "median": 45.0,
+       "q25": 30.0,
+       "q75": 60.0,
+       "share_ge_30": 0.784314
+      },
+      "warnable_ceiling": 0.946429
+     },
+     "all": {
+      "episodes": 117,
+      "hits": 103,
+      "sensitivity": 0.880342,
+      "fa_per_day": 2.308341,
+      "monitored_days": 348.302083,
+      "notifications": {
+       "true": 98,
+       "false": 804,
+       "outcome_unknown": 4
+      },
+      "alert_precision": 0.108647,
+      "lead_min": {
+       "median": 45.0,
+       "q25": 30.0,
+       "q75": 60.0,
+       "share_ge_30": 0.815534
+      },
+      "warnable_ceiling": 0.905983
+     }
+    },
+    {
+     "theta": 80,
+     "treated": {
+      "episodes": 56,
+      "hits": 53,
+      "sensitivity": 0.946429,
+      "fa_per_day": 3.654603,
+      "monitored_days": 255.020833,
+      "notifications": {
+       "true": 52,
+       "false": 932,
+       "outcome_unknown": 5
+      },
+      "alert_precision": 0.052846,
+      "lead_min": {
+       "median": 60.0,
+       "q25": 45.0,
+       "q75": 60.0,
+       "share_ge_30": 0.924528
+      },
+      "warnable_ceiling": 0.946429
+     },
+     "all": {
+      "episodes": 117,
+      "hits": 105,
+      "sensitivity": 0.897436,
+      "fa_per_day": 3.732392,
+      "monitored_days": 348.302083,
+      "notifications": {
+       "true": 103,
+       "false": 1300,
+       "outcome_unknown": 7
+      },
+      "alert_precision": 0.073414,
+      "lead_min": {
+       "median": 60.0,
+       "q25": 45.0,
+       "q75": 60.0,
+       "share_ge_30": 0.933333
+      },
+      "warnable_ceiling": 0.905983
+     }
+    }
+   ],
+   "curves": {
+    "treated": {
+     "summary": {
+      "grid_points": 280,
+      "non_monotone_fa_steps": 0,
+      "monitored_days": 255.020833,
+      "episodes": 56.0,
+      "sens_at_1fa": 0.625959,
+      "first_crossing": {
+       "a": 54,
+       "k_star": 55,
+       "f_a": 0.995997,
+       "s_a": 0.625,
+       "budget_not_reached": false,
+       "k_star_is_1": false
+      },
+      "tau_alert": -54.0,
+      "theta_alert": 54.0,
+      "tau_watch": -73.8,
+      "theta_watch": 73.8,
+      "watch_band_empty": false,
+      "partial_area_0.5_2.0": 0.69141,
+      "partial_area_hi_reached": true
+     },
+     "points": [
+      {
+       "tau": null,
+       "theta": null,
+       "fa_per_day": 0.0,
+       "sensitivity": 0.0,
+       "notifications_per_day": 0.0
+      },
+      {
+       "tau": 75.6,
+       "theta": -75.6,
+       "fa_per_day": 0.0,
+       "sensitivity": 0.0,
+       "notifications_per_day": 0.0
+      },
+      {
+       "tau": 73.8,
+       "theta": -73.8,
+       "fa_per_day": 0.0,
+       "sensitivity": 0.017857,
+       "notifications_per_day": 0.003921
+      },
+      {
+       "tau": 66.6,
+       "theta": -66.6,
+       "fa_per_day": 0.003921,
+       "sensitivity": 0.017857,
+       "notifications_per_day": 0.007842
+      },
+      {
+       "tau": 57.6,
+       "theta": -57.6,
+       "fa_per_day": 0.003921,
+       "sensitivity": 0.017857,
+       "notifications_per_day": 0.007842
+      },
+      {
+       "tau": 54.0,
+       "theta": -54.0,
+       "fa_per_day": 0.007842,
+       "sensitivity": 0.017857,
+       "notifications_per_day": 0.011764
+      },
+      {
+       "tau": 50.4,
+       "theta": -50.4,
+       "fa_per_day": 0.007842,
+       "sensitivity": 0.035714,
+       "notifications_per_day": 0.015685
+      },
+      {
+       "tau": 45.0,
+       "theta": -45.0,
+       "fa_per_day": 0.011764,
+       "sensitivity": 0.035714,
+       "notifications_per_day": 0.019606
+      },
+      {
+       "tau": 39.6,
+       "theta": -39.6,
+       "fa_per_day": 0.015685,
+       "sensitivity": 0.035714,
+       "notifications_per_day": 0.023527
+      },
+      {
+       "tau": 37.8,
+       "theta": -37.8,
+       "fa_per_day": 0.015685,
+       "sensitivity": 0.035714,
+       "notifications_per_day": 0.023527
+      },
+      {
+       "tau": 30.6,
+       "theta": -30.6,
+       "fa_per_day": 0.019606,
+       "sensitivity": 0.035714,
+       "notifications_per_day": 0.027449
+      },
+      {
+       "tau": 28.8,
+       "theta": -28.8,
+       "fa_per_day": 0.023527,
+       "sensitivity": 0.035714,
+       "notifications_per_day": 0.03137
+      },
+      {
+       "tau": 27.0,
+       "theta": -27.0,
+       "fa_per_day": 0.023527,
+       "sensitivity": 0.053571,
+       "notifications_per_day": 0.035291
+      },
+      {
+       "tau": 19.8,
+       "theta": -19.8,
+       "fa_per_day": 0.023527,
+       "sensitivity": 0.071429,
+       "notifications_per_day": 0.039212
+      },
+      {
+       "tau": 18.0,
+       "theta": -18.0,
+       "fa_per_day": 0.027449,
+       "sensitivity": 0.071429,
+       "notifications_per_day": 0.043134
+      },
+      {
+       "tau": 16.2,
+       "theta": -16.2,
+       "fa_per_day": 0.03137,
+       "sensitivity": 0.071429,
+       "notifications_per_day": 0.047055
+      },
+      {
+       "tau": 14.4,
+       "theta": -14.4,
+       "fa_per_day": 0.043134,
+       "sensitivity": 0.071429,
+       "notifications_per_day": 0.058819
+      },
+      {
+       "tau": 12.6,
+       "theta": -12.6,
+       "fa_per_day": 0.047055,
+       "sensitivity": 0.071429,
+       "notifications_per_day": 0.06274
+      },
+      {
+       "tau": 10.8,
+       "theta": -10.8,
+       "fa_per_day": 0.058819,
+       "sensitivity": 0.071429,
+       "notifications_per_day": 0.074504
+      },
+      {
+       "tau": 9.0,
+       "theta": -9.0,
+       "fa_per_day": 0.06274,
+       "sensitivity": 0.071429,
+       "notifications_per_day": 0.078425
+      },
+      {
+       "tau": 7.2,
+       "theta": -7.2,
+       "fa_per_day": 0.066661,
+       "sensitivity": 0.071429,
+       "notifications_per_day": 0.082346
+      },
+      {
+       "tau": 5.4,
+       "theta": -5.4,
+       "fa_per_day": 0.066661,
+       "sensitivity": 0.071429,
+       "notifications_per_day": 0.082346
+      },
+      {
+       "tau": 3.6,
+       "theta": -3.6,
+       "fa_per_day": 0.066661,
+       "sensitivity": 0.071429,
+       "notifications_per_day": 0.082346
+      },
+      {
+       "tau": 1.8,
+       "theta": -1.8,
+       "fa_per_day": 0.070582,
+       "sensitivity": 0.071429,
+       "notifications_per_day": 0.086267
+      },
+      {
+       "tau": -0.0,
+       "theta": 0.0,
+       "fa_per_day": 0.078425,
+       "sensitivity": 0.071429,
+       "notifications_per_day": 0.09411
+      },
+      {
+       "tau": -1.8,
+       "theta": 1.8,
+       "fa_per_day": 0.09411,
+       "sensitivity": 0.107143,
+       "notifications_per_day": 0.117637
+      },
+      {
+       "tau": -3.6,
+       "theta": 3.6,
+       "fa_per_day": 0.113716,
+       "sensitivity": 0.107143,
+       "notifications_per_day": 0.137244
+      },
+      {
+       "tau": -5.4,
+       "theta": 5.4,
+       "fa_per_day": 0.121559,
+       "sensitivity": 0.125,
+       "notifications_per_day": 0.149007
+      },
+      {
+       "tau": -7.2,
+       "theta": 7.2,
+       "fa_per_day": 0.133322,
+       "sensitivity": 0.142857,
+       "notifications_per_day": 0.164692
+      },
+      {
+       "tau": -9.0,
+       "theta": 9.0,
+       "fa_per_day": 0.152929,
+       "sensitivity": 0.160714,
+       "notifications_per_day": 0.192141
+      },
+      {
+       "tau": -10.8,
+       "theta": 10.8,
+       "fa_per_day": 0.168614,
+       "sensitivity": 0.160714,
+       "notifications_per_day": 0.207826
+      },
+      {
+       "tau": -12.6,
+       "theta": 12.6,
+       "fa_per_day": 0.172535,
+       "sensitivity": 0.160714,
+       "notifications_per_day": 0.211747
+      },
+      {
+       "tau": -14.4,
+       "theta": 14.4,
+       "fa_per_day": 0.180377,
+       "sensitivity": 0.196429,
+       "notifications_per_day": 0.227432
+      },
+      {
+       "tau": -16.2,
+       "theta": 16.2,
+       "fa_per_day": 0.192141,
+       "sensitivity": 0.196429,
+       "notifications_per_day": 0.239196
+      },
+      {
+       "tau": -18.0,
+       "theta": 18.0,
+       "fa_per_day": 0.211747,
+       "sensitivity": 0.214286,
+       "notifications_per_day": 0.262724
+      },
+      {
+       "tau": -19.8,
+       "theta": 19.8,
+       "fa_per_day": 0.227432,
+       "sensitivity": 0.232143,
+       "notifications_per_day": 0.28233
+      },
+      {
+       "tau": -21.6,
+       "theta": 21.6,
+       "fa_per_day": 0.239196,
+       "sensitivity": 0.267857,
+       "notifications_per_day": 0.301936
+      },
+      {
+       "tau": -23.4,
+       "theta": 23.4,
+       "fa_per_day": 0.270566,
+       "sensitivity": 0.303571,
+       "notifications_per_day": 0.341149
+      },
+      {
+       "tau": -25.2,
+       "theta": 25.2,
+       "fa_per_day": 0.286251,
+       "sensitivity": 0.303571,
+       "notifications_per_day": 0.356834
+      },
+      {
+       "tau": -27.0,
+       "theta": 27.0,
+       "fa_per_day": 0.305857,
+       "sensitivity": 0.303571,
+       "notifications_per_day": 0.37644
+      },
+      {
+       "tau": -28.8,
+       "theta": 28.8,
+       "fa_per_day": 0.341149,
+       "sensitivity": 0.321429,
+       "notifications_per_day": 0.415652
+      },
+      {
+       "tau": -30.6,
+       "theta": 30.6,
+       "fa_per_day": 0.368597,
+       "sensitivity": 0.357143,
+       "notifications_per_day": 0.450944
+      },
+      {
+       "tau": -32.4,
+       "theta": 32.4,
+       "fa_per_day": 0.380361,
+       "sensitivity": 0.375,
+       "notifications_per_day": 0.466629
+      },
+      {
+       "tau": -34.2,
+       "theta": 34.2,
+       "fa_per_day": 0.411731,
+       "sensitivity": 0.392857,
+       "notifications_per_day": 0.50192
+      },
+      {
+       "tau": -36.0,
+       "theta": 36.0,
+       "fa_per_day": 0.431337,
+       "sensitivity": 0.392857,
+       "notifications_per_day": 0.521526
+      },
+      {
+       "tau": -37.8,
+       "theta": 37.8,
+       "fa_per_day": 0.486235,
+       "sensitivity": 0.392857,
+       "notifications_per_day": 0.576423
+      },
+      {
+       "tau": -39.6,
+       "theta": 39.6,
+       "fa_per_day": 0.548975,
+       "sensitivity": 0.428571,
+       "notifications_per_day": 0.647006
+      },
+      {
+       "tau": -41.4,
+       "theta": 41.4,
+       "fa_per_day": 0.59603,
+       "sensitivity": 0.428571,
+       "notifications_per_day": 0.694061
+      },
+      {
+       "tau": -43.2,
+       "theta": 43.2,
+       "fa_per_day": 0.65877,
+       "sensitivity": 0.428571,
+       "notifications_per_day": 0.756801
+      },
+      {
+       "tau": -45.0,
+       "theta": 45.0,
+       "fa_per_day": 0.713667,
+       "sensitivity": 0.482143,
+       "notifications_per_day": 0.827383
+      },
+      {
+       "tau": -46.8,
+       "theta": 46.8,
+       "fa_per_day": 0.756801,
+       "sensitivity": 0.5,
+       "notifications_per_day": 0.874438
+      },
+      {
+       "tau": -48.6,
+       "theta": 48.6,
+       "fa_per_day": 0.796013,
+       "sensitivity": 0.535714,
+       "notifications_per_day": 0.921493
+      },
+      {
+       "tau": -50.4,
+       "theta": 50.4,
+       "fa_per_day": 0.850911,
+       "sensitivity": 0.553571,
+       "notifications_per_day": 0.980312
+      },
+      {
+       "tau": -52.2,
+       "theta": 52.2,
+       "fa_per_day": 0.90973,
+       "sensitivity": 0.589286,
+       "notifications_per_day": 1.043052
+      },
+      {
+       "tau": -54.0,
+       "theta": 54.0,
+       "fa_per_day": 0.995997,
+       "sensitivity": 0.625,
+       "notifications_per_day": 1.141083
+      },
+      {
+       "tau": -55.8,
+       "theta": 55.8,
+       "fa_per_day": 1.070501,
+       "sensitivity": 0.642857,
+       "notifications_per_day": 1.219508
+      },
+      {
+       "tau": -57.6,
+       "theta": 57.6,
+       "fa_per_day": 1.152847,
+       "sensitivity": 0.678571,
+       "notifications_per_day": 1.309697
+      },
+      {
+       "tau": -59.4,
+       "theta": 59.4,
+       "fa_per_day": 1.270484,
+       "sensitivity": 0.75,
+       "notifications_per_day": 1.443019
+      },
+      {
+       "tau": -61.2,
+       "theta": 61.2,
+       "fa_per_day": 1.372437,
+       "sensitivity": 0.767857,
+       "notifications_per_day": 1.548893
+      },
+      {
+       "tau": -63.0,
+       "theta": 63.0,
+       "fa_per_day": 1.501838,
+       "sensitivity": 0.803571,
+       "notifications_per_day": 1.674373
+      },
+      {
+       "tau": -64.8,
+       "theta": 64.8,
+       "fa_per_day": 1.678294,
+       "sensitivity": 0.839286,
+       "notifications_per_day": 1.862593
+      },
+      {
+       "tau": -66.6,
+       "theta": 66.6,
+       "fa_per_day": 1.835144,
+       "sensitivity": 0.857143,
+       "notifications_per_day": 2.019443
+      },
+      {
+       "tau": -68.4,
+       "theta": 68.4,
+       "fa_per_day": 2.050813,
+       "sensitivity": 0.910714,
+       "notifications_per_day": 2.250797
+      },
+      {
+       "tau": -70.2,
+       "theta": 70.2,
+       "fa_per_day": 2.219427,
+       "sensitivity": 0.910714,
+       "notifications_per_day": 2.41941
+      },
+      {
+       "tau": -72.0,
+       "theta": 72.0,
+       "fa_per_day": 2.435095,
+       "sensitivity": 0.928571,
+       "notifications_per_day": 2.646843
+      },
+      {
+       "tau": -73.8,
+       "theta": 73.8,
+       "fa_per_day": 2.635079,
+       "sensitivity": 0.928571,
+       "notifications_per_day": 2.850747
+      },
+      {
+       "tau": -75.6,
+       "theta": 75.6,
+       "fa_per_day": 2.842905,
+       "sensitivity": 0.928571,
+       "notifications_per_day": 3.058574
+      },
+      {
+       "tau": -77.4,
+       "theta": 77.4,
+       "fa_per_day": 3.113471,
+       "sensitivity": 0.928571,
+       "notifications_per_day": 3.32914
+      },
+      {
+       "tau": -79.2,
+       "theta": 79.2,
+       "fa_per_day": 3.376195,
+       "sensitivity": 0.946429,
+       "notifications_per_day": 3.595785
+      },
+      {
+       "tau": -81.0,
+       "theta": 81.0,
+       "fa_per_day": 3.654603,
+       "sensitivity": 0.946429,
+       "notifications_per_day": 3.878115
+      },
+      {
+       "tau": -82.8,
+       "theta": 82.8,
+       "fa_per_day": 3.913406,
+       "sensitivity": 0.946429,
+       "notifications_per_day": 4.136917
+      },
+      {
+       "tau": -84.6,
+       "theta": 84.6,
+       "fa_per_day": 4.219263,
+       "sensitivity": 0.946429,
+       "notifications_per_day": 4.442774
+      }
+     ],
+     "operating_point_at_tau_alert": {
+      "tau": -54.0,
+      "strict": true,
+      "episodes": 56,
+      "hits": 35,
+      "sensitivity": 0.625,
+      "missed_episode_rate": 0.375,
+      "warnable_episodes": 53,
+      "warnable_ceiling": 0.946429,
+      "notifications": {
+       "true": 35,
+       "false": 254,
+       "outcome_unknown": 2
+      },
+      "monitored_days": 255.020833,
+      "fa_per_day": 0.995997,
+      "alert_precision": 0.121107,
+      "lead_min": {
+       "median": 45.0,
+       "q25": 22.5,
+       "q75": 60.0,
+       "share_ge_30": 0.742857
+      },
+      "abstention": {
+       "readings": 24501,
+       "insufficient_data_share": 0.00853,
+       "warnable_episodes_without_forecast_in_window": 0
+      },
+      "per_patient_distribution": {
+       "patients": 22,
+       "patients_with_episodes": 13,
+       "sensitivity_q25_q50_q75": [
+        0.5,
+        0.571429,
+        0.875
+       ],
+       "fa_per_day_q25_q50_q75": [
+        0.369578,
+        1.017111,
+        1.352167
+       ]
+      }
+     }
+    },
+    "all": {
+     "summary": {
+      "grid_points": 283,
+      "non_monotone_fa_steps": 0,
+      "monitored_days": 348.302083,
+      "episodes": 117.0,
+      "sens_at_1fa": 0.609552,
+      "first_crossing": {
+       "a": 55,
+       "k_star": 56,
+       "f_a": 0.993391,
+       "s_a": 0.606838,
+       "budget_not_reached": false,
+       "k_star_is_1": false
+      },
+      "tau_alert": -52.2,
+      "theta_alert": 52.2,
+      "tau_watch": -72.0,
+      "theta_watch": 72.0,
+      "watch_band_empty": false,
+      "partial_area_0.5_2.0": 0.680917,
+      "partial_area_hi_reached": true
+     },
+     "points": [
+      {
+       "tau": null,
+       "theta": null,
+       "fa_per_day": 0.0,
+       "sensitivity": 0.0,
+       "notifications_per_day": 0.0
+      },
+      {
+       "tau": 75.6,
+       "theta": -75.6,
+       "fa_per_day": 0.0,
+       "sensitivity": 0.0,
+       "notifications_per_day": 0.0
+      },
+      {
+       "tau": 73.8,
+       "theta": -73.8,
+       "fa_per_day": 0.0,
+       "sensitivity": 0.008547,
+       "notifications_per_day": 0.002871
+      },
+      {
+       "tau": 66.6,
+       "theta": -66.6,
+       "fa_per_day": 0.002871,
+       "sensitivity": 0.008547,
+       "notifications_per_day": 0.005742
+      },
+      {
+       "tau": 57.6,
+       "theta": -57.6,
+       "fa_per_day": 0.002871,
+       "sensitivity": 0.008547,
+       "notifications_per_day": 0.005742
+      },
+      {
+       "tau": 54.0,
+       "theta": -54.0,
+       "fa_per_day": 0.005742,
+       "sensitivity": 0.008547,
+       "notifications_per_day": 0.008613
+      },
+      {
+       "tau": 50.4,
+       "theta": -50.4,
+       "fa_per_day": 0.008613,
+       "sensitivity": 0.017094,
+       "notifications_per_day": 0.014355
+      },
+      {
+       "tau": 45.0,
+       "theta": -45.0,
+       "fa_per_day": 0.011484,
+       "sensitivity": 0.017094,
+       "notifications_per_day": 0.017226
+      },
+      {
+       "tau": 41.4,
+       "theta": -41.4,
+       "fa_per_day": 0.017226,
+       "sensitivity": 0.017094,
+       "notifications_per_day": 0.022969
+      },
+      {
+       "tau": 39.6,
+       "theta": -39.6,
+       "fa_per_day": 0.017226,
+       "sensitivity": 0.025641,
+       "notifications_per_day": 0.02584
+      },
+      {
+       "tau": 37.8,
+       "theta": -37.8,
+       "fa_per_day": 0.017226,
+       "sensitivity": 0.025641,
+       "notifications_per_day": 0.02584
+      },
+      {
+       "tau": 30.6,
+       "theta": -30.6,
+       "fa_per_day": 0.020097,
+       "sensitivity": 0.025641,
+       "notifications_per_day": 0.028711
+      },
+      {
+       "tau": 28.8,
+       "theta": -28.8,
+       "fa_per_day": 0.022969,
+       "sensitivity": 0.025641,
+       "notifications_per_day": 0.031582
+      },
+      {
+       "tau": 27.0,
+       "theta": -27.0,
+       "fa_per_day": 0.022969,
+       "sensitivity": 0.034188,
+       "notifications_per_day": 0.034453
+      },
+      {
+       "tau": 23.4,
+       "theta": -23.4,
+       "fa_per_day": 0.022969,
+       "sensitivity": 0.042735,
+       "notifications_per_day": 0.037324
+      },
+      {
+       "tau": 19.8,
+       "theta": -19.8,
+       "fa_per_day": 0.02584,
+       "sensitivity": 0.042735,
+       "notifications_per_day": 0.040195
+      },
+      {
+       "tau": 18.0,
+       "theta": -18.0,
+       "fa_per_day": 0.031582,
+       "sensitivity": 0.042735,
+       "notifications_per_day": 0.045937
+      },
+      {
+       "tau": 16.2,
+       "theta": -16.2,
+       "fa_per_day": 0.034453,
+       "sensitivity": 0.042735,
+       "notifications_per_day": 0.048808
+      },
+      {
+       "tau": 14.4,
+       "theta": -14.4,
+       "fa_per_day": 0.043066,
+       "sensitivity": 0.042735,
+       "notifications_per_day": 0.057421
+      },
+      {
+       "tau": 12.6,
+       "theta": -12.6,
+       "fa_per_day": 0.051679,
+       "sensitivity": 0.051282,
+       "notifications_per_day": 0.068906
+      },
+      {
+       "tau": 10.8,
+       "theta": -10.8,
+       "fa_per_day": 0.074648,
+       "sensitivity": 0.051282,
+       "notifications_per_day": 0.091874
+      },
+      {
+       "tau": 9.0,
+       "theta": -9.0,
+       "fa_per_day": 0.08039,
+       "sensitivity": 0.068376,
+       "notifications_per_day": 0.103359
+      },
+      {
+       "tau": 7.2,
+       "theta": -7.2,
+       "fa_per_day": 0.091874,
+       "sensitivity": 0.068376,
+       "notifications_per_day": 0.114843
+      },
+      {
+       "tau": 5.4,
+       "theta": -5.4,
+       "fa_per_day": 0.091874,
+       "sensitivity": 0.068376,
+       "notifications_per_day": 0.114843
+      },
+      {
+       "tau": 3.6,
+       "theta": -3.6,
+       "fa_per_day": 0.094745,
+       "sensitivity": 0.068376,
+       "notifications_per_day": 0.117714
+      },
+      {
+       "tau": 1.8,
+       "theta": -1.8,
+       "fa_per_day": 0.109101,
+       "sensitivity": 0.068376,
+       "notifications_per_day": 0.132069
+      },
+      {
+       "tau": -0.0,
+       "theta": 0.0,
+       "fa_per_day": 0.117714,
+       "sensitivity": 0.068376,
+       "notifications_per_day": 0.140682
+      },
+      {
+       "tau": -1.8,
+       "theta": 1.8,
+       "fa_per_day": 0.132069,
+       "sensitivity": 0.08547,
+       "notifications_per_day": 0.16078
+      },
+      {
+       "tau": -3.6,
+       "theta": 3.6,
+       "fa_per_day": 0.149296,
+       "sensitivity": 0.094017,
+       "notifications_per_day": 0.180877
+      },
+      {
+       "tau": -5.4,
+       "theta": 5.4,
+       "fa_per_day": 0.157909,
+       "sensitivity": 0.102564,
+       "notifications_per_day": 0.192362
+      },
+      {
+       "tau": -7.2,
+       "theta": 7.2,
+       "fa_per_day": 0.166522,
+       "sensitivity": 0.119658,
+       "notifications_per_day": 0.206717
+      },
+      {
+       "tau": -9.0,
+       "theta": 9.0,
+       "fa_per_day": 0.183749,
+       "sensitivity": 0.136752,
+       "notifications_per_day": 0.232557
+      },
+      {
+       "tau": -10.8,
+       "theta": 10.8,
+       "fa_per_day": 0.195233,
+       "sensitivity": 0.162393,
+       "notifications_per_day": 0.252654
+      },
+      {
+       "tau": -12.6,
+       "theta": 12.6,
+       "fa_per_day": 0.200975,
+       "sensitivity": 0.162393,
+       "notifications_per_day": 0.258396
+      },
+      {
+       "tau": -14.4,
+       "theta": 14.4,
+       "fa_per_day": 0.209588,
+       "sensitivity": 0.196581,
+       "notifications_per_day": 0.278494
+      },
+      {
+       "tau": -16.2,
+       "theta": 16.2,
+       "fa_per_day": 0.223944,
+       "sensitivity": 0.205128,
+       "notifications_per_day": 0.29572
+      },
+      {
+       "tau": -18.0,
+       "theta": 18.0,
+       "fa_per_day": 0.246912,
+       "sensitivity": 0.230769,
+       "notifications_per_day": 0.327302
+      },
+      {
+       "tau": -19.8,
+       "theta": 19.8,
+       "fa_per_day": 0.26701,
+       "sensitivity": 0.247863,
+       "notifications_per_day": 0.353142
+      },
+      {
+       "tau": -21.6,
+       "theta": 21.6,
+       "fa_per_day": 0.289978,
+       "sensitivity": 0.282051,
+       "notifications_per_day": 0.387595
+      },
+      {
+       "tau": -23.4,
+       "theta": 23.4,
+       "fa_per_day": 0.315818,
+       "sensitivity": 0.299145,
+       "notifications_per_day": 0.419176
+      },
+      {
+       "tau": -25.2,
+       "theta": 25.2,
+       "fa_per_day": 0.335915,
+       "sensitivity": 0.307692,
+       "notifications_per_day": 0.439274
+      },
+      {
+       "tau": -27.0,
+       "theta": 27.0,
+       "fa_per_day": 0.356013,
+       "sensitivity": 0.316239,
+       "notifications_per_day": 0.462242
+      },
+      {
+       "tau": -28.8,
+       "theta": 28.8,
+       "fa_per_day": 0.384724,
+       "sensitivity": 0.34188,
+       "notifications_per_day": 0.499566
+      },
+      {
+       "tau": -30.6,
+       "theta": 30.6,
+       "fa_per_day": 0.416305,
+       "sensitivity": 0.358974,
+       "notifications_per_day": 0.53689
+      },
+      {
+       "tau": -32.4,
+       "theta": 32.4,
+       "fa_per_day": 0.430661,
+       "sensitivity": 0.384615,
+       "notifications_per_day": 0.559859
+      },
+      {
+       "tau": -34.2,
+       "theta": 34.2,
+       "fa_per_day": 0.470856,
+       "sensitivity": 0.410256,
+       "notifications_per_day": 0.608667
+      },
+      {
+       "tau": -36.0,
+       "theta": 36.0,
+       "fa_per_day": 0.496695,
+       "sensitivity": 0.42735,
+       "notifications_per_day": 0.640249
+      },
+      {
+       "tau": -37.8,
+       "theta": 37.8,
+       "fa_per_day": 0.548375,
+       "sensitivity": 0.444444,
+       "notifications_per_day": 0.69767
+      },
+      {
+       "tau": -39.6,
+       "theta": 39.6,
+       "fa_per_day": 0.602925,
+       "sensitivity": 0.487179,
+       "notifications_per_day": 0.766576
+      },
+      {
+       "tau": -41.4,
+       "theta": 41.4,
+       "fa_per_day": 0.648862,
+       "sensitivity": 0.495726,
+       "notifications_per_day": 0.815384
+      },
+      {
+       "tau": -43.2,
+       "theta": 43.2,
+       "fa_per_day": 0.706283,
+       "sensitivity": 0.504274,
+       "notifications_per_day": 0.872806
+      },
+      {
+       "tau": -45.0,
+       "theta": 45.0,
+       "fa_per_day": 0.766576,
+       "sensitivity": 0.529915,
+       "notifications_per_day": 0.944582
+      },
+      {
+       "tau": -46.8,
+       "theta": 46.8,
+       "fa_per_day": 0.812513,
+       "sensitivity": 0.547009,
+       "notifications_per_day": 0.993391
+      },
+      {
+       "tau": -48.6,
+       "theta": 48.6,
+       "fa_per_day": 0.85845,
+       "sensitivity": 0.57265,
+       "notifications_per_day": 1.050812
+      },
+      {
+       "tau": -50.4,
+       "theta": 50.4,
+       "fa_per_day": 0.918743,
+       "sensitivity": 0.581197,
+       "notifications_per_day": 1.111104
+      },
+      {
+       "tau": -52.2,
+       "theta": 52.2,
+       "fa_per_day": 0.993391,
+       "sensitivity": 0.606838,
+       "notifications_per_day": 1.188623
+      },
+      {
+       "tau": -54.0,
+       "theta": 54.0,
+       "fa_per_day": 1.076652,
+       "sensitivity": 0.641026,
+       "notifications_per_day": 1.289111
+      },
+      {
+       "tau": -55.8,
+       "theta": 55.8,
+       "fa_per_day": 1.148428,
+       "sensitivity": 0.65812,
+       "notifications_per_day": 1.36663
+      },
+      {
+       "tau": -57.6,
+       "theta": 57.6,
+       "fa_per_day": 1.234561,
+       "sensitivity": 0.692308,
+       "notifications_per_day": 1.464246
+      },
+      {
+       "tau": -59.4,
+       "theta": 59.4,
+       "fa_per_day": 1.349403,
+       "sensitivity": 0.735043,
+       "notifications_per_day": 1.593444
+      },
+      {
+       "tau": -61.2,
+       "theta": 61.2,
+       "fa_per_day": 1.464246,
+       "sensitivity": 0.769231,
+       "notifications_per_day": 1.719772
+      },
+      {
+       "tau": -63.0,
+       "theta": 63.0,
+       "fa_per_day": 1.590573,
+       "sensitivity": 0.786325,
+       "notifications_per_day": 1.843228
+      },
+      {
+       "tau": -64.8,
+       "theta": 64.8,
+       "fa_per_day": 1.780064,
+       "sensitivity": 0.82906,
+       "notifications_per_day": 2.052816
+      },
+      {
+       "tau": -66.6,
+       "theta": 66.6,
+       "fa_per_day": 1.926489,
+       "sensitivity": 0.854701,
+       "notifications_per_day": 2.204983
+      },
+      {
+       "tau": -68.4,
+       "theta": 68.4,
+       "fa_per_day": 2.133206,
+       "sensitivity": 0.880342,
+       "notifications_per_day": 2.423184
+      },
+      {
+       "tau": -70.2,
+       "theta": 70.2,
+       "fa_per_day": 2.308341,
+       "sensitivity": 0.880342,
+       "notifications_per_day": 2.60119
+      },
+      {
+       "tau": -72.0,
+       "theta": 72.0,
+       "fa_per_day": 2.529414,
+       "sensitivity": 0.888889,
+       "notifications_per_day": 2.830876
+      },
+      {
+       "tau": -73.8,
+       "theta": 73.8,
+       "fa_per_day": 2.739002,
+       "sensitivity": 0.888889,
+       "notifications_per_day": 3.043335
+      },
+      {
+       "tau": -75.6,
+       "theta": 75.6,
+       "fa_per_day": 2.937106,
+       "sensitivity": 0.888889,
+       "notifications_per_day": 3.247181
+      },
+      {
+       "tau": -77.4,
+       "theta": 77.4,
+       "fa_per_day": 3.201244,
+       "sensitivity": 0.888889,
+       "notifications_per_day": 3.51132
+      },
+      {
+       "tau": -79.2,
+       "theta": 79.2,
+       "fa_per_day": 3.465383,
+       "sensitivity": 0.897436,
+       "notifications_per_day": 3.778329
+      },
+      {
+       "tau": -81.0,
+       "theta": 81.0,
+       "fa_per_day": 3.732392,
+       "sensitivity": 0.897436,
+       "notifications_per_day": 4.04821
+      },
+      {
+       "tau": -82.8,
+       "theta": 82.8,
+       "fa_per_day": 4.008015,
+       "sensitivity": 0.897436,
+       "notifications_per_day": 4.326704
+      }
+     ],
+     "operating_point_at_tau_alert": {
+      "tau": -52.2,
+      "strict": true,
+      "episodes": 117,
+      "hits": 71,
+      "sensitivity": 0.606838,
+      "missed_episode_rate": 0.393162,
+      "warnable_episodes": 106,
+      "warnable_ceiling": 0.905983,
+      "notifications": {
+       "true": 66,
+       "false": 346,
+       "outcome_unknown": 2
+      },
+      "monitored_days": 348.302083,
+      "fa_per_day": 0.993391,
+      "alert_precision": 0.160194,
+      "lead_min": {
+       "median": 30.0,
+       "q25": 30.0,
+       "q75": 45.0,
+       "share_ge_30": 0.760563
+      },
+      "abstention": {
+       "readings": 33464,
+       "insufficient_data_share": 0.007859,
+       "warnable_episodes_without_forecast_in_window": 0
+      },
+      "per_patient_distribution": {
+       "patients": 30,
+       "patients_with_episodes": 18,
+       "sensitivity_q25_q50_q75": [
+        0.35,
+        0.5,
+        0.653846
+       ],
+       "fa_per_day_q25_q50_q75": [
+        0.355419,
+        0.889345,
+        1.781575
+       ]
+      }
+     }
+    }
+   },
+   "bootstrap": {
+    "treated": {
+     "method": "paired patient-cluster bootstrap, percentile 95% interval",
+     "resamples": 2000,
+     "seed": 2027,
+     "patients": 22,
+     "point": {
+      "sens_at_1fa": 0.625959,
+      "partial_area": 0.69141
+     },
+     "ci95": {
+      "sens_at_1fa": [
+       0.490867,
+       0.836835
+      ],
+      "partial_area": [
+       0.558065,
+       0.836504
+      ]
+     },
+     "undefined_resamples": {
+      "sens_at_1fa": 0,
+      "partial_area": 0
+     }
+    },
+    "all": {
+     "method": "paired patient-cluster bootstrap, percentile 95% interval",
+     "resamples": 2000,
+     "seed": 2027,
+     "patients": 30,
+     "point": {
+      "sens_at_1fa": 0.609552,
+      "partial_area": 0.680917
+     },
+     "ci95": {
+      "sens_at_1fa": [
+       0.418486,
+       0.810461
+      ],
+      "partial_area": [
+       0.491415,
+       0.830259
+      ]
+     },
+     "undefined_resamples": {
+      "sens_at_1fa": 0,
+      "partial_area": 0
+     }
+    }
+   }
+  },
+  "decomposition": {
+   "v5_legacy_semantics": [
+    {
+     "theta": 40,
+     "treated": {
+      "episodes": 56,
+      "hits": 24,
+      "sensitivity": 0.428571,
+      "fa_per_day": 0.59603,
+      "monitored_days": 255.020833,
+      "notifications": {
+       "true": 24,
+       "false": 152,
+       "outcome_unknown": 0
+      },
+      "alert_precision": 0.136364,
+      "lead_min": {
+       "median": 30.0,
+       "q25": 26.25,
+       "q75": 45.0,
+       "share_ge_30": 0.75
+      },
+      "warnable_ceiling": 0.946429
+     },
+     "all": {
+      "episodes": 117,
+      "hits": 58,
+      "sensitivity": 0.495726,
+      "fa_per_day": 0.648862,
+      "monitored_days": 348.302083,
+      "notifications": {
+       "true": 57,
+       "false": 226,
+       "outcome_unknown": 0
+      },
+      "alert_precision": 0.201413,
+      "lead_min": {
+       "median": 30.0,
+       "q25": 15.0,
+       "q75": 45.0,
+       "share_ge_30": 0.689655
+      },
+      "warnable_ceiling": 0.905983
+     }
+    },
+    {
+     "theta": 45,
+     "treated": {
+      "episodes": 56,
+      "hits": 27,
+      "sensitivity": 0.482143,
+      "fa_per_day": 0.713667,
+      "monitored_days": 255.020833,
+      "notifications": {
+       "true": 27,
+       "false": 182,
+       "outcome_unknown": 0
+      },
+      "alert_precision": 0.129187,
+      "lead_min": {
+       "median": 30.0,
+       "q25": 22.5,
+       "q75": 45.0,
+       "share_ge_30": 0.740741
+      },
+      "warnable_ceiling": 0.946429
+     },
+     "all": {
+      "episodes": 117,
+      "hits": 62,
+      "sensitivity": 0.529915,
+      "fa_per_day": 0.766576,
+      "monitored_days": 348.302083,
+      "notifications": {
+       "true": 60,
+       "false": 267,
+       "outcome_unknown": 0
+      },
+      "alert_precision": 0.183486,
+      "lead_min": {
+       "median": 30.0,
+       "q25": 30.0,
+       "q75": 45.0,
+       "share_ge_30": 0.758065
+      },
+      "warnable_ceiling": 0.905983
+     }
+    },
+    {
+     "theta": 50,
+     "treated": {
+      "episodes": 56,
+      "hits": 31,
+      "sensitivity": 0.553571,
+      "fa_per_day": 0.850911,
+      "monitored_days": 255.020833,
+      "notifications": {
+       "true": 31,
+       "false": 217,
+       "outcome_unknown": 0
+      },
+      "alert_precision": 0.125,
+      "lead_min": {
+       "median": 30.0,
+       "q25": 15.0,
+       "q75": 45.0,
+       "share_ge_30": 0.709677
+      },
+      "warnable_ceiling": 0.946429
+     },
+     "all": {
+      "episodes": 117,
+      "hits": 68,
+      "sensitivity": 0.581197,
+      "fa_per_day": 0.918743,
+      "monitored_days": 348.302083,
+      "notifications": {
+       "true": 65,
+       "false": 320,
+       "outcome_unknown": 0
+      },
+      "alert_precision": 0.168831,
+      "lead_min": {
+       "median": 30.0,
+       "q25": 30.0,
+       "q75": 45.0,
+       "share_ge_30": 0.779412
+      },
+      "warnable_ceiling": 0.905983
+     }
+    },
+    {
+     "theta": 55,
+     "treated": {
+      "episodes": 56,
+      "hits": 36,
+      "sensitivity": 0.642857,
+      "fa_per_day": 1.070501,
+      "monitored_days": 255.020833,
+      "notifications": {
+       "true": 36,
+       "false": 273,
+       "outcome_unknown": 0
+      },
+      "alert_precision": 0.116505,
+      "lead_min": {
+       "median": 45.0,
+       "q25": 30.0,
+       "q75": 60.0,
+       "share_ge_30": 0.777778
+      },
+      "warnable_ceiling": 0.946429
+     },
+     "all": {
+      "episodes": 117,
+      "hits": 77,
+      "sensitivity": 0.65812,
+      "fa_per_day": 1.148428,
+      "monitored_days": 348.302083,
+      "notifications": {
+       "true": 74,
+       "false": 400,
+       "outcome_unknown": 0
+      },
+      "alert_precision": 0.156118,
+      "lead_min": {
+       "median": 45.0,
+       "q25": 30.0,
+       "q75": 45.0,
+       "share_ge_30": 0.805195
+      },
+      "warnable_ceiling": 0.905983
+     }
+    },
+    {
+     "theta": 60,
+     "treated": {
+      "episodes": 56,
+      "hits": 43,
+      "sensitivity": 0.767857,
+      "fa_per_day": 1.372437,
+      "monitored_days": 255.020833,
+      "notifications": {
+       "true": 42,
+       "false": 350,
+       "outcome_unknown": 0
+      },
+      "alert_precision": 0.107143,
+      "lead_min": {
+       "median": 45.0,
+       "q25": 30.0,
+       "q75": 60.0,
+       "share_ge_30": 0.767442
+      },
+      "warnable_ceiling": 0.946429
+     },
+     "all": {
+      "episodes": 117,
+      "hits": 90,
+      "sensitivity": 0.769231,
+      "fa_per_day": 1.464246,
+      "monitored_days": 348.302083,
+      "notifications": {
+       "true": 86,
+       "false": 510,
+       "outcome_unknown": 0
+      },
+      "alert_precision": 0.144295,
+      "lead_min": {
+       "median": 45.0,
+       "q25": 30.0,
+       "q75": 45.0,
+       "share_ge_30": 0.777778
+      },
+      "warnable_ceiling": 0.905983
+     }
+    },
+    {
+     "theta": 65,
+     "treated": {
+      "episodes": 56,
+      "hits": 48,
+      "sensitivity": 0.857143,
+      "fa_per_day": 1.835144,
+      "monitored_days": 255.020833,
+      "notifications": {
+       "true": 44,
+       "false": 468,
+       "outcome_unknown": 0
+      },
+      "alert_precision": 0.085938,
+      "lead_min": {
+       "median": 45.0,
+       "q25": 30.0,
+       "q75": 60.0,
+       "share_ge_30": 0.8125
+      },
+      "warnable_ceiling": 0.946429
+     },
+     "all": {
+      "episodes": 117,
+      "hits": 100,
+      "sensitivity": 0.854701,
+      "fa_per_day": 1.926489,
+      "monitored_days": 348.302083,
+      "notifications": {
+       "true": 94,
+       "false": 671,
+       "outcome_unknown": 0
+      },
+      "alert_precision": 0.122876,
+      "lead_min": {
+       "median": 45.0,
+       "q25": 30.0,
+       "q75": 60.0,
+       "share_ge_30": 0.79
+      },
+      "warnable_ceiling": 0.905983
+     }
+    },
+    {
+     "theta": 70,
+     "treated": {
+      "episodes": 56,
+      "hits": 51,
+      "sensitivity": 0.910714,
+      "fa_per_day": 2.219427,
+      "monitored_days": 255.020833,
+      "notifications": {
+       "true": 48,
+       "false": 566,
+       "outcome_unknown": 0
+      },
+      "alert_precision": 0.078176,
+      "lead_min": {
+       "median": 45.0,
+       "q25": 30.0,
+       "q75": 60.0,
+       "share_ge_30": 0.784314
+      },
+      "warnable_ceiling": 0.946429
+     },
+     "all": {
+      "episodes": 117,
+      "hits": 103,
+      "sensitivity": 0.880342,
+      "fa_per_day": 2.308341,
+      "monitored_days": 348.302083,
+      "notifications": {
+       "true": 98,
+       "false": 804,
+       "outcome_unknown": 0
+      },
+      "alert_precision": 0.108647,
+      "lead_min": {
+       "median": 45.0,
+       "q25": 30.0,
+       "q75": 60.0,
+       "share_ge_30": 0.815534
+      },
+      "warnable_ceiling": 0.905983
+     }
+    },
+    {
+     "theta": 80,
+     "treated": {
+      "episodes": 56,
+      "hits": 53,
+      "sensitivity": 0.946429,
+      "fa_per_day": 3.654603,
+      "monitored_days": 255.020833,
+      "notifications": {
+       "true": 52,
+       "false": 932,
+       "outcome_unknown": 0
+      },
+      "alert_precision": 0.052846,
+      "lead_min": {
+       "median": 60.0,
+       "q25": 45.0,
+       "q75": 60.0,
+       "share_ge_30": 0.924528
+      },
+      "warnable_ceiling": 0.946429
+     },
+     "all": {
+      "episodes": 117,
+      "hits": 105,
+      "sensitivity": 0.897436,
+      "fa_per_day": 3.732392,
+      "monitored_days": 348.302083,
+      "notifications": {
+       "true": 103,
+       "false": 1300,
+       "outcome_unknown": 0
+      },
+      "alert_precision": 0.073414,
+      "lead_min": {
+       "median": 60.0,
+       "q25": 45.0,
+       "q75": 60.0,
+       "share_ge_30": 0.933333
+      },
+      "warnable_ceiling": 0.905983
+     }
+    }
+   ],
+   "v2_protocol_semantics": [
+    {
+     "theta": 40,
+     "treated": {
+      "episodes": 56,
+      "hits": 24,
+      "sensitivity": 0.428571,
+      "fa_per_day": 0.59603,
+      "monitored_days": 255.020833,
+      "notifications": {
+       "true": 24,
+       "false": 152,
+       "outcome_unknown": 1
+      },
+      "alert_precision": 0.136364,
+      "lead_min": {
+       "median": 30.0,
+       "q25": 26.25,
+       "q75": 45.0,
+       "share_ge_30": 0.75
+      },
+      "warnable_ceiling": 0.946429
+     },
+     "all": {
+      "episodes": 117,
+      "hits": 58,
+      "sensitivity": 0.495726,
+      "fa_per_day": 0.648862,
+      "monitored_days": 348.302083,
+      "notifications": {
+       "true": 57,
+       "false": 226,
+       "outcome_unknown": 1
+      },
+      "alert_precision": 0.201413,
+      "lead_min": {
+       "median": 30.0,
+       "q25": 15.0,
+       "q75": 45.0,
+       "share_ge_30": 0.689655
+      },
+      "warnable_ceiling": 0.905983
+     }
+    },
+    {
+     "theta": 45,
+     "treated": {
+      "episodes": 56,
+      "hits": 27,
+      "sensitivity": 0.482143,
+      "fa_per_day": 0.713667,
+      "monitored_days": 255.020833,
+      "notifications": {
+       "true": 27,
+       "false": 182,
+       "outcome_unknown": 2
+      },
+      "alert_precision": 0.129187,
+      "lead_min": {
+       "median": 30.0,
+       "q25": 22.5,
+       "q75": 45.0,
+       "share_ge_30": 0.740741
+      },
+      "warnable_ceiling": 0.946429
+     },
+     "all": {
+      "episodes": 117,
+      "hits": 62,
+      "sensitivity": 0.529915,
+      "fa_per_day": 0.766576,
+      "monitored_days": 348.302083,
+      "notifications": {
+       "true": 60,
+       "false": 267,
+       "outcome_unknown": 2
+      },
+      "alert_precision": 0.183486,
+      "lead_min": {
+       "median": 30.0,
+       "q25": 30.0,
+       "q75": 45.0,
+       "share_ge_30": 0.758065
+      },
+      "warnable_ceiling": 0.905983
+     }
+    },
+    {
+     "theta": 50,
+     "treated": {
+      "episodes": 56,
+      "hits": 31,
+      "sensitivity": 0.553571,
+      "fa_per_day": 0.850911,
+      "monitored_days": 255.020833,
+      "notifications": {
+       "true": 31,
+       "false": 217,
+       "outcome_unknown": 2
+      },
+      "alert_precision": 0.125,
+      "lead_min": {
+       "median": 30.0,
+       "q25": 15.0,
+       "q75": 45.0,
+       "share_ge_30": 0.709677
+      },
+      "warnable_ceiling": 0.946429
+     },
+     "all": {
+      "episodes": 117,
+      "hits": 68,
+      "sensitivity": 0.581197,
+      "fa_per_day": 0.918743,
+      "monitored_days": 348.302083,
+      "notifications": {
+       "true": 65,
+       "false": 320,
+       "outcome_unknown": 2
+      },
+      "alert_precision": 0.168831,
+      "lead_min": {
+       "median": 30.0,
+       "q25": 30.0,
+       "q75": 45.0,
+       "share_ge_30": 0.779412
+      },
+      "warnable_ceiling": 0.905983
+     }
+    },
+    {
+     "theta": 55,
+     "treated": {
+      "episodes": 56,
+      "hits": 36,
+      "sensitivity": 0.642857,
+      "fa_per_day": 1.070501,
+      "monitored_days": 255.020833,
+      "notifications": {
+       "true": 36,
+       "false": 273,
+       "outcome_unknown": 2
+      },
+      "alert_precision": 0.116505,
+      "lead_min": {
+       "median": 45.0,
+       "q25": 30.0,
+       "q75": 60.0,
+       "share_ge_30": 0.777778
+      },
+      "warnable_ceiling": 0.946429
+     },
+     "all": {
+      "episodes": 117,
+      "hits": 77,
+      "sensitivity": 0.65812,
+      "fa_per_day": 1.148428,
+      "monitored_days": 348.302083,
+      "notifications": {
+       "true": 74,
+       "false": 400,
+       "outcome_unknown": 2
+      },
+      "alert_precision": 0.156118,
+      "lead_min": {
+       "median": 45.0,
+       "q25": 30.0,
+       "q75": 45.0,
+       "share_ge_30": 0.805195
+      },
+      "warnable_ceiling": 0.905983
+     }
+    },
+    {
+     "theta": 60,
+     "treated": {
+      "episodes": 56,
+      "hits": 43,
+      "sensitivity": 0.767857,
+      "fa_per_day": 1.372437,
+      "monitored_days": 255.020833,
+      "notifications": {
+       "true": 42,
+       "false": 350,
+       "outcome_unknown": 3
+      },
+      "alert_precision": 0.107143,
+      "lead_min": {
+       "median": 45.0,
+       "q25": 30.0,
+       "q75": 60.0,
+       "share_ge_30": 0.767442
+      },
+      "warnable_ceiling": 0.946429
+     },
+     "all": {
+      "episodes": 117,
+      "hits": 90,
+      "sensitivity": 0.769231,
+      "fa_per_day": 1.464246,
+      "monitored_days": 348.302083,
+      "notifications": {
+       "true": 86,
+       "false": 510,
+       "outcome_unknown": 3
+      },
+      "alert_precision": 0.144295,
+      "lead_min": {
+       "median": 45.0,
+       "q25": 30.0,
+       "q75": 45.0,
+       "share_ge_30": 0.777778
+      },
+      "warnable_ceiling": 0.905983
+     }
+    },
+    {
+     "theta": 65,
+     "treated": {
+      "episodes": 56,
+      "hits": 48,
+      "sensitivity": 0.857143,
+      "fa_per_day": 1.835144,
+      "monitored_days": 255.020833,
+      "notifications": {
+       "true": 44,
+       "false": 468,
+       "outcome_unknown": 3
+      },
+      "alert_precision": 0.085938,
+      "lead_min": {
+       "median": 45.0,
+       "q25": 30.0,
+       "q75": 60.0,
+       "share_ge_30": 0.8125
+      },
+      "warnable_ceiling": 0.946429
+     },
+     "all": {
+      "episodes": 117,
+      "hits": 100,
+      "sensitivity": 0.854701,
+      "fa_per_day": 1.926489,
+      "monitored_days": 348.302083,
+      "notifications": {
+       "true": 94,
+       "false": 671,
+       "outcome_unknown": 3
+      },
+      "alert_precision": 0.122876,
+      "lead_min": {
+       "median": 45.0,
+       "q25": 30.0,
+       "q75": 60.0,
+       "share_ge_30": 0.79
+      },
+      "warnable_ceiling": 0.905983
+     }
+    },
+    {
+     "theta": 70,
+     "treated": {
+      "episodes": 56,
+      "hits": 51,
+      "sensitivity": 0.910714,
+      "fa_per_day": 2.219427,
+      "monitored_days": 255.020833,
+      "notifications": {
+       "true": 48,
+       "false": 566,
+       "outcome_unknown": 3
+      },
+      "alert_precision": 0.078176,
+      "lead_min": {
+       "median": 45.0,
+       "q25": 30.0,
+       "q75": 60.0,
+       "share_ge_30": 0.784314
+      },
+      "warnable_ceiling": 0.946429
+     },
+     "all": {
+      "episodes": 117,
+      "hits": 103,
+      "sensitivity": 0.880342,
+      "fa_per_day": 2.308341,
+      "monitored_days": 348.302083,
+      "notifications": {
+       "true": 98,
+       "false": 804,
+       "outcome_unknown": 4
+      },
+      "alert_precision": 0.108647,
+      "lead_min": {
+       "median": 45.0,
+       "q25": 30.0,
+       "q75": 60.0,
+       "share_ge_30": 0.815534
+      },
+      "warnable_ceiling": 0.905983
+     }
+    },
+    {
+     "theta": 80,
+     "treated": {
+      "episodes": 56,
+      "hits": 53,
+      "sensitivity": 0.946429,
+      "fa_per_day": 3.654603,
+      "monitored_days": 255.020833,
+      "notifications": {
+       "true": 52,
+       "false": 932,
+       "outcome_unknown": 5
+      },
+      "alert_precision": 0.052846,
+      "lead_min": {
+       "median": 60.0,
+       "q25": 45.0,
+       "q75": 60.0,
+       "share_ge_30": 0.924528
+      },
+      "warnable_ceiling": 0.946429
+     },
+     "all": {
+      "episodes": 117,
+      "hits": 105,
+      "sensitivity": 0.897436,
+      "fa_per_day": 3.732392,
+      "monitored_days": 348.302083,
+      "notifications": {
+       "true": 103,
+       "false": 1300,
+       "outcome_unknown": 7
+      },
+      "alert_precision": 0.073414,
+      "lead_min": {
+       "median": 60.0,
+       "q25": 45.0,
+       "q75": 60.0,
+       "share_ge_30": 0.933333
+      },
+      "warnable_ceiling": 0.905983
+     }
+    }
+   ]
+  }
+ },
+ "timing_s": {
+  "build_eval_inputs_s": 28.409,
+  "table_a2_eval_s": 0.209,
+  "one_threshold_eval_s": 0.013,
+  "curve_treated_s": 4.836,
+  "bootstrap_treated_s": 1.474,
+  "curve_all_s": 6.188,
+  "bootstrap_all_s": 1.653
+ }
+}

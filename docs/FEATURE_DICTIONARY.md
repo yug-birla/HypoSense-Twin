@@ -5,7 +5,7 @@
 **Authoritative definition:** `src/hyposense/features/spec.py`, the registry with one definition per
 feature. Its committed, generated export is
 [`artifacts/features/feature_spec.json`](../artifacts/features/feature_spec.json)
-(sha256 `82fc54e9…`). A test fails if the export drifts from the registry, and artefacts check
+(v1.0.1, sha256 `90329804…`; v1.0.1 = exact rational slope / M0 arithmetic, ADR-036). A test fails if the export drifts from the registry, and artefacts check
 feature names against it (`FeatureSpecMismatch`). This page is the human-readable summary; where
 they differ, the registry wins.
 

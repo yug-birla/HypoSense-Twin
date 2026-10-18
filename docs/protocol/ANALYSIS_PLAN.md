@@ -1,7 +1,7 @@
 # HypoSense Twin v2 — Statistical Analysis Plan (pre-registration)
 
-**Status: DRAFT v0.4 — §0 ADOPTED (= executable spec, S2); §0b ADOPTED (S3); §0c APPROVED (P-C8);
-§0d ADOPTED (= executable spec, S4);
+**Status: DRAFT v0.5 — §0 ADOPTED (= executable spec, S2); §0b ADOPTED (S3); §0c APPROVED (P-C8);
+§0d ADOPTED (= executable spec, S4; exact arithmetic S5); §5 DRAFT (S5, awaiting owner approval);
 §1–4 APPROVED by the project owner (2026-10-18); §5–6 pending (S5).** This file is hashed into the freeze manifest (ADR-012). After freeze it may not
 change. Before freeze, a change to an APPROVED section requires a new owner approval recorded
 in [../DECISION_LOG.md](../DECISION_LOG.md).
@@ -128,7 +128,7 @@ changes no number.
    (§3.1).
 2. The same projection (H = 30, 60) and slope are App. D group-1 and group-2 features
    (`cgm_m0_proj30/60`, `cgm_slope30`). One implementation, `features.cgm`, serves both M0 and the
-   features. Exact sums agree with numpy.polyfit to 1e-9 (`test_ls_slope_matches_numpy_polyfit`).
+   features. Since S5 (ADR-036) the slope and projection are computed in exact rational arithmetic on the 0.1 mg/dL data grid and rounded once. A projection exactly equal to θ is exactly θ and does not alert (strict rule). This agrees with numpy.polyfit to 1e-9 (`test_ls_slope_matches_numpy_polyfit`).
 3. **Feature time.** Features at t use only events with ts ≤ t, ordered dose → meal → CGM within
    one timestamp. Static summary values (including laboratory values that may post-date the CGM
    period) are recording-level context available at every t. This is Blueprint §10.2's accepted
@@ -249,7 +249,54 @@ must include fixtures for:
 - OUTCOME-UNKNOWN classification at recording ends.
 
 ## 5. Primary analysis, bootstrap, secondary and sensitivity analyses
-PENDING (S5). Blueprint §20 (Tables 20.1–20.4) applies unchanged until this section is written.
+
+Status: **DRAFT (S5), awaiting owner approval. Required before freeze; not blocking S6
+development work.** Implementation: `src/hyposense/evaluation/`. Metric definitions:
+`artifacts/evaluation/metric_registry.json`, generated from `evaluation/registry.py`.
+
+### 5.1 Primary analysis (Blueprint §15, Table 20.1; unchanged)
+- **Endpoint:** Δ = sens@1FA(M3) − sens@1FA(M2), for E-treated patients, on pooled
+  out-of-fold predictions.
+- **Rules:** the §2 policy-replay semantics and the §3.4 first-crossing rule.
+- **H1 is supported iff** the lower bound of the 95 % paired patient-cluster bootstrap interval
+  of Δ is greater than 0.
+
+### 5.2 Bootstrap (Blueprint Table 20.1, App. E; `configs/default.yaml` `bootstrap`)
+- **Settings:** B = 2,000 resamples, seed 2027, percentile 95 % interval.
+- **Unit:** the patient. All of a drawn patient's recordings, episodes and prediction times
+  travel together. Readings, windows and episodes are never resampled on their own.
+- **Multiplicity:** a patient drawn k times counts k times (weights = draw counts).
+- **Pairing:** one set of draws, shared by both models. Δ is computed on each resample;
+  separate intervals are never compared.
+- **Each resample** re-applies the full §3.4 rule on its own curve. The implementation evaluates
+  per-patient step functions on the pooled grid. A grid value that is not a resampled patient's
+  score repeats an adjacent point of the resample's own curve, so first-crossing values and
+  areas are exactly those of the resample's own grid.
+- **G5 (Table 21.1):** the number of resamples in which a statistic is undefined (no episodes)
+  is reported. G5 requires it to be 0 for both models.
+
+### 5.3 Implementation clarifications of §2–3 (S5)
+None of these changes a number on the current tuning data. Each is tested.
+1. **Cooldown scope.** The 60-min cooldown runs within a recording; each recording is one state
+   (§0 item 10). The recordings of a patient do not overlap in time (MEASURED on T).
+2. **Ties are exact.** M0 projections and CGM slopes are computed in exact rational arithmetic on
+   the 0.1 mg/dL data grid and rounded once (ADR-036). Mathematically equal scores are therefore
+   bitwise equal and switch together (§3.4). A projection exactly equal to θ does not alert,
+   because the rule is strict.
+3. **Partial area (§3.7).** Each segment of the first-crossing path is clipped to [0.5, 2.0]
+   FA/day and integrated with its sign, so a non-monotone stretch counts as the path runs. For a
+   monotone curve this is the ordinary trapezoidal area. The M0 curves on T have 0 non-monotone
+   steps.
+4. **Window-level metrics** (log-loss, Brier, AUPRC, calibration) are defined only for
+   probabilities. M0 has none, so they are reported as not applicable, never forced.
+5. **Abstention coverage (Table 20.2).** The share of CGM readings in INSUFFICIENT DATA, plus the
+   number of warnable episodes with no forecast at any label-eligible reading of their warning
+   window.
+
+### 5.4 Secondary, sensitivity and robustness analyses
+Blueprint Table 20.3 (S1–S7, SA1–SA8, R1–R4) and §0c SA9 apply unchanged. Each reuses §2–3
+and §5.2 exactly. Development (T) results are labelled DEVELOPMENT and are never pooled with
+confirmatory results.
 
 ## 6. Interpretation matrix and model-selection rule
 PENDING (S5). Blueprint §15 and Table 20.4 apply unchanged.
