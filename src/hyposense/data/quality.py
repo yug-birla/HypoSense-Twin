@@ -47,3 +47,27 @@ def cgm_quality_flags(series: CGMSeries, thr: QualityThresholds) -> CGMQualityFl
     return CGMQualityFlags(
         gap_before=gap, floor=g <= thr.floor_mgdl, rapid_change=rate, warmup=warm
     )
+
+
+SENSOR_FAULT_RUN_READINGS = 8  # approved P-C8a: >= 8 consecutive readings <= floor (~2 h)
+
+
+def sensor_fault_suspected(
+    series: CGMSeries,
+    thr: QualityThresholds,
+    min_readings: int = SENSOR_FAULT_RUN_READINGS,
+    max_step_s: int = 1200,
+) -> npt.NDArray[np.bool_]:
+    """CAUSAL live flag (approved P-C8a/b): True at reading t if the readings ending at t form a run
+    of >= `min_readings` consecutive values <= floor, each <= max_step_s apart. It uses only data
+    up to t. It is a data-quality warning ("SENSOR FAULT SUSPECTED"): it never changes labels and
+    never replaces LOW NOW (P-C1). The offline SA9 annotation (labels.annotations.floor_runs)
+    flags whole runs in hindsight, including their first 7 readings."""
+    ts, g = series.ts, series.value
+    out = np.zeros(len(g), dtype=bool)
+    run = 0
+    for k in range(len(g)):
+        contiguous = k > 0 and ts[k] - ts[k - 1] <= max_step_s
+        run = (run + 1 if contiguous else 1) if g[k] <= thr.floor_mgdl else 0
+        out[k] = run >= min_readings
+    return out

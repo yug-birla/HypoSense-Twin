@@ -73,7 +73,11 @@ def measure_events(
     utc_offset_s: int,
     partition: dict[str, str],
     g3b: dict[str, Any],
+    treated_override: dict[str, bool] | None = None,
 ) -> dict[str, Any]:
+    """`treated_override` (patient_id -> treated) replaces the LEGACY treated definition in the
+    partition aggregates and strata (S3: production parser). Blueprint-definition values that are
+    recording-level legacy constructs (L1_in_*_recordings) keep the legacy rule for reproduction."""
     recs = sorted(recordings, key=lambda r: r.identity.recording_key)
     labelled: list[tuple[Recording, RecordingLabels]] = [(r, label_recording(r, cfg)) for r in recs]
     patients = sorted({r.identity.patient_id for r in recs})
@@ -180,6 +184,9 @@ def measure_events(
         treated[pid] |= t.insulin_any or t.secretagogue_any
         treated_strict[pid] |= t.insulin_strict or t.secretagogue_any
     iv_only = sum(1 for p in patients if treated[p] != treated_strict[p])
+    legacy_treated = dict(treated)
+    if treated_override is not None:
+        treated = {p: bool(treated_override.get(p, False)) for p in patients}
     l1 = {p: per_patient[p]["L1"] for p in patients}
     by_part: dict[str, Any] = {}
     strata: Counter[str] = Counter()
@@ -229,7 +236,6 @@ def measure_events(
         }
         for lv in LEVELS
     }
-    patients_treated = sum(treated.values())
 
     results: dict[str, Any] = {
         "label_config": cfg.as_dict(),
@@ -272,10 +278,14 @@ def measure_events(
             "ineligibility_reasons": {k: reasons[k] for k in sorted(reasons)},
             "per_recording_eligible_share_min_median_max": _q(coverage, [0, 50, 100]),
         },
+        "treated_definition": "production_parser" if treated_override is not None else "legacy",
+        "treated_differs_from_legacy": sorted(
+            p for p in patients if treated[p] != legacy_treated[p]
+        ),
         "treatment_legacy_provisional": {
             "definition": "Blueprint audit.py rule (any matched s.c. insulin class, any CSII cell, "
             "any i.v. cell, or an oral SU/glinide); PROVISIONAL until the S3 parser",
-            "patients_treated": patients_treated,
+            "patients_treated": sum(legacy_treated.values()),
             "patients_treated_strict_iv": sum(treated_strict.values()),
             "patients_status_depends_on_non_insulin_iv": iv_only,
             "L1_in_treated_recordings": l1_rec_class["either"],

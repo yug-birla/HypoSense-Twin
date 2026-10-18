@@ -144,3 +144,69 @@ def test_legacy_blueprint_event_numbers_reproduce_exactly_on_v2() -> None:
     }
     assert mismatches == {}
     assert len(ref) == 48
+
+
+# ------- S3: medication parsing, treated population, exposure causality (real data) -------
+# Pinned values are invariants of the pinned v5 copy + versioned drug dictionary + parser. They
+# change only with a dictionary/parser change, and then deliberately (DECISION_LOG).
+
+from hyposense.audit.medication import parse_all, production_treated  # noqa: E402
+from hyposense.medication.dictionary import load_dictionary  # noqa: E402
+from hyposense.medication.events import ParseStatus  # noqa: E402
+
+
+@pytest.fixture(scope="module")
+def meds(audit_ds):  # type: ignore[no-untyped-def]
+    return parse_all(
+        audit_ds.recordings, load_dictionary(), load_config("pharma.yaml")["formulation_rules"]
+    )
+
+
+def test_every_medication_entry_is_recognised(meds) -> None:  # type: ignore[no-untyped-def]
+    statuses = [en.status for m in meds.values() for en in m.entries]
+    assert len(statuses) == 4653
+    assert not any(s in (ParseStatus.UNPARSEABLE, ParseStatus.AMBIGUOUS) for s in statuses)
+
+
+def test_production_treated_population(audit_ds, meds) -> None:  # type: ignore[no-untyped-def]
+    status = production_treated(audit_ds.recordings, meds)
+    treated = sorted(p for p, s in status.items() if s.treated)
+    assert len(treated) == 72
+    assert "2078" not in treated  # legacy rule mis-read a misplaced acarbose cell as CSII insulin
+    part = load_partition()
+    assert sum(part[p] == "E" for p in treated) == 50
+    assert sum(part[p] == "T" for p in treated) == 22
+
+
+def test_exposure_truncation_equality_on_real_tuning_records() -> None:
+    import numpy as np
+
+    from hyposense.data.loader import cgm_series
+    from hyposense.medication.exposure import ExposureEngine, load_kernel_set
+    from hyposense.medication.recording import parse_recording, prescribed_classes
+    from hyposense.medication.timing import raw_timing
+
+    cfg, ph = load_config(), load_config("pharma.yaml")
+    ks = load_kernel_set(ph, cfg["exposure"]["timing_unknown_after_h"])
+    d = load_dictionary()
+    ds = load_dataset(AccessScope.TUNING_ONLY)
+    rng = np.random.default_rng(2026)
+    checked = 0
+    for r in ds.recordings:
+        m = parse_recording(r, d, ph["formulation_rules"])
+        pres = prescribed_classes(
+            ds.summary.frame.loc[r.identity.recording_key, "prescribed_hypoglycemic_agents"], d
+        )
+        ts = cgm_series(r).ts
+        full = ExposureEngine(m.events, ks, pres).compute(ts)
+        raw = raw_timing(m.events, ts)
+        for t in rng.choice(ts, size=min(3, len(ts)), replace=False):
+            past = [e for e in m.events if e.ts <= t]
+            a = ExposureEngine(past, ks, pres).compute(np.array([t]))
+            b = raw_timing(past, np.array([t]))
+            for k, v in a.items():
+                assert np.array_equal(v, full[k][ts == t], equal_nan=True), (k, r.identity)
+            for k, v in b.items():
+                assert np.array_equal(v, raw[k][ts == t], equal_nan=True), (k, r.identity)
+            checked += 1
+    assert checked > 60

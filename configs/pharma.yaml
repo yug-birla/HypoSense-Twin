@@ -1,85 +1,92 @@
-# HypoSense Twin v2 — exposure kernel parameters
-# Source: Blueprint v2.0 Section 12.2 and Appendix C.
+# HypoSense Twin v2 — exposure kernel parameters with per-parameter provenance (S3, 2026-10-18)
+# Structure: Blueprint §12.2–12.3, Appendix C. Full source quotes: docs/medication/PARAMETER_SOURCES.md
 #
-# STATUS: ILLUSTRATIVE — NOT FOR USE IN ANY REPORTED RESULT.
-# Every value below is the blueprint's illustrative value (Appendix C, used for Figure 12.1).
-# Before the protocol freeze, each kernel needs a production value taken from the current
-# product label, with `source` and `source_date` filled and `status: SOURCED`, then a
-# clinical-pharmacist review (`reviewed_by`). The freeze script must refuse to freeze while any
-# kernel has `status: ILLUSTRATIVE`
-# (enforced by tests/regression/test_protocol_constants.py::test_pharma_not_freezable_while_illustrative).
-#
-# Constraints the kernel code will validate:
-#   exponential insulin kernel: 0 < t_peak_min < t_dur_min / 2  (denominator of Eq. 3 must be > 0)
-#   Bateman kernel: t_max_min < t_half_min / ln(2), so that k_a > k_e solves the t_max equation
+# Parameter status vocabulary:
+#   VERIFIED_SOURCE     value stated in a regulatory label / official product information (quote on file)
+#   LITERATURE_DERIVED  value derived from such a source by a documented step (e.g. midpoint of a range)
+#   ASSUMPTION          modelling choice, not a measured value
+#   ILLUSTRATIVE        blueprint placeholder — must not remain at freeze (none left)
+#   PENDING_REVIEW      awaiting clinical-pharmacist review
+# Kernels describe POPULATION-LEVEL pharmacodynamic time courses (insulins: glucose-lowering effect)
+# or normalised pharmacokinetic shape (secretagogues). They are modelling approximations: NOT
+# clinically validated, not patient-specific, and never used to advise on doses.
 
-version: "0.0.0-illustrative"
+version: "1.0.0"
+reviewed_by: null               # clinical-pharmacist review: PENDING (docs/medication/PHARMACIST_REVIEW.md)
+verification_date: "2026-10-18"
 
 insulin:
-  rapid_analogue:
-    family: exponential          # Eq. 3-4 (OpenAPS-style activity curve)
-    t_peak_min: 75
-    t_dur_min: 300
-    products: [insulin aspart, insulin glulisine, insulin lispro]
-    status: ILLUSTRATIVE
-    source: null
-    source_date: null
-    reviewed_by: null
-  regular_human:
+  rapid_analogue:               # insulin aspart, glulisine (lispro by class)
     family: exponential
-    t_peak_min: 150
-    t_dur_min: 480
-    products: [Novolin R, Gansulin R, Humulin R]
-    status: ILLUSTRATIVE
-    source: null
-    source_date: null
-    reviewed_by: null
-  intermediate_nph:
+    t_peak_min: {value: 75, status: LITERATURE_DERIVED, source: "OpenAPS rapid-acting exponential curve (peak 75 min); within NovoLog label 'maximum glucose-lowering effect ... between 1 and 3 hours'", note: "community-documented curve; label gives a 1-3 h range"}
+    t_dur_min: {value: 300, status: VERIFIED_SOURCE, source: "NovoLog FDA label (set 3a1e73a2…, v34): 'duration of action ... 3 to 5 hours'; NovoRapid EMA SmPC 3-5 h", note: "upper end of label range; equals OpenAPS minimum DIA"}
+  regular_human:                # Novolin R, Gansulin R, Humulin R; CSII reservoir insulin
     family: exponential
-    t_peak_min: 360
-    t_dur_min: 900
-    products: [Novolin N, Humulin N]
-    status: ILLUSTRATIVE
-    source: null
-    source_date: null
-    reviewed_by: null
-  basal_analogue:
-    family: flat                 # flat after a lag; window definition to confirm (docs/PROPOSALS.md P-B4)
-    lag_min: 60
-    t_dur_min: 1440
-    products: [insulin glargine, insulin detemir, insulin degludec]
-    status: ILLUSTRATIVE
-    source: null
-    source_date: null
-    reviewed_by: null
+    t_peak_min: {value: 150, status: LITERATURE_DERIVED, source: "Novolin R FDA label (set aee7f1f3…, v19): 'maximal between 1.5 and 3.5 hours'; Actrapid EMA SmPC 1.5-3.5 h", note: "midpoint of 1.5-3.5 h (Humulin R: ~3 h)"}
+    t_dur_min: {value: 480, status: VERIFIED_SOURCE, source: "Novolin R FDA label: 'terminates approximately 8 hours post-dose'; Humulin R ~8 h (3-14 h)", note: "longer at high doses in obesity (Humulin R ~18 h)"}
+  intermediate_nph:             # NPH; also the protamine component of premixes (ASSUMPTION for protamine-aspart)
+    family: exponential
+    t_peak_min: {value: 390, status: VERIFIED_SOURCE, source: "Humulin N FDA label (set f6edd793…, v50): 'median maximum effect occurred at 6.5 hours (range: 2.8 to 13 hours)'", note: "Insulatard SmPC: maximum 4-12 h"}
+    t_dur_min: {value: 1440, status: VERIFIED_SOURCE, source: "Novolin N FDA label: 'duration of action of up to 24 hours'; Insulatard EMA SmPC 'approximately 24 hours'", note: "CHANGED from blueprint illustrative 900 min (15 h), which the labels contradict"}
+  basal_glargine:
+    family: flat
+    lag_min: {value: 60, status: ASSUMPTION, source: "", note: "label gives no numeric onset; 1 h lag per Blueprint §12.2"}
+    t_dur_min: {value: 1440, status: VERIFIED_SOURCE, source: "Lantus FDA label (set d5e07a0c…, v35): 'no pronounced peak'; duration '24 hours (range: 10.8 to >24 hours)'", note: "clamp observation ended at 24 h (censored)"}
+  basal_detemir:
+    family: flat
+    lag_min: {value: 60, status: ASSUMPTION, source: "", note: "label: >50 % of max effect from 3-4 h (0.2-0.4 U/kg)"}
+    t_dur_min: {value: 1440, status: VERIFIED_SOURCE, source: "Levemir FDA label: 'up to a 24-hour duration of action'; EMA: 'up to 24 hours depending on dose'", note: "dose-dependent (7.6 to >24 h); flat shape is an ASSUMPTION"}
+  basal_degludec:
+    family: flat
+    lag_min: {value: 60, status: VERIFIED_SOURCE, source: "Tresiba FDA label (set 456c5e87…, v14): 'median onset of appearance was around one hour'", note: ""}
+    t_dur_min: {value: 2520, status: VERIFIED_SOURCE, source: "Tresiba FDA label: 'lasted at least 42 hours'; EMA: 'beyond 42 hours'; t1/2 ~25 h", note: "CHANGED from blueprint illustrative 1440; at once-daily steady state the flat level equals dose/24 h either way"}
 
-# Premixes are dose-weighted sums of component kernels (Section 12.2; Appendix B)
-premix:
-  premix_analogue_30_70: {rapid_analogue: 0.30, intermediate_nph: 0.70}
-  premix_analogue_50_50: {rapid_analogue: 0.50, intermediate_nph: 0.50}
-  premix_human_30_70:    {regular_human: 0.30, intermediate_nph: 0.70}
-  premix_human_40_60:    {regular_human: 0.40, intermediate_nph: 0.60}
+# Bateman kernels: exposure = (dose / d_max) x peak-normalised one-compartment curve (Eq. 5–6)
+secretagogue:
+  gliclazide_mr:
+    family: bateman
+    t_half_min: {value: 960, status: LITERATURE_DERIVED, source: "Diamicron 30 mg MR UK SmPC (eMC 1321, rev 02/2020): 'elimination half-life ... between 12 and 20 hours'", note: "midpoint 16 h"}
+    t_max_min: {value: 540, status: LITERATURE_DERIVED, source: "same: 'increase progressively during the first 6 hours, reaching a plateau ... from the sixth to the twelfth hour'", note: "midpoint of the 6-12 h plateau; a Bateman curve cannot represent a plateau (ASSUMPTION)"}
+    d_max_mg: {value: 120, status: VERIFIED_SOURCE, source: "same: 'maximum recommended daily dose is 120 mg'", note: ""}
+  gliclazide_ir:
+    family: bateman
+    t_half_min: {value: 660, status: LITERATURE_DERIVED, source: "Diamicron 80 mg UK SmPC (eMC 1150, rev 02/2020): 'between 10 and 12 hours'", note: "midpoint 11 h"}
+    t_max_min: {value: 240, status: LITERATURE_DERIVED, source: "same: 'maximal concentrations between 2 and 6 hours'", note: "midpoint 4 h"}
+    d_max_mg: {value: 320, status: VERIFIED_SOURCE, source: "same: 'total daily dose may vary from 40 to 320 mg'", note: ""}
+  glimepiride:
+    family: bateman
+    t_half_min: {value: 390, status: LITERATURE_DERIVED, source: "Amaryl SPC (HPRA, rev 2010): 'about 5 to 8 hours' (multiple dose); US label 5.3 +/- 4.1 h", note: "midpoint 6.5 h"}
+    t_max_min: {value: 150, status: VERIFIED_SOURCE, source: "Amaryl SPC: 'approx. 2.5 hours'; US label Cmax 2-3 h", note: ""}
+    d_max_mg: {value: 8, status: VERIFIED_SOURCE, source: "Amaryl FDA label (set 222b630b…, v19): 'maximum recommended dose is 8 mg once daily'", note: "CONFLICT: EU (2010 SPC) 6 mg; Chinese label not checked — PENDING_REVIEW"}
+  gliquidone:
+    family: bateman
+    t_half_min: {value: 180, status: ASSUMPTION, source: "", note: "terminal t1/2 NOT verified; Glurenorm ChPL: effect lasts 8-10 h, plasma values halved within 1.2 h (distribution); 3 h chosen to give an 8-10 h effective span"}
+    t_max_min: {value: 150, status: VERIFIED_SOURCE, source: "Glurenorm Polish ChPL (register 2726): Cmax 'after 2-3 hours'", note: "midpoint 2.5 h"}
+    d_max_mg: {value: 120, status: VERIFIED_SOURCE, source: "same: 'maximum recommended daily dose ... 4 tablets (120 mg)'", note: "CHANGED from 180 used in an earlier draft"}
+  repaglinide:
+    family: bateman
+    t_half_min: {value: 60, status: VERIFIED_SOURCE, source: "Prandin FDA label (set 4c1c212f…, v11): 'half-life of approximately 1 hour'; NovoNorm EMA idem", note: ""}
+    t_max_min: {value: 60, status: VERIFIED_SOURCE, source: "same: 'Cmax occur within 1 hour'", note: ""}
+    d_max_mg: {value: 16, status: VERIFIED_SOURCE, source: "same: 'maximum daily dose of 16 mg'", note: ""}
+
+# Dose-based formulation inference (Blueprint App. B). ASSUMPTION; INFERRED cases are flagged.
+formulation_rules:
+  gliclazide:
+    MR: {doses: [30, 60, 90, 120], formulation: modified-release, basis: DOSE_RULE, kernel: gliclazide_mr}
+    MR_half_tablet: {doses: [15], formulation: modified-release, basis: INFERRED, kernel: gliclazide_mr}
+    IR: {doses: [40, 80, 160, 240, 320], formulation: immediate-release, basis: DOSE_RULE, kernel: gliclazide_ir}
 
 csii:
-  kernel: regular_human
-  basal_microbolus_min: 15       # rate r (IU/h) -> r/4 IU every 15 min until the next rate entry
+  kernel: regular_human               # pump reservoir insulin = Novolin R (column header) — SOURCE FACT
+  basal_microbolus_min: 15            # rate r (IU/h) -> r/4 IU every 15 min (Blueprint §12.2)
+  max_continuation_min: 360           # ASSUMPTION (S3): a programmed rate continues at most 6 h after its
+                                      # entry (T: segments 180-300 min); beyond -> delivery UNKNOWN
+  projection_continues_current_rate: true   # P-B3 a-priori decision (S3)
 
-secretagogue:                    # Eq. 5-6 (Bateman, peak-normalised); dose expressed as d / D_max
-  sulfonylurea_default:
-    family: bateman
-    t_half_min: 720
-    t_max_min: 240
-    d_max_mg: null               # per drug and formulation, from labels (App. C)
-    status: ILLUSTRATIVE
-    source: null
-    source_date: null
-    reviewed_by: null
-  glinide_default:
-    family: bateman
-    t_half_min: 60
-    t_max_min: 60
-    d_max_mg: null
-    status: ILLUSTRATIVE
-    source: null
-    source_date: null
-    reviewed_by: null
+iv_insulin:
+  flag_window_min: 240                # Blueprint §12.2: "i.v. insulin entry in the last 4 h" flag only
+
+composition_assumptions:              # premix compositions not confirmed by an official source
+  gansulin_40r: "40 % regular / 60 % NPH — inferred from the name; press release says '40/60 premix' (ASSUMPTION)"
+  scilin_m30: "30 % soluble / 70 % isophane — confirmed only for Bioton Gensulin M30 (Polish ChPL); same-product ASSUMPTION"
+  insulin_aspart_biphasic_30: "70 % protamine-crystallised / 30 % soluble aspart — VERIFIED (NovoLog Mix 70/30 label, NovoMix 30 SmPC); protamine component modelled with the NPH kernel (ASSUMPTION)"

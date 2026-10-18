@@ -195,3 +195,19 @@ def test_git_dirty_ignores_generated_outputs_only(monkeypatch: pytest.MonkeyPatc
     assert provenance.git_state()["dirty"] is True
     monkeypatch.setattr(provenance, "_git", fake(""))
     assert provenance.git_state()["dirty"] is False
+
+
+def test_sensor_fault_suspected_is_causal_and_needs_8_readings() -> None:
+    from hyposense.data.quality import sensor_fault_suspected
+
+    ts = np.arange(0, 12 * 900, 900, dtype=np.int64)
+    g = np.array([100, 39.6, 39.6, 39.6, 39.6, 39.6, 39.6, 39.6, 39.6, 39.6, 120, 39.6])
+    flags = sensor_fault_suspected(
+        CGMSeries("k", ts, g, np.arange(12, dtype=np.int64), {}), QualityThresholds()
+    )
+    # run starts at index 1; the 8th consecutive floor reading is index 8
+    assert flags.tolist() == [False] * 8 + [True, True, False, False]
+    # causal: the flag at k is unchanged when the series is truncated at k
+    for k in range(1, 12):
+        sub = CGMSeries("k", ts[: k + 1], g[: k + 1], np.arange(k + 1, dtype=np.int64), {})
+        assert sensor_fault_suspected(sub, QualityThresholds())[-1] == flags[k]

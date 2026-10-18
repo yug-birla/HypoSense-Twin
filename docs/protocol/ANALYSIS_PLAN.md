@@ -1,7 +1,7 @@
 # HypoSense Twin v2 — Statistical Analysis Plan (pre-registration)
 
-**Status: DRAFT v0.2 — §0 ADOPTED (= executable spec, S2); §1–4 APPROVED by the project owner
-(2026-10-18); §5–6 pending (S5).** This file is hashed into the freeze manifest (ADR-012). After freeze it may not
+**Status: DRAFT v0.3 — §0 ADOPTED (= executable spec, S2); §0b ADOPTED (S3); §0c APPROVED (P-C8);
+§1–4 APPROVED by the project owner (2026-10-18); §5–6 pending (S5).** This file is hashed into the freeze manifest (ADR-012). After freeze it may not
 change. Before freeze, a change to an APPROVED section requires a new owner approval recorded
 in [../DECISION_LOG.md](../DECISION_LOG.md).
 
@@ -58,6 +58,61 @@ Implementation: `src/hyposense/labels/`. Fixtures: `tests/unit/label_fixtures.py
 **Two distinct time concepts.** **Policy decision time** is every CGM reading; the live policy
 is causal (§2). **Label-eligible time** is the subset defined above, used for training rows and
 for counting hits. Labels may use the future; the policy and features may not.
+
+## 0b. Treated population and medication exposure (S3, 2026-10-18)
+
+**Treated patient (operational form of Table 5.1).** A patient is treated if any of their
+recordings contains ≥ 1 parsed (PARSED or PARSED_WITH_WARNING) logged administration of:
+- insulin by any route: s.c. injection, CSII bolus > 0 IU, CSII basal rate > 0 IU/h, or an i.v.
+  insulin bag; or
+- a sulfonylurea; or
+- a glinide.
+
+Classification follows the parsed CONTENT of a cell, never its source column. A zero-dose CSII
+bolus, a pump-suspension text and a pasted column header are not administrations. Status:
+ADOPTED, being the production form of the blueprint definition.
+
+Result (MEASURED): 72 treated patients (T 22, E 50). The legacy audit rule gave 73. The single
+difference is patient 2078 (E), whose only "insulin" under the legacy rule was a misplaced
+"acarbose 50 mg" cell in the CSII bolus column. G2 is unchanged (154 E-treated L1 episodes in 30
+patients). Artefact: `artifacts/population/treated_patients.csv` (sha256 recorded in the
+medication audit).
+
+**Medication exposure conventions.** These are frozen with the code at freeze:
+- An administration charted at row time t is known at t.
+- Exposure at t uses only administrations with ts ≤ t.
+- Projections assume no future injections or tablets. They do continue the currently programmed
+  CSII basal rate (P-B3, a-priori).
+- A programmed basal rate lasts at most 6 h after its entry.
+- Summation is exact (math.fsum), so truncated and full records give identical values.
+
+Kernel parameters and their provenance: configs/pharma.yaml and
+docs/medication/PARAMETER_SOURCES.md.
+
+## 0c. Sensor-failure handling (approved P-C8, 2026-10-18)
+
+- **P-C8a: definition.** A *sensor-floor run* is ≥ 8 consecutive CGM readings ≤ 40 mg/dL, each
+  ≤ 20 min after its predecessor (≈ ≥ 2 h at the floor). It is a measurement-quality annotation
+  and **never alters the canonical labels**.
+- **P-C8b: live behaviour (policy, S7).**
+  - A causal flag (`data.quality.sensor_fault_suspected`) becomes true at the 8th consecutive floor
+    reading, using data up to t only.
+  - While it is true, the state stays **LOW NOW** (P-C1), with the prominent data-quality warning
+    "SENSOR FAULT SUSPECTED — verify sensor and obtain capillary glucose."
+  - The state is never converted to NO ALERT, the observed low is never hidden, and no treatment
+    advice is given.
+- **P-C8c: sensitivity analysis SA9.** It repeats the primary comparison (Δ sens@1FA, M3 − M2,
+  E-treated) with two exclusions:
+  - (i) every L1 episode whose readings [onset, end) overlap a sensor-floor run (identified in
+    hindsight; offline annotation `labels.annotations.floor_runs`) is removed from the
+    sensitivity denominator;
+  - (ii) notifications issued at times t whose label window (t, t + 60 min] overlaps a
+    sensor-floor run are removed from FA accounting and reported separately.
+
+  Everything else is as in the primary analysis (bootstrap, rules, thresholds).
+  - SA9 is a sensitivity analysis only; the canonical primary analysis is unchanged.
+  - MEASURED on v5: 0 E episodes overlap a sensor-floor run, so SA9 equals the primary
+    analysis unless the data change.
 
 ## 1. Decision policy: current lows (approved P-C1)
 

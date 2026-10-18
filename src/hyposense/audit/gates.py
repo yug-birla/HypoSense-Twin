@@ -449,3 +449,59 @@ def evaluate_g3b(*, measured: dict[str, Any], criteria: dict[str, Any]) -> dict[
         "consequence_if_not_pass": "Rename label, run SA5, capillary-check action "
         "(Blueprint Table 21.1)",
     }
+
+
+# ---------------------------------------------------------------------------------------------
+# G3 · Medication usability (Blueprint Table 21.1)
+# ---------------------------------------------------------------------------------------------
+
+
+def evaluate_g3(*, measured: dict[str, Any], criteria: dict[str, Any]) -> dict[str, Any]:
+    pr, cov = measured["parse_rate"], measured["day_coverage_median"]
+    res = measured["timing_resolution_min"]
+    var = measured["treated_E_patients_with_exposure_variation"]
+    grid = measured["timing_on_grid_rate"]
+    checks = [
+        _check(
+            "G3.1-parse-rate",
+            PASS if pr is not None and pr >= criteria["min_parse_rate"] else FAIL,
+            "target administrations (insulin, SU, glinide) parsed to drug + dose, among all "
+            "target administrations plus unrecognised/ambiguous entries",
+            pr,
+            f">= {criteria['min_parse_rate']}",
+        ),
+        _check(
+            "G3.2-day-coverage",
+            PASS if cov is not None and cov >= criteria["min_day_coverage"] else FAIL,
+            "median share of CGM calendar days with >= 1 target administration, over treated "
+            "recordings",
+            cov,
+            f">= {criteria['min_day_coverage']}",
+        ),
+        _check(
+            "G3.3-timing-resolution",
+            PASS
+            if res <= criteria["max_timing_resolution_min"] and grid is not None and grid >= 0.99
+            else FAIL,
+            f"administration timestamps lie on the 15-min CGM grid (share {grid})",
+            res,
+            f"<= {criteria['max_timing_resolution_min']} min",
+        ),
+        _check(
+            "G3.4-treated-E-with-variation",
+            PASS if var >= criteria["min_treated_E_patients_with_variation"] else FAIL,
+            "E-treated patients with >= 2 distinct target administration times (exposure "
+            "necessarily varies)",
+            var,
+            f">= {criteria['min_treated_E_patients_with_variation']}",
+        ),
+    ]
+    status = FAIL if any(c["status"] == FAIL for c in checks) else PASS
+    return {
+        "gate": "G3",
+        "title": "Medication usability",
+        "status": status,
+        "checks": checks,
+        "discrepancies": [c["id"] for c in checks if c["status"] != PASS],
+        "consequence_if_not_pass": "Context-only branch (M2 vs M1) (Blueprint Table 21.1)",
+    }

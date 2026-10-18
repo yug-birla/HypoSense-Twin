@@ -113,20 +113,37 @@ def test_policy_budgets(cfg: dict[str, Any]) -> None:
     assert pol["cooldown_min"] == 60
 
 
-def test_pharma_not_freezable_while_illustrative() -> None:
-    """Records the freeze precondition: no kernel may be ILLUSTRATIVE at freeze.
+ALLOWED_STATUSES = {
+    "VERIFIED_SOURCE",
+    "LITERATURE_DERIVED",
+    "ASSUMPTION",
+    "ILLUSTRATIVE",
+    "PENDING_REVIEW",
+}
 
-    Today every kernel is ILLUSTRATIVE, so this asserts the version string says so. When the
-    values are sourced, this test must be updated to require status SOURCED + source + reviewer.
-    """
+
+def _params() -> list[tuple[str, str, dict[str, Any]]]:
     pharma = _load("pharma.yaml")
-    statuses = [
-        k["status"] for group in ("insulin", "secretagogue") for k in pharma[group].values()
+    return [
+        (kname, pname, spec)
+        for group in ("insulin", "secretagogue")
+        for kname, k in pharma[group].items()
+        for pname, spec in k.items()
+        if isinstance(spec, dict)
     ]
-    if any(s == "ILLUSTRATIVE" for s in statuses):
-        assert "illustrative" in pharma["version"], (
-            "pharma.yaml holds ILLUSTRATIVE kernels but its version does not say so"
-        )
+
+
+def test_pharma_parameters_have_provenance_and_none_is_illustrative() -> None:
+    """Freeze precondition (S3): every kernel parameter carries a status; no parameter is
+    ILLUSTRATIVE; every parameter that is not an ASSUMPTION names its source."""
+    params = _params()
+    assert params
+    for kname, pname, spec in params:
+        assert spec["status"] in ALLOWED_STATUSES, (kname, pname)
+        assert spec["status"] != "ILLUSTRATIVE", (kname, pname)
+        if spec["status"] != "ASSUMPTION":
+            assert spec.get("source"), (kname, pname)
+    assert "illustrative" not in _load("pharma.yaml")["version"]
 
 
 def test_exponential_kernels_satisfy_shape_constraint() -> None:
@@ -134,4 +151,4 @@ def test_exponential_kernels_satisfy_shape_constraint() -> None:
     pharma = _load("pharma.yaml")
     for name, k in pharma["insulin"].items():
         if k["family"] == "exponential":
-            assert 0 < k["t_peak_min"] < k["t_dur_min"] / 2, name
+            assert 0 < k["t_peak_min"]["value"] < k["t_dur_min"]["value"] / 2, name

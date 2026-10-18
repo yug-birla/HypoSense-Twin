@@ -7,7 +7,8 @@ hyposense data validate                 manifest check + load every recording; i
 hyposense partition verify              pinned hash, patient-set agreement, counts
 hyposense audit run                     structural audit + version reconciliation + G0/G1
 hyposense audit events                  labels, event audit, legacy reproduction, G2/G3b
-hyposense gates show                   print the latest gate results
+hyposense audit medication              medication audit, G3, G2 re-check (production treated)
+hyposense gates show                  print the latest gate results
 """
 
 from __future__ import annotations
@@ -119,6 +120,14 @@ def cmd_audit_events(args: argparse.Namespace) -> int:
     return 0 if summary["G2"] != "FAIL" and summary["G3b"] != "FAIL" else 1
 
 
+def cmd_audit_medication(args: argparse.Namespace) -> int:
+    from hyposense.audit.med_run import run_medication_audit
+
+    summary = run_medication_audit()
+    _print(summary)
+    return 0 if summary["G3"] != "FAIL" and summary["G2"] != "FAIL" else 1
+
+
 def cmd_gates_show(args: argparse.Namespace) -> int:
     from hyposense.audit.gates import gates_dir
 
@@ -185,6 +194,9 @@ def build_parser() -> argparse.ArgumentParser:
         "--skip-versions", action="store_true", help="skip legacy (figshare v1/v2) reproduction"
     )
     ev.set_defaults(func=cmd_audit_events)
+    audit.add_parser("medication", help="medication audit, G3, G2 re-check").set_defaults(
+        func=cmd_audit_medication
+    )
 
     gates = sub.add_parser("gates", help="gate results").add_subparsers(dest="cmd", required=True)
     gates.add_parser("show", help="print latest gate results").set_defaults(func=cmd_gates_show)

@@ -1,0 +1,46 @@
+alias,canonical,drug_class,subclass,route,formulation,dose_unit,target,exposure_family,kernel_components,plausible_min,plausible_max,mapping_status,notes
+insulin aspart 70/30,insulin_aspart_biphasic_30,insulin,premix_analogue,sc,premix 30% soluble aspart / 70% protamine aspart,IU,1,insulin_premix,rapid_analogue:0.30;intermediate_nph:0.70,1,60,SOURCE_FACT,composition per product name; protamine-aspart component modelled with the NPH kernel (ASSUMPTION)
+insulin aspart 50/50,insulin_aspart_biphasic_50,insulin,premix_analogue,sc,premix 50% soluble aspart / 50% protamine aspart,IU,1,insulin_premix,rapid_analogue:0.50;intermediate_nph:0.50,1,60,SOURCE_FACT,prescription text only (never logged); protamine component modelled as NPH (ASSUMPTION)
+insulin aspart,insulin_aspart,insulin,rapid_analogue,sc,solution,IU,1,insulin_rapid,rapid_analogue:1.0,1,60,SOURCE_FACT,
+insulin glulisine,insulin_glulisine,insulin,rapid_analogue,sc,solution,IU,1,insulin_rapid,rapid_analogue:1.0,1,60,SOURCE_FACT,
+insulin lispro,insulin_lispro,insulin,rapid_analogue,sc,solution,IU,1,insulin_rapid,rapid_analogue:1.0,1,60,SOURCE_FACT,not observed in data; rule kept
+novolin r,regular_human_insulin,insulin,short_human,sc,solution,IU,1,insulin_regular,regular_human:1.0,1,60,SOURCE_FACT,
+gansulin r,regular_human_insulin,insulin,short_human,sc,solution,IU,1,insulin_regular,regular_human:1.0,1,60,SOURCE_FACT,
+humulin r,regular_human_insulin,insulin,short_human,sc,solution,IU,1,insulin_regular,regular_human:1.0,1,60,SOURCE_FACT,prescription text only
+novolin 30r,premix_human_30_70,insulin,premix_human,sc,premix 30% regular / 70% NPH,IU,1,insulin_premix,regular_human:0.30;intermediate_nph:0.70,1,60,SOURCE_FACT,
+humulin 70/30,premix_human_30_70,insulin,premix_human,sc,premix 30% regular / 70% NPH,IU,1,insulin_premix,regular_human:0.30;intermediate_nph:0.70,1,60,SOURCE_FACT,"70/30 = 70% NPH, 30% regular"
+scilin m30,premix_human_30_70,insulin,premix_human,sc,premix 30% soluble / 70% isophane,IU,1,insulin_premix,regular_human:0.30;intermediate_nph:0.70,1,60,SOURCE_FACT,missed by the blueprint audit regex (explains 825/827)
+gansulin 40r,premix_human_40_60,insulin,premix_human,sc,premix 40% regular / 60% NPH,IU,1,insulin_premix,regular_human:0.40;intermediate_nph:0.60,1,60,SOURCE_FACT,composition per product name (40R)
+novolin n,nph_human_insulin,insulin,intermediate_human,sc,suspension,IU,1,insulin_intermediate,intermediate_nph:1.0,1,60,SOURCE_FACT,not observed in data; rule kept
+humulin n,nph_human_insulin,insulin,intermediate_human,sc,suspension,IU,1,insulin_intermediate,intermediate_nph:1.0,1,60,SOURCE_FACT,not observed in data; rule kept
+insulin glargine,insulin_glargine,insulin,basal_analogue,sc,solution,IU,1,insulin_basal,basal_glargine:1.0,1,80,SOURCE_FACT,
+insulin glarigine,insulin_glargine,insulin,basal_analogue,sc,solution,IU,1,insulin_basal,basal_glargine:1.0,1,80,SOURCE_FACT,spelling variant in source data
+insulin detemir,insulin_detemir,insulin,basal_analogue,sc,solution,IU,1,insulin_basal,basal_detemir:1.0,1,80,SOURCE_FACT,
+insulin degludec,insulin_degludec,insulin,basal_analogue,sc,solution,IU,1,insulin_basal,basal_degludec:1.0,1,80,SOURCE_FACT,
+gliclazide,gliclazide,sulfonylurea,sulfonylurea,oral,FORMULATION_RULE,mg,1,secretagogue_su,bateman:gliclazide,15,160,SOURCE_FACT,formulation inferred from dose (see configs/pharma.yaml formulation_rules) - ASSUMPTION
+glimepiride,glimepiride,sulfonylurea,sulfonylurea,oral,tablet,mg,1,secretagogue_su,bateman:glimepiride,0.5,8,SOURCE_FACT,
+gliquidone,gliquidone,sulfonylurea,sulfonylurea,oral,tablet,mg,1,secretagogue_su,bateman:gliquidone,15,60,SOURCE_FACT,
+glibenclamide,glibenclamide,sulfonylurea,sulfonylurea,oral,tablet,mg,1,secretagogue_su,bateman:glibenclamide,1.25,10,SOURCE_FACT,not observed in data; rule kept (kernel PENDING)
+glyburide,glibenclamide,sulfonylurea,sulfonylurea,oral,tablet,mg,1,secretagogue_su,bateman:glibenclamide,1.25,10,SOURCE_FACT,not observed in data; rule kept (kernel PENDING)
+glipizide,glipizide,sulfonylurea,sulfonylurea,oral,tablet,mg,1,secretagogue_su,bateman:glipizide,2.5,20,SOURCE_FACT,not observed in data; rule kept (kernel PENDING)
+repaglinide,repaglinide,glinide,glinide,oral,tablet,mg,1,secretagogue_glinide,bateman:repaglinide,0.5,4,SOURCE_FACT,
+nateglinide,nateglinide,glinide,glinide,oral,tablet,mg,1,secretagogue_glinide,bateman:nateglinide,60,120,SOURCE_FACT,not observed in data; rule kept (kernel PENDING)
+metformin,metformin,biguanide,biguanide,oral,tablet,mg,0,flag_only,,250,1000,SOURCE_FACT,low intrinsic hypoglycaemia risk: presence flag only
+acarbose,acarbose,agi,alpha_glucosidase_inhibitor,oral,tablet,mg,0,flag_only,,25,100,SOURCE_FACT,
+voglibose,voglibose,agi,alpha_glucosidase_inhibitor,oral,tablet,mg,0,flag_only,,0.1,0.3,SOURCE_FACT,several entries carry implausible units (e.g. 0.2 g)
+miglitol,miglitol,agi,alpha_glucosidase_inhibitor,oral,tablet,mg,0,flag_only,,25,100,SOURCE_FACT,not observed
+sitagliptin,sitagliptin,dpp4,dpp4_inhibitor,oral,tablet,mg,0,flag_only,,25,100,SOURCE_FACT,
+linagliptin,linagliptin,dpp4,dpp4_inhibitor,oral,tablet,mg,0,flag_only,,5,5,SOURCE_FACT,
+saxagliptin,saxagliptin,dpp4,dpp4_inhibitor,oral,tablet,mg,0,flag_only,,2.5,5,SOURCE_FACT,not observed
+vildagliptin,vildagliptin,dpp4,dpp4_inhibitor,oral,tablet,mg,0,flag_only,,50,50,SOURCE_FACT,not observed
+dapagliflozin,dapagliflozin,sglt2,sglt2_inhibitor,oral,tablet,mg,0,flag_only,,5,10,SOURCE_FACT,
+canagliflozin,canagliflozin,sglt2,sglt2_inhibitor,oral,tablet,mg,0,flag_only,,100,300,SOURCE_FACT,
+empagliflozin,empagliflozin,sglt2,sglt2_inhibitor,oral,tablet,mg,0,flag_only,,10,25,SOURCE_FACT,
+pioglitazone,pioglitazone,tzd,thiazolidinedione,oral,tablet,mg,0,flag_only,,15,45,SOURCE_FACT,
+liraglutide,liraglutide,glp1,glp1_receptor_agonist,sc,injection,mg,0,flag_only,,0.6,1.8,SOURCE_FACT,injectable logged in the non-insulin agents column (correct column; route sc)
+exenatide,exenatide,glp1,glp1_receptor_agonist,sc,injection,mg,0,flag_only,,0.005,0.01,SOURCE_FACT,not observed
+sitagliptinphosphate/metforminhydrochloride tablets,COMBINATION:sitagliptin+metformin,combination,fixed_dose_combination,oral,tablet,mg,0,flag_only,,,,SOURCE_FACT,fixed-dose combination; split into component events (dose order as written)
+sodium chloride,sodium_chloride,iv_fluid,crystalloid,iv,infusion,ml,0,flag_only,,,,SOURCE_FACT,i.v. column content; not a medication of interest
+glucose and sodium chloride,glucose_sodium_chloride,iv_glucose,glucose_infusion,iv,infusion,ml,0,confounder_flag,,,,SOURCE_FACT,glucose-containing infusion: confounder flag (S3.6 investigation)
+glucose,glucose,iv_glucose,glucose_infusion,iv,infusion,ml,0,confounder_flag,,,,SOURCE_FACT,glucose-containing infusion: confounder flag (S3.6 investigation)
+potassium chloride,potassium_chloride,electrolyte,electrolyte,iv,infusion,ml,0,flag_only,,,,SOURCE_FACT,
