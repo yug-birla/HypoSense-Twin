@@ -55,6 +55,25 @@ def _y(ts: npt.NDArray[np.int64], onsets: npt.NDArray[np.int64], h: int) -> npt.
     return y
 
 
+def pb6_window_mask(
+    ts: npt.NDArray[np.int64],
+    eligible: npt.NDArray[np.bool_],
+    floor_bounds: list[tuple[int, int]],
+    h: int,
+) -> npt.NDArray[np.bool_]:
+    """P-B6 (c): eligible rows whose label window (t, t+h] overlaps a floor run [lo, hi]."""
+    ex = np.zeros(len(ts), dtype=bool)
+    for lo, hi in floor_bounds:
+        ex |= eligible & (ts < hi) & (ts + h >= lo)
+    return ex
+
+
+def cbg_contradicted(cbg: npt.NDArray[np.float64], cgm: npt.NDArray[np.float64]) -> bool:
+    """P-B6 (c): >= CONTRADICTION_MIN_PAIRS paired CGM < 70 readings, every paired CBG >= 70."""
+    low = cgm < 70
+    return int(low.sum()) >= CONTRADICTION_MIN_PAIRS and bool(np.all(cbg[low] >= 70))
+
+
 def load_dev() -> DevData:
     cfg = load_config()
     spec = spec_sha256(cfg["features"])
@@ -79,14 +98,11 @@ def load_dev() -> DevData:
             raise AssertionError(f"{r.recording_key}: feature table and labels misaligned")
         y = _y(r.ts, r.onsets, h)
         s = cgm_series(by_key[r.recording_key])
-        ex = np.zeros(len(r.ts), dtype=bool)
-        for a, b in floor_runs(s.ts, s.value):
-            lo, hi = int(s.ts[a]), int(s.ts[b - 1])
-            ex |= r.eligible & (r.ts < hi) & (r.ts + h >= lo)  # (t, t+60] overlaps [lo, hi]
+        bounds = [(int(s.ts[a]), int(s.ts[b - 1])) for a, b in floor_runs(s.ts, s.value)]
+        ex = pb6_window_mask(r.ts, r.eligible, bounds, h)
         excl_window += int(ex.sum())
         cb, cg = pair_cbg_cgm(cbg_series(by_key[r.recording_key]), s.ts, s.value, CBG_PAIR_S)
-        low = cg < 70
-        if int(low.sum()) >= CONTRADICTION_MIN_PAIRS and bool(np.all(cb[low] >= 70)):
+        if cbg_contradicted(cb, cg):
             ex[:] = True
             excl_rec += 1
             contradicted.append(r.recording_key)

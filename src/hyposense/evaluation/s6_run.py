@@ -234,6 +234,29 @@ def tune_m1(
     }
 
 
+def pb1_decide(pb1: dict[str, dict[str, float]]) -> str:
+    """P-B1: a challenger replaces isotonic iff log-loss >= 1 % lower AND ECE not higher."""
+    iso = pb1["isotonic"]
+    winners = [
+        m
+        for m in ("platt", "isotonic_interp")
+        if pb1[m]["log_loss"] <= iso["log_loss"] * 0.99 and pb1[m]["ece"] <= iso["ece"]
+    ]
+    return min(winners, key=lambda m: pb1[m]["log_loss"]) if winners else "isotonic"
+
+
+def pb6_decide(ll_canonical: float, ll_pb6: float) -> str:
+    """P-B6 (c): adopt iff unaffected-patient log-loss improves by >= 1 %."""
+    return "ADOPT for training" if ll_pb6 <= 0.99 * ll_canonical else "KEEP canonical training"
+
+
+def pb8_decide(ll_m3: float, ll_compact: float, sens_m3: float, sens_compact: float) -> str:
+    """P-B8 (a): compact preferred iff log-loss >= 1 % lower AND sens@1FA not lower."""
+    if ll_compact <= 0.99 * ll_m3 and sens_compact >= sens_m3:
+        return "candidate preferred (owner approval needed to change M3)"
+    return "M3_baseline retained"
+
+
 def _assemble(dev: DevData, outs: list[dict[str, Any]], method: str) -> F64:
     p = np.full(len(dev.table), np.nan)
     for o in outs:
@@ -416,13 +439,7 @@ def run_s6(
             "intercept": cal["intercept"],
             "unique_values": len(np.unique(p)),
         }
-    iso = pb1["isotonic"]
-    winners = [
-        m
-        for m in ("platt", "isotonic_interp")
-        if pb1[m]["log_loss"] <= iso["log_loss"] * 0.99 and pb1[m]["ece"] <= iso["ece"]
-    ]
-    pb1_decision = min(winners, key=lambda m: pb1[m]["log_loss"]) if winners else "isotonic"
+    pb1_decision = pb1_decide(pb1)
     band_rule = {
         "calibrator": pb1_decision,
         "m1_heldout_slope": pb1[pb1_decision]["slope"],
@@ -465,7 +482,7 @@ def run_s6(
         "m1_logloss_unaffected": ll_m1,
         "m1_pb6_logloss_unaffected": ll_pb6,
         "relative_improvement": (ll_m1 - ll_pb6) / ll_m1,
-        "decision": "ADOPT for training" if ll_pb6 <= 0.99 * ll_m1 else "KEEP canonical training",
+        "decision": pb6_decide(ll_m1, ll_pb6),
         **{k: v for k, v in dev.pb6_summary.items() if not k.endswith("_private")},
     }
     # P-B8 compact M3
@@ -478,11 +495,7 @@ def run_s6(
         "m3_compact_logloss_all": lc,
         "m3_sens1_treated": s3,
         "m3_compact_sens1_treated": sc,
-        "decision": (
-            "candidate preferred (owner approval needed to change M3)"
-            if lc <= 0.99 * lm3 and sc >= s3
-            else "M3_baseline retained"
-        ),
+        "decision": pb8_decide(lm3, lc, s3, sc),
     }
     # overfitting and behaviour
     overfit = {
@@ -550,6 +563,7 @@ def run_s6(
     prov = provenance(
         {
             "feature_table_sha256": dev.provenance["table_sha256"],
+            "s6_inputs_sha256": sha256_bytes(INPUTS.read_bytes()),
             "model_seed": seed,
             "bootstrap": {"resamples": B, "seed": bseed},
         }
