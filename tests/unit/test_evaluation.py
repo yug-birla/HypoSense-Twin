@@ -371,3 +371,106 @@ def test_cooldown_is_per_recording_and_unqueried_readings_never_notify() -> None
     low = rec([0, 15, 200], [0.9, 0.9, 0.1], queried=[False, True, True])  # LOW NOW at 0
     o = op(low, 0.5)
     assert sum(o["notifications"].values()) == 1  # only the queried reading at 15 notifies
+
+
+# ---------------------------------------------------------------- S5 independent-review fixes
+def _duplicate(recs: list[EvalRecording], w: np.ndarray) -> list[EvalRecording]:
+    """The explicit resample: patient i repeated w[i] times as distinct copies."""
+    from dataclasses import replace as _rep
+
+    pats = sorted({r.patient_key for r in recs})
+    out = []
+    for i, p in enumerate(pats):
+        for c in range(int(w[i])):
+            out += [
+                _rep(r, patient_key=f"{p}#{c}", recording_key=f"{r.recording_key}#{c}")
+                for r in recs
+                if r.patient_key == p
+            ]
+    return out
+
+
+@settings(max_examples=200, deadline=None)
+@given(random_recordings(), st.booleans(), st.data())
+def test_weighted_curve_equals_the_resamples_own_grid(recs, strict, data) -> None:  # type: ignore[no-untyped-def]
+    """§3.4: in each resample the grid is the set of distinct scores WITHIN the resample. The
+    pooled-grid shortcut must give the same sens@B, flags and partial area (both comparators)."""
+    pc = patient_curves(recs, "m", strict, R)
+    w = np.array([data.draw(st.integers(0, 3)) for _ in pc.patients], dtype=float)
+    if w.sum() == 0:
+        w[0] = 1
+    own = curve(patient_curves(_duplicate(recs, w), "m", strict, R))
+    pooled = curve(pc, w)
+    if not own.n_episodes or not own.days:
+        return
+    for budget in (0.5, 1.0, 2.0, 4.0, 8.0):
+        a = sens_at_budget(own.fa_per_day, own.sensitivity, own.tau, budget)
+        b = sens_at_budget(pooled.fa_per_day, pooled.sensitivity, pooled.tau, budget)
+        assert a.value == pytest.approx(b.value) and a.budget_not_reached == b.budget_not_reached
+        assert a.tau_a == b.tau_a
+    assert partial_area(own.fa_per_day, own.sensitivity)[0] == pytest.approx(
+        partial_area(pooled.fa_per_day, pooled.sensitivity)[0]
+    )
+
+
+@settings(max_examples=100, deadline=None)
+@given(random_recordings(), st.booleans(), st.sampled_from([0.1, 0.2, 0.5, 0.8]))
+def test_vectorised_accounting_equals_stepwise_policy_functions(recs, strict, tau) -> None:  # type: ignore[no-untyped-def]
+    """§2.1: the replay must equal the live policy functions applied reading by reading."""
+    from hyposense.policy.decide import PolicyRules, PolicyState, classify, should_notify
+
+    rules = PolicyRules()
+    for r in recs:
+        last = None
+        notified = []
+        for i, t in enumerate(r.ts.tolist()):
+            if not r.queried[i]:
+                continue
+            state = classify(float(r.scores["m"][i]), tau, None, strict)
+            if should_notify(state, t, last, rules):
+                notified.append(i)
+                last = t
+            assert (state is PolicyState.ALERT) == bool(
+                passes_vec(r.scores["m"][i : i + 1], tau, strict)[0]
+            )
+        alert = r.queried & passes_vec(r.scores["m"], tau, strict)
+        assert notification_indices(r.ts, alert, 3600).tolist() == notified
+
+
+def passes_vec(s: np.ndarray, tau: float, strict: bool) -> np.ndarray:
+    from hyposense.evaluation.metrics import passes
+
+    return passes(s, tau, strict)
+
+
+def test_paired_bootstrap_refuses_different_patient_sets() -> None:
+    a = patient_curves(
+        [
+            rec([0, 30, 300], [0.9, 0.5, 0.2], [60], patient="A", key="A_0"),
+            rec([0, 30, 300], [0.4, 0.5, 0.2], [60], patient="B", key="B_0"),
+        ],
+        "m",
+        False,
+        R,
+    )
+    b = patient_curves(
+        [
+            rec([0, 30, 300], [0.9, 0.5, 0.2], [60], patient="A", key="A_0"),
+            rec([0, 30, 300], [0.4, 0.5, 0.2], [60], patient="C", key="C_0"),
+        ],
+        "m",
+        False,
+        R,
+    )
+    with pytest.raises(ValueError):
+        paired_bootstrap(
+            {"a": sens_at_budget_stat(a, 1.0), "b": sens_at_budget_stat(b, 1.0)}, 2, 10, 2027
+        )
+
+
+def test_k_star_is_1_flag_under_the_strict_comparator() -> None:
+    # every alert is FALSE and frequent: the strictest alerting threshold already exceeds B
+    r = rec([0, 61, 122, 183, 244, 400], [0.9, 0.9, 0.9, 0.9, 0.9, 0.1], [395], last=400)
+    c = curve(patient_curves([r], "m", True, R))
+    b = sens_at_budget(c.fa_per_day, c.sensitivity, c.tau, 1.0)
+    assert b.k_star_is_1 and b.value == 0.0

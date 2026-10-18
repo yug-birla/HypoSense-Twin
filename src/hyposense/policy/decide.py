@@ -91,6 +91,11 @@ def passes(score: float, tau: float, strict: bool) -> bool:
 
 
 def classify(score: float, tau_alert: float, tau_watch: float | None, strict: bool) -> PolicyState:
+    """A requested forecast that is undefined (NaN, e.g. M0 with < 3 readings in 35 min) is
+    INSUFFICIENT DATA, never NO ALERT: low risk and no information are different states
+    (CLAUDE.md §17). In the offline replay a NaN score likewise never alerts."""
+    if math.isnan(score):
+        return PolicyState.INSUFFICIENT_DATA
     if passes(score, tau_alert, strict):
         return PolicyState.ALERT
     if tau_watch is not None and passes(score, tau_watch, strict):

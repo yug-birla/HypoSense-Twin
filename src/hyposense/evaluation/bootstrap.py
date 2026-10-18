@@ -55,9 +55,17 @@ def paired_bootstrap(
     resamples: int = 2000,
     seed: int = 2027,
     differences: Mapping[str, tuple[str, str]] | None = None,
+    patients: tuple[str, ...] | None = None,
 ) -> BootstrapResult:
     """`stats` map a name to a function of patient weights. `differences` adds
-    name -> (A, B): A - B on the same draws."""
+    name -> (A, B): A - B on the same draws. Statistics built from `PatientCurves` carry their
+    patient tuple; all of them must index the SAME patients in the same order (pairing)."""
+    keyed = {k: getattr(f, "patients", None) for k, f in stats.items()}
+    tuples = {v for v in keyed.values() if v is not None} | ({patients} if patients else set())
+    if len(tuples) > 1:
+        raise ValueError(f"paired statistics index different patient sets: {sorted(keyed)}")
+    if tuples and len(next(iter(tuples))) != n_patients:
+        raise ValueError("n_patients does not match the statistics' patient set")
     w = draw_weights(n_patients, resamples, seed).astype(np.float64)
     ones = np.ones(n_patients)
     draws = {k: np.array([f(w[b]) for b in range(resamples)]) for k, f in stats.items()}
@@ -85,6 +93,7 @@ def sens_at_budget_stat(pc: PatientCurves, budget: float) -> Statistic:
             return float("nan")
         return sens_at_budget(c.fa_per_day, c.sensitivity, c.tau, budget).value
 
+    f.patients = pc.patients  # type: ignore[attr-defined]
     return f
 
 
@@ -95,6 +104,7 @@ def partial_area_stat(pc: PatientCurves, lo: float = 0.5, hi: float = 2.0) -> St
             return float("nan")
         return partial_area(c.fa_per_day, c.sensitivity, lo, hi)[0]
 
+    f.patients = pc.patients  # type: ignore[attr-defined]
     return f
 
 

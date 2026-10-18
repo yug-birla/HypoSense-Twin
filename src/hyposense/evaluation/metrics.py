@@ -167,6 +167,7 @@ class PatientCurves:
     days: F64
     n_episodes: I64
     n_warnable: I64
+    present: npt.NDArray[np.bool_]  # [patient, k]: tau_k is one of the patient's scores
     meta: dict[str, Any] = field(default_factory=dict)
 
 
@@ -187,6 +188,8 @@ def patient_curves(
     days = np.zeros(P)
     n_ep = np.zeros(P, dtype=np.int64)
     n_warn = np.zeros(P, dtype=np.int64)
+    present = np.zeros((P, K), dtype=bool)
+    present[:, 0] = True  # sentinel
     for r in recs:
         i = pidx[r.patient_key]
         st = steps[r.recording_key]
@@ -200,7 +203,28 @@ def patient_curves(
         days[i] += r.days
         n_ep[i] += len(r.onsets)
         n_warn[i] += int(r.warnable.sum())
-    return PatientCurves(model, strict, patients, tau, fa, tr, un, hits, days, n_ep, n_warn)
+        present[i, 1:] |= np.isin(tau[1:], st.distinct_desc)
+    return PatientCurves(
+        model, strict, patients, tau, fa, tr, un, hits, days, n_ep, n_warn, present
+    )
+
+
+def _columns(pc: PatientCurves, keep: npt.NDArray[np.bool_]) -> PatientCurves:
+    return PatientCurves(
+        pc.model,
+        pc.strict,
+        pc.patients,
+        pc.tau[keep],
+        pc.fa[:, keep],
+        pc.true[:, keep],
+        pc.unknown[:, keep],
+        pc.hits[:, keep],
+        pc.days,
+        pc.n_episodes,
+        pc.n_warnable,
+        pc.present[:, keep],
+        pc.meta,
+    )
 
 
 def _passes_tau(h: float, tau: F64, strict: bool) -> npt.NDArray[np.bool_]:
@@ -225,7 +249,16 @@ class Curve:
 
 
 def curve(pc: PatientCurves, weights: F64 | None = None) -> Curve:
+    """The curve of the (weighted) sample on ITS OWN grid (§3.4): the sentinel plus the distinct
+    scores of the patients with weight > 0. Pooled-grid columns that are no drawn patient's score
+    are dropped, so first-crossing values, thresholds, flags and areas equal those of the
+    resample's own grid exactly, for both comparators (Hypothesis test against an explicit
+    resample). S5 review finding: without this, a strict-comparator resample gained a lenient
+    point its own grid lacks."""
     w = np.ones(len(pc.patients)) if weights is None else np.asarray(weights, dtype=np.float64)
+    keep: npt.NDArray[np.bool_] = np.asarray(pc.present[w > 0].any(axis=0), dtype=bool)
+    if not keep.all():
+        pc = _columns(pc, keep)
     days = float(w @ pc.days)
     n_ep = float(w @ pc.n_episodes)
     fa = (w @ pc.fa) / days if days > 0 else np.full(len(pc.tau), np.nan)
@@ -261,7 +294,10 @@ def sens_at_budget(F: F64, S: F64, tau: F64, budget: float) -> BudgetPoint:
     a = k - 1
     fa, sa = float(F[a]), float(S[a])
     val = sa if fa == budget else sa + (budget - fa) * (float(S[k]) - sa) / (float(F[k]) - fa)
-    return BudgetPoint(budget, val, a, k, float(tau[a]), fa, sa, False, k == 1)
+    # 'k* = 1' (§3.4): the strictest ALERTING threshold already exceeds B, i.e. the crossing
+    # starts from the no-alert point (0, 0). Comparator-independent (strict grids begin with a
+    # (0, 0) point at the top score as well as the sentinel).
+    return BudgetPoint(budget, val, a, k, float(tau[a]), fa, sa, False, fa == 0.0 and sa == 0.0)
 
 
 def partial_area(F: F64, S: F64, lo: float = 0.5, hi: float = 2.0) -> tuple[float, bool]:

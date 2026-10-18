@@ -15,7 +15,6 @@ from hyposense.evaluation.data import as_label_eligible_decisions
 from hyposense.evaluation.m0_run import (
     MODEL,
     REFERENCE,
-    TIE_EPS,
     compare,
     curve_rows,
     eval_recordings,
@@ -46,7 +45,7 @@ def test_table_a2_reproduces_on_v2_tuning() -> None:
     treated = treated_patient_keys()
     rows = table_rows(recs, thetas, ER, treated)
     ties = {th: exact_ties(recs, th) for th in thetas}
-    tie_rows = [table_rows(recs, [th], ER, treated, offset=TIE_EPS)[0] for th in thetas]
+    tie_rows = table_rows(recs, thetas, ER, treated, strict=False)
     status = {c["theta"]: c["status"] for c in compare(rows, ref, tie_rows, ties)}
     assert status == {
         40: "MATCH",

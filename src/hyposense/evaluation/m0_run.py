@@ -113,14 +113,15 @@ def table_rows(
     thetas: Sequence[int],
     er: EventRules,
     treated: set[str],
-    offset: float = 0.0,
+    strict: bool = M0_STRICT,
+    model: str = MODEL,
 ) -> list[dict[str, Any]]:
     sub = {"treated": [r for r in recs if r.patient_key in treated], "all": list(recs)}
     rows = []
     for th in thetas:
         row: dict[str, Any] = {"theta": th}
         for name, rr in sub.items():
-            o = operating_point(rr, MODEL, theta_to_tau(th + offset), M0_STRICT, er)
+            o = operating_point(rr, model, theta_to_tau(th), strict, er)
             row[name] = {
                 k: o[k]
                 for k in (
@@ -139,9 +140,6 @@ def table_rows(
     return rows
 
 
-TIE_EPS = 1e-6  # mg/dL: separates an exact tie at theta from any distinct projection
-
-
 def exact_ties(recs: Sequence[EvalRecording], theta: float) -> int:
     """Queried readings whose projection is exactly theta (score == -theta, exact arithmetic)."""
     return int(sum(int(np.sum(r.queried & (r.scores[MODEL] == -float(theta)))) for r in recs))
@@ -156,10 +154,13 @@ def compare(
     """Per theta:
     - MATCH: warned episodes, episodes and median lead equal, and FA/day equal at the
       reference's 2-dp precision.
-    - EXPECTED DIFFERENCE (exact-tie resolution): not a match, readings with projection exactly
-      theta exist, and every reference warned / FA value lies between the protocol value (exact
-      tie: no alert, strict rule) and the tie-inclusive value (all exact ties alert). This is how
-      the reference's float noise could resolve them (np.polyfit, ~1e-13).
+    - EXPECTED DIFFERENCE (exact-tie resolution; basis recorded): not a match, but all of these
+      hold:
+      - episodes, monitored days (1 dp) and median lead match exactly;
+      - readings with projection exactly theta exist;
+      - every reference warned / FA value lies between the protocol value (strict: a tie does
+        not alert) and the tie-inclusive value (projection <= theta, exact comparator).
+      The reference's np.polyfit float noise (~1e-13) resolves such ties arbitrarily.
     - UNEXPLAINED DIFFERENCE: anything else.
     """
     out = []
@@ -167,6 +168,7 @@ def compare(
         r = ref["rows"][row["theta"]]
         checks: dict[str, Any] = {}
         bracket = True
+        fixed = True
         for i, name in ((0, "treated"), (4, "all")):
             m, mt = row[name], trow[name]
             checks[name] = {
@@ -182,6 +184,8 @@ def compare(
                     "median_lead": mt["lead_min"]["median"],
                 },
             }
+            c = checks[name]
+            fixed &= all(c[k][0] == c[k][1] for k in ("episodes", "median_lead", "days"))
             lo_w, hi_w = sorted((m["hits"], mt["hits"]))
             lo_f, hi_f = sorted((round(m["fa_per_day"], 2), round(mt["fa_per_day"], 2)))
             bracket &= lo_w <= r[i] <= hi_w and lo_f <= r[i + 2] <= hi_f
@@ -195,17 +199,43 @@ def compare(
             "MATCH"
             if ok
             else "EXPECTED DIFFERENCE"
-            if ties[row["theta"]] > 0 and bracket
+            if fixed and ties[row["theta"]] > 0 and bracket
             else "UNEXPLAINED DIFFERENCE"
         )
         out.append(
             {
                 "theta": row["theta"],
                 "status": status,
+                "basis": None
+                if status != "EXPECTED DIFFERENCE"
+                else "exact ties at theta; reference bracketed by tie-exclusive (protocol) and "
+                "tie-inclusive values; episodes, days and lead match",
                 "exact_ties_at_theta": ties[row["theta"]],
                 "checks": checks,
             }
         )
+    return out
+
+
+def polyfit_scores(
+    recs: Sequence[EvalRecording], recordings: Sequence[Recording]
+) -> list[EvalRecording]:
+    """DIAGNOSTIC ONLY: the executable spec's own float numerics (np.polyfit at label-eligible
+    times; audit2.py), used to test the tie-resolution explanation. Never used for a result."""
+    from hyposense.data.loader import cgm_series
+
+    by_key = {r.identity.recording_key: r for r in recordings}
+    out = []
+    for r in recs:
+        s = cgm_series(by_key[r.recording_key])
+        ts, g = s.ts, s.value
+        pf = np.full(len(ts), np.nan)
+        for k in np.flatnonzero(r.eligible):
+            w = (ts > ts[k] - 2100) & (ts <= ts[k])
+            if w.sum() >= 3:
+                tt = (ts[w] - ts[k]) / 60
+                pf[k] = g[k] + np.polyfit(tt, g[w], 1)[0] * 60
+        out.append(r.with_scores("M0_polyfit", -pf))
     return out
 
 
@@ -302,9 +332,17 @@ def run_m0(resamples: int | None = None) -> dict[str, Any]:
     v2_legacy = as_label_eligible_decisions(v2)
     legacy_rows = table_rows(v2_legacy, thetas, er, treated)
     timings["table_a2_eval_s"] = time.perf_counter() - t0
-    tie_rows = [table_rows(v2_legacy, [th], er, treated, offset=TIE_EPS)[0] for th in thetas]
+    tie_rows = table_rows(v2_legacy, thetas, er, treated, strict=False)  # projection <= theta
     ties = {th: exact_ties(v2_legacy, th) for th in thetas}
     reproduction = compare(legacy_rows, ref, tie_rows, ties)
+    diag = [c["theta"] for c in reproduction if c["status"] != "MATCH"]
+    polyfit_rows = (
+        table_rows(
+            polyfit_scores(v2_legacy, legacy.recordings), diag, er, treated, model="M0_polyfit"
+        )
+        if diag
+        else []
+    )
 
     decomposition = {
         "v5_legacy_semantics": table_rows(as_label_eligible_decisions(v5), thetas, er, treated),
@@ -382,6 +420,11 @@ def run_m0(resamples: int | None = None) -> dict[str, Any]:
                 "decision_times": "label-eligible (audit2.py)",
                 "rows": legacy_rows,
                 "comparison": reproduction,
+                "polyfit_replay_diagnostic": {
+                    "purpose": "test the exact-tie explanation with audit2.py's own numerics "
+                    "(np.polyfit); diagnostic only",
+                    "rows": polyfit_rows,
+                },
                 "summary": {
                     s: sum(1 for c in reproduction if c["status"] == s)
                     for s in ("MATCH", "EXPECTED DIFFERENCE", "UNEXPLAINED DIFFERENCE")

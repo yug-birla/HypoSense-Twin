@@ -59,7 +59,7 @@ def test_classify_and_cooldown() -> None:
     assert classify(0.5, 0.5, 0.2, strict=False) is PolicyState.ALERT
     assert classify(0.5, 0.5, 0.2, strict=True) is PolicyState.WATCH  # M0 strict comparator
     assert classify(0.1, 0.5, 0.2, strict=False) is PolicyState.NO_ALERT
-    assert classify(math.nan, 0.5, 0.2, strict=False) is PolicyState.NO_ALERT
+    assert classify(math.nan, 0.5, 0.2, strict=False) is PolicyState.INSUFFICIENT_DATA
     assert should_notify(PolicyState.ALERT, 3600, 0, RULES)  # exactly 60 min: allowed
     assert not should_notify(PolicyState.ALERT, 3599, 0, RULES)
     assert not should_notify(PolicyState.WATCH, 9999, None, RULES)
