@@ -89,6 +89,74 @@ Run-ID convention: `<partition>-<model|task>-<seq>`, e.g. `T-M0-001`, `T-M1-tune
   medication_inventory.json), `artifacts/gates/G3.json`, `artifacts/gates/G2.json` (superseding
   S2's provisional result), `artifacts/population/treated_patients.csv`
 
+## T-AGG-audit-features (runs 1–5) — S4 state engine and feature audit (TUNING partition only)
+- Date (UTC): 2026-10-18
+- Partition / patients: TUNING only (34 recordings, 30 patients). The evaluation partition was not
+  accessed; feature generation refuses any scope other than TUNING_ONLY, and the adapter refuses E
+  patients.
+- Command: `hyposense audit features --workers 15`
+- Hashes: feature spec `82fc54e9…` (v1.0.0); table sha256 `a5b6ac93…`; dataset, config,
+  dictionary and pharma hashes are in each run's provenance block.
+- Purpose:
+  - truncation equality at every label-eligible T time;
+  - offline vs replay parity;
+  - future perturbation;
+  - causal tracker vs label builder;
+  - distributions, redundancy and the medication event study;
+  - performance.
+- Pre-specified rules:
+  - 0 mismatches required in every causality / parity check (CLAUDE.md §11);
+  - REQUIRED features finite at every eligible row;
+  - univariate AUC ≥ 0.95 (or ≤ 0.05) treated as a leakage smell.
+
+| Run | Commit (clean?) | Wall-clock | results_sha256 | Note |
+|---|---|---|---|---|
+| …20261018T110633Z (run 1) | bd813d1 (**dirty**: docs edited during the run) | 7.1 min | `919eb8ee…` | **SUPERSEDED**: determinism false from the frame-hash defect (ADR-034); spec `0e87630c…` |
+| …20261018T113718Z (run 2) | dcb164f (clean) | 16.1 min | `db39f39a…` | official; slow due to E-core throttling (ADR-035) |
+| …20261018T115636Z (run 3) | dcb164f (clean) | 19.3 min | `db39f39a…` | official reproduction |
+| …20261018T121521Z (run 4) | df90031 (clean) | 10.0 min | `db39f39a…` | after the runtime fix; phases: build 14.6 s, parity 36 s, truncation 497 s, perturbation 25 s |
+| …20261018T122549Z (run 5) | df90031 (clean) | 10.1 min | `db39f39a…` | reproduction |
+
+- **Result (MEASURED; identical in runs 2–5)**:
+  - **Size**: 33,464 readings; 31,292 label-eligible rows (403 positive); 117 L1 episodes.
+  - **Truncation equality**: 31,292 comparisons, 0 mismatches. The raw record is truncated and
+    the full pipeline re-run.
+  - **Parity**: 133,856 snapshot comparisons (4 levels × 33,464 readings), 0 mismatches.
+  - **Future perturbation**: CGM, medication, meal and outcome, 300 each, 0 mismatches.
+  - **Causal tracker vs label builder**: 33,464 readings, 0 mismatches.
+  - **Determinism**: two builds identical.
+  - **Flags**: REQUIRED violations 0; impossible values 0; smell-AUC 0 (strongest:
+    `cgm_m0_proj60` 0.067, i.e. the expected trend signal).
+  - **Constant on eligible T rows (21)**:
+    - the glinide channel (0 glinide patients in T);
+    - `rx_glinide`, `rx_sglt2`;
+    - static `_missing` indicators for fields complete in T;
+    - `cgm_slope60_missing`;
+    - `su_last_dose`: every T SU dose is 30 mg (4 patients).
+  - **Near-constant (8)**: lag/slope30 indicators (~0.01 %), `rx_glp1`, `meal_none_logged`,
+    `iv_insulin_recent`.
+  - **Redundancy**:
+    - 41 pairs with |ρ| ≥ 0.95, 0 identical columns;
+    - insulin_p30 / p60 vs current activity ρ 0.993 / 0.987; su_p60 vs act_su 0.999;
+      per-kg vs total activity 0.996;
+    - M3 vs M3r: act_basal ~ basal dose_24h 0.986, act_su ~ su_dose_24h 0.96, min_since_su ≡
+      su_min_since_last (1.0);
+    - the Δ60 terms are the least redundant: best M3r match 0.49 (insulin), 0.58 (SU).
+  - **Event study** (227 s.c. boluses): insulin activity median 0.45 → 0.41 IU/h at the dose
+    time (τ = 0 contributes 0), then 1.83 / 2.39 / 2.15 / 0.95 at +30 / +60 / +120 / +240 min.
+    IOB rises from 2.49 to 9.99 IU at the dose. SU (75 doses): act_su rises slowly (MR tmax 9 h).
+  - **Data-quality metadata**: sensor-fault-suspected rows 146. 1 eligible row has a label
+    window that overlaps a sensor-floor run (SA9 / P-B6 mask).
+- **Performance**:
+  - live path (separate serial benchmark): 0.74 ms per reading (p99 1.79 ms);
+  - audit replay peak traced memory 0.11 MB; table 32.7 MB.
+- Decision: S4 causality and parity requirements met; feature set accepted as the canonical
+  baseline. Redundancy findings go to P-B8 / P-B9 (S6).
+- Artefacts:
+  - `experiments/runs/T-AGG-audit-features-20261018T*/` (aggregate JSON and Markdown, committed);
+  - `data/processed/features/v1.0.0/tuning_features.parquet` + provenance (row-level,
+    git-ignored).
+
 ## Evidence inherited from the blueprint (not reproduced here)
 
 | Item | Source | Status in this repo |
@@ -103,6 +171,7 @@ Run-ID convention: `<partition>-<model|task>-<seq>`, e.g. `T-M0-001`, `T-M1-tune
 | ALL-AGG-audit-structural-20261017T2135* | ALL-AGG | — | G0/G1 structural audit | S1 | **DONE** (G0 PASS, G1 PASS) |
 | ALL-AGG-audit-events-20261017T2212* | ALL-AGG | — | G2/G3b event audit + legacy reproduction | S2 | **DONE** (G2 PASS provisional, G3b TRIGGERED, 48/48) |
 | ALL-AGG-audit-medication-20261018T0952* | ALL-AGG (+T for QA) | — | G3 medication audit + G2 re-check | S3 | **DONE** (G3 PASS, G2 PASS) |
+| T-AGG-audit-features-20261018T1215* / T1225* | T (+aggregate) | — | S4 state + feature audit (truncation, parity, perturbation) | S4 | **DONE** (0 mismatches; runs 2–5 identical) |
 | T-M0-001 | T | M0 | exploratory operating curve (compare Table A.2) | S5 | PENDING |
 | T-M1-tune-001 | T | M1 | Optuna ≤30 trials, inner log-loss; num_boost_round rule (P-B2) | S6 | PENDING |
 | T-calib-bench-001 | T | M1–M3 | calibration benchmark (P-B1) | S6 | PENDING |

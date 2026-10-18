@@ -379,3 +379,92 @@ set). P-B3, P-B4 and P-B5 resolved. New proposals P-B7 and P-B8.
 
 ### Next Task
 S4: patient state engine and causal feature builder.
+
+## 2026-10-18 — S4: Patient State Engine, causal Feature Builder, feature specification
+
+### Objective
+Build the per-recording digital twin and ONE causal feature implementation shared by offline
+training-table generation and replay / inference. Prove causality on real tuning data. No
+model training.
+
+### Work Completed
+- Startup check: HEAD `9c305af`, clean tree. Blueprint App. D, Table 11.1, §10.2, §12.2, §25 and
+  the S3 contracts were read before any feature was defined.
+- The executable spec `audit2.py` (author's bundle) was read for the exact M0 rule:
+  (t − 35 min, t], ≥ 3 readings, g(t) + H × LS slope. Recorded as ANALYSIS_PLAN §0d.
+- **State engine** (`state/`):
+  - typed events with canonical same-timestamp order;
+  - persistent append-only histories;
+  - CGM state with a causal L1 episode tracker;
+  - data-quality state built on the authoritative `data.quality` functions (P-C8 flag; P-C7
+    hook kept);
+  - medication state over the S3 engines (no re-implementation);
+  - static context (allow-list; '/' → NaN), meals, CBG, forecast state, outcome ledger;
+  - `update()` strict and order-checked; `try_update()` → SYSTEM_ERROR;
+  - one state per recording;
+  - recording adapter (`stream.py`).
+- **Features** (`features/`):
+  - registry `spec.py`, one definition per feature, groups G1–G8 + G78;
+  - level membership M1 38 / M2 72 / M3r 95 / M3 100;
+  - missingness policy;
+  - generated `artifacts/features/feature_spec.json`, locked;
+  - group functions; `FeatureBuilder.union` / `snapshot`;
+  - offline builder = event-by-event replay;
+  - export with provenance;
+  - T-only scope guard.
+- **S4 audit** (`hyposense audit features`):
+  - truncation equality at every eligible T time (raw record truncated, full pipeline re-run);
+  - parity at every reading and level;
+  - four future perturbations;
+  - tracker vs labels;
+  - distributions, redundancy, leakage smell test, event study, performance.
+- **Independent review** (separate agent): no CRITICAL or HIGH findings, no leakage path. Fixed:
+  - G7 indicator definition;
+  - ledger finalize at recording end;
+  - engine cache under `replace`;
+  - a defence-in-depth sealed-partition guard in the adapter;
+  - config / spec name consistency;
+  - unrecognised regimen text flagged;
+  - G5 audit privacy.
+
+  Regimen temporal status was documented (MEASURED on T).
+- Docs:
+  - FEATURE_DICTIONARY (full rewrite);
+  - ANALYSIS_PLAN v0.4 §0d;
+  - ARCHITECTURE §4.5a;
+  - DECISION_LOG ADR-030..035, DEC-2026-10-18-E;
+  - PROPOSALS P-B8 evidence, new P-B9;
+  - TRACEABILITY, EXPERIMENT_LOG, TEST_STRATEGY, IMPLEMENTATION_PLAN.
+
+### Tests Executed
+- `uv run pytest -q` → **362 passed** (unit 317, leakage 18, regression 10, integration 17).
+- ruff clean; `mypy --strict src` clean (71 files).
+- `hyposense audit features`: runs 2–3 on clean `dcb164f` and runs 4–5 on clean `df90031`,
+  identical results_sha256 `db39f39a…`.
+- Mutation checks: two tracker mutations and one adapter future-leak mutation were each caught by
+  the tests.
+
+### Results (MEASURED, T only)
+- Truncation equality 31,292 / 0. Parity 133,856 / 0. Perturbation 1,200 / 0. Tracker 33,464 / 0.
+- Determinism: two builds identical.
+- REQUIRED violations 0; impossible values 0; smell-AUC 0.
+- 21 constant and 8 near-constant columns on eligible T rows, all structurally explained.
+- 41 |ρ| ≥ 0.95 pairs; 0 identical columns.
+- Event study: insulin activity peaks at +60 min after s.c. boluses; no exposure before the dose.
+- Live path 0.74 ms per reading (p99 1.79 ms). Exhaustive audit ~10 min.
+
+### Problems Found and Fixed (verify → diagnose → replan)
+- **Determinism false in run 1**: `frame_sha256` hashed object pointers of pandas `str` columns.
+  The arrays were identical. Fixed with value-based hashing and a test.
+- **Feature cost 3.3 ms per reading**: profiling showed `raw_timing` re-categorising every event at
+  every reading. `RawTiming` is now cached per log length.
+- **Audit runtime 16–19 min**: Windows E-core throttling of the background workers, not a hang
+  (diagnosed live). Fixed with the throttling opt-out, single-thread BLAS and progress logging:
+  10 min, identical results (ADR-035).
+- **Audit bounds false positive**: `cgm_min_` prefix matched; fixed.
+- **eGFR 257 rejected** by an over-tight validation bound; widened (keep-and-flag rule).
+- **Lag test fixture wrong**: the code was right, the fixture used 8 min against a 7.5-min
+  tolerance.
+
+### Next Task
+S5: evaluation harness and M0 (not started).

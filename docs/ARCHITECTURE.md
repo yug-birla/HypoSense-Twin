@@ -256,7 +256,8 @@ PatientState(patient_key, ts)
   (git-ignored) with provenance: commit, data, config, spec, dictionary and pharma hashes.
 - **Audit**: `audit/features.py`, run as `hyposense audit features`: truncation equality at every
   eligible T time (raw record truncated), replay parity, perturbation, tracker agreement,
-  distributions, redundancy, performance.
+  distributions, redundancy, performance. It is parallel (15 workers); `common/runtime.py` opts
+  the processes out of Windows power throttling (ADR-035).
 
 ### 4.6 Risk models (`models/`) and calibration (`calibration/`)
 - M0: least-squares 30-min slope projected to t+60. Its "score" is the projected glucose, with

@@ -368,6 +368,29 @@ Status values: **AWAITING APPROVAL** · **APPROVED** · **REJECTED** · **EXPERI
     within SA6.
 - **Rule**: T inner CV only, with a pre-written decision margin. M3_baseline is preserved.
 - **Classification**: B.
+- **S4 evidence (MEASURED, T, label-eligible rows; audit runs 2–5)**:
+  - insulin_p30 / p60 vs act_insulin_total ρ 0.993 / 0.987; su_p60 vs act_su 0.999;
+    act_insulin_total_per_kg vs act_insulin_total 0.996.
+  - The Δ60 terms carry information that the raw timing does not (best M3r match ρ 0.49 insulin,
+    0.58 SU).
+  - Candidate (a) should therefore keep current activity and the Δ60 terms, and drop the
+    absolute projections and per-kg.
+
+### P-B9 · Learner handling of categorical and T-constant columns (S6, a-priori rule)
+**Status: EXPERIMENT PLANNED (S6; decided before any model is fitted)**
+- **Evidence (MEASURED, S4 T audit)**:
+  - `quality_<class>` codes (0–5) are categorical but stored as floats.
+  - 21 columns are constant on eligible T rows: the glinide channel (0 glinide patients in T),
+    `rx_glinide`, `rx_sglt2`, static `_missing` indicators for fields complete in T,
+    `cgm_slope60_missing`, and `su_last_dose` (every T SU dose is 30 mg).
+  - 8 columns are near-constant.
+- **Proposal**:
+  - declare the quality codes categorical to LightGBM, identically for every model that has
+    them;
+  - keep all canonical columns. The specification is fixed and E-fold training data contain
+    glinide patients. Do not prune by T statistics.
+  - Report how many columns are inert during T tuning.
+- **Classification**: B (learner configuration; identical across M1–M3).
 
 ---
 
@@ -377,7 +400,7 @@ Status values: **AWAITING APPROVAL** · **APPROVED** · **REJECTED** · **EXPERI
 |---|---|---|
 | ADR-002 | `src/` layout, `configs/`, `artifacts/` | IMPLEMENTED |
 | ADR-003 | uv + lockfile, Python 3.11 | IMPLEMENTED |
-| ADR-004 | Single causal feature implementation for training and replay | SCHEDULED S4 |
+| ADR-004 | Single causal feature implementation for training and replay | IMPLEMENTED (S4, ADR-032) |
 | ADR-005 | Audit built on production modules; audit split across S1–S3 | IMPLEMENTED for S1 (structural); S2/S3 parts pending |
 | ADR-006 | `hyposense` CLI instead of Makefile | IMPLEMENTED (data/partition/audit/gates) |
 | ADR-007 | Next.js + TS + Tailwind + shadcn/ui + ECharts; static export served by FastAPI | SCHEDULED S8 |
@@ -399,6 +422,8 @@ Status values: **AWAITING APPROVAL** · **APPROVED** · **REJECTED** · **EXPERI
 | ADR-024 | Content-aware medication parsing | IMPLEMENTED |
 | ADR-025 | Exact summation (bitwise causality) | IMPLEMENTED |
 | ADR-029 | Provenance porcelain parsing fix | IMPLEMENTED |
+| ADR-030..034 | S4 feature spec, state engine, offline = replay, missingness, review fixes | IMPLEMENTED |
+| ADR-035 | Feature-audit runtime: Windows power-throttling opt-out (no scientific effect) | IMPLEMENTED |
 
 ---
 

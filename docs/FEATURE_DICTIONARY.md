@@ -154,9 +154,8 @@ carbohydrate estimation and no nutrition parsing (E3 deferred).
 - **Missing:**
   - If the class is TIMING_UNKNOWN (prescribed, nothing logged within 36 h; Table 12.1),
     min_since, last_dose and dose_24h are NaN. n_24h keeps the true count.
-  - `<cat>_missing` = min_since is NaN: never logged before t, or timing unknown.
-  - A dose of unknown size makes last_dose / dose_24h NaN. There are 0 such cases in the data;
-    any would pass as a native NaN.
+  - `<cat>_missing` = 1 if any of min_since / last_dose / dose_24h is NaN: never logged before
+    t, class timing unknown, or a dose of unknown size (0 such cases in T; S4 review fix).
 
 ## G78 CSII / i.v. flags (M3r and M3)
 

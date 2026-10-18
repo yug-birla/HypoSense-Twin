@@ -123,7 +123,7 @@ The event reportedly ends **20 Nov 2026**. The Phase-1 deadline is unknown.
   model card.
 
 ## S4 · Patient State Engine and causal Feature Builder
-**Status: NEXT.**
+**Status: COMPLETE (2026-10-18).** PatientState and causal FeatureBuilder (one implementation; offline = replay). Feature spec v1.0.0 (`artifacts/features/feature_spec.json`; M1 38 / M2 72 / M3r 95 / M3 100). Real T: truncation equality at all 31,292 eligible times, parity 133,856 snapshots, perturbation 1,200, all with 0 mismatches. Evidence: `experiments/runs/T-AGG-audit-features-20261018T1215*`, `T1225*` (results_sha256 `db39f39a…`, identical in 4 runs).
 
 - **Work**: `state/` (sub-states, deterministic `update`, causal episode tracker, ledger);
   `features/` (App. D groups 1–8, level gating, `feature_spec.json`); offline snapshot
@@ -134,6 +134,7 @@ The event reportedly ends **20 Nov 2026**. The Phase-1 deadline is unknown.
 - **Stop**: any truncation inequality → **STOP model development** (CLAUDE.md §11).
 
 ## S5 · Evaluation harness, metrics and M0
+**Status: NEXT** (not started). M0 must use `features.cgm` (ANALYSIS_PLAN §0d).
 - **Work**: write `docs/protocol/ANALYSIS_PLAN.md` (after P-C2/P-C3/P-C6 approvals);
   `evaluation/metrics.py` (episode hits, lead time, notifications with cooldown, FA/day,
   operating curve with the first-crossing rule, partial area, per-patient metrics, log-loss,

@@ -59,7 +59,7 @@ Commit. Pending scientific decisions are in [PROPOSALS.md](PROPOSALS.md) until a
   whole class of skew bugs.
 - **Consequences**: Feature functions must be efficient on numpy slices. Performance is
   profiled in S4.
-- **Class**: A · **Date**: 2026-10-18 · **Commit**: pending (S4)
+- **Class**: A · **Date**: 2026-10-18 · **Commit**: bd813d1 (implemented in S4; see ADR-032)
 
 ## ADR-005 · The audit is built on production modules; audit work is split across S1–S3
 - **Decision**: The audit reuses the adapter, label builder and dose parser. S1 audits
@@ -406,3 +406,153 @@ Commit. Pending scientific decisions are in [PROPOSALS.md](PROPOSALS.md) until a
   character. Only false *dirty* flags were possible, so earlier `dirty=False` evidence stands.
 - **Fix**: keep leading spaces; parse with `parse_porcelain`; regression test added.
 - **Class**: A · **Date**: 2026-10-18 · **Commit**: 88cdeac
+
+---
+
+## ADR-030 · Feature specification v1.0.0: one registry, a generated export, operational choices fixed a priori
+- **Decision**:
+  - `features/spec.py` is the single authoritative definition of every feature: group, dtype,
+    unit, source, computation, availability, missingness policy, indicators, status, SA8 lab tag
+    and version.
+  - `artifacts/features/feature_spec.json` is its generated, committed export. A test fails on
+    drift, and the spec hash is pinned in the regression suite. Model levels are fixed by group
+    (M1 38 / M2 72 / M3r 95 / M3 100).
+- **Operational choices** (App. D leaves these open). They were fixed before any model was fitted
+  and without any outcome-based selection:
+  - **Lags:** the reading nearest t − L within ± 7.5 min, ties going to the earlier reading.
+  - **Trend window:** slopes and M0 use (t − Δ − 5 min, t] with ≥ 3 readings, the executable
+    spec's M0 window (audit2.py; ANALYSIS_PLAN §0d). Exact least-squares sums agree with
+    polyfit to 1e-9.
+  - **Statistics:** half-open (t − W, t]; SD with ddof = 1; a young recording uses the readings it
+    has.
+  - **Minutes < 80** = 15 min × the count of such readings.
+  - **Minutes since a reading < 70:** capped at 1440, NaN if none.
+  - **Own percentile:** mid-rank, requiring ≥ 24 h of history.
+  - **Sensor day:** counted from the recording start. P-C7, if approved, does not re-anchor it.
+  - **Meals:** rows sharing a timestamp form one meal. Content is unknown when the diet text is
+    the "not recorded" marker (MEASURED on T: "Data not available" and 未记录 always occur
+    together, 201 rows).
+  - **Regimen flags** come from the drug dictionary. `rx_basal` covers basal analogues and NPH,
+    consistent with the M3r `insulin_basal` category.
+  - **Static validity ranges** are wide and catch gross errors only. eGFR's bound was widened to
+    400 so that the extreme-but-recorded value of 257 on T is kept (S3 keep-and-flag rule).
+  - **Values and digests:** float64 values with one canonical NaN; SHA-256 snapshot digests.
+    The blueprint specified float32 and SHA-1, but rounding would blur threshold ties.
+- **Pre-release change:** v1.0.0 was regenerated once inside S4 (the G7 indicator definition,
+  after the independent review), before any model or official evidence used it. Final spec
+  sha256 `82fc54e9…`; the superseded dirty run 1 used the earlier `0e87630c…`.
+- **Class**: B (representation, decided a priori) · **Date**: 2026-10-18 · **Commit**: bd813d1, d75ff1b
+
+## ADR-031 · Patient State Engine design (implements ARCHITECTURE §4.4)
+- **Decision**: `PatientState` is a frozen dataclass.
+  - **Blocks:** context; CGM (series + causal episode tracker + last low); data quality;
+    medication (S3 engines); meals; CBG; forecast; ledger.
+  - **`update(event)`** is strict and deterministic. It accepts only the canonical order (ts,
+    then dose → meal → CGM → CBG), refuses another recording's events, duplicate CGM readings
+    and malformed values, and uses only (previous state, event).
+  - **`try_update`** returns the previous state tagged SYSTEM_ERROR, and snapshots of a tagged
+    state are refused.
+  - **Histories** are persistent append-only logs: O(1) amortised, immutable prefixes, copy on
+    branch.
+- **Recording boundary:** one state per recording; nothing carries over (ANALYSIS_PLAN §0 item
+  10). Recordings are ordered by first timestamp, never by number.
+- **No duplicated rule logic:**
+  - The quality flags reuse the authoritative `data.quality` functions on 2- and 8-reading tails.
+  - The live path cannot import `labels/`, so the episode rule is restated causally. The causal
+    tracker is tied to `labels.build_episodes` by a differential test (Hypothesis, 400 examples
+    + 22 hand-labelled fixtures) and by real T data (33,464 readings, 0 mismatches).
+- **Class**: A · **Date**: 2026-10-18 · **Commit**: bd813d1
+
+## ADR-032 · Offline feature generation is the replay (ADR-004 implemented)
+- **Decision**:
+  - The training table is produced by replaying each recording through `PatientState.update` and
+    calling the same `FeatureBuilder.union` after every CGM reading. There is no batch path.
+  - `snapshot(state, level)` is a fixed selection of the union.
+  - Before freeze, the builder accepts only a TUNING_ONLY dataset.
+- **Evidence (MEASURED)**:
+  - parity (T audit): 133,856 snapshot comparisons, 0 mismatches;
+  - live-path cost, serial single-process benchmark on all 34 T recordings (median of 3):
+    `update()` 71 µs per event and `snapshot(M3)` 0.66 ms, 0.74 ms per reading in total
+    (p50 0.65 ms, p99 1.79 ms);
+  - T table (33,464 readings) built in 14.6 s on 15 processes (audit run 4).
+- **Performance change (profiled first):** `raw_timing` re-categorised every logged event at
+  every reading (43 % of feature time on the heaviest recording). `RawTiming` now builds the
+  per-category arrays once per log length, with the same semantics. The S3 exposure engine,
+  now the main cost, is left unchanged because it is adequate.
+- **Class**: A · **Date**: 2026-10-18 · **Commit**: bd813d1
+
+## ADR-033 · Missingness policy and indicators
+- **Decision**: Every feature has exactly one missingness policy:
+  - REQUIRED: guaranteed finite at label-eligible times; asserted by the audit (0 violations on
+    31,292 eligible T rows);
+  - NEVER_MISSING;
+  - NAN_WITH_INDICATOR.
+- **Indicators** belong to the *missingness source*. Features with the same source share one
+  indicator, which avoids duplicate columns.
+- **M3 exposure clusters:** the indicator is the class quality code, App. D's "timing-unknown
+  indicators". The exposure is NaN exactly when the quality is TIMING_UNKNOWN, DOSE_UNKNOWN or
+  FORMULATION_UNKNOWN.
+- **M3r:** per the S3 contract, TIMING_UNKNOWN masks min_since, last_dose and dose_24h (n_24h
+  keeps the true count). `<cat>_missing` = any NaN in the category.
+- **Semantics:** ZERO is always a true zero; NaN meanings (NOT_OBSERVED / INSUFFICIENT_HISTORY /
+  UNKNOWN / TIMING_UNKNOWN) are recorded per feature; there is no imputation.
+- **Prescribed regimen:** like the labs, it is stay-level context used at every t (M2 `rx_*`;
+  the M3/M3r TIMING_UNKNOWN rule). MEASURED on T: first logged dose ≤ 9.2 h (insulin) / ≤ 20 h
+  (SU) after recording start; 1 SU prescription never logged. This residual risk is documented
+  (independent review finding); it is not a protocol change.
+- **Class**: B (representation, a priori) · **Date**: 2026-10-18 · **Commit**: bd813d1, d75ff1b
+
+## ADR-034 · S4 defects found by measurement and review, and their fixes
+- **Table-hash defect.**
+  - Observed: two identical builds reported different table hashes.
+  - Cause: `frame_sha256` hashed pandas `str` columns via `.to_numpy().tobytes()`, i.e. object
+    *pointers*. The feature arrays were bitwise identical.
+  - Fix: value-based hashing, with a regression test. The superseded run
+    `T-AGG-audit-features-20261018T110633Z` is kept as a record.
+- **Independent review** (no CRITICAL or HIGH findings; no leakage path found). Fixed:
+  - the G7 indicator now covers a dose of unknown size;
+  - `OutcomeLedger.finalize` resolves fully observed windows to 0 at recording end (ANALYSIS_PLAN
+    §2.4);
+  - the engine cache is `init=False`, so it is never shared via `replace`;
+  - **defence-in-depth sealed guard:** `data.dataset.assert_not_sealed` in the recording
+    adapter, so even a mis-scoped call cannot build E features before freeze;
+  - the CGM feature config must match the names the spec fixes;
+  - unrecognised regimen text is flagged;
+  - the audit reports only quartiles for static features, for privacy.
+- **Audit bounds bug:** names starting `cgm_min_` captured `cgm_min_below80_24h` and
+  `cgm_min_since_low70`, giving false "impossible value" flags. Fixed; both are within [0, 1440].
+- **Class**: A · **Date**: 2026-10-18 · **Commit**: d75ff1b
+
+## DEC-2026-10-18-E · ANALYSIS_PLAN §0d adopted (M0 operational definition = executable spec)
+- **Decision**: M0 is defined as audit2.py computes it:
+  - window (t − 35 min, t], ≥ 3 readings;
+  - least-squares slope;
+  - projection g(t) + H × slope, anchored at the current reading.
+- One implementation (`features.cgm`) serves M0 (S5) and the group-1/2 features.
+- It clarifies Table 11.1 and changes no number. S5 must reproduce Table A.2 with it.
+- **Class**: C-clarification (= executable spec, like §0) · **Date**: 2026-10-18 · **Commit**: dcb164f
+
+## ADR-035 · Feature-audit runtime: Windows power-throttling opt-out (engineering only; no scientific effect)
+- **Observed**: official feature-audit runs 2 and 3 took 16.1 and 19.3 min (run 1: 7.1 min). The
+  audit printed nothing until the end, so it looked stalled.
+- **Diagnosis (MEASURED)**: not hung.
+  - All 15 workers stayed CPU-active, at ~27 % of a core each.
+  - No disk I/O or paging, no lock or network wait, no recursion. Only the 34 TUNING
+    recordings were processed; no evaluation or full-dataset work.
+  - Logical CPUs 12–15 (the i7-13620H's 4 efficiency cores) ran at 100 % while the 12 P-core
+    threads were nearly idle. Affinity was 0xFFFF and priority Normal.
+- **Root cause**: Windows 11 power throttling (EcoQoS) scheduled the console-less background
+  workers on the efficiency cores.
+- **Change** (commit df90031):
+  - `common/runtime.disable_power_throttling()` (SetProcessInformation /
+    ProcessPowerThrottling, with a typed HANDLE) in the audit main process and every worker;
+  - `single_threaded_math_env()` for spawned workers;
+  - per-phase progress on stderr and phase wall times in the audit output.
+- **Effect**:
+  - A/B on the build phase: 54.2 / 65.4 s without vs 32.1 / 35.3 s with the opt-out.
+  - Official runs 4 and 5: 10.0 / 10.1 min. Truncation is ~8 of the 10 min because it rebuilds
+    every truncated record independently. That cost is inherent to the proof and is accepted for
+    an offline validation audit; the test is not weakened.
+- **Scientific effect: none.** results_sha256 `db39f39a…` and table sha256 `a5b6ac93…` are
+  identical in runs 2–5 (before and after the change).
+- **Class**: A · **Date**: 2026-10-18 · **Commit**: df90031

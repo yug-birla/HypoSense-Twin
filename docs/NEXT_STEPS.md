@@ -1,47 +1,47 @@
 # Next Steps
 
-Ordered execution queue. Updated: 2026-10-18 (end of S3).
+Ordered execution queue. Updated: 2026-10-18 (end of S4).
 Each item lists: objective · dependency · acceptance criteria · difficulty · parallel? ·
 approval needed?
 
 ## P0 — Blocking
 
-1. **S4 — Patient State Engine + causal Feature Builder**  ← *next task*
+1. **S5 — Evaluation harness and M0**  ← *next task (not started)*
    - Objective:
-     - `PatientState` (CGMState with a causal episode tracker, MedicationExposureState wrapping
-       the S3 engine, DataQualityState with sufficiency and the P-C8 flag, ForecastState,
-       OutcomeLedger) with a deterministic `update()` over ordered events (dose → meal → CGM);
-     - feature groups 1–6 (App. D), and assembly of group 7 (M3r) and group 8 (M3) per model
-       level with `_missing` indicators;
-     - the static allow-list (never the "Hypoglycemia (yes/no)" field);
-     - `feature_spec.json`;
-     - snapshot generation for **T patients only** (TUNING_ONLY scope);
-     - throughput profile.
-   - Dependency: S2 labels, S3 engines (done).
+     - `evaluation/` implementing ANALYSIS_PLAN §2–3 exactly, plus §0c (SA9): causal policy
+       replay semantics, episode hits and lead time, notifications with the 60-min cooldown,
+       TRUE / FALSE / OUTCOME-UNKNOWN classes, FA / patient-day, operating curve with the
+       first-crossing rule, sens@budget;
+     - paired patient-cluster bootstrap (B = 2,000, seed 2027);
+     - M0 using `features.cgm` (ANALYSIS_PLAN §0d) on T, which should reproduce Table A.2.
+   - Dependency: S2 labels, S4 features (done).
    - Acceptance:
-     - **full-snapshot truncation equality** (every level, random t incl. dose times, episode
-       boundaries and gaps; Hypothesis and real T), bitwise;
-     - replay determinism of the state sequence;
-     - the ledger never feeds features;
-     - feature-spec mismatch raises;
-     - leakage suite green.
-   - Difficulty: high · Parallel: S5 metric code can start in parallel · Approval: none.
+     - metric unit tests on hand-built fixtures (test-first);
+     - bootstrap determinism;
+     - Table A.2 reproduced on T (or the differences explained);
+     - the freeze guard refuses E.
+   - Difficulty: medium · Approval: none (§5–6 of the plan to be written for owner review).
 
 ## P1 — Core
 
-1. **S5 — Evaluation harness** implementing ANALYSIS_PLAN §2–3 and §0c (SA9) exactly; paired
-   cluster bootstrap; §5–6; M0 on T (Table A.2 should reproduce exactly).
-2. **S6 — Development experiments on T**, each with its decision rule written first:
+1. **S6 — Development experiments on T**, each with its decision rule written first
+   (input: `data/processed/features/v1.0.0/tuning_features.parquet` + labels joined offline):
    - M1 tuning;
    - M2 / M3r / M3 ladder;
    - P-B1 calibration benchmark;
    - P-B2 rounds rule;
    - P-B6 sensor-artefact handling;
    - **P-B7 combined secretagogue**;
-   - **P-B8 compact M3 / detemir duration**;
+   - **P-B8 compact M3 / detemir duration** (S4 evidence: keep Δ60, drop the near-duplicate
+     projections and per-kg);
+   - **P-B9 categorical quality codes; report T-inert columns**;
    - G4.
-3. **S7 — Policy** (P-C1; **P-C8b** LOW NOW + SENSOR FAULT SUSPECTED; P-C7 if approved), replay,
+2. **S7 — Policy** (P-C1; **P-C8b** LOW NOW + SENSOR FAULT SUSPECTED; P-C7 if approved), replay,
    FastAPI + SSE. Parallel from S4.
+   - Replay service on `PatientState.try_update` + `FeatureBuilder.snapshot`.
+   - Define a recovery policy after SYSTEM_ERROR, e.g. a late or back-dated chart entry (S4
+     review finding 6).
+   - Use `OutcomeLedger.finalize` at recording end.
 
 ## P2 — Product / Demo
 

@@ -22,7 +22,7 @@ Update this file whenever a requirement's status changes. Module paths are relat
 | D-05 | tz-aware +08:00, epoch seconds, sort, dedupe, quarantine non-monotone | REQ | §10.1, §25.1 | `data/loader.py`, `common/timeconv.py` | `test_clean_recording_contract_and_epoch`, `test_non_monotone_*`, `test_duplicate_timestamps`, `test_subsecond_*` | **PASS** (flags, no deletion; ADR-019) |
 | D-06 | Quality flags (gap >20, ≤40, rate >4, warm-up); flags never delete | REQ | §10.1 | `data/quality.py` | `test_cgm_quality_flags` | **PASS** |
 | D-07 | Patient = file prefix; group by patient_key | REQ | N3, §25.1 | `data/records.py` (identity); `evaluation/folds.py` (S5) | `test_parse_recording_name`, `test_multiple_recordings_share_patient_key`; fold test S5 | PARTIAL (identity PASS; folds S5) |
-| D-08 | Never use "Hypoglycemia (yes/no)" field | REQ | N2, App. D | `data/summary.py` FORBIDDEN_FEATURE_COLUMNS; `features/` allow-list (S4) | audit never reports its values; feature test S4 | PARTIAL |
+| D-08 | Never use "Hypoglycemia (yes/no)" field | REQ | N2, App. D | `data/summary.py` FORBIDDEN_FEATURE_COLUMNS; `state/context.py` allow-list (import-time assert) | `test_static_context_parsing` (field supplied, never read); `test_spec_records_are_complete_and_safe` | **PASS** |
 | D-09 | G1: ≥99% readings parse, ≥99% intervals ≤20 min | REQ | Table 21.1 | `audit/gates.py` | `test_g1_thresholds_*`; artifacts/gates/G1.json (1.0 / 0.999902) | **PASS** |
 | D-10 | Data-quality report (App. G sections) | REQ | App. G | `hyposense audit run` | `test_audit_is_deterministic`; two runs identical results_sha256 | PARTIAL (provenance, structure, CGM, medication/meal structure, partition done; events S2, med parse S3) |
 | D-11 | Logs never contain raw diet free text | REQ | Table 18.1 | `policy/`, `api/` | log content test | PENDING |
@@ -64,12 +64,12 @@ Update this file whenever a requirement's status changes. Module paths are relat
 
 | ID | Requirement | Kind | Source | Implementation | Verification | Status |
 |---|---|---|---|---|---|---|
-| S-01 | PatientState with CGM, exposure, quality, forecast, ledger blocks | REQ | §9.1, Table 25.1 | `state/` | `test_state_updates` | PENDING |
-| S-02 | Deterministic, ordered, replayable updates | REQ | CLAUDE.md §16 | `state/`, `replay/` | state-sequence determinism | PENDING |
-| F-01 | **Truncation equality** at all levels | REQ | §10.2, CLAUDE.md §11 | `features/` | `test_truncation_equality` | PENDING |
-| F-02 | Feature groups 1–8 per App. D; level gating | REQ | App. D, Table 11.1 | `features/` | unit tests | PENDING |
-| F-03 | Missing values NaN + `_missing` indicators | REQ | §25.1 | `features/` | unit tests | PENDING |
-| F-04 | Feature spec stored with artefacts; mismatch error | REQ | Table 25.2 | `features/`, `models/` | unit test | PENDING |
+| S-01 | PatientState with CGM, exposure, quality, forecast, ledger blocks | REQ | §9.1, Table 25.1 | `state/patient.py` (+ `cgm`, `quality`, `medication`, `ledger`, `context`, `history`, `stream`) | `test_start_and_update_advance_time_and_counts`, `test_ledger_*`, `test_quality_state_equals_authoritative_flag_functions` | **PASS** |
+| S-02 | Deterministic, ordered, replayable updates | REQ | CLAUDE.md §16 | `state/patient.update` (order-checked), `try_update` (SYSTEM_ERROR) | `test_replay_is_deterministic`, `test_same_past_different_future_gives_identical_current_state`, `test_same_timestamp_order_is_dose_meal_cgm_cbg`, `test_malformed_input_and_safe_degradation` | **PASS** (replay service S7) |
+| F-01 | **Truncation equality** at all levels | REQ | §10.2, CLAUDE.md §11 | `features/` (offline = replay) | `test_truncation_equality_every_cgm_time` (Hypothesis), `test_truncation_equality_through_the_loader`; real T: 31,292 eligible times, 0 mismatches (audit runs 2–5) | **PASS** |
+| F-02 | Feature groups 1–8 per App. D; level gating | REQ | App. D, Table 11.1 | `features/spec.py` (M1 38 / M2 72 / M3r 95 / M3 100), `features/{cgm,context,medication}.py` | `test_level_membership`, per-group unit tests | **PASS** |
+| F-03 | Missing values NaN + `_missing` indicators | REQ | §25.1 | `features/spec.py` Missing policy (ADR-033) | `test_every_indicator_is_in_the_same_level_as_its_features`, missingness unit tests; audit REQUIRED violations 0 | **PASS** |
+| F-04 | Feature spec stored with artefacts; mismatch error | REQ | Table 25.2 | `artifacts/features/feature_spec.json` (sha256 `82fc54e9…`), `FeatureSpecMismatch` | `test_committed_feature_spec_matches_the_registry`, `test_feature_spec_is_locked`, `test_feature_spec_mismatch_is_raised` | **PASS** (model-artefact check S6) |
 | F-05 | Live path never imports labels/evaluation | REQ | CLAUDE.md §11 | package boundaries | `test_import_boundaries` | **PASS** |
 
 ## Models and calibration
@@ -181,8 +181,24 @@ Update this file whenever a requirement's status changes. Module paths are relat
 | M-15 | Content-aware i.v. column (fluids ≠ insulin) | REQ | owner S3.5C | `parse._parse_iv` | `test_iv_column_is_content_aware` | **PASS** |
 | M-16 | Pump suspension and misplaced entries classified by content | REQ | owner S3.5A/B | `parse.parse_text` | `test_csii_cells` | **PASS** |
 | M-17 | i.v. glucose investigation and decision | REQ | owner S3.6 | `audit/medication` iv_glucose | ADR-028 (FLAG ONLY) | **PASS** |
-| M-18 | M3r and M3 representation contracts | REQ | owner S3.12 | `timing.raw_timing`, `ExposureEngine.compute`; docs/FEATURE_DICTIONARY.md | unit tests; representation QA (T) | **PASS** (feature builder S4) |
+| M-18 | M3r and M3 representation contracts | REQ | owner S3.12 | `timing.raw_timing`, `ExposureEngine.compute`; docs/FEATURE_DICTIONARY.md | unit tests; representation QA (T); assembled by the S4 feature builder (G7/G8) | **PASS** |
 | M-19 | G2 re-check with the production treated definition | REQ | owner S3.7 | `med_run.py` | artifacts/gates/G2.json (PASS, unchanged 154/30) | **PASS** |
 | S-03 | P-C8a sensor-failure flag (never alters labels) | C (approved) | ANALYSIS_PLAN §0c | `data.quality.sensor_fault_suspected`; `labels.annotations.floor_runs` | `test_sensor_fault_suspected_is_causal_and_needs_8_readings`, `test_floor_runs_require_8_consecutive_readings` | **PASS** |
 | S-04 | P-C8b keep LOW NOW + SENSOR FAULT warning | C (approved) | ANALYSIS_PLAN §0c | policy (S7) | policy tests (S7) | PENDING |
 | S-05 | P-C8c SA9 sensitivity analysis | C (approved) | ANALYSIS_PLAN §0c | evaluation (S5/S9) | — | PENDING |
+
+## S4 additions
+
+| ID | Requirement | Kind | Source | Implementation | Verification | Status |
+|---|---|---|---|---|---|---|
+| S-06 | Recording boundaries: state never crosses recordings; order by time, not number | REQ | ANALYSIS_PLAN §0.10; owner S4.4 | `state/patient.py` RecordingBoundaryError; `stream.order_recordings` | `test_recording_boundary_is_enforced`, `test_meal_unknown_markers_and_recording_order` | **PASS** |
+| S-07 | Causal episode tracker = label rule with confirmation lag | REQ | ARCHITECTURE §4.4 | `state/cgm.EpisodeTracker` | differential tests (400 Hypothesis + 22 fixtures); real T 33,464 readings, 0 mismatches | **PASS** |
+| S-08 | P-C8a flag and sufficiency in state; P-C7 hook preserved | C (approved) / pending | ANALYSIS_PLAN §0c; P-C7 | `state/quality.py` (authoritative `data.quality` functions) | `test_quality_state_equals_authoritative_flag_functions` | **PASS** (P-C7 pending) |
+| F-06 | Future perturbation leaves features at t unchanged | REQ | owner S4.15 | — | `test_future_perturbation_never_changes_the_present`; real T 1,200 checks, 0 mismatches | **PASS** |
+| F-07 | Offline vs replay parity (one implementation) | REQ | ADR-004; owner S4.16 | `features/build.py` = replay of `PatientState.update` + `FeatureBuilder.union` | `test_offline_table_equals_event_by_event_replay_snapshots`; real T 133,856, 0 mismatches | **PASS** |
+| F-08 | Features ignore forecast state and ledger | REQ | Table H.2 | `features/snapshot.FeatureInputs` | `test_features_ignore_forecast_state_and_ledger`, `test_feature_package_cannot_reach_the_ledger_or_labels` | **PASS** |
+| F-09 | No E features before freeze | C (P-C5) | ADR-011 | `features/build.tuning_streams` scope guard; `data.dataset.assert_not_sealed` in the adapter | `test_feature_generation_refuses_sealed_scope`, `test_adapter_refuses_sealed_patients_before_freeze` | **PASS** |
+| F-10 | Feature provenance: data, spec, config, dictionary, kernel hashes + commit | REQ | CLAUDE.md §13; owner S4.12 | `features/export.provenance` | audit run provenance blocks | **PASS** |
+| F-11 | Tuning-set feature audit (distributions, redundancy, sanity) | REQ | owner S4.17–19 | `audit/features.py` | runs T-AGG-audit-features-20261018T1215*/T1225* | **PASS** |
+| F-12 | M0 trend rule = executable spec | C-clarification | ANALYSIS_PLAN §0d | `features/cgm.ls_slope`, `trend_slope` | `test_m0_projection_is_the_executable_spec`, `test_ls_slope_matches_numpy_polyfit` | **PASS** (M0 model S5) |
+

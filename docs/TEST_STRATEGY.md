@@ -96,17 +96,20 @@ Once a remote exists, a GitHub Actions workflow runs on every push: `uv sync --f
 mypy, pytest (no data, so `requires_data` tests skip), the frontend lint and build, and the
 E2E tests on the main branch.
 
-## 8. Current status (updated 2026-10-18, end of S3)
+## 8. Current status (updated 2026-10-18, end of S4)
 
-Command: `uv run pytest -q` → **281 passed**. `ruff check` + `ruff format` clean; `mypy --strict` clean
-(52 source files).
+Command: `uv run pytest -q` → **362 passed, 0 failed**. `ruff check` + `ruff format` clean; `mypy --strict src`
+clean (71 source files).
 
-| Category | Tests | Passing | Notable additions in S3 |
+| Category | Tests | Passing | Notable additions in S4 |
 |---|---|---|---|
-| Unit | 249 | 249 | Parser: every vocabulary pattern, malformed, ambiguous and misplaced cases. Kernels: shape, integral, peak, decay, invalid parameters. Exposure: zero before dose, dose-at-t convention, additivity, repeated doses, quality states, CSII cap / suspension / projection, i.v. flag. **Hypothesis truncation-equality property test** (exposure and raw timing, bitwise). G3 thresholds. Causal sensor-fault flag. Porcelain regression |
-| Leakage / static guards | 12 | 12 | medication/ is live path (no labels or audit imports) |
-| Regression | 9 | 9 | pharma provenance: no ILLUSTRATIVE parameter, sources present |
-| Integration (real data) | 11 | 11 | 4,653/4,653 recognised; treated set 72 (2078 untreated); **bitwise exposure truncation equality on real T records** |
+| Unit | 317 | 317 | **State**: append-only history and branching; causal episode tracker, differential against `build_episodes` (400 Hypothesis cases + 22 hand-labelled fixtures); quality state equal to the authoritative `data.quality` functions (Hypothesis); update order, recording boundary, duplicate / malformed input, `try_update` → SYSTEM_ERROR; replay determinism; same past / different future; ledger reconcile and finalize; static context. **Features**: exact window boundaries, M0 = audit2.py, least squares = polyfit, lags, statistics, percentile, time (local clock), meals, G7 / G8 assembly, TIMING_UNKNOWN masking, per-kg, spec contracts, level membership, indicators, spec drift, value-based table hash. Runtime helper |
+| Leakage / static guards | 18 | 18 | **Truncation equality at every CGM time** (Hypothesis, bitwise, all levels); **truncation through the loader** (synthetic workbooks); **future perturbation** (CGM / medication / meal / outcome); offline vs replay parity; features ignore the ledger; `features/` cannot import ledger / labels / audit |
+| Regression | 10 | 10 | feature spec locked (sha256 + level sizes 38 / 72 / 95 / 100) |
+| Integration (real data) | 17 | 17 | T only: 34 streams in time order; sampled truncation (incl. dose times, episode ends), parity (300 readings × 4 levels), tracker = labels, REQUIRED finite on 3 recordings; sealed-scope and E-patient refusal; static context |
+
+The exhaustive real-data checks (every eligible T time) run in `hyposense audit features` (about
+10 min; EXPERIMENT_LOG), not in the pytest suite.
 
 All synthetic fixtures are generated at test time (`tests/conftest.py`, labelled SYNTHETIC). No
 binary fixtures or real patient data are committed.
