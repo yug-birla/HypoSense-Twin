@@ -10,6 +10,8 @@ artifacts/*
 !artifacts/.gitkeep
 # gate evaluations are aggregate-only evidence and ARE committed
 !artifacts/gates/
+# population definitions (outcome-blind, e.g. treated status) are committed evidence
+!artifacts/population/
 experiments/runs/*
 !experiments/runs/.gitkeep
 # aggregate-only audit runs are committed as evidence (P-C5: no patient-level values inside)

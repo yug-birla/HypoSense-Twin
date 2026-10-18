@@ -210,3 +210,25 @@ def test_exposure_truncation_equality_on_real_tuning_records() -> None:
                 assert np.array_equal(v, raw[k][ts == t], equal_nan=True), (k, r.identity)
             checked += 1
     assert checked > 60
+
+
+def test_committed_treated_set_matches_recomputation(audit_ds, meds) -> None:  # type: ignore[no-untyped-def]
+    """The committed population artefact must equal what the production parser computes."""
+    import csv
+    from pathlib import Path
+
+    from hyposense.common.hashing import sha256_file
+
+    path = Path(__file__).resolve().parents[2] / "artifacts" / "population" / "treated_patients.csv"
+    assert sha256_file(path) == "2016d3e3025b66081889e4fe64c3359c280f2be79534b57fb82e31db4050c5ef"
+    status = production_treated(audit_ds.recordings, meds)
+    with path.open(newline="", encoding="utf-8") as fh:
+        rows = {r["patient_id"]: r for r in csv.DictReader(fh)}
+    assert set(rows) == set(status)
+    for p, s in status.items():
+        assert (
+            int(rows[p]["treated"]),
+            int(rows[p]["insulin"]),
+            int(rows[p]["sulfonylurea"]),
+            int(rows[p]["glinide"]),
+        ) == (int(s.treated), int(s.insulin), int(s.sulfonylurea), int(s.glinide))
