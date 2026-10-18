@@ -1,6 +1,6 @@
 # HypoSense Twin v2 — Architecture
 
-Status: **S1 data layer IMPLEMENTED (§4.1, §4.1a); remaining components DESIGN** (updated
+Status: **Data (S1), labels (S2), medication (S3), state engine and features (S4) IMPLEMENTED; models, policy, API, UI DESIGN** (updated
 2026-10-18).
 Baseline: Blueprint v2.0 §9–§18 and §24–§25 ([digest](BLUEPRINT_DIGEST.md)). Engineering
 refinements are recorded as ADRs in [DECISION_LOG.md](DECISION_LOG.md). Open scientific
@@ -212,6 +212,51 @@ PatientState(patient_key, ts)
   `feature_spec.json` and checked when an artefact loads (`FeatureSpecMismatch`).
 - The "Hypoglycemia (yes/no)" summary field and patient identifiers are excluded by an
   allow-list, not a deny-list.
+
+### 4.5a As implemented in S4 (2026-10-18)
+- **Adapter** `state/stream.py`: `Recording` → `RecordingStream`, typed events in canonical order
+  (ts, then dose → meal → CGM → CBG, then source row and column). Inputs:
+  - CGM from `cgm_series`;
+  - meals (same-timestamp rows merged; "not recorded" marker → content unknown);
+  - CBG;
+  - S3 medication events;
+  - the recording's static context (`state/context.py`, allow-list).
+
+  A patient's recordings are ordered by first timestamp, never by number.
+- **State** `state/patient.py`: frozen `PatientState` with:
+  - `context`;
+  - `cgm` (`CGMState`: persistent append-only series + causal `EpisodeTracker` + last low);
+  - `quality` (`DataQualityState`, from the authoritative `data.quality` functions applied to
+    2- and 8-reading tails, plus the warm-up anchor with the P-C7 hook);
+  - `medication` (`MedicationExposureState`: append-only S3 events; `ExposureEngine` and
+    `RawTiming` built once per log length);
+  - `meals`, `cbg`;
+  - `forecast`, `ledger` (display/audit only).
+
+  `update()`:
+  - is strict, deterministic and order-checked (`OutOfOrderEventError`,
+    `RecordingBoundaryError`, `MalformedEventError`);
+  - has a live-path wrapper, `try_update()`, which returns the previous state tagged
+    SYSTEM_ERROR; snapshots of a tagged state are refused.
+
+  Histories are persistent (`state/history.py`): O(1) amortised appends, immutable prefixes,
+  copy on branch.
+- **One state per recording.** No state crosses a recording boundary (ANALYSIS_PLAN §0 item 10).
+  Static context is per recording row.
+- **Features**: `features/spec.py` holds the registry (one definition per feature, groups, levels,
+  missingness); `artifacts/features/feature_spec.json` is its committed export.
+  - Group functions: `features/cgm.py` (G1–G4), `features/context.py` (G5–G6) and
+    `features/medication.py` (G7, G78, G8), the last being assembly only from the S3 engines.
+  - `FeatureBuilder.union(FeatureInputs)` computes every feature at a CGM reading.
+    `snapshot(state, level)` is a fixed selection of that union.
+  - `FeatureInputs` exposes only context, CGM, meals and medication, never forecast or ledger.
+- **Offline = replay**: `features/build.py` replays each recording through `update()` and calls the
+  same `union()` after each CGM reading. There is no batch path (ADR-004, now implemented).
+  T-only scope guard (`SealedPartitionError`). The table goes to `data/processed/features/`
+  (git-ignored) with provenance: commit, data, config, spec, dictionary and pharma hashes.
+- **Audit**: `audit/features.py`, run as `hyposense audit features`: truncation equality at every
+  eligible T time (raw record truncated), replay parity, perturbation, tracker agreement,
+  distributions, redundancy, performance.
 
 ### 4.6 Risk models (`models/`) and calibration (`calibration/`)
 - M0: least-squares 30-min slope projected to t+60. Its "score" is the projected glucose, with

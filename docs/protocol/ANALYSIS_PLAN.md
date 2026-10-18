@@ -1,6 +1,7 @@
 # HypoSense Twin v2 — Statistical Analysis Plan (pre-registration)
 
-**Status: DRAFT v0.3 — §0 ADOPTED (= executable spec, S2); §0b ADOPTED (S3); §0c APPROVED (P-C8);
+**Status: DRAFT v0.4 — §0 ADOPTED (= executable spec, S2); §0b ADOPTED (S3); §0c APPROVED (P-C8);
+§0d ADOPTED (= executable spec, S4);
 §1–4 APPROVED by the project owner (2026-10-18); §5–6 pending (S5).** This file is hashed into the freeze manifest (ADR-012). After freeze it may not
 change. Before freeze, a change to an APPROVED section requires a new owner approval recorded
 in [../DECISION_LOG.md](../DECISION_LOG.md).
@@ -113,6 +114,26 @@ docs/medication/PARAMETER_SOURCES.md.
   - SA9 is a sensitivity analysis only; the canonical primary analysis is unchanged.
   - MEASURED on v5: 0 E episodes overlap a sensor-floor run, so SA9 equals the primary
     analysis unless the data change.
+
+## 0d. M0 trend rule and feature-time conventions (S4, 2026-10-18)
+
+Status: **ADOPTED. Identical to the blueprint's executable specification** (audit2.py, which
+produced Table A.2). This makes Table 11.1's "last 30 min of CGM (≥ 3 readings)" precise; it
+changes no number.
+
+1. **M0 projection.** At reading t, take the readings with ts in (t − 35 min, t]. With fewer than
+   3, there is no projection (NaN). Otherwise slope = the least-squares slope of g on time
+   (mg/dL per min), and the projection to t + H is g(t) + H × slope. The fit's intercept is not
+   used: the line is anchored at the current reading. The M0 score is −projection(t + 60)
+   (§3.1).
+2. The same projection (H = 30, 60) and slope are App. D group-1 and group-2 features
+   (`cgm_m0_proj30/60`, `cgm_slope30`). One implementation, `features.cgm`, serves both M0 and the
+   features. Exact sums agree with numpy.polyfit to 1e-9 (`test_ls_slope_matches_numpy_polyfit`).
+3. **Feature time.** Features at t use only events with ts ≤ t, ordered dose → meal → CGM within
+   one timestamp. Static summary values (including laboratory values that may post-date the CGM
+   period) are recording-level context available at every t. This is Blueprint §10.2's accepted
+   residual risk, removed in SA8. Full definitions: docs/FEATURE_DICTIONARY.md and
+   artifacts/features/feature_spec.json.
 
 ## 1. Decision policy: current lows (approved P-C1)
 
