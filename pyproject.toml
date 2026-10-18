@@ -39,6 +39,7 @@ dev = [
     "mypy>=1.10",
     "pandas-stubs",
     "types-PyYAML",
+    "httpx==0.28.1",
 ]
 
 [build-system]

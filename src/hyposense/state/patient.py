@@ -190,6 +190,12 @@ class PatientState:
             ledger=self.ledger.add(f),
         )
 
+    def record_notification(self, ts: int) -> PatientState:
+        """The policy issued a notification at the current reading (display / policy only)."""
+        if self.ts is None or ts != self.ts:
+            raise StateError("a notification must be issued at the current state time")
+        return replace(self, forecast=replace(self.forecast, last_notification_ts=ts))
+
     # ------------------------------------------------------------------ inspection
     @property
     def at_cgm_reading(self) -> bool:

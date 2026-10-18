@@ -40,6 +40,7 @@ class PolicyRules:
     low_mgdl: float = 70.0
     post_episode_s: int = 3600  # LOW NOW for < 60 min after an episode ended
     cooldown_s: int = 3600
+    max_gap_s: int = 1200  # no reading for > 20 min: the last decision is no longer current
 
     @classmethod
     def from_config(cls, cfg: dict[str, Any]) -> PolicyRules:
@@ -47,7 +48,43 @@ class PolicyRules:
             low_mgdl=float(cfg["event"]["threshold_mgdl"]),
             post_episode_s=int(cfg["event"]["refractory_min"]) * 60,
             cooldown_s=int(cfg["policy"]["cooldown_min"]) * 60,
+            max_gap_s=int(cfg["policy"]["max_gap_min"]) * 60,
         )
+
+
+@dataclass(frozen=True)
+class Thresholds:
+    """Frozen operating thresholds of a deployed model (ANALYSIS_PLAN §3.5-3.6; policy.json).
+    Learned models alert at p >= tau (non-strict)."""
+
+    tau_alert: float
+    tau_watch: float | None
+    strict: bool = False
+
+    def __post_init__(self) -> None:
+        if not math.isfinite(self.tau_alert):
+            raise ValueError("tau_alert must be finite")
+        if self.tau_watch is not None and not self.tau_watch <= self.tau_alert:
+            raise ValueError("tau_watch must be <= tau_alert (ANALYSIS_PLAN §3.6)")
+
+
+@dataclass(frozen=True)
+class PolicyDecision:
+    """One decision at a CGM reading (Blueprint Table 25.1). `reasons` say why the state was
+    reached; `tags` are uncertainty qualifiers that NEVER change the state (§14.3)."""
+
+    ts: int
+    state: PolicyState
+    p: float | None
+    reasons: tuple[str, ...]
+    tags: tuple[str, ...] = ()
+    notify: bool = False
+
+    def __post_init__(self) -> None:
+        if self.notify and self.state is not PolicyState.ALERT:
+            raise ValueError("notify implies ALERT (Table 25.1 invariant)")
+        if self.p is not None and self.state not in FORECAST_STATES:
+            raise ValueError(f"{self.state} carries no probability (Table 14.1)")
 
 
 @dataclass(frozen=True)
@@ -109,3 +146,48 @@ def should_notify(
     return state is PolicyState.ALERT and (
         last_notification_ts is None or t - last_notification_ts >= rules.cooldown_s
     )
+
+
+FORECAST_STATES = frozenset({PolicyState.ALERT, PolicyState.WATCH, PolicyState.NO_ALERT})
+
+
+def system_error(t: int, reason: str) -> PolicyDecision:
+    return PolicyDecision(t, PolicyState.SYSTEM_ERROR, None, (reason,))
+
+
+def decide(
+    g: Gate,
+    p: float | None,
+    t: int,
+    last_notification_ts: int | None,
+    rules: PolicyRules,
+    th: Thresholds,
+    tags: tuple[str, ...] = (),
+) -> PolicyDecision:
+    """Table 14.1 for one reading: the gate, then the calibrated probability. Never raises: any
+    failure, and any malformed inference response (None, NaN, outside [0, 1]) while a forecast
+    is requested, is SYSTEM ERROR. Tags qualify forecast states only and never change them."""
+    try:
+        if g.state is not None:
+            return PolicyDecision(t, g.state, None, g.tags)
+        if p is None or not isinstance(p, float) or not 0.0 <= p <= 1.0:
+            return system_error(t, "MALFORMED_INFERENCE")
+        state = classify(p, th.tau_alert, th.tau_watch, th.strict)
+        reason = {
+            PolicyState.ALERT: "P_AT_OR_ABOVE_TAU_ALERT",
+            PolicyState.WATCH: "P_AT_OR_ABOVE_TAU_WATCH",
+            PolicyState.NO_ALERT: "P_BELOW_TAU_WATCH",
+        }[state]
+        notify = should_notify(state, t, last_notification_ts, rules)
+        return PolicyDecision(t, state, p, (reason,), tuple(sorted(set(tags))), notify)
+    except Exception:  # pragma: no cover - defensive: decide() must never raise
+        return system_error(t, "POLICY_EXCEPTION")
+
+
+def current(d: PolicyDecision, now: int, rules: PolicyRules) -> PolicyDecision:
+    """The decision as displayed at clock time `now`. With no reading for more than the
+    sufficiency gap (Table 14.1 priority 2: "no reading at t"), the last decision is not
+    current: INSUFFICIENT DATA, no probability. A stale prediction is never shown as current."""
+    if d.state is PolicyState.SYSTEM_ERROR or now - d.ts <= rules.max_gap_s:
+        return d
+    return PolicyDecision(now, PolicyState.INSUFFICIENT_DATA, None, ("NO_RECENT_READING",))

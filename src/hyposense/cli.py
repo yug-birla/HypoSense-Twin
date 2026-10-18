@@ -14,6 +14,9 @@ hyposense features spec                 write artifacts/features/feature_spec.js
 hyposense eval m0 [--resamples N]       S5: Table A.2 reproduction + M0 on v5 T (DEVELOPMENT)
 hyposense eval registry                 write artifacts/evaluation/metric_registry.json
 hyposense dev s6 [--workers N]          S6 development workflow on T (tuning, ladder, experiments)
+hyposense dev artifact [--level M3]      S7 DEVELOPMENT model artefact (T only)
+hyposense dev s7 [--model DIR]           S7 engineering evidence (parity, determinism, latency)
+hyposense serve [--model DIR] [--port N] replay API (refuses to start on an artefact mismatch)
 hyposense gates show                  print the latest gate results
 """
 
@@ -179,6 +182,47 @@ def cmd_eval_registry(args: argparse.Namespace) -> int:
     return 0
 
 
+def _latest_model(arg: str | None) -> Path:
+    from hyposense.evaluation.s7_artifact import MODELS_DIR
+
+    if arg:
+        return Path(arg)
+    found = sorted(MODELS_DIR.glob("M3-dev-*"))
+    if not found:
+        raise SystemExit("no development artefact: run `hyposense dev artifact` first")
+    return found[-1]
+
+
+def cmd_dev_artifact(args: argparse.Namespace) -> int:
+    from hyposense.evaluation.s7_artifact import build_dev_artifact
+
+    _print(build_dev_artifact(args.level))
+    return 0
+
+
+def cmd_dev_s7(args: argparse.Namespace) -> int:
+    from hyposense.evaluation.s7_bench import run_s7_bench
+
+    _print(run_s7_bench(_latest_model(args.model)))
+    return 0
+
+
+def cmd_serve(args: argparse.Namespace) -> int:
+    import uvicorn
+
+    from hyposense.api.app import create_app
+    from hyposense.api.service import Service
+    from hyposense.models.artifact import ArtifactError
+
+    try:
+        svc = Service(_latest_model(args.model))
+    except ArtifactError as exc:
+        print(f"REFUSING TO START: {exc}")
+        return 3
+    uvicorn.run(create_app(svc), host=args.host, port=args.port, log_level="info")
+    return 0
+
+
 def cmd_dev_s6(args: argparse.Namespace) -> int:
     from hyposense.evaluation.s6_run import run_s6
 
@@ -285,6 +329,17 @@ def build_parser() -> argparse.ArgumentParser:
     d6.add_argument("--resamples", type=int, default=None, help="smoke tests only")
     d6.add_argument("--trials", type=int, default=None, help="smoke tests only")
     d6.set_defaults(func=cmd_dev_s6)
+    da = dv.add_parser("artifact", help="S7 DEVELOPMENT model artefact (T only)")
+    da.add_argument("--level", default="M3", choices=["M1", "M2", "M3r", "M3"])
+    da.set_defaults(func=cmd_dev_artifact)
+    d7 = dv.add_parser("s7", help="S7 engineering evidence on T")
+    d7.add_argument("--model", default=None)
+    d7.set_defaults(func=cmd_dev_s7)
+    sv = sub.add_parser("serve", help="replay API (FastAPI + SSE), offline")
+    sv.add_argument("--model", default=None)
+    sv.add_argument("--host", default="127.0.0.1")
+    sv.add_argument("--port", type=int, default=8000)
+    sv.set_defaults(func=cmd_serve)
 
     gates = sub.add_parser("gates", help="gate results").add_subparsers(dest="cmd", required=True)
     gates.add_parser("show", help="print latest gate results").set_defaults(func=cmd_gates_show)
