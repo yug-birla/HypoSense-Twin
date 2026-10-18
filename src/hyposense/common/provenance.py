@@ -29,17 +29,24 @@ def utc_now_iso() -> str:
 
 
 def _git(*args: str) -> str | None:
+    """Raw git stdout without trailing newlines. Leading spaces are KEPT because the porcelain
+    status columns are significant (S3 fix: stripping them mangled the first path)."""
     try:
         out = subprocess.run(
             ["git", *args], cwd=REPO_ROOT, capture_output=True, text=True, check=True, timeout=30
         )
     except (OSError, subprocess.SubprocessError):
         return None
-    return out.stdout.strip()
+    return out.stdout.rstrip("\r\n")
 
 
 # Generated outputs do not make the source tree dirty; any other change (tracked or untracked) does.
 OUTPUT_DIRS = ("experiments/runs/", "artifacts/")
+
+
+def parse_porcelain(status: str) -> list[str]:
+    """Paths from `git status --porcelain` v1 lines (two status columns, a space, the path)."""
+    return [ln[3:].strip().strip('"') for ln in status.splitlines() if ln.strip()]
 
 
 def git_state() -> dict[str, Any]:
@@ -47,9 +54,12 @@ def git_state() -> dict[str, Any]:
     status = _git("status", "--porcelain", "--untracked-files=all")
     if status is None:
         return {"commit": commit, "dirty": None}
-    changed = [ln[3:].strip('"') for ln in status.splitlines() if ln.strip()]
-    relevant = [p for p in changed if not p.startswith(OUTPUT_DIRS)]
-    return {"commit": commit, "dirty": bool(relevant), "dirty_paths": relevant[:20]}
+    relevant = [p for p in parse_porcelain(status) if not p.startswith(OUTPUT_DIRS)]
+    return {
+        "commit": commit.strip() if commit else commit,
+        "dirty": bool(relevant),
+        "dirty_paths": relevant[:20],
+    }
 
 
 def package_versions() -> dict[str, str | None]:

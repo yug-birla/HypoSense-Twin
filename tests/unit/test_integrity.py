@@ -211,3 +211,19 @@ def test_sensor_fault_suspected_is_causal_and_needs_8_readings() -> None:
     for k in range(1, 12):
         sub = CGMSeries("k", ts[: k + 1], g[: k + 1], np.arange(k + 1, dtype=np.int64), {})
         assert sensor_fault_suspected(sub, QualityThresholds())[-1] == flags[k]
+
+
+def test_porcelain_parsing_keeps_first_path_intact(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Regression (S3): a leading-space status line used to lose its first path character."""
+    from hyposense.common import provenance
+
+    assert provenance.parse_porcelain(" M artifacts/gates/G2.json\n?? src/x.py") == [
+        "artifacts/gates/G2.json",
+        "src/x.py",
+    ]
+    monkeypatch.setattr(
+        provenance,
+        "_git",
+        lambda *a: "abc" if a[0] == "rev-parse" else " M artifacts/gates/G2.json",
+    )
+    assert provenance.git_state()["dirty"] is False
