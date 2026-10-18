@@ -146,7 +146,7 @@ The event reportedly ends **20 Nov 2026**. The Phase-1 deadline is unknown.
   are expected to differ if the partition changed (P-C4).
 
 ## S6 · M1 / M2 / M3r / M3 development on T (Gate G4)
-**Status: NEXT** (not started).
+**Status: COMPLETE (2026-10-18).** G4 PASS. Pre-registered (DEC-2026-10-18-G); outcomes in DEC-2026-10-18-H. Evidence: `experiments/runs/T-AGG-dev-s6-20261018T1444*`, `T1500*`.
 - **Work**: LightGBM wrapper and artefacts (ADR-009); Optuna tuning of M1 on T (≤30 trials,
   inner grouped CV, mean log-loss) and the `num_boost_round` rule (P-B2); M2/M3r/M3 with
   frozen hyperparameters; nested calibration; calibration benchmark (P-B1); the risk-band
@@ -158,6 +158,7 @@ The event reportedly ends **20 Nov 2026**. The Phase-1 deadline is unknown.
   computed. On failure → M0 becomes the operational baseline; fix the pipeline.
 
 ## S7 · Policy engine, replay and backend API (parallel track)
+**Status: NEXT** (not started).
 - **Work**: `policy.decide` (Table 14.1 + approved P-C1); cooldown; tags; JSONL logs; replay
   service (ordering, speed, seek, case selection); FastAPI routes + SSE (ADR-008);
   acknowledgement store; artefact hash check at start-up; SYSTEM ERROR path.

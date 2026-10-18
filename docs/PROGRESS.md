@@ -526,3 +526,47 @@ cases and the blueprint's Table A.2, and measure M0 on the v5 tuning partition. 
 
 ### Next Task
 S6: development experiments on T (not started).
+
+## 2026-10-18 — S6: Learned-model development on T (tuning only)
+
+### Objective
+Tune M1, build the M1 / M2 / M3r / M3 ladder under one shared procedure, run the pre-registered
+development experiments, and evaluate G4. E stays sealed.
+
+### Work Completed
+- **Pre-registered protocol first** (DEC-2026-10-18-G, committed 877e9bf before any fit).
+- **Built:**
+  - `models/lgbm.py`;
+  - `calibration/methods.py` (isotonic, Platt, interpolated isotonic);
+  - `evaluation/folds.py`, `devdata.py`, `s6_run.py`;
+  - CLI `hyposense dev s6`.
+- **Smoke run flagged a suspected leak.** M1 reached 0.91 vs M0 0.63. Diagnosed with no-learning
+  rules: "CGM < 81" gives 0.911, so this is a genuine endpoint property, not leakage. This
+  became the post-hoc diagnostic and P-C9.
+- **Two official runs** on clean fd34ecf: identical (`e81268ae…`). G4 PASS (G4.json).
+
+### Results (DEVELOPMENT, treated T)
+- **sens@1FA:**
+
+  | M0 | M1 | M2 | M3r | M3 | M3_compact |
+  |---|---|---|---|---|---|
+  | 0.626 | 0.857 | 0.875 | 0.929 | 0.911 | 0.929 |
+
+- **Comparisons:**
+  - C0 +0.231 (0.094–0.437).
+  - C1, C2a, C2b and M3−M2 all include 0; M3−M2 +0.036 (−0.042, 0.088).
+- **Decisions:**
+  - P-B1 → isotonic_interp;
+  - P-B6 → adopted for training;
+  - P-B8 → compact preferred (owner);
+  - P-B9 adopted;
+  - num_boost_round 113.
+
+### Problems Found and Fixed
+- **Read-only Arrow mask in the worker:** non-inplace ops.
+- **The P-B1 decision was not driving the ladder calibrator:** reordered.
+- **Evaluation and bootstrap take 11–14 min** (continuous scores). Accepted for an offline
+  development run.
+
+### Next Task
+S7: policy, replay and API (not started). Owner decisions are pending before freeze.

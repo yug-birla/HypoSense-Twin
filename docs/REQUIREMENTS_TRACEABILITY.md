@@ -216,3 +216,16 @@ Update this file whenever a requirement's status changes. Module paths are relat
 | E5-08 | Window-level and calibration metrics for probabilistic models only | REQ | Table 20.2 | `metrics.window_metrics`, `calibration` | hand fixtures; probability guard | **PASS** (first use S6) |
 | E5-09 | G4 baseline feasibility | Gate | Table 21.1 | — | needs M1 on T inner CV | NOT YET EVALUABLE (S6) |
 | E5-10 | Exact ties in trend scores | REQ | ANALYSIS_PLAN §3.4, §0d | `features/cgm.ls_slope_exact` (ADR-036) | exact-tie tests; S4 audit re-run 0 mismatches | **PASS** |
+
+## S6 additions
+
+| ID | Requirement | Kind | Source | Implementation | Verification | Status |
+|---|---|---|---|---|---|---|
+| D6-01 | LightGBM, binary log-loss, no re-weighting, deterministic, shared hyperparameters | B | §11.1 | `models/lgbm.py` | determinism and class-weighting tests | **PASS** |
+| D6-02 | M1 tuning: ≤ 30 Optuna trials, inner grouped CV, log-loss; P-B2 rounds | B | §11.1; P-B2 | `evaluation/s6_run.tune_m1` | trials.csv (30 trials kept) | **PASS** |
+| D6-03 | Nested calibration on inner OOF; P-B1 benchmark | B | §11.1; P-B1 | `calibration/methods.py`, `s6_run.task_outer` | isolation asserts; calibrator tests | **PASS** (isotonic_interp) |
+| D6-04 | Patient-grouped folds; no fold leakage | C | §10.3 | `evaluation/folds.py` | fold tests; fail-fast isolation asserts | **PASS** |
+| D6-05 | Development ladder M0–M3 through the S5 harness, paired bootstrap | REQ | §15, §19 | `s6_run.evaluate` | runs T-AGG-dev-s6-20261018T1444*/1500* identical | **PASS** |
+| D6-06 | Pre-registered experiments P-B1/B6/B8/B9 (P-B7 justified not run) | B | DEC-2026-10-18-G | `s6_run` | DEC-2026-10-18-H | **PASS** |
+| D6-07 | Grouped TreeSHAP (descriptive) | REQ | §16.1 | `s6_run.task_outer` (pred_contrib) | results.json | **PASS** |
+| D6-08 | Gate G4 | Gate | Table 21.1 | `artifacts/gates/G4.json` | 415 tests; pipeline; M1 curve | **PASS** |

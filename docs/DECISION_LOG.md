@@ -714,3 +714,56 @@ Status of every result: DEVELOPMENT.
   no tuning) and are not out-of-sample for tuning. This is why T results are DEVELOPMENT only;
   the confirmatory run on E has no such overlap.
 - **Class**: B (development procedures; pre-registered) · **Date**: 2026-10-18 · **Commit**: this commit
+
+## DEC-2026-10-18-H · S6 development outcomes under the pre-registered rules (DEC-2026-10-18-G)
+Evidence: T-AGG-dev-s6-20261018T144427Z and T150030Z on clean fd34ecf; identical results_sha256
+`e81268ae…`. DEVELOPMENT only.
+
+- **P-B2 / tuning.** Best trial #20:
+  - learning_rate 0.0418, num_leaves 16, min_data_in_leaf 603, feature_fraction 0.601,
+    bagging_fraction 0.940, lambda_l2 9.41;
+  - CV log-loss 0.04626 ± 0.0285 (fold SD);
+  - per-fold best iterations 193 / 111 / 116 / 39 → **num_boost_round = 113** (median).
+
+  The 30 trials span only 0.0463–0.0503, so the hyperparameters are weakly identified; fold
+  composition dominates. **Frozen as the shared set for M1/M2/M3r/M3.**
+- **P-B1 calibration → ADOPTED `isotonic_interp`** for all models. M1 pooled held-out values:
+
+  | Calibrator | Log-loss | ECE | Outcome |
+  |---|---|---|---|
+  | isotonic (canonical) | 0.04308 | 0.00082 | — |
+  | isotonic_interp | 0.04017 (−6.7 %) | 0.00060 | rule met |
+  | Platt | 0.04037 | 0.00133 | fails the ECE condition |
+
+  Band rule: slope 0.97 → percentages in the UI.
+- **P-B9 adopted a priori:** quality codes are categorical. Inert columns (no split in any outer
+  model): M1 7, M2 19, M3r 30, M3 31. All are explained by T-constant or near-constant columns.
+  No columns are pruned.
+- **P-B6 → ADOPTED for training** (pre-registered rule met).
+  - Measured: M1 held-out log-loss on the 28 unaffected T patients 0.02954 vs 0.03018
+    (−2.1 % ≥ 1 %).
+  - Excluded from training: 876 eligible rows (2 CBG-contradicted recordings; 1 floor-window
+    row).
+  - Labels and evaluation are unchanged, and the rule applies identically to every model and to
+    the confirmatory training folds.
+  - Weak evidence, reported honestly: the all-T log-loss is not improved (+0.0006, CI includes 0).
+- **P-B8 (a) M3_compact → "candidate preferred"** (rule met: all-T log-loss −3.1 %; treated
+  sens@1FA 0.929 ≥ 0.911).
+  - **M3_baseline stays canonical.** A change needs owner approval before freeze (PROPOSALS
+    P-B8).
+  - **P-B8 (b)** not run (SA6).
+- **P-B7:** not run (0 glinide patients in T).
+- **G4: PASS** (`artifacts/gates/G4.json`):
+  - tests 415/415;
+  - the pipeline runs end-to-end on T;
+  - the M1 curve is computed.
+
+  M1−M0 sens@1FA (treated T) = +0.231 (95 % CI 0.094 to 0.437).
+- **Interpretation (development):** M1 ≫ M0. M2, M3r and M3 do not separate on T: every
+  C1 / C2a / C2b / M3−M2 interval includes 0, with differences of 1–3 episodes. Treated-T
+  sens@1FA (0.86–0.93) sits near the warnable ceiling (0.946).
+- **Post-hoc diagnostic** (not pre-registered; used for no selection): a no-learning rule
+  "alert if CGM < 81 mg/dL" reaches treated-T sens@1FA 0.911, above M1 (0.857). The large
+  M1-over-M0 gain therefore reflects M0's weakness under this endpoint, not leakage. This raises
+  P-C9.
+- **Class**: B (pre-registered rules applied) · **Date**: 2026-10-18 · **Commit**: fd34ecf

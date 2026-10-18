@@ -1,30 +1,24 @@
 # Next Steps
 
-Ordered execution queue. Updated: 2026-10-18 (end of S5).
+Ordered execution queue. Updated: 2026-10-18 (end of S6).
 Each item lists: objective · dependency · acceptance criteria · difficulty · parallel? ·
 approval needed?
 
 ## P0 — Blocking
 
-1. **S6 — Development experiments on T**  ← *next task (not started)*. Write each decision rule
-   before the experiment runs.
-   - **Inputs:**
-     - the tuning feature table for spec v1.0.1 (`data/processed/features/v1.0.1/`, written by run
-       T-AGG-audit-features-20261018T133142Z);
-     - labels joined offline;
-     - the S5 harness, with `EvalRecording` scores joined on (recording_key, ts).
-   - **Work:**
-     - LightGBM wrapper and artefacts (ADR-009);
-     - M1 tuning (≤ 30 Optuna trials, inner grouped CV, log-loss);
-     - the M2 / M3r / M3 ladder;
-     - P-B1 calibration; P-B2 rounds rule; P-B6 sensor artefacts; P-B7; P-B8; P-B9 (declare the
-       quality codes categorical);
-     - **G4**: M1 vs M0 on T inner CV, with the M1 operating curve computed.
-   - **Acceptance:**
-     - G4 evaluated per Table 21.1;
-     - every result through `hyposense.evaluation` with provenance and status DEVELOPMENT;
-     - window metrics and calibration reported.
-   - **Approval:** none (Class B). The owner should confirm ANALYSIS_PLAN §5 before freeze.
+1. **Owner decisions before freeze** (they do not block S7 engineering):
+   - ANALYSIS_PLAN §5 draft;
+   - **P-C9** (level-rule reference baseline);
+   - **P-B8** (M3_compact as canonical M3, or keep the baseline);
+   - P-C7;
+   - pharmacist review of the kernels.
+2. **S7 — Policy, replay, API**  ← *next engineering task (not started)*:
+   - extend `policy/decide.py` (tags, P-C8b, decision log, acknowledgements);
+   - replay service on `PatientState.try_update` + `FeatureBuilder.snapshot` + frozen M3 /
+     calibrator;
+   - SYSTEM_ERROR recovery;
+   - FastAPI + SSE;
+   - `OutcomeLedger.finalize`.
 
 ## P1 — Core
 

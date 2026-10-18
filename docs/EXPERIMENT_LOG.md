@@ -252,6 +252,93 @@ m0_v5_curve_*.csv}`. The per-patient table is under `data/processed/evaluation/`
 ### Decision / next action
 Harness accepted for S6. G4 is NOT YET EVALUABLE: it requires M1 on T inner CV (Table 21.1).
 
+## T-AGG-dev-s6 (S6) — learned-model development ladder on T
+
+### Run IDs
+| Run | Commit (clean?) | results_sha256 | Status |
+|---|---|---|---|
+| T-AGG-dev-s6-20261018T142512Z | 877e9bf + uncommitted S6 code (**dirty**) | — | SMOKE (2 trials, 50 resamples). Raised the "too good?" check (M1 0.91 vs M0 0.63) |
+| T-AGG-dev-s6-20261018T143013Z | dirty | — | SMOKE after the calibrator-order fix |
+| **T-AGG-dev-s6-20261018T144427Z** | **fd34ecf (clean)** | **`e81268ae…`** | **OFFICIAL** |
+| **T-AGG-dev-s6-20261018T150030Z** | **fd34ecf (clean)** | **`e81268ae…`** | **OFFICIAL reproduction (identical)** |
+
+### Purpose
+Pre-registered S6 development (DEC-2026-10-18-G):
+- M1 tuning;
+- the M1 / M2 / M3r / M3 ladder;
+- P-B1, P-B6, P-B8 and P-B9;
+- G4.
+
+### Data / population
+v5 TUNING only: 30 patients (22 treated), 33,464 readings, 31,292 eligible rows (403 positive),
+117 L1 episodes (56 treated). E was not accessed.
+
+### Models
+- LightGBM, binary, no class weighting, seed 2026, deterministic, 1 thread.
+- Shared hyperparameters (best trial #20); num_boost_round 113.
+- Calibrator: isotonic_interp (P-B1).
+- Nested 5 × 4 patient-grouped folds (seed 2026).
+
+### Results (treated T; DEVELOPMENT ONLY — not confirmatory)
+| Model | sens@1FA (95 % CI) | Partial area | Log-loss | AUPRC | ECE | Slope |
+|---|---|---|---|---|---|---|
+| M0 | 0.626 (0.491–0.837) | 0.691 | n/a | n/a | n/a | n/a |
+| M1 | 0.857 (0.719–1.000) | 0.892 | 0.0307 | 0.247 | 0.0025 | 0.95 |
+| M2 | 0.875 (0.781–1.000) | 0.898 | 0.0313 | 0.233 | 0.0013 | 0.97 |
+| M3r | 0.929 (0.804–1.000) | 0.911 | 0.0301 | 0.249 | 0.0015 | 1.01 |
+| M3 | 0.911 (0.788–1.000) | 0.907 | 0.0309 | 0.236 | 0.0013 | 1.00 |
+| M3_compact | 0.929 (0.817–1.000) | 0.918 | 0.0297 | 0.236 | 0.0011 | 1.03 |
+| M1_pb6 | 0.929 (0.786–1.000) | 0.910 | 0.0303 | 0.227 | 0.0033 | 0.98 |
+
+Patient-weighted sensitivity (treated): M0 0.61, M1 0.87, M2 0.90, M3r 0.95, M3 0.94. The
+all-T table and every interval are in `ladder.md` and `results.json`.
+
+### Paired differences (treated T, sens@1FA; 2,000 patient-cluster resamples, seed 2027)
+| Comparison | Difference | 95 % CI |
+|---|---|---|
+| C0 M1−M0 | +0.231 | 0.094 to 0.437 |
+| C1 M2−M1 | +0.018 | −0.064 to 0.089 |
+| C2a M3r−M2 | +0.054 | −0.054 to 0.107 |
+| C2b M3−M3r | −0.018 | −0.086 to 0.057 |
+| Preview M3−M2 (NOT H1) | +0.036 | −0.042 to 0.088 |
+
+Log-loss differences are all within ±0.0012, and every CI includes 0.
+
+### Diagnostics
+- **Tuning:** the 30 trials span CV log-loss 0.0463–0.0503; fold log-loss ranges 0.017–0.083.
+  Fold composition dominates hyperparameters.
+- **Overfitting:** train log-loss 0.018–0.030 vs held-out 0.013–0.083 per fold. This is patient
+  heterogeneity, not a systematic train/held-out gap.
+- **Grouped TreeSHAP (M3):** CGM level 0.82 > CGM history 0.76 > exposure 0.26 ≈ static 0.25 >
+  trend 0.16 > time 0.10 > meal 0.04. Descriptive only.
+- **Post-hoc simple rules:** "CGM < 81" gives sens@1FA 0.911 treated / 0.856 all → P-C9.
+- **Runtime:**
+  - tuning 40–50 s;
+  - 210 ladder fits 38–40 s;
+  - evaluation and bootstrap 11–14 min (~19k distinct calibrated scores per model);
+  - full-T M3 fit 3.9 s;
+  - single-reading prediction 0.16 ms p50 / 0.39 ms p99.
+
+### Interpretation
+- Learned models clearly beat M0 on T. But M0 is a weak reference under this endpoint, and a
+  level rule matches the learned models.
+- On T the M2 / M3r / M3 differences are within 1–3 episodes, against a warnable ceiling of
+  0.946. The headroom for H1 on the primary endpoint is small. The window-level secondary
+  (S3: log-loss) shows no separation either.
+- This is development evidence only. It neither supports nor refutes H1.
+
+### Limitations
+- Hyperparameters were tuned on all of T and reused in T's outer CV, so learned-model results
+  are optimistic vs M0.
+- 22 treated patients.
+- Two artefact recordings.
+- The level-rule check was post hoc.
+
+### Decision / next action
+- DEC-2026-10-18-H: tuned set and 113 rounds frozen; isotonic_interp; P-B6 adopted for training;
+  P-B9 adopted; M3_compact = candidate (owner); G4 PASS.
+- Owner decisions: P-C9, P-B8 compact, ANALYSIS_PLAN §5, P-C7.
+
 ## Evidence inherited from the blueprint (not reproduced here)
 
 | Item | Source | Status in this repo |
@@ -269,9 +356,10 @@ Harness accepted for S6. G4 is NOT YET EVALUABLE: it requires M1 on T inner CV (
 | T-AGG-audit-features-20261018T1215* / T1225* | T (+aggregate) | — | S4 state + feature audit (truncation, parity, perturbation) | S4 | **DONE** (0 mismatches; runs 2–5 identical) |
 | T-AGG-audit-features-20261018T133142Z | T | — | S4 re-verification after ADR-036 | S5 | **DONE** (0 mismatches) |
 | T-AGG-eval-m0-20261018T1406* / T1407* | T (+v2 T) | M0 | Table A.2 reproduction + v5 development M0 | S5 | **DONE** (7 MATCH + 1 EXPECTED; runs identical) |
-| T-M1-tune-001 | T | M1 | Optuna ≤30 trials, inner log-loss; num_boost_round rule (P-B2) | S6 | PENDING |
-| T-calib-bench-001 | T | M1–M3 | calibration benchmark (P-B1) | S6 | PENDING |
-| T-ladder-001 | T | M1–M3 | development ladder; Gate G4 | S6 | PENDING |
+| T-M1-tune-001 | T | M1 | Optuna ≤30 trials, inner log-loss; num_boost_round rule (P-B2) | S6 | **DONE** within T-AGG-dev-s6-20261018T1444* |
+| T-calib-bench-001 | T | M1–M3 | calibration benchmark (P-B1) | S6 | **DONE** within T-AGG-dev-s6-20261018T1444* |
+| T-ladder-001 | T | M1–M3 | development ladder; Gate G4 | S6 | **DONE** within T-AGG-dev-s6-20261018T1444* |
+| T-AGG-dev-s6-20261018T1444* / T1500* | T | M1–M3 (+variants) | S6 development ladder, P-B1/6/8/9, G4 | S6 | **DONE** (identical; G4 PASS) |
 | E-confirm-001 | E | M0–M3 | **confirmatory, once, after freeze** | S9 | PENDING |
 
 ## Entry template

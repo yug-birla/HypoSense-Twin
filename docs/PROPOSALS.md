@@ -253,10 +253,37 @@ Status values: **AWAITING APPROVAL** · **APPROVED** · **REJECTED** · **EXPERI
 
 ---
 
+### P-C9 · Add a CGM-level rule as a reference baseline for interpreting C0 (S6 finding)
+**Status: AWAITING APPROVAL (before freeze; not blocking S7)**
+1. **Current specification.** C0 = M1 vs M0. M0 is the 60-min linear trend projection
+   (Table 19.1, ANALYSIS_PLAN §0d). Interpretation-matrix row: "Learned models ≤ M0 →
+   trend extrapolation is as good as ML".
+2. **Problem.** Under the episode endpoint, an alert at any eligible reading in
+   [onset − 60, onset − 15] counts as a warning, so the current CGM level is very informative.
+   MEASURED on treated T (development), sens@1FA:
+
+   | Rule | sens@1FA |
+   |---|---|
+   | M0 | 0.626 |
+   | no-learning "CGM < 81 mg/dL" | 0.911 |
+   | M1 | 0.857 |
+   | M3 | 0.911 |
+
+   Comparing learned models only against M0 would overstate the need for machine learning.
+3. **Evidence.** T-AGG-dev-s6-20261018T144427Z `diagnostic_simple_rules` (treated and all T).
+4. **Proposed modification.** Report a pre-specified M0-level baseline alongside M0 as a
+   SECONDARY reference: score = −CGM(t), the same harness, cooldown, threshold rule and
+   bootstrap. No change to the primary endpoint (M3 − M2), to M0, or to any model.
+5. **Scientific consequences.** It gives a more honest C0; the claim becomes "learned models vs
+   the best simple rules".
+6. **Comparability.** Unaffected for the primary comparison.
+7. **Risk of bias.** Low. It is fixed now, before E is opened, and no parameter is chosen on E.
+8. **Recommendation.** Approve as a secondary analysis (S8 in Table 20.3 numbering, or "C0b").
+
 ## Class B — experiments or a-priori decisions on development data (T) before freeze
 
 ### P-B1 · Calibration method benchmark (isotonic vs Platt vs smoothed isotonic)
-**Status: EXPERIMENT PLANNED (S6)**
+**Status: ADOPTED isotonic_interp (S6, DEC-2026-10-18-H)**
 - **Current approach**: isotonic regression on inner OOF predictions (§11.1).
 - **Problem**: isotonic output is piecewise constant. The resulting ties coarsen the operating
   curve (P-C2), and the fit can be unstable with few positives per fold (~1.1% prevalence). The
@@ -272,7 +299,7 @@ Status values: **AWAITING APPROVAL** · **APPROVED** · **REJECTED** · **EXPERI
 - **Classification**: B · **Action**: EXPERIMENT.
 
 ### P-B2 · Number of boosting rounds in nested and confirmatory training
-**Status: A-PRIORI DECISION PROPOSED**
+**Status: ADOPTED as proposed (num_boost_round = 113; DEC-2026-10-18-G/H)**
 - **Current**: "2,000 rounds with early stopping on inner grouped log-loss" (§11.1).
 - **Problem**: early stopping in the confirmatory run needs a validation split carved from
   T ∪ (E∖k). The blueprint leaves this undefined, and different choices change the models.
@@ -323,7 +350,7 @@ Status values: **AWAITING APPROVAL** · **APPROVED** · **REJECTED** · **EXPERI
 - **Classification**: B.
 
 ### P-B6 · Development-stage handling of sensor-artefact recordings in T (S6)
-**Status: EXPERIMENT PLANNED (S6; decision rule to be written before any model is run)**
+**Status: RUN in S6: (c) ADOPTED for training by the pre-registered rule; (b) reported**
 - **Problem**: T development metrics (M1 tuning objective, ladder on T, the M0 Table A.2
   reproduction) are dominated by two artefact recordings: 37 % of T's L1 episodes, with T's
   largest single-patient share 24 % for L1 and 69 % for L2.
@@ -343,7 +370,7 @@ Status values: **AWAITING APPROVAL** · **APPROVED** · **REJECTED** · **EXPERI
 - **Classification**: B.
 
 ### P-B7 · Secretagogue representation: separate SU and glinide vs combined (S6)
-**Status: EXPERIMENT PLANNED (S6)**
+**Status: NOT RUN: 0 glinide patients in T (uninformative)**
 - **Evidence (MEASURED, S3)**: there are 0 glinide patients in T and 3 in E, so `act_glinide` is 100 %
   zero in T. A separate glinide channel cannot be learned on development data and adds
   near-empty dimensions.
@@ -355,7 +382,7 @@ Status values: **AWAITING APPROVAL** · **APPROVED** · **REJECTED** · **EXPERI
 - **Classification**: B.
 
 ### P-B8 · Compact M3 (redundancy) and product-specific basal durations (S6)
-**Status: EXPERIMENT PLANNED (S6)**
+**Status: (a) RUN in S6: candidate preferred by the pre-registered rule (DEC-2026-10-18-H); replacing M3_baseline needs OWNER APPROVAL before freeze. (b) not run (SA6).**
 - **Evidence (MEASURED, S3; T only)**:
   - Spearman ρ(insulin_p60, act_insulin_total) = 0.974, so the projections are nearly redundant
     with current activity; only the Δ carries information.
@@ -377,7 +404,7 @@ Status values: **AWAITING APPROVAL** · **APPROVED** · **REJECTED** · **EXPERI
     absolute projections and per-kg.
 
 ### P-B9 · Learner handling of categorical and T-constant columns (S6, a-priori rule)
-**Status: EXPERIMENT PLANNED (S6; decided before any model is fitted)**
+**Status: ADOPTED a priori (quality codes categorical; inert columns reported)**
 - **Evidence (MEASURED, S4 T audit)**:
   - `quality_<class>` codes (0–5) are categorical but stored as floats.
   - 21 columns are constant on eligible T rows: the glinide channel (0 glinide patients in T),
