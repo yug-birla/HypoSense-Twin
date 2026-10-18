@@ -98,11 +98,11 @@ E2E tests on the main branch.
 
 ## 8. Current status (updated 2026-10-18, end of S6)
 
-Command: `uv run pytest -q` → **415 passed, 0 failed**. ruff clean; `mypy --strict src` clean (83 files).
+Command: `uv run pytest -q` → **421 passed, 0 failed**. ruff clean; `mypy --strict src` clean (83 files).
 
 | Category | Tests | Passing | Notable additions in S6 |
 |---|---|---|---|
-| Unit | 366 | 366 | Grouped folds (deterministic, balanced, stratified); calibrators (monotone, bounded, serialisable, resolution); LightGBM wrapper (determinism, feature-spec check, early stopping, class weighting refused) |
+| Unit | 372 | 372 | S6 rules on SYNTHETIC fixtures (label, P-B6 masks, P-B1/B6/B8 decisions, OOF assembly); grouped folds (deterministic, balanced, stratified); calibrators (monotone, bounded, serialisable, resolution); LightGBM wrapper (determinism, feature-spec check, early stopping, class weighting refused) |
 | Leakage / static guards | 18 | 18 | unchanged. The S6 runner asserts nested-fold isolation at run time |
 | Regression | 10 | 10 | unchanged |
 | Integration (real data) | 21 | 21 | development dataset: alignment, 403 positives, strata, P-B6 mask counts, fold sizes |

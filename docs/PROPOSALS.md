@@ -265,7 +265,7 @@ Status values: **AWAITING APPROVAL** · **APPROVED** · **REJECTED** · **EXPERI
    | Rule | sens@1FA |
    |---|---|
    | M0 | 0.626 |
-   | no-learning "CGM < 81 mg/dL" | 0.911 |
+   | non-learned level rule "CGM < 81 mg/dL" (τ chosen on T by the harness) | 0.911 |
    | M1 | 0.857 |
    | M3 | 0.911 |
 
@@ -282,8 +282,31 @@ Status values: **AWAITING APPROVAL** · **APPROVED** · **REJECTED** · **EXPERI
 
 ## Class B — experiments or a-priori decisions on development data (T) before freeze
 
+### P-B10 · Floored calibrator (S6 review F1)
+**Status: PROPOSED (T only; before freeze)**
+- **Problem.** Isotonic and isotonic_interp output exactly 0 on thousands of T rows.
+  - The P-B1 decision hinges on 3 positives at a calibrated 0.
+  - A 0 % displayed risk is not defensible.
+- **Alternative.**
+  - Isotonic_interp with outputs clamped to [p_lo, 1 − p_lo], where p_lo = (positives in the
+    lowest block + 0.5) / (block size + 1), fitted on inner OOF only.
+  - Alternatively Platt as a fallback.
+  - The P-B1 rule is restated without the 1e-15 clip dependence.
+- **Evaluation.** The same nested folds and the same P-B1 rule; log-loss, ECE and sens@1FA.
+  sens@1FA is expected to be unchanged, because the calibrator is monotone.
+- **Decision.** EXPERIMENT (Class B), pre-specified before running.
+
+### P-B11 · Fit-variance repeat for the development ladder (S6 review F3)
+**Status: PROPOSED (T only; optional before freeze)**
+- **Problem.** Model-fit variance (seed, fold assignment) is comparable to the M2 / M3r / M3
+  differences on T. The patient bootstrap does not include it.
+- **Alternative.** Repeat the ladder for 5 model seeds × 3 fold seeds and report the spread of
+  sens@1FA and log-loss per model and per comparison. Descriptive only; no selection.
+- **Decision.** EXPERIMENT (Class B). It informs interpretation, not the frozen protocol.
+
 ### P-B1 · Calibration method benchmark (isotonic vs Platt vs smoothed isotonic)
-**Status: ADOPTED isotonic_interp (S6, DEC-2026-10-18-H)**
+**Status: ADOPTED isotonic_interp by the pre-registered rule (S6, DEC-2026-10-18-H). FRAGILE:
+the margin comes from 3 positives at a calibrated 0 (DEC-2026-10-18-I F1) → challenger P-B10.**
 - **Current approach**: isotonic regression on inner OOF predictions (§11.1).
 - **Problem**: isotonic output is piecewise constant. The resulting ties coarsen the operating
   curve (P-C2), and the fit can be unstable with few positives per fold (~1.1% prevalence). The
@@ -350,7 +373,9 @@ Status values: **AWAITING APPROVAL** · **APPROVED** · **REJECTED** · **EXPERI
 - **Classification**: B.
 
 ### P-B6 · Development-stage handling of sensor-artefact recordings in T (S6)
-**Status: RUN in S6: (c) ADOPTED for training by the pre-registered rule; (b) reported**
+**Status: RUN in S6 on M1 only. (c) Rule met (calibrator-dependent; 2 affected patients).
+Adoption is PENDING implementation for all models and an owner decision before freeze
+(DEC-2026-10-18-I F2). (b) reported.**
 - **Problem**: T development metrics (M1 tuning objective, ladder on T, the M0 Table A.2
   reproduction) are dominated by two artefact recordings: 37 % of T's L1 episodes, with T's
   largest single-patient share 24 % for L1 and 69 % for L2.

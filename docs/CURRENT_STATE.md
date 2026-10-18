@@ -60,7 +60,7 @@ None. S4 ended at a clean boundary.
 | M0 (DEVELOPMENT, T) | sens@1FA 0.626 (95 % CI 0.491–0.837) treated, 0.610 (0.418–0.810) all; θA 54.0 / 52.2 mg/dL; precision 0.12 / 0.16; median lead 45 / 30 min |
 | Gates | **G4 PASS** (tests, pipeline on T, M1 curve) |
 | Ladder (DEVELOPMENT, treated T, sens@1FA) | M0 0.626 · M1 0.857 · M2 0.875 · M3r 0.929 · M3 0.911 (ceiling 0.946). C0 +0.231 (0.094–0.437). C1 / C2a / C2b / M3−M2 intervals include 0 |
-| Frozen candidates (S6) | shared LightGBM hyperparameters (trial #20), 113 rounds, calibrator isotonic_interp, P-B6 training exclusion, quality codes categorical |
+| Frozen candidates (S6) | shared LightGBM hyperparameters (trial #20), 113 rounds, calibrator isotonic_interp (rule-selected, FRAGILE → P-B10), quality codes categorical. P-B6 exclusion: rule met, PENDING implementation and owner decision |
 | Sealed evaluation (E) | **SEALED.** S4 used TUNING_ONLY only. Feature generation refuses other scopes, and the adapter refuses E patients (`assert_not_sealed`). No E feature, prediction or per-patient analysis exists. |
 
 ## Performance
@@ -73,13 +73,13 @@ None. S4 ended at a clean boundary.
 ## Testing Status
 | Category | Status |
 |---|---|
-| Unit | 366/366 |
+| Unit | 372/372 |
 | Leakage / static guards | 18/18 |
 | Regression | 10/10 |
 | Integration (real data, T / aggregate) | 21/21 |
 | Lint / format / types | ruff clean; mypy --strict clean (83 files) |
 
-Last full run: `uv run pytest -q` → **415 passed** (2026-10-18).
+Last full run: `uv run pytest -q` → **421 passed** (2026-10-18, after the S6 review fixes).
 
 ## UI Status
 Not started (S7/S8).
@@ -93,8 +93,9 @@ Not started (S7/S8).
 | Quality codes categorical but stored as floats | LOW | P-B9 (declare categorical identically for all models) |
 | ANALYSIS_PLAN §5 (bootstrap + §2–3 implementation clarifications) DRAFT | MEDIUM | owner approval before freeze |
 | Table A.2 θ = 45 all-patients residual (63/0.79 vs 62/0.77) | LOW | exact-tie bracket; partly demonstrated (DEC-2026-10-18-F) |
-| M1 is below a no-learning CGM-level rule on T (0.857 vs 0.911); M0 is a weak reference | MEDIUM (interpretation) | P-C9 |
+| M1 is below a non-learned CGM-level rule on T (0.857 vs 0.911); M0 is a weak reference | MEDIUM (interpretation) | P-C9 |
 | Primary endpoint near the ceiling on T (M2 0.875, M3 0.911 vs 0.946); limited headroom for H1 | MEDIUM (scientific) | report honestly; secondary window log-loss |
+| Model-fit variance ≥ M2/M3r/M3 differences on T; ladder ordering uninformative (review F3) | MEDIUM (interpretation) | P-B11 |
 | Hyperparameters weakly identified (30 trials within 0.004 log-loss) | LOW | shared set frozen; R4 retuning is a robustness analysis |
 | S6 evaluation / bootstrap runtime 11–14 min | LOW | acceptable offline |
 | Live path: one malformed / back-dated event ends the twin (SYSTEM_ERROR) | LOW (S7) | recovery policy for the replay service in S7 |
@@ -108,6 +109,8 @@ Not started (S7/S8).
 | P-B1, P-B2, P-B6, P-B7, P-B8, P-B9 | Run as planned S6 experiments | No (Class B) | — |
 | ANALYSIS_PLAN §5 draft | Approve | Yes | Before freeze |
 | P-C9 level-rule reference baseline | Approve (secondary) | Yes | Before freeze |
+| P-B6 training exclusion (implement for all models + rerun ladder, or drop) | Decide | Yes | Before freeze |
+| P-B10 floored calibrator / P-B11 fit-variance repeat (Class B, T only) | Run (recommended) | No | Before freeze |
 | P-B8 M3_compact as canonical M3 | Keep M3_baseline (preserves the primary definition); compact as secondary | Yes | Before freeze |
 | Pharmacist review | Use the packet when a reviewer is available | — | No |
 

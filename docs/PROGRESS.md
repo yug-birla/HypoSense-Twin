@@ -541,7 +541,8 @@ development experiments, and evaluate G4. E stays sealed.
   - `evaluation/folds.py`, `devdata.py`, `s6_run.py`;
   - CLI `hyposense dev s6`.
 - **Smoke run flagged a suspected leak.** M1 reached 0.91 vs M0 0.63. Diagnosed with no-learning
-  rules: "CGM < 81" gives 0.911, so this is a genuine endpoint property, not leakage. This
+  rules: "CGM < 81" gives 0.911, so the endpoint is easy for a level rule. This is not proof of
+  no leakage; that comes from the S4 audits and the S6 isolation checks. This
   became the post-hoc diagnostic and P-C9.
 - **Two official runs** on clean fd34ecf: identical (`e81268ae…`). G4 PASS (G4.json).
 
@@ -570,3 +571,16 @@ development experiments, and evaluate G4. E stays sealed.
 
 ### Next Task
 S7: policy, replay and API (not started). Owner decisions are pending before freeze.
+
+### S6 independent review (2026-10-18)
+- No leakage, contamination or unfairness found. Folds were re-derived exactly.
+- Findings F1–F9 are in DEC-2026-10-18-I.
+- **Fixed:**
+  - F7: pure decision and mask functions, 6 fixture tests;
+  - F8: inputs hash, smoke-run note;
+  - doc overstatements: F2, F4, F5.
+- **Opened:**
+  - P-B10 (floored calibrator; P-B1 is fragile);
+  - P-B11 (fit-variance repeat);
+  - P-B6 status reset to PENDING implementation.
+- **Verification run `T-AGG-dev-s6-20261018T153341Z`** on clean fce4c4b: results_sha256 `e81268ae…`, identical.

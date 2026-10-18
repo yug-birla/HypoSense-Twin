@@ -11,7 +11,12 @@ approval needed?
    - **P-C9** (level-rule reference baseline);
    - **P-B8** (M3_compact as canonical M3, or keep the baseline);
    - P-C7;
-   - pharmacist review of the kernels.
+   - pharmacist review of the kernels;
+   - **P-B6** (implement the exclusion for all models and rerun the ladder, or drop it);
+   - ANALYSIS_PLAN §5 must also state the pre-registration gaps from review F6 (P-B8
+     population, metric clip, raw vs calibrated scores for P-B6).
+   - Recommended Class B runs on T before freeze: **P-B10** (floored calibrator) and
+     **P-B11** (fit-variance repeat).
 2. **S7 — Policy, replay, API**  ← *next engineering task (not started)*:
    - extend `policy/decide.py` (tags, P-C8b, decision log, acknowledgements);
    - replay service on `PatientState.try_update` + `FeatureBuilder.snapshot` + frozen M3 /

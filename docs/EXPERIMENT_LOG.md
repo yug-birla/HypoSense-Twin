@@ -258,9 +258,10 @@ Harness accepted for S6. G4 is NOT YET EVALUABLE: it requires M1 on T inner CV (
 | Run | Commit (clean?) | results_sha256 | Status |
 |---|---|---|---|
 | T-AGG-dev-s6-20261018T142512Z | 877e9bf + uncommitted S6 code (**dirty**) | — | SMOKE (2 trials, 50 resamples). Raised the "too good?" check (M1 0.91 vs M0 0.63) |
-| T-AGG-dev-s6-20261018T143013Z | dirty | — | SMOKE after the calibrator-order fix |
+| T-AGG-dev-s6-20261018T143013Z | dirty | — | SMOKE after the calibrator-order fix. Before the fix, ladder scores used canonical isotonic regardless of the P-B1 winner. After it, the P-B1 winner drives every model (M1 0.911 → 0.893 in smoke; P-B1 metrics unchanged) |
 | **T-AGG-dev-s6-20261018T144427Z** | **fd34ecf (clean)** | **`e81268ae…`** | **OFFICIAL** |
 | **T-AGG-dev-s6-20261018T150030Z** | **fd34ecf (clean)** | **`e81268ae…`** | **OFFICIAL reproduction (identical)** |
+| T-AGG-dev-s6-20261018T153341Z | fce4c4b (clean; review F7/F8 refactor) | `e81268ae…` | VERIFICATION: refactor leaves results unchanged; adds s6_inputs sha256 |
 
 ### Purpose
 Pre-registered S6 development (DEC-2026-10-18-G):
@@ -326,6 +327,11 @@ Log-loss differences are all within ±0.0012, and every CI includes 0.
   0.946. The headroom for H1 on the primary endpoint is small. The window-level secondary
   (S3: log-loss) shows no separation either.
 - This is development evidence only. It neither supports nor refutes H1.
+- *Review (DEC-2026-10-18-I)*: model-fit variance is as large as the M2 / M3r / M3 /
+  M3_compact / M1_pb6 differences, so their ordering on T is uninformative.
+- The P-B1 win of isotonic_interp rests on 3 positives at a calibrated 0. Raw scores already
+  match its log-loss.
+- P-B6 was decided on M1 only and is not yet applied to the canonical ladder.
 
 ### Limitations
 - Hyperparameters were tuned on all of T and reused in T's outer CV, so learned-model results

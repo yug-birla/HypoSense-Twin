@@ -727,7 +727,7 @@ Evidence: T-AGG-dev-s6-20261018T144427Z and T150030Z on clean fd34ecf; identical
 
   The 30 trials span only 0.0463–0.0503, so the hyperparameters are weakly identified; fold
   composition dominates. **Frozen as the shared set for M1/M2/M3r/M3.**
-- **P-B1 calibration → ADOPTED `isotonic_interp`** for all models. M1 pooled held-out values:
+- **P-B1 calibration → ADOPTED `isotonic_interp`** for all models. **FRAGILE**: see DEC-2026-10-18-I (F1). M1 pooled held-out values:
 
   | Calibrator | Log-loss | ECE | Outcome |
   |---|---|---|---|
@@ -737,15 +737,19 @@ Evidence: T-AGG-dev-s6-20261018T144427Z and T150030Z on clean fd34ecf; identical
 
   Band rule: slope 0.97 → percentages in the UI.
 - **P-B9 adopted a priori:** quality codes are categorical. Inert columns (no split in any outer
-  model): M1 7, M2 19, M3r 30, M3 31. All are explained by T-constant or near-constant columns.
+  model): M1 7, M2 19, M3r 30, M3 31. *[Corrected, DEC-2026-10-18-I F5]*: some are near-constant,
+  others are redundant missingness indicators or patient-level variables suppressed by
+  min_data_in_leaf = 603 (top-value share 53–84 %).
   No columns are pruned.
-- **P-B6 → ADOPTED for training** (pre-registered rule met).
+- **P-B6 → rule met on M1; adoption PENDING implementation and owner decision** *[corrected,
+  DEC-2026-10-18-I F2]*.
   - Measured: M1 held-out log-loss on the 28 unaffected T patients 0.02954 vs 0.03018
     (−2.1 % ≥ 1 %).
   - Excluded from training: 876 eligible rows (2 CBG-contradicted recordings; 1 floor-window
     row).
-  - Labels and evaluation are unchanged, and the rule applies identically to every model and to
-    the confirmatory training folds.
+  - Labels and evaluation are unchanged. The *intent* is to apply the exclusion to every
+    model and the confirmatory training folds. That is **not implemented**: the canonical
+    ladder above uses `pb6=False`.
   - Weak evidence, reported honestly: the all-T log-loss is not improved (+0.0006, CI includes 0).
 - **P-B8 (a) M3_compact → "candidate preferred"** (rule met: all-T log-loss −3.1 %; treated
   sens@1FA 0.929 ≥ 0.911).
@@ -763,7 +767,74 @@ Evidence: T-AGG-dev-s6-20261018T144427Z and T150030Z on clean fd34ecf; identical
   C1 / C2a / C2b / M3−M2 interval includes 0, with differences of 1–3 episodes. Treated-T
   sens@1FA (0.86–0.93) sits near the warnable ceiling (0.946).
 - **Post-hoc diagnostic** (not pre-registered; used for no selection): a no-learning rule
-  "alert if CGM < 81 mg/dL" reaches treated-T sens@1FA 0.911, above M1 (0.857). The large
-  M1-over-M0 gain therefore reflects M0's weakness under this endpoint, not leakage. This raises
-  P-C9.
+  "alert if CGM < 81 mg/dL" reaches treated-T sens@1FA 0.911, above M1 (0.857). Its threshold
+  is chosen on T by the harness, like every τ. *[Corrected, DEC-2026-10-18-I F4]*: this
+  shows the endpoint is easy for a level rule and that M0 is a weak reference. It is **not**
+  evidence against leakage; that evidence is the S4 truncation and feature audits and the S6
+  isolation checks. This raises P-C9.
 - **Class**: B (pre-registered rules applied) · **Date**: 2026-10-18 · **Commit**: fd34ecf
+
+## DEC-2026-10-18-I · S6 independent review: outcome and corrections
+
+- **Context.** Independent ML review of commits 877e9bf..8d8c3fe (review only, E not accessed).
+  The reviewer re-derived the folds (exact match) and reproduced pooled raw M1 held-out log-loss
+  (0.040247).
+- **Verified:**
+  - patient isolation (tuning, outer, inner, calibrator);
+  - fairness: same folds, params, rounds, seed and calibrator for every model; nested feature
+    sets M1 ⊂ M2 ⊂ M3r, M2 ⊂ M3;
+  - rules coded as pre-registered;
+  - score alignment into the harness;
+  - bootstrap pairing;
+  - determinism.
+
+  The tuning-overlap optimism stays as pre-declared. No CRITICAL or HIGH finding.
+- **F1 (MEDIUM) — P-B1 adoption is fragile.**
+  - Canonical isotonic outputs exactly 0 on 9,761 eligible rows, 3 of them positive. Each
+    costs ≈ 34.5 nats at the 1e-15 clip, which is the whole log-loss gap.
+  - Without those 3 rows the interp gain is −0.6 %, below the 1 % rule.
+  - isotonic_interp still outputs 0 on 6,944 rows.
+  - Raw scores (0.04025) ≈ interp (0.04017), so calibration buys ECE only, not log-loss.
+  - **Decision:** isotonic_interp stays the rule-selected calibrator, labelled FRAGILE. A floored
+    calibrator challenger is proposed (P-B10). The UI must never display a 0 % risk. Both apply
+    before freeze.
+- **F2 (MEDIUM) — P-B6 was decided on M1 only and is not implemented canonically.**
+  - The unaffected-patient gain depends on the calibrator:
+
+    | Scores | Gain |
+    |---|---|
+    | raw | +2.3 % |
+    | isotonic_interp | +2.3 % |
+    | Platt | +1.9 % |
+    | canonical isotonic | −0.6 % (rule fails) |
+
+  - The evidence comes from 2 affected patients.
+  - **Status → "rule met; adoption PENDING implementation"** (owner decision before freeze). If
+    adopted, it is implemented for all models, and the ladder is rerun before freeze.
+- **F3 (MEDIUM, interpretation) — fit variance is the same size as the effects.**
+  - Dropping 876 rows of 2 patients moved M1 by +4 episodes. That is larger than any
+    C1 / C2a / C2b / M3−M2 difference (1–3 episodes).
+  - The patient bootstrap does not include model-fit variance.
+  - **Ordering among M2 / M3r / M3 / M3_compact / M1_pb6 on T is uninformative.**
+  - A seed / fold-permutation repeat on T is proposed (P-B11).
+- **F4 (LOW–MEDIUM):** the "not leakage" inference and the "no-learning" label were corrected
+  (DEC-H, P-C9, PROGRESS).
+- **F5 (LOW):** the inert-column explanation was corrected in DEC-H.
+- **F6 (LOW) — pre-registration gaps.**
+  - P-B8 used all-T log-loss with treated sens. The treated log-loss (−4.1 %) also meets the
+    rule, so the outcome is unchanged.
+  - The P-B1 / P-B6 metric clip (1e-15) and P-B6 on calibrated scores are not specified.
+  - These must be stated in ANALYSIS_PLAN §5 before freeze (pending owner; not changed here).
+- **F7 (LOW) — fixed** in fce4c4b:
+  - the P-B1 / B6 / B8 rules and the P-B6 masks are now pure functions;
+  - 6 new SYNTHETIC fixture tests cover the label, mask, contradiction rule, the three
+    decisions and OOF assembly;
+  - 421 tests pass.
+- **F8 (LOW) — fixed:**
+  - the `s6_inputs.parquet` sha256 is now in the run provenance;
+  - the smoke-run calibrator-order fix is explained in EXPERIMENT_LOG.
+- **F9 (LOW, suspected):** pooled OOF from 5 fold calibrators. This is standard and applied
+  equally to all models. A per-fold check is optional.
+- **Verification run:** `T-AGG-dev-s6-20261018T153341Z` on clean fce4c4b gave the same results_sha256 `e81268ae…` as
+  the official runs. The refactor leaves results unchanged.
+- **Class**: A (code / tests / docs); B (P-B10, P-B11 proposals) · **Date**: 2026-10-18 · **Commit**: fce4c4b
