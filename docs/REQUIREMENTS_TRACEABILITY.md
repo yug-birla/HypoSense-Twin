@@ -242,3 +242,18 @@ Update this file whenever a requirement's status changes. Module paths are relat
 | D7-06 | Latency < 200 ms per reading on a laptop CPU | REQ | Table 18.1 | — | p99 4.5 ms | **PASS** |
 | D7-07 | API contract, bounded inputs, no stack traces, offline | REQ | §17, ADR-008 | `api/` | `test_replay_api` | **PASS** |
 | D7-08 | E sealed in S7 (T catalogue only) | C | §12 | `tuning_streams`, `assert_not_sealed` | catalogue test | **PASS** |
+
+## S8 additions
+
+| ID | Requirement | Kind | Source | Implementation | Verification | Status |
+|---|---|---|---|---|---|---|
+| D8-01 | Ward board, Patient review, Evidence view | REQ | §17; CLAUDE.md §24 | `frontend/src/app/*` | screenshots; E2E | **PASS** |
+| D8-02 | State never colour alone | REQ | §16.2 | `lib/states.ts`, `StatePill` | Vitest (every state) | **PASS** |
+| D8-03 | No scientific logic in the browser | REQ | CLAUDE.md §26 | backend display fields | review F5 (fixed); code review | **PASS** |
+| D8-04 | Never show a stale prediction as current | REQ | CLAUDE.md §29 | `policy.current`; lost-connection hiding | Vitest `lost.test.tsx`; integration stale-bed test | **PASS** |
+| D8-05 | Acknowledgement: 4 codes, deliberate, audited | REQ | §16.4 | `AckPanel` | Vitest; E2E → acks.jsonl | **PASS** |
+| D8-06 | DEVELOPMENT vs confirmatory honesty | REQ | CLAUDE.md §31 | Evidence banner, shell status | Vitest; review | **PASS** |
+| D8-07 | Prohibited wording (no "safe", no dose advice) | REQ | §16.3 | UI strings | Vitest scan (with controls) | **PASS** |
+| D8-08 | Accessibility baseline (WCAG AA) | REQ | S8 brief | tokens, roles, skip link | axe audit, 0 violations | **PASS** |
+| D8-09 | Offline single-process demo | REQ | ADR-007 | static export served by FastAPI | walkthrough; E2E | **PASS** |
+| D8-10 | All six states visible on a T replay | Accept | IMPLEMENTATION_PLAN S8 | — | 5 of 6 occur naturally; SYSTEM ERROR only under injected faults (S7) | **PASS (qualified)** |

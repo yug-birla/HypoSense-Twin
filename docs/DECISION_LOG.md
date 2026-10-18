@@ -940,3 +940,59 @@ Class A unless marked. Code: 457b770 (S7), 9b154bf (review fixes). No protocol c
   - F1, F2, F3, F4, F5, F6, F8, F9 and F10 are fixed in 9b154bf, with tests.
   - F7, the display semantics of a rejected non-CGM event, is raised as P-C10 for the owner.
 - **Class**: A (+ P-C10 / P-B12 raised) · **Date**: 2026-10-18 · **Commit**: 457b770, 9b154bf
+
+## DEC-2026-10-19-K · S8: clinical frontend (implementation decisions + review outcome)
+
+Class A. Code: 7b66be1 (S8), 25c2d88 (review fixes). No protocol change. Design and architecture:
+docs/FRONTEND.md.
+
+- **Stack as ADR-007/008**, with versions moved to releases outside known advisories and at least two
+  weeks old: Next 16.3.8 (static export), React 19.3.0, ECharts 6.1.0 (SVG renderer,
+  tree-shaken), TanStack Query, Tailwind 4, Vitest 5, Radix (dialog, tooltip). `npm audit`: 0.
+  shadcn/ui was not adopted: two Radix primitives and our own tokens were enough, and a library
+  look was explicitly unwanted.
+- **No scientific logic in the browser.** These are added to the backend instead:
+  - bed and patient display fields: trend from the canonical `cgm_slope30`, `reason`, a
+    deterministic `summary`, `stale` and `cgm_low` from the policy rules;
+  - a 24-h `timeline`;
+  - `ledger_entries` from the twin's OutcomeLedger, including OUTCOME_UNKNOWN at the end of a
+    recording;
+  - typed `/api/meta` and `/api/evidence`, with `excludes_zero` computed server-side;
+  - the post-hoc level-rule diagnostic, quoted from S6.
+
+  An unknown state string renders as SYSTEM ERROR.
+- **Deterministic summary** (`policy/messages.summary`) replaces the dropped LLM idea. It is a
+  template over validated fields: unavailable values are omitted, there is no advice, and it is
+  unit-tested.
+- **Evidence curves** (`hyposense dev evidence`): the S6 OOF scores are checked against their
+  recorded hash and run through the canonical S5 harness. They reproduce S6 sens@1FA exactly
+  (10/10) and contain aggregates only.
+- **P-C10 (PENDING)**: `serve --pc10 badge` is a development switch for option (b). The default
+  remains the current specification (SYSTEM ERROR).
+- **P-B12**: LOW_CONFIDENCE is rendered as a quiet tertiary tag and never as a warning.
+- **Lost connection**: if the service or stream is unreachable, ward and patient states are
+  hidden, a banner says the values are not current, and the replay controls are disabled.
+  Stale values are never shown as current.
+- **Static export serving**: Next 16 requests `__next.<seg>.__PAGE__.txt` while the export
+  writes `__next.<seg>/__PAGE__.txt`. A narrow, traversal-safe mapping in `ExportFiles` fixes
+  this. Before the fix, client navigation logged 25 × 404.
+- **Screenshots** show T patient traces, so they stay in the git-ignored
+  `artifacts/screenshots/`.
+- **Negative / superseded runs**:
+  - `T-AGG-dev-evidence-20261018T174431Z` and `T-AGG-s8-ui-audit-20261018T183303Z` ran on an
+    uncommitted tree. They were deleted and regenerated on clean commits.
+  - Two audits taken at 18:45 queried a stale server left over from the interrupted session.
+    They were deleted.
+  - `T-AGG-s8-ui-audit-20261018T184552Z` / `T-AGG-s8-ui-audit-20261018T184600Z` (clean, 9f457b5) are superseded by the post-review audits.
+- **Review** (independent, 4 perspectives): no CRITICAL findings.
+  - **F1 (HIGH):** a stale ward stayed on screen after the backend died.
+  - **F2:** the notification column was clipped at 1280 px.
+  - **F3:** the wording scan was vacuous; `\b` in a JS template literal is a backspace
+    character. It now has positive controls.
+  - **F4:** C0 was over-readable. A caveat and the post-hoc level-rule diagnostic are now shown;
+    P-C9 remains pending.
+  - **F5–F10:** duplicated thresholds, a colour-only status under 1280 px, extra tab stops,
+    chart gaps, slider reset, reconnect scope.
+
+  All ten are fixed in 25c2d88, with tests where testable.
+- **Class**: A · **Date**: 2026-10-19 · **Commit**: 7b66be1, 25c2d88

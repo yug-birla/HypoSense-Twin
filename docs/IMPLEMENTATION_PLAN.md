@@ -169,7 +169,7 @@ The event reportedly ends **20 Nov 2026**. The Phase-1 deadline is unknown.
   (14-day replay at ×600); API contract tests.
 
 ## S8 · Professional frontend (parallel track)
-**Status: NEXT** (not started).
+**Status: COMPLETE (2026-10-19).** DEC-2026-10-19-K; docs/FRONTEND.md. LOW NOW, ALERT, WATCH, NO ALERT and INSUFFICIENT DATA occur naturally on the T replay. SYSTEM ERROR does not, because T has no malformed events; it is covered by component tests and the S7 error-injection runs.
 - **Work**: Next.js app (ADR-007): Ward Board, Patient Review, Evidence view; replay controls;
   event timeline/ledger; provenance strip; data-quality and timing badges; acknowledgement
   panel; loading, error, insufficient-data and stale states; honesty card. Types are generated

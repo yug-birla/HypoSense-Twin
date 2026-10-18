@@ -326,7 +326,7 @@ from the state, never from the model.
 - Frontend TypeScript types are **generated from the OpenAPI schema** (openapi-typescript), so
   contracts are never duplicated by hand.
 
-### 4.11 Frontend (`frontend/`, ADR-007)
+### 4.11 Frontend (`frontend/`, ADR-007) — implemented in S8; details in [FRONTEND.md](FRONTEND.md)
 - Stack: Next.js (App Router, static export) + React + TypeScript + Tailwind CSS +
   shadcn/ui (Radix primitives) + Apache ECharts + TanStack Query. FastAPI serves the static
   build, so the demo is a single process and fully offline.

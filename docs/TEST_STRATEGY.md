@@ -96,16 +96,21 @@ Once a remote exists, a GitHub Actions workflow runs on every push: `uv sync --f
 mypy, pytest (no data, so `requires_data` tests skip), the frontend lint and build, and the
 E2E tests on the main branch.
 
-## 8. Current status (updated 2026-10-18, end of S7)
+## 8. Current status (updated 2026-10-19, end of S8)
 
-Command: `uv run pytest -q` → **479 passed, 0 failed**. ruff clean; `mypy --strict src` clean (92 files).
+Command: `uv run pytest -q` → **495 passed, 0 failed**; `cd frontend && npx vitest run` → **28 passed**.
+ruff clean; `mypy --strict src` clean (93 files); `tsc --noEmit` (strict) clean.
 
-| Category | Tests | Passing | Notable additions in S7 |
+| Category | Tests | Passing | Notable additions in S8 |
 |---|---|---|---|
-| Unit | 419 | 419 | policy `decide` (Table 14.1 rows via gate, inclusive boundaries, cooldown / persistence, tags never downgrade — property test, malformed inference, staleness, invariants, texts never "safe" / no treatment words); strict artefact loader (hash, missing, compatibility, corrupt, level, thresholds, pin, CONFIRMATORY guard); runner (rejected events never poison later state, inference failure, circuit breaker, EVENT_REJECTED tag); session (log determinism, seek = uninterrupted log) |
+| Unit | 432 | 432 | deterministic summary / reason / trend templates; static-export path mapping (traversal-safe); P-C10 display switch |
 | Leakage / static guards | 18 | 18 | unchanged |
 | Regression | 10 | 10 | unchanged |
-| Integration (real data) | 32 | 32 | S7 on T: bitwise offline/live parity, decision-log determinism, long run ×600, refusal to start, API contract + acknowledgement, bounds and safe errors, stale bed → INSUFFICIENT + `bed_state` stream, SSE typing, slow-subscriber disconnect |
+| Integration (real data) | 34 | 34 | S8 ward/patient fields on T; evidence view from real artefacts (excludes_zero, diagnostics, G3b) |
+| E2E (browser) | 1 | 1 | Edge: start replay → states on the board → acknowledge in the dialog → `acks.jsonl` entry |
+| Frontend (Vitest) | 28 | 28 | text + icon for every state; unknown → SYSTEM ERROR; ward rows; lost connection hides states; acknowledgement (4 reasons, no free text); DEVELOPMENT banner; stream contract; chart gaps; prohibited-wording scan with positive controls |
+
+Accessibility: `scripts/ui_audit.py` (axe-core, WCAG 2.x A/AA), 0 violations.
 
 Engineering evidence (all T recordings): `hyposense dev s7` (two identical runs).
 

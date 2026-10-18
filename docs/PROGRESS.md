@@ -623,3 +623,42 @@ sealed.
 
 ### Next Task
 S8: professional frontend (not started). Owner decisions are listed in CURRENT_STATE.
+
+## 2026-10-19 — S8: Professional frontend
+
+### Objective
+A clinical, honest, deterministic frontend on the S7 API: Ward board, Patient review, Evidence.
+T only.
+
+### Work Completed
+- **Design and stack:** short design-reference review (FRONTEND.md §5); design system as tokens;
+  Next.js static export served by FastAPI, so it runs as one offline process.
+- **Screens:** Ward board (attention summary, dense state-ordered table, freshness,
+  notifications); Patient review (state header with a deterministic summary, glucose/model
+  timeline with layer toggles, estimated exposure vs recorded doses, why, acknowledgement,
+  data quality, forecast → outcome ledger); Evidence (DEVELOPMENT banner, task, limitations,
+  ladder with CIs, operating curves, paired Δ, calibration, gates, safeguards, provenance).
+- **Replay controller:** play, pause, step, +1 h, speed, seek, reset.
+- **Backend additions:** display fields, typed evidence, curve artefact, P-C10 development
+  switch, static-export mapping.
+- **Tests:** Vitest 28; Python 495 including the browser E2E (replay → API → dashboard →
+  acknowledge → acks.jsonl).
+- **QA:** visual QA at 1440 / 1280 / 1024 px; accessibility audit; T walkthrough.
+- **Independent 4-perspective review:** 10 findings (one HIGH), all fixed.
+
+### Results
+- **Accessibility:** 0 WCAG A/AA violations, keyboard skip link.
+- **Load:** pages ready in < 0.5 s.
+- **Determinism:** evidence curves identical across runs and equal to S6.
+- **Walkthrough:** first ALERT at replay offset 3 h 08 min and first LOW NOW at 4 h 08 min, on
+  the default ward. Moments were taken as they first occurred, not chosen.
+
+### Problems Found and Fixed
+- **Next 16 RSC segment 404s.**
+- **Dependency advisories** (moved to patched releases).
+- **Contrast failures:** 46 nodes; ink tokens darkened.
+- **Interrupted-session hygiene:** stale server, dirty-tree runs regenerated.
+- **Review F1–F10** (DEC-2026-10-19-K).
+
+### Next Task
+Pre-freeze Class B runs on T (P-B10, P-B11, P-B12). Owner decisions are listed in CURRENT_STATE.

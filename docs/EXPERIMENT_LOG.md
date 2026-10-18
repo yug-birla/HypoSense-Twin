@@ -367,6 +367,16 @@ Log-loss differences are all within ±0.0012, and every CI includes 0.
   - 1.186 notifications / patient-day;
   - LOW_CONFIDENCE 16.1% of forecasts (P-B12).
 
+## S8 — Evidence-view curves and UI audit (T, DEVELOPMENT)
+
+| Run | Commit (clean) | results_sha256 | Status |
+|---|---|---|---|
+| T-AGG-dev-evidence-20261018T184314Z / 20261018T184413Z | 7b66be1 | `18cb4d0e…` (identical) | OFFICIAL: aggregate operating curves from the S6 OOF (hash-verified); sens@1FA reproduces S6 for 10/10 model × population |
+| T-AGG-s8-ui-audit-20261018T184552Z / 20261018T184600Z | 9f457b5 | — | SUPERSEDED by the post-review audit |
+| **T-AGG-s8-ui-audit-20261018T190216Z / 20261018T190224Z** | **25c2d88** | **`d6b44323…` (identical)** | **OFFICIAL**: axe-core 4.13 WCAG 2.0/2.1 A+AA, 0 violations on Ward / Patient / Evidence; first Tab = skip link; ready 0.24–0.45 s |
+
+Deleted, not evidence: two runs on an uncommitted tree, and two audits against a stale server.
+
 ## Evidence inherited from the blueprint (not reproduced here)
 
 | Item | Source | Status in this repo |

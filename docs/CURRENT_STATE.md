@@ -1,15 +1,15 @@
 # HypoSense Twin — Current Project State
 
-_Last updated: 2026-10-18 (end of S7). This is the canonical snapshot. Read it first, then
+_Last updated: 2026-10-19 (end of S8). This is the canonical snapshot. Read it first, then
 [NEXT_STEPS.md](NEXT_STEPS.md) and [PROGRESS.md](PROGRESS.md)._
 
 ## Current Phase
-**S7 — complete and reviewed.** Next: **S8** (frontend). S8 has **not** been started. Freeze is
-NOT ready (owner decisions pending).
+**S8 — complete and reviewed.** S9 has **not** been started. Freeze is NOT ready (owner decisions
+and Class B runs pending).
 
 ## Overall Status
-**IMPLEMENTATION.** Deterministic backend (policy, replay, API) runs end-to-end on T with a
-DEVELOPMENT model. E is still sealed.
+**IMPLEMENTATION / DEMO-READY (DEVELOPMENT).** End-to-end: replay → twin → policy → API → web UI,
+offline, on T with a DEVELOPMENT model. E is still sealed.
 
 ## Completed Components
 | Component | Status | Key files | Evidence |
@@ -22,6 +22,7 @@ DEVELOPMENT model. E is still sealed.
 | **S4 feature specification v1.0.0** | **DONE, locked** | `features/spec.py` → `artifacts/features/feature_spec.json` (v1.0.1, sha256 `90329804…`) | regression lock; docs/FEATURE_DICTIONARY.md |
 | **S5 evaluation harness + policy core + M0 + bootstrap** | **DONE** | `src/hyposense/evaluation/`, `policy/decide.py`, `models/m0.py`, `artifacts/evaluation/metric_registry.json` | Table A.2 7 MATCH + 1 EXPECTED; `T-AGG-eval-m0-20261018T1406*`/`T1407*` (results `7864a0d0…`, identical) |
 | **S6 learned-model development (T)** | **DONE; G4 PASS** | `models/lgbm.py`, `calibration/methods.py`, `evaluation/{folds,devdata,s6_run}.py` | `T-AGG-dev-s6-20261018T1444*`/`T1500*` (results `e81268ae…`, identical); `artifacts/gates/G4.json` |
+| **S8 frontend** | **DONE** | `frontend/` (Next.js static export), `api/` display + evidence fields, `evaluation/s8_evidence.py`; docs/FRONTEND.md | `T-AGG-dev-evidence-20261018T184314Z` (curves `18cb4d0e…`); `T-AGG-s8-ui-audit-20261018T190216Z` (a11y, 0 violations); DEC-2026-10-19-K |
 | **S7 policy, replay, API** | **DONE** | `policy/{decide,messages}.py`, `models/artifact.py`, `replay/{runner,session}.py`, `api/{app,schemas,service}.py`, `evaluation/{s7_artifact,s7_bench}.py` | `T-AGG-s7-engineering-20261018T163321Z` / `T-AGG-s7-engineering-20261018T163810Z` (results `6d2517cd…`, identical); DEC-2026-10-18-J |
 | **S4 feature audit (T only)** | **DONE** | `audit/features.py`, `hyposense audit features` | `T-AGG-audit-features-20261018T1215*`, `T1225*` (results_sha256 `db39f39a…`, identical in runs 2–5) |
 
@@ -76,13 +77,16 @@ None. S4 ended at a clean boundary.
 ## Testing Status
 | Category | Status |
 |---|---|
-| Unit | 419/419 |
+| Unit | 432/432 |
 | Leakage / static guards | 18/18 |
 | Regression | 10/10 |
-| Integration (real data, T / aggregate) | 32/32 |
-| Lint / format / types | ruff clean; mypy --strict clean (92 files) |
+| Integration (real data, T / aggregate) | 34/34 |
+| E2E (browser, Edge) | 1/1 |
+| Frontend (Vitest) | 28/28 |
+| Lint / format / types | ruff clean; mypy --strict clean (93 files); tsc strict clean |
 
-Last full run: `uv run pytest -q` → **479 passed** (2026-10-18, after the S7 review fixes).
+Last full run: `uv run pytest -q` → **495 passed**; `npx vitest run` → **28 passed** (2026-10-19,
+after the S8 review fixes).
 
 ## Engineering (S7, T)
 - **Latency:** per reading p50 1.5 ms / p99 4.5 ms; API ward p50
@@ -92,7 +96,9 @@ Last full run: `uv run pytest -q` → **479 passed** (2026-10-18, after the S7 r
 - **Error injection:** no poisoning.
 
 ## UI Status
-Not started (S8). The backend API contract is in ARCHITECTURE §4.10.
+**Built (S8).** Ward board, Patient review, Evidence; replay controls; SSE live updates; acknowledgement.
+`cd frontend && npm ci && npm run build`, then `uv run hyposense serve`. Accessibility: 0 WCAG A/AA
+violations (axe). Desktop/laptop/tablet ≥ 1024 px. Design and contracts: docs/FRONTEND.md.
 
 ## Open Issues
 | Issue | Severity | Proposed solution |
@@ -130,10 +136,9 @@ Not started (S8). The backend API contract is in ARCHITECTURE §4.10.
 | Pharmacist review | Use the packet when a reviewer is available | — | No |
 
 ## Last Verified Commit
-- Code: `9b154bf` (S7 + review fixes). The official engineering runs ran on it, clean and
-  identical.
+- Code: `25c2d88` (S8 + review fixes). Audits ran on it, clean and identical.
 - Documentation commit: see `git log -1`.
 
 ## Next Recommended Task
-**S8: professional frontend** on the S7 API (T replay, DEVELOPMENT labels). Owner decisions are
-pending before freeze.
+**Pre-freeze Class B development runs on T: P-B10, P-B11, P-B12.** Owner decisions (P-C7, P-C9,
+P-C10, P-B6, P-B8, ANALYSIS_PLAN §5) are needed before freeze.

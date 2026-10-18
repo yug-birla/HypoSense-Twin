@@ -1,6 +1,6 @@
 # Next Steps
 
-Ordered execution queue. Updated: 2026-10-18 (end of S7).
+Ordered execution queue. Updated: 2026-10-19 (end of S8).
 Each item lists: objective · dependency · acceptance criteria · difficulty · parallel? ·
 approval needed?
 
@@ -17,15 +17,13 @@ approval needed?
      population, metric clip, raw vs calibrated scores for P-B6).
    - Recommended Class B runs on T before freeze: **P-B10** (floored calibrator) and
      **P-B11** (fit-variance repeat).
-2. **S8 — Professional frontend**  ← *next engineering task (not started)*:
-   - Ward Board, Patient Review and Evidence View on the S7 API (ARCHITECTURE §4.10);
-   - types generated from OpenAPI;
-   - render state only from `/api/ward` and `bed_state` (no UI-side policy);
-   - DEVELOPMENT labels;
-   - P-C10 display once decided.
+2. **Pre-freeze Class B runs on T** ← *next engineering task*:
+   - P-B10 (floored calibrator);
+   - P-B11 (fit variance);
+   - P-B12 (LOW CONFIDENCE definition).
 3. Owner decisions (CURRENT_STATE "Open Decisions"): P-C7, P-C9, P-C10, P-B6, P-B8,
    ANALYSIS_PLAN §5, pharmacist review.
-4. Class B runs on T before freeze: P-B10, P-B11, P-B12.
+4. FREEZE (IMPLEMENTATION_PLAN), then S9.
 
 ## P1 — Core
 
@@ -33,8 +31,8 @@ approval needed?
 
 ## P2 — Product / Demo
 
-1. S8 — Next.js frontend: exposure timeline with quality badges, the P-C8b warning, and the
-   data honesty card.
+1. S8 done (DEC-2026-10-19-K). Remaining polish: P-C10 display once decided; screenshots for
+   the submission (T only).
 2. Early submittable version (S0–S5 + minimal S7–S8, labelled DEVELOPMENT).
 3. FREEZE → S9 → S10.
 4. Remote repository + CI.
