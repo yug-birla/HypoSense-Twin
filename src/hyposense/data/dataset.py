@@ -88,3 +88,46 @@ def load_dataset(scope: AccessScope) -> Dataset:
             summary.frame.loc[summary.frame.index.isin(keys)], summary.raw_headers
         )
     return Dataset(scope, root, str(verified["files_sha256"]), recordings, summary)
+
+
+@dataclass(frozen=True)
+class LegacyTuning:
+    """A pre-2023 figshare version's TUNING recordings (reconciliation copy), for reproducing
+    blueprint numbers (S5 Table A.2). E files are never opened."""
+
+    version: int
+    root: Path
+    files_sha256: dict[str, str]
+    recordings: tuple[Recording, ...]
+    summary: SummaryTable | None
+
+
+def load_legacy_tuning(version: int) -> LegacyTuning:
+    """TUNING-only recordings of an extracted reconciliation version
+    (data/raw/reconciliation/v<N>/, created and MD5-checked by `hyposense audit events`)."""
+    from hyposense.common.hashing import sha256_file
+
+    dcfg = dataset_config()
+    cfg = load_config()
+    root = REPO_ROOT / "data" / "raw" / "reconciliation" / f"v{version}"
+    rec_dir = root / dcfg["extract"]["recordings_dir"]
+    if not rec_dir.is_dir():
+        raise FileNotFoundError(
+            f"{rec_dir} missing: run `hyposense audit events` to extract v{version}"
+        )
+    partition = load_partition()
+    paths = [
+        p
+        for p in discover_recordings(rec_dir)
+        if partition.get(parse_recording_name(p.name).patient_id) == "T"
+    ]
+    offset = str(cfg["time"]["assumed_utc_offset"])
+    recordings = tuple(load_recording(p, utc_offset=offset) for p in paths)
+    hashes = {p.name: sha256_file(p) for p in paths}
+    summary_path = root / dcfg["extract"]["summary_file"]
+    summary = None
+    if summary_path.exists():
+        full = load_summary(summary_path)
+        keys = {r.identity.recording_key for r in recordings}
+        summary = SummaryTable(full.frame.loc[full.frame.index.isin(keys)], full.raw_headers)
+    return LegacyTuning(version, root, hashes, recordings, summary)

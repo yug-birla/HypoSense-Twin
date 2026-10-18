@@ -1,6 +1,8 @@
-"""Evaluation harness: folds, nested calibration and threshold selection, episode metrics,
-operating curves, patient-cluster bootstrap, provenance-stamped results. Blueprint Sections 15,
-19-20, Appendix E.
+"""Evaluation harness (OFFLINE): model-agnostic policy-replay accounting, episode and window
+metrics, exact operating curves, first-crossing sens@B, threshold selection, paired
+patient-cluster bootstrap, metric registry, provenance-stamped results. Blueprint Sections 15,
+19-20, App. E; ANALYSIS_PLAN §2-3.
 
-Status: NOT IMPLEMENTED (planned for S5-S6, S9). See docs/ARCHITECTURE.md.
+Status: S5 IMPLEMENTED (data, metrics, bootstrap, registry, m0_run). Folds, nested calibration
+and the confirmatory runner: S6 / S9.
 """

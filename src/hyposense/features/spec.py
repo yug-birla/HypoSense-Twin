@@ -33,7 +33,7 @@ UNKNOWN (value absent or unusable), TIMING_UNKNOWN (Table 12.1).
 from __future__ import annotations
 
 from collections.abc import Sequence
-from dataclasses import asdict, dataclass, field
+from dataclasses import asdict, dataclass, field, replace
 from enum import StrEnum
 from typing import Any
 
@@ -150,7 +150,8 @@ def _g1() -> list[FeatureDef]:
                 "mg/dL",
                 CGM,
                 f"M0 trend projection g(t) + {h} x cgm_slope30 (executable spec audit2.py: "
-                "least-squares slope over (t - 35 min, t], >= 3 readings)",
+                "least-squares slope over (t - 35 min, t], >= 3 readings); computed exactly "
+                "and rounded once, so a projection equal to theta is exactly theta",
                 "readings in (t - 35 min, t]",
                 Missing.NAN_WITH_INDICATOR,
                 "INSUFFICIENT_HISTORY (< 3 readings)",
@@ -178,7 +179,8 @@ def _g2() -> list[FeatureDef]:
                 "mg/dL/min",
                 CGM,
                 f"least-squares slope of g on time over (t - {w} - 5 min, t] "
-                "(trend_window_tolerance_min = 5, the M0 window convention); exact sums",
+                "(trend_window_tolerance_min = 5, the M0 window convention); exact rational "
+                "arithmetic on the 0.1 mg/dL data grid, rounded once (v1.0.1, ADR-036)",
                 f"readings in (t - {w + 5} min, t]",
                 Missing.REQUIRED if req else Missing.NAN_WITH_INDICATOR,
                 None if req else "INSUFFICIENT_HISTORY (< 3 readings in the window)",
@@ -757,8 +759,15 @@ def _g8() -> list[FeatureDef]:
     return out
 
 
+# v1.0.1 (S5, ADR-036): exact rational trend arithmetic changed only these features' values
+_V101 = frozenset(
+    {"cgm_slope30", "cgm_slope60", "cgm_slope120", "cgm_accel", "cgm_m0_proj30", "cgm_m0_proj60"}
+)
+
+
 def _build() -> tuple[FeatureDef, ...]:
-    return tuple(_g1() + _g2() + _g3() + _g4() + _g5() + _g6() + _g7() + _g78() + _g8())
+    feats = _g1() + _g2() + _g3() + _g4() + _g5() + _g6() + _g7() + _g78() + _g8()
+    return tuple(replace(f, version="1.0.1") if f.name in _V101 else f for f in feats)
 
 
 FEATURES: tuple[FeatureDef, ...] = _build()

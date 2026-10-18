@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import math
 from dataclasses import dataclass
+from fractions import Fraction
 from typing import Any
 
 import numpy as np
@@ -69,19 +70,39 @@ class CGMFeatureConfig:
         )
 
 
-def ls_slope(ts: npt.NDArray[np.int64], g: npt.NDArray[np.float64]) -> float:
-    """Least-squares slope (mg/dL per min) with exact sums; NaN for < 2 points."""
+def _exact(v: float) -> Fraction:
+    """A CGM value as an exact rational. Values lie on the 0.1 mg/dL grid (S1: every value is a
+    multiple of 1.8 mg/dL), so the decimal value is recovered exactly. An off-grid value falls
+    back to the exact binary value of the float, which is still deterministic."""
+    tenths = round(v * 10)
+    return Fraction(tenths, 10) if abs(v * 10 - tenths) < 1e-6 else Fraction(v)
+
+
+def ls_slope_exact(ts: npt.NDArray[np.int64], g: npt.NDArray[np.float64]) -> Fraction | None:
+    """Least-squares slope (mg/dL per min) in EXACT rational arithmetic; None for < 2 points or
+    a degenerate design. Exactness makes mathematically equal slopes bitwise equal after
+    conversion to float. Ties then switch together (ANALYSIS_PLAN §3.4), and the M0 strict rule
+    resolves a projection exactly equal to theta correctly (S5 finding, ADR-036)."""
     n = len(ts)
     if n < 2:
-        return math.nan
-    x = ((ts - ts[-1]) / 60.0).tolist()
-    y = g.tolist()
-    xm = math.fsum(x) / n
-    ym = math.fsum(y) / n
-    sxx = math.fsum((a - xm) * (a - xm) for a in x)
-    if sxx == 0.0:
-        return math.nan
-    return math.fsum((a - xm) * (b - ym) for a, b in zip(x, y, strict=True)) / sxx
+        return None
+    t_end = int(ts[-1])
+    x = [int(t) - t_end for t in ts.tolist()]  # integer seconds
+    y = [_exact(v) for v in g.tolist()]
+    sx, sy = sum(x), sum(y, Fraction(0))
+    sxx = sum(a * a for a in x)
+    den = n * sxx - sx * sx
+    if den == 0:
+        return None
+    sxy = sum((a * b for a, b in zip(x, y, strict=True)), Fraction(0))
+    return (n * sxy - sx * sy) / den * 60  # per second -> per minute
+
+
+def ls_slope(ts: npt.NDArray[np.int64], g: npt.NDArray[np.float64]) -> float:
+    """Least-squares slope (mg/dL per min), correctly rounded from the exact value; NaN if
+    undefined."""
+    s = ls_slope_exact(ts, g)
+    return math.nan if s is None else float(s)
 
 
 def window_start(ts: npt.NDArray[np.int64], t: int, span_s: float) -> int:
@@ -89,14 +110,30 @@ def window_start(ts: npt.NDArray[np.int64], t: int, span_s: float) -> int:
     return int(np.searchsorted(ts, t - span_s, side="right"))
 
 
-def trend_slope(
+def trend_slope_exact(
     ts: npt.NDArray[np.int64], g: npt.NDArray[np.float64], window_s: int, c: CGMFeatureConfig
-) -> float:
+) -> Fraction | None:
     t = int(ts[-1])
     lo = window_start(ts, t, window_s + c.trend_tol_s)
     if len(ts) - lo < c.slope_min_readings:
-        return math.nan
-    return ls_slope(ts[lo:], g[lo:])
+        return None
+    return ls_slope_exact(ts[lo:], g[lo:])
+
+
+def trend_slope(
+    ts: npt.NDArray[np.int64], g: npt.NDArray[np.float64], window_s: int, c: CGMFeatureConfig
+) -> float:
+    s = trend_slope_exact(ts, g, window_s, c)
+    return math.nan if s is None else float(s)
+
+
+def trend_projection(
+    ts: npt.NDArray[np.int64], g: npt.NDArray[np.float64], horizon_min: int, c: CGMFeatureConfig
+) -> float:
+    """M0 projection g(t) + H x slope30 (ANALYSIS_PLAN §0d), computed exactly, then rounded once.
+    NaN if the 30-min slope is undefined."""
+    s = trend_slope_exact(ts, g, 30 * 60, c)
+    return math.nan if s is None else float(_exact(float(g[-1])) + horizon_min * s)
 
 
 def nearest_lag(
@@ -125,15 +162,17 @@ def cgm_features(
     for lag in c.lags_s:
         v = nearest_lag(ts, g, lag, c.lag_tol_s)
         out[f"cgm_lag{lag // 60}"] = v
-    slopes = {w // 60: trend_slope(ts, g, w, c) for w in c.slope_windows_s}
+    exact = {w // 60: trend_slope_exact(ts, g, w, c) for w in c.slope_windows_s}
+    slopes = {w: (math.nan if v is None else float(v)) for w, v in exact.items()}
     for h in c.projections_min:
-        out[f"cgm_m0_proj{h}"] = gt + h * slopes[30] if math.isfinite(slopes[30]) else math.nan
+        out[f"cgm_m0_proj{h}"] = trend_projection(ts, g, h, c)
     for lag in c.lags_s:
         out[f"cgm_lag{lag // 60}_missing"] = float(math.isnan(out[f"cgm_lag{lag // 60}"]))
     # G2 trend
     for w, s in slopes.items():
         out[f"cgm_slope{w}"] = s
-    out["cgm_accel"] = slopes[30] - slopes[60]  # NaN if either is NaN
+    s30, s60 = exact[30], exact[60]
+    out["cgm_accel"] = math.nan if s30 is None or s60 is None else float(s30 - s60)
     k = len(g) - 1
     falling = 0
     while k >= 1 and g[k] < g[k - 1] and ts[k] - ts[k - 1] <= c.max_step_s:

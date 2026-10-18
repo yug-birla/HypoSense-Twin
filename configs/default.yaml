@@ -121,7 +121,7 @@ features:                           # [CLASS B] Appendix D representation consta
                                     # the blueprint's where it states them; the rest are a-priori
                                     # operational choices, fixed before any model is fitted
                                     # (docs/FEATURE_DICTIONARY.md; DECISION_LOG ADR-030).
-  spec_version: "1.0.0"
+  spec_version: "1.0.1"               # 1.0.1 (S5): exact rational slope arithmetic (ADR-036)
   cgm_nominal_interval_min: 15      # ShanghaiT2DM sampling interval (S1: >= 99 % of intervals <= 20 min)
   lags_min: [15, 30, 45, 60]        # App. D group 1: g at t-15 ... t-60
   lag_tolerance_min: 7.5            # reading nearest to t-L within +/- half a sampling interval

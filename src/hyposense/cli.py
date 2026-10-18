@@ -11,6 +11,8 @@ hyposense audit medication              medication audit, G3, G2 re-check (produ
 hyposense audit features [--workers N]  S4 feature audit on T: truncation equality at every
                                         eligible time, replay parity, perturbation, distributions
 hyposense features spec                 write artifacts/features/feature_spec.json (registry)
+hyposense eval m0 [--resamples N]       S5: Table A.2 reproduction + M0 on v5 T (DEVELOPMENT)
+hyposense eval registry                 write artifacts/evaluation/metric_registry.json
 hyposense gates show                  print the latest gate results
 """
 
@@ -154,6 +156,28 @@ def cmd_features_spec(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_eval_m0(args: argparse.Namespace) -> int:
+    from hyposense.evaluation.m0_run import run_m0
+
+    summary = run_m0(resamples=args.resamples)
+    _print(summary)
+    return 0 if summary["legacy_reproduction"].get("UNEXPLAINED DIFFERENCE", 0) == 0 else 1
+
+
+def cmd_eval_registry(args: argparse.Namespace) -> int:
+    from hyposense.common.config import REPO_ROOT
+    from hyposense.evaluation.registry import registry_document, registry_sha256
+
+    path = REPO_ROOT / "artifacts" / "evaluation" / "metric_registry.json"
+    path.parent.mkdir(parents=True, exist_ok=True)
+    doc = {**registry_document(), "sha256": registry_sha256()}
+    path.write_text(
+        json.dumps(doc, indent=1, ensure_ascii=False) + "\n", encoding="utf-8", newline="\n"
+    )
+    print(f"wrote {path} (sha256 {doc['sha256']})")
+    return 0
+
+
 def cmd_gates_show(args: argparse.Namespace) -> int:
     from hyposense.audit.gates import gates_dir
 
@@ -233,6 +257,16 @@ def build_parser() -> argparse.ArgumentParser:
     )
     feats.add_parser("spec", help="write artifacts/features/feature_spec.json").set_defaults(
         func=cmd_features_spec
+    )
+
+    ev_ = sub.add_parser("eval", help="evaluation harness (S5)").add_subparsers(
+        dest="cmd", required=True
+    )
+    em = ev_.add_parser("m0", help="Table A.2 reproduction + M0 on v5 T (DEVELOPMENT)")
+    em.add_argument("--resamples", type=int, default=None, help="bootstrap resamples (config)")
+    em.set_defaults(func=cmd_eval_m0)
+    ev_.add_parser("registry", help="write the metric registry").set_defaults(
+        func=cmd_eval_registry
     )
 
     gates = sub.add_parser("gates", help="gate results").add_subparsers(dest="cmd", required=True)

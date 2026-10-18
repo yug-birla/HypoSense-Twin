@@ -254,7 +254,7 @@ def test_every_indicator_is_in_the_same_level_as_its_features() -> None:
 def test_spec_records_are_complete_and_safe() -> None:
     for f in FEATURES:
         assert f.name and f.unit and f.source and f.computation and f.availability and f.ref
-        assert f.causal and f.version == "1.0.0"
+        assert f.causal and f.version in ("1.0.0", "1.0.1")
         assert "hypoglyc" not in f.name and "patient" not in f.name and f.name != "id"
     labs = {f.name for f in FEATURES if f.lab}
     assert labs == {"hba1c_mmol_mol", "egfr", "c_peptide_fasting_nmol_l"}

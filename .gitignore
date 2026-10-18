@@ -14,6 +14,8 @@ artifacts/*
 !artifacts/population/
 # the canonical feature specification (generated from features/spec.py; S4)
 !artifacts/features/
+# the canonical metric registry (generated from evaluation/registry.py; S5)
+!artifacts/evaluation/
 experiments/runs/*
 !experiments/runs/.gitkeep
 # aggregate-only audit runs are committed as evidence (P-C5: no patient-level values inside)

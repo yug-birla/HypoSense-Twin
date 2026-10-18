@@ -1,0 +1,6963 @@
+{
+ "schema_version": "1.0.0",
+ "run_id": "T-AGG-eval-m0-20261018T130913Z",
+ "created_utc": "2026-10-18T13:08:04+00:00",
+ "finished_utc": "2026-10-18T13:09:13+00:00",
+ "status": "EXPLORATORY",
+ "partition": "T",
+ "results_sha256": "8d6eb3b75f4684a77787c472324fbc670295fe0d6d5bc79ad41126a69a011c4a",
+ "provenance": {
+  "git": {
+   "commit": "5c7deca4340933cd4b86f8ea849b83eb61f88459",
+   "dirty": true,
+   "dirty_paths": [
+    ".gitignore",
+    "src/hyposense/cli.py",
+    "src/hyposense/data/dataset.py",
+    "configs/reference/blueprint_m0_table_a2.yaml",
+    "src/hyposense/evaluation/bootstrap.py",
+    "src/hyposense/evaluation/data.py",
+    "src/hyposense/evaluation/m0_run.py",
+    "src/hyposense/evaluation/metrics.py",
+    "src/hyposense/evaluation/registry.py",
+    "src/hyposense/models/m0.py",
+    "src/hyposense/policy/decide.py",
+    "tests/unit/test_evaluation.py",
+    "tests/unit/test_policy_m0.py"
+   ]
+  },
+  "environment": {
+   "hyposense": "0.0.1",
+   "python": "3.11.9",
+   "platform": "Windows-10-10.0.26200-SP0",
+   "packages": {
+    "numpy": "2.4.6",
+    "pandas": "3.0.6",
+    "openpyxl": "3.1.5",
+    "xlrd": "2.0.2",
+    "pyyaml": "6.0.3",
+    "pydantic": "2.14.1",
+    "scikit-learn": "1.9.1",
+    "lightgbm": "4.7.0"
+   },
+   "uv_lock_sha256": "82ba7f45dbb87e3a3c1e25ece7687cbcd14387f8fa7ef04ea6955c251dcfe7da"
+  },
+  "config_sha256": "f3abfdf2f47d7b3be5e2a4bb0236e564fdc22d403c6e9c661b2a1cc522e0d766",
+  "partition_sha256": "ccdcbce02b049992b0ca09bd99a2a5b8c49bcf49940f3a68ed6ca69cd2449578",
+  "label_config_sha256": "92e24a777897ab727c410433f5c218bf45b9819d322d940678084918e7284f7f",
+  "analysis_plan_sha256": "3bfd297be066ed581fa0623bcc7db94808b61f1c7875a1e5a6a899c3eed45b18",
+  "analysis_plan_version": "v0.4",
+  "metric_registry_sha256": "cf01baeb30d2ae7afaddbcc4c399a170fec56699b800c29d585fea3dadc5f685",
+  "feature_spec_sha256": "82fc54e9b3c7e3ed8638c282be253251c3bdd9b2fe8b0de9b1dda1afc0ac76d1",
+  "reference_sha256": "8631cd7edf2d01c16cd3532aea2d33800964ce4c28418fa8c4dd37c62d9bdab3",
+  "treated_population_sha256": "2016d3e3025b66081889e4fe64c3359c280f2be79534b57fb82e31db4050c5ef",
+  "dataset_v5_files_sha256": "5f9d65b4e9233d4ecdd05438e80bb94314290cd5e2d9fdd21e353487cd3cc4ab",
+  "dataset_v2_tuning_files_sha256": "501bf01ce63f8b3dc0d0dee57e9bd3710a5d2d0b14d5ae5e9e9a2196b1c472ac",
+  "bootstrap": {
+   "resamples": 2000,
+   "seed": 2027,
+   "unit": "patient"
+  }
+ },
+ "results": {
+  "status": "EXPLORATORY / DEVELOPMENT (tuning partition only; not confirmatory)",
+  "model": {
+   "id": "M0",
+   "version": "1.0.0",
+   "strict": true,
+   "score": "-projection(t+60); projection = g(t) + 60 x LS slope over (t-35 min, t], >= 3 readings (ANALYSIS_PLAN \u00a70d)"
+  },
+  "event": {
+   "definition": "L1 CGM-detected episode (ANALYSIS_PLAN \u00a70)",
+   "horizon_min": 60,
+   "min_lead_min": 15,
+   "cooldown_min": 60,
+   "fa_budget_per_day": 1.0
+  },
+  "population": {
+   "v5": {
+    "recordings": 34,
+    "patients": 30,
+    "treated_patients": 22,
+    "readings": 33464,
+    "label_eligible_times": 31292,
+    "policy_queried_readings": 31416
+   },
+   "v2": {
+    "recordings": 34,
+    "patients": 30
+   }
+  },
+  "legacy_reproduction": {
+   "data": "figshare v2, TUNING patients",
+   "decision_times": "label-eligible (audit2.py)",
+   "rows": [
+    {
+     "theta": 40,
+     "treated": {
+      "episodes": 56,
+      "hits": 24,
+      "sensitivity": 0.428571,
+      "fa_per_day": 0.59603,
+      "monitored_days": 255.020833,
+      "notifications": {
+       "true": 24,
+       "false": 152,
+       "outcome_unknown": 0
+      },
+      "alert_precision": 0.136364,
+      "lead_min": {
+       "median": 30.0,
+       "q25": 26.25,
+       "q75": 45.0,
+       "share_ge_30": 0.75
+      },
+      "warnable_ceiling": 0.946429
+     },
+     "all": {
+      "episodes": 117,
+      "hits": 58,
+      "sensitivity": 0.495726,
+      "fa_per_day": 0.648862,
+      "monitored_days": 348.302083,
+      "notifications": {
+       "true": 57,
+       "false": 226,
+       "outcome_unknown": 0
+      },
+      "alert_precision": 0.201413,
+      "lead_min": {
+       "median": 30.0,
+       "q25": 15.0,
+       "q75": 45.0,
+       "share_ge_30": 0.689655
+      },
+      "warnable_ceiling": 0.905983
+     }
+    },
+    {
+     "theta": 45,
+     "treated": {
+      "episodes": 56,
+      "hits": 27,
+      "sensitivity": 0.482143,
+      "fa_per_day": 0.717588,
+      "monitored_days": 255.020833,
+      "notifications": {
+       "true": 27,
+       "false": 183,
+       "outcome_unknown": 0
+      },
+      "alert_precision": 0.128571,
+      "lead_min": {
+       "median": 30.0,
+       "q25": 22.5,
+       "q75": 45.0,
+       "share_ge_30": 0.740741
+      },
+      "warnable_ceiling": 0.946429
+     },
+     "all": {
+      "episodes": 117,
+      "hits": 63,
+      "sensitivity": 0.538462,
+      "fa_per_day": 0.775189,
+      "monitored_days": 348.302083,
+      "notifications": {
+       "true": 60,
+       "false": 270,
+       "outcome_unknown": 0
+      },
+      "alert_precision": 0.181818,
+      "lead_min": {
+       "median": 30.0,
+       "q25": 30.0,
+       "q75": 45.0,
+       "share_ge_30": 0.761905
+      },
+      "warnable_ceiling": 0.905983
+     }
+    },
+    {
+     "theta": 50,
+     "treated": {
+      "episodes": 56,
+      "hits": 31,
+      "sensitivity": 0.553571,
+      "fa_per_day": 0.850911,
+      "monitored_days": 255.020833,
+      "notifications": {
+       "true": 31,
+       "false": 217,
+       "outcome_unknown": 0
+      },
+      "alert_precision": 0.125,
+      "lead_min": {
+       "median": 30.0,
+       "q25": 15.0,
+       "q75": 45.0,
+       "share_ge_30": 0.709677
+      },
+      "warnable_ceiling": 0.946429
+     },
+     "all": {
+      "episodes": 117,
+      "hits": 68,
+      "sensitivity": 0.581197,
+      "fa_per_day": 0.918743,
+      "monitored_days": 348.302083,
+      "notifications": {
+       "true": 65,
+       "false": 320,
+       "outcome_unknown": 0
+      },
+      "alert_precision": 0.168831,
+      "lead_min": {
+       "median": 30.0,
+       "q25": 30.0,
+       "q75": 45.0,
+       "share_ge_30": 0.779412
+      },
+      "warnable_ceiling": 0.905983
+     }
+    },
+    {
+     "theta": 55,
+     "treated": {
+      "episodes": 56,
+      "hits": 36,
+      "sensitivity": 0.642857,
+      "fa_per_day": 1.070501,
+      "monitored_days": 255.020833,
+      "notifications": {
+       "true": 36,
+       "false": 273,
+       "outcome_unknown": 0
+      },
+      "alert_precision": 0.116505,
+      "lead_min": {
+       "median": 45.0,
+       "q25": 30.0,
+       "q75": 60.0,
+       "share_ge_30": 0.777778
+      },
+      "warnable_ceiling": 0.946429
+     },
+     "all": {
+      "episodes": 117,
+      "hits": 77,
+      "sensitivity": 0.65812,
+      "fa_per_day": 1.148428,
+      "monitored_days": 348.302083,
+      "notifications": {
+       "true": 74,
+       "false": 400,
+       "outcome_unknown": 0
+      },
+      "alert_precision": 0.156118,
+      "lead_min": {
+       "median": 45.0,
+       "q25": 30.0,
+       "q75": 45.0,
+       "share_ge_30": 0.805195
+      },
+      "warnable_ceiling": 0.905983
+     }
+    },
+    {
+     "theta": 60,
+     "treated": {
+      "episodes": 56,
+      "hits": 43,
+      "sensitivity": 0.767857,
+      "fa_per_day": 1.372437,
+      "monitored_days": 255.020833,
+      "notifications": {
+       "true": 42,
+       "false": 350,
+       "outcome_unknown": 0
+      },
+      "alert_precision": 0.107143,
+      "lead_min": {
+       "median": 45.0,
+       "q25": 30.0,
+       "q75": 60.0,
+       "share_ge_30": 0.767442
+      },
+      "warnable_ceiling": 0.946429
+     },
+     "all": {
+      "episodes": 117,
+      "hits": 90,
+      "sensitivity": 0.769231,
+      "fa_per_day": 1.464246,
+      "monitored_days": 348.302083,
+      "notifications": {
+       "true": 86,
+       "false": 510,
+       "outcome_unknown": 0
+      },
+      "alert_precision": 0.144295,
+      "lead_min": {
+       "median": 45.0,
+       "q25": 30.0,
+       "q75": 45.0,
+       "share_ge_30": 0.777778
+      },
+      "warnable_ceiling": 0.905983
+     }
+    },
+    {
+     "theta": 65,
+     "treated": {
+      "episodes": 56,
+      "hits": 48,
+      "sensitivity": 0.857143,
+      "fa_per_day": 1.835144,
+      "monitored_days": 255.020833,
+      "notifications": {
+       "true": 44,
+       "false": 468,
+       "outcome_unknown": 0
+      },
+      "alert_precision": 0.085938,
+      "lead_min": {
+       "median": 45.0,
+       "q25": 30.0,
+       "q75": 60.0,
+       "share_ge_30": 0.8125
+      },
+      "warnable_ceiling": 0.946429
+     },
+     "all": {
+      "episodes": 117,
+      "hits": 100,
+      "sensitivity": 0.854701,
+      "fa_per_day": 1.926489,
+      "monitored_days": 348.302083,
+      "notifications": {
+       "true": 94,
+       "false": 671,
+       "outcome_unknown": 0
+      },
+      "alert_precision": 0.122876,
+      "lead_min": {
+       "median": 45.0,
+       "q25": 30.0,
+       "q75": 60.0,
+       "share_ge_30": 0.79
+      },
+      "warnable_ceiling": 0.905983
+     }
+    },
+    {
+     "theta": 70,
+     "treated": {
+      "episodes": 56,
+      "hits": 51,
+      "sensitivity": 0.910714,
+      "fa_per_day": 2.219427,
+      "monitored_days": 255.020833,
+      "notifications": {
+       "true": 48,
+       "false": 566,
+       "outcome_unknown": 0
+      },
+      "alert_precision": 0.078176,
+      "lead_min": {
+       "median": 45.0,
+       "q25": 30.0,
+       "q75": 60.0,
+       "share_ge_30": 0.784314
+      },
+      "warnable_ceiling": 0.946429
+     },
+     "all": {
+      "episodes": 117,
+      "hits": 103,
+      "sensitivity": 0.880342,
+      "fa_per_day": 2.308341,
+      "monitored_days": 348.302083,
+      "notifications": {
+       "true": 98,
+       "false": 804,
+       "outcome_unknown": 0
+      },
+      "alert_precision": 0.108647,
+      "lead_min": {
+       "median": 45.0,
+       "q25": 30.0,
+       "q75": 60.0,
+       "share_ge_30": 0.815534
+      },
+      "warnable_ceiling": 0.905983
+     }
+    },
+    {
+     "theta": 80,
+     "treated": {
+      "episodes": 56,
+      "hits": 53,
+      "sensitivity": 0.946429,
+      "fa_per_day": 3.654603,
+      "monitored_days": 255.020833,
+      "notifications": {
+       "true": 52,
+       "false": 932,
+       "outcome_unknown": 0
+      },
+      "alert_precision": 0.052846,
+      "lead_min": {
+       "median": 60.0,
+       "q25": 45.0,
+       "q75": 60.0,
+       "share_ge_30": 0.924528
+      },
+      "warnable_ceiling": 0.946429
+     },
+     "all": {
+      "episodes": 117,
+      "hits": 105,
+      "sensitivity": 0.897436,
+      "fa_per_day": 3.732392,
+      "monitored_days": 348.302083,
+      "notifications": {
+       "true": 103,
+       "false": 1300,
+       "outcome_unknown": 0
+      },
+      "alert_precision": 0.073414,
+      "lead_min": {
+       "median": 60.0,
+       "q25": 45.0,
+       "q75": 60.0,
+       "share_ge_30": 0.933333
+      },
+      "warnable_ceiling": 0.905983
+     }
+    }
+   ],
+   "comparison": [
+    {
+     "theta": 40,
+     "status": "MATCH",
+     "checks": {
+      "treated": {
+       "warned": [
+        24,
+        24
+       ],
+       "episodes": [
+        56,
+        56
+       ],
+       "sensitivity": [
+        0.429,
+        0.429
+       ],
+       "fa_per_day": [
+        0.6,
+        0.6
+       ],
+       "median_lead": [
+        30,
+        30.0
+       ],
+       "days": [
+        255.0,
+        255.0
+       ]
+      },
+      "all": {
+       "warned": [
+        58,
+        58
+       ],
+       "episodes": [
+        117,
+        117
+       ],
+       "sensitivity": [
+        0.496,
+        0.496
+       ],
+       "fa_per_day": [
+        0.65,
+        0.65
+       ],
+       "median_lead": [
+        30,
+        30.0
+       ],
+       "days": [
+        348.3,
+        348.3
+       ]
+      }
+     }
+    },
+    {
+     "theta": 45,
+     "status": "UNEXPLAINED DIFFERENCE",
+     "checks": {
+      "treated": {
+       "warned": [
+        27,
+        27
+       ],
+       "episodes": [
+        56,
+        56
+       ],
+       "sensitivity": [
+        0.482,
+        0.482
+       ],
+       "fa_per_day": [
+        0.73,
+        0.72
+       ],
+       "median_lead": [
+        30,
+        30.0
+       ],
+       "days": [
+        255.0,
+        255.0
+       ]
+      },
+      "all": {
+       "warned": [
+        63,
+        63
+       ],
+       "episodes": [
+        117,
+        117
+       ],
+       "sensitivity": [
+        0.538,
+        0.538
+       ],
+       "fa_per_day": [
+        0.79,
+        0.78
+       ],
+       "median_lead": [
+        30,
+        30.0
+       ],
+       "days": [
+        348.3,
+        348.3
+       ]
+      }
+     }
+    },
+    {
+     "theta": 50,
+     "status": "MATCH",
+     "checks": {
+      "treated": {
+       "warned": [
+        31,
+        31
+       ],
+       "episodes": [
+        56,
+        56
+       ],
+       "sensitivity": [
+        0.554,
+        0.554
+       ],
+       "fa_per_day": [
+        0.85,
+        0.85
+       ],
+       "median_lead": [
+        30,
+        30.0
+       ],
+       "days": [
+        255.0,
+        255.0
+       ]
+      },
+      "all": {
+       "warned": [
+        68,
+        68
+       ],
+       "episodes": [
+        117,
+        117
+       ],
+       "sensitivity": [
+        0.581,
+        0.581
+       ],
+       "fa_per_day": [
+        0.92,
+        0.92
+       ],
+       "median_lead": [
+        30,
+        30.0
+       ],
+       "days": [
+        348.3,
+        348.3
+       ]
+      }
+     }
+    },
+    {
+     "theta": 55,
+     "status": "MATCH",
+     "checks": {
+      "treated": {
+       "warned": [
+        36,
+        36
+       ],
+       "episodes": [
+        56,
+        56
+       ],
+       "sensitivity": [
+        0.643,
+        0.643
+       ],
+       "fa_per_day": [
+        1.07,
+        1.07
+       ],
+       "median_lead": [
+        45,
+        45.0
+       ],
+       "days": [
+        255.0,
+        255.0
+       ]
+      },
+      "all": {
+       "warned": [
+        77,
+        77
+       ],
+       "episodes": [
+        117,
+        117
+       ],
+       "sensitivity": [
+        0.658,
+        0.658
+       ],
+       "fa_per_day": [
+        1.15,
+        1.15
+       ],
+       "median_lead": [
+        45,
+        45.0
+       ],
+       "days": [
+        348.3,
+        348.3
+       ]
+      }
+     }
+    },
+    {
+     "theta": 60,
+     "status": "MATCH",
+     "checks": {
+      "treated": {
+       "warned": [
+        43,
+        43
+       ],
+       "episodes": [
+        56,
+        56
+       ],
+       "sensitivity": [
+        0.768,
+        0.768
+       ],
+       "fa_per_day": [
+        1.37,
+        1.37
+       ],
+       "median_lead": [
+        45,
+        45.0
+       ],
+       "days": [
+        255.0,
+        255.0
+       ]
+      },
+      "all": {
+       "warned": [
+        90,
+        90
+       ],
+       "episodes": [
+        117,
+        117
+       ],
+       "sensitivity": [
+        0.769,
+        0.769
+       ],
+       "fa_per_day": [
+        1.46,
+        1.46
+       ],
+       "median_lead": [
+        45,
+        45.0
+       ],
+       "days": [
+        348.3,
+        348.3
+       ]
+      }
+     }
+    },
+    {
+     "theta": 65,
+     "status": "MATCH",
+     "checks": {
+      "treated": {
+       "warned": [
+        48,
+        48
+       ],
+       "episodes": [
+        56,
+        56
+       ],
+       "sensitivity": [
+        0.857,
+        0.857
+       ],
+       "fa_per_day": [
+        1.84,
+        1.84
+       ],
+       "median_lead": [
+        45,
+        45.0
+       ],
+       "days": [
+        255.0,
+        255.0
+       ]
+      },
+      "all": {
+       "warned": [
+        100,
+        100
+       ],
+       "episodes": [
+        117,
+        117
+       ],
+       "sensitivity": [
+        0.855,
+        0.855
+       ],
+       "fa_per_day": [
+        1.93,
+        1.93
+       ],
+       "median_lead": [
+        45,
+        45.0
+       ],
+       "days": [
+        348.3,
+        348.3
+       ]
+      }
+     }
+    },
+    {
+     "theta": 70,
+     "status": "MATCH",
+     "checks": {
+      "treated": {
+       "warned": [
+        51,
+        51
+       ],
+       "episodes": [
+        56,
+        56
+       ],
+       "sensitivity": [
+        0.911,
+        0.911
+       ],
+       "fa_per_day": [
+        2.22,
+        2.22
+       ],
+       "median_lead": [
+        45,
+        45.0
+       ],
+       "days": [
+        255.0,
+        255.0
+       ]
+      },
+      "all": {
+       "warned": [
+        103,
+        103
+       ],
+       "episodes": [
+        117,
+        117
+       ],
+       "sensitivity": [
+        0.88,
+        0.88
+       ],
+       "fa_per_day": [
+        2.31,
+        2.31
+       ],
+       "median_lead": [
+        45,
+        45.0
+       ],
+       "days": [
+        348.3,
+        348.3
+       ]
+      }
+     }
+    },
+    {
+     "theta": 80,
+     "status": "MATCH",
+     "checks": {
+      "treated": {
+       "warned": [
+        53,
+        53
+       ],
+       "episodes": [
+        56,
+        56
+       ],
+       "sensitivity": [
+        0.946,
+        0.946
+       ],
+       "fa_per_day": [
+        3.65,
+        3.65
+       ],
+       "median_lead": [
+        60,
+        60.0
+       ],
+       "days": [
+        255.0,
+        255.0
+       ]
+      },
+      "all": {
+       "warned": [
+        105,
+        105
+       ],
+       "episodes": [
+        117,
+        117
+       ],
+       "sensitivity": [
+        0.897,
+        0.897
+       ],
+       "fa_per_day": [
+        3.73,
+        3.73
+       ],
+       "median_lead": [
+        60,
+        60.0
+       ],
+       "days": [
+        348.3,
+        348.3
+       ]
+      }
+     }
+    }
+   ],
+   "summary": {
+    "MATCH": 7,
+    "UNEXPLAINED DIFFERENCE": 1
+   }
+  },
+  "canonical_v5": {
+   "decision_times": "policy replay (ANALYSIS_PLAN \u00a72)",
+   "table_a2_thetas": [
+    {
+     "theta": 40,
+     "treated": {
+      "episodes": 56,
+      "hits": 24,
+      "sensitivity": 0.428571,
+      "fa_per_day": 0.59603,
+      "monitored_days": 255.020833,
+      "notifications": {
+       "true": 24,
+       "false": 152,
+       "outcome_unknown": 1
+      },
+      "alert_precision": 0.136364,
+      "lead_min": {
+       "median": 30.0,
+       "q25": 26.25,
+       "q75": 45.0,
+       "share_ge_30": 0.75
+      },
+      "warnable_ceiling": 0.946429
+     },
+     "all": {
+      "episodes": 117,
+      "hits": 58,
+      "sensitivity": 0.495726,
+      "fa_per_day": 0.648862,
+      "monitored_days": 348.302083,
+      "notifications": {
+       "true": 57,
+       "false": 226,
+       "outcome_unknown": 1
+      },
+      "alert_precision": 0.201413,
+      "lead_min": {
+       "median": 30.0,
+       "q25": 15.0,
+       "q75": 45.0,
+       "share_ge_30": 0.689655
+      },
+      "warnable_ceiling": 0.905983
+     }
+    },
+    {
+     "theta": 45,
+     "treated": {
+      "episodes": 56,
+      "hits": 27,
+      "sensitivity": 0.482143,
+      "fa_per_day": 0.717588,
+      "monitored_days": 255.020833,
+      "notifications": {
+       "true": 27,
+       "false": 183,
+       "outcome_unknown": 2
+      },
+      "alert_precision": 0.128571,
+      "lead_min": {
+       "median": 30.0,
+       "q25": 22.5,
+       "q75": 45.0,
+       "share_ge_30": 0.740741
+      },
+      "warnable_ceiling": 0.946429
+     },
+     "all": {
+      "episodes": 117,
+      "hits": 63,
+      "sensitivity": 0.538462,
+      "fa_per_day": 0.775189,
+      "monitored_days": 348.302083,
+      "notifications": {
+       "true": 60,
+       "false": 270,
+       "outcome_unknown": 2
+      },
+      "alert_precision": 0.181818,
+      "lead_min": {
+       "median": 30.0,
+       "q25": 30.0,
+       "q75": 45.0,
+       "share_ge_30": 0.761905
+      },
+      "warnable_ceiling": 0.905983
+     }
+    },
+    {
+     "theta": 50,
+     "treated": {
+      "episodes": 56,
+      "hits": 31,
+      "sensitivity": 0.553571,
+      "fa_per_day": 0.850911,
+      "monitored_days": 255.020833,
+      "notifications": {
+       "true": 31,
+       "false": 217,
+       "outcome_unknown": 2
+      },
+      "alert_precision": 0.125,
+      "lead_min": {
+       "median": 30.0,
+       "q25": 15.0,
+       "q75": 45.0,
+       "share_ge_30": 0.709677
+      },
+      "warnable_ceiling": 0.946429
+     },
+     "all": {
+      "episodes": 117,
+      "hits": 68,
+      "sensitivity": 0.581197,
+      "fa_per_day": 0.918743,
+      "monitored_days": 348.302083,
+      "notifications": {
+       "true": 65,
+       "false": 320,
+       "outcome_unknown": 2
+      },
+      "alert_precision": 0.168831,
+      "lead_min": {
+       "median": 30.0,
+       "q25": 30.0,
+       "q75": 45.0,
+       "share_ge_30": 0.779412
+      },
+      "warnable_ceiling": 0.905983
+     }
+    },
+    {
+     "theta": 55,
+     "treated": {
+      "episodes": 56,
+      "hits": 36,
+      "sensitivity": 0.642857,
+      "fa_per_day": 1.070501,
+      "monitored_days": 255.020833,
+      "notifications": {
+       "true": 36,
+       "false": 273,
+       "outcome_unknown": 2
+      },
+      "alert_precision": 0.116505,
+      "lead_min": {
+       "median": 45.0,
+       "q25": 30.0,
+       "q75": 60.0,
+       "share_ge_30": 0.777778
+      },
+      "warnable_ceiling": 0.946429
+     },
+     "all": {
+      "episodes": 117,
+      "hits": 77,
+      "sensitivity": 0.65812,
+      "fa_per_day": 1.148428,
+      "monitored_days": 348.302083,
+      "notifications": {
+       "true": 74,
+       "false": 400,
+       "outcome_unknown": 2
+      },
+      "alert_precision": 0.156118,
+      "lead_min": {
+       "median": 45.0,
+       "q25": 30.0,
+       "q75": 45.0,
+       "share_ge_30": 0.805195
+      },
+      "warnable_ceiling": 0.905983
+     }
+    },
+    {
+     "theta": 60,
+     "treated": {
+      "episodes": 56,
+      "hits": 43,
+      "sensitivity": 0.767857,
+      "fa_per_day": 1.372437,
+      "monitored_days": 255.020833,
+      "notifications": {
+       "true": 42,
+       "false": 350,
+       "outcome_unknown": 3
+      },
+      "alert_precision": 0.107143,
+      "lead_min": {
+       "median": 45.0,
+       "q25": 30.0,
+       "q75": 60.0,
+       "share_ge_30": 0.767442
+      },
+      "warnable_ceiling": 0.946429
+     },
+     "all": {
+      "episodes": 117,
+      "hits": 90,
+      "sensitivity": 0.769231,
+      "fa_per_day": 1.464246,
+      "monitored_days": 348.302083,
+      "notifications": {
+       "true": 86,
+       "false": 510,
+       "outcome_unknown": 3
+      },
+      "alert_precision": 0.144295,
+      "lead_min": {
+       "median": 45.0,
+       "q25": 30.0,
+       "q75": 45.0,
+       "share_ge_30": 0.777778
+      },
+      "warnable_ceiling": 0.905983
+     }
+    },
+    {
+     "theta": 65,
+     "treated": {
+      "episodes": 56,
+      "hits": 48,
+      "sensitivity": 0.857143,
+      "fa_per_day": 1.835144,
+      "monitored_days": 255.020833,
+      "notifications": {
+       "true": 44,
+       "false": 468,
+       "outcome_unknown": 3
+      },
+      "alert_precision": 0.085938,
+      "lead_min": {
+       "median": 45.0,
+       "q25": 30.0,
+       "q75": 60.0,
+       "share_ge_30": 0.8125
+      },
+      "warnable_ceiling": 0.946429
+     },
+     "all": {
+      "episodes": 117,
+      "hits": 100,
+      "sensitivity": 0.854701,
+      "fa_per_day": 1.926489,
+      "monitored_days": 348.302083,
+      "notifications": {
+       "true": 94,
+       "false": 671,
+       "outcome_unknown": 3
+      },
+      "alert_precision": 0.122876,
+      "lead_min": {
+       "median": 45.0,
+       "q25": 30.0,
+       "q75": 60.0,
+       "share_ge_30": 0.79
+      },
+      "warnable_ceiling": 0.905983
+     }
+    },
+    {
+     "theta": 70,
+     "treated": {
+      "episodes": 56,
+      "hits": 51,
+      "sensitivity": 0.910714,
+      "fa_per_day": 2.219427,
+      "monitored_days": 255.020833,
+      "notifications": {
+       "true": 48,
+       "false": 566,
+       "outcome_unknown": 3
+      },
+      "alert_precision": 0.078176,
+      "lead_min": {
+       "median": 45.0,
+       "q25": 30.0,
+       "q75": 60.0,
+       "share_ge_30": 0.784314
+      },
+      "warnable_ceiling": 0.946429
+     },
+     "all": {
+      "episodes": 117,
+      "hits": 103,
+      "sensitivity": 0.880342,
+      "fa_per_day": 2.308341,
+      "monitored_days": 348.302083,
+      "notifications": {
+       "true": 98,
+       "false": 804,
+       "outcome_unknown": 4
+      },
+      "alert_precision": 0.108647,
+      "lead_min": {
+       "median": 45.0,
+       "q25": 30.0,
+       "q75": 60.0,
+       "share_ge_30": 0.815534
+      },
+      "warnable_ceiling": 0.905983
+     }
+    },
+    {
+     "theta": 80,
+     "treated": {
+      "episodes": 56,
+      "hits": 53,
+      "sensitivity": 0.946429,
+      "fa_per_day": 3.654603,
+      "monitored_days": 255.020833,
+      "notifications": {
+       "true": 52,
+       "false": 932,
+       "outcome_unknown": 5
+      },
+      "alert_precision": 0.052846,
+      "lead_min": {
+       "median": 60.0,
+       "q25": 45.0,
+       "q75": 60.0,
+       "share_ge_30": 0.924528
+      },
+      "warnable_ceiling": 0.946429
+     },
+     "all": {
+      "episodes": 117,
+      "hits": 105,
+      "sensitivity": 0.897436,
+      "fa_per_day": 3.732392,
+      "monitored_days": 348.302083,
+      "notifications": {
+       "true": 103,
+       "false": 1300,
+       "outcome_unknown": 7
+      },
+      "alert_precision": 0.073414,
+      "lead_min": {
+       "median": 60.0,
+       "q25": 45.0,
+       "q75": 60.0,
+       "share_ge_30": 0.933333
+      },
+      "warnable_ceiling": 0.905983
+     }
+    }
+   ],
+   "curves": {
+    "treated": {
+     "summary": {
+      "grid_points": 1268,
+      "non_monotone_fa_steps": 0,
+      "monitored_days": 255.020833,
+      "episodes": 56.0,
+      "sens_at_1fa": 0.625,
+      "first_crossing": {
+       "a": 190,
+       "k_star": 191,
+       "f_a": 0.999918,
+       "s_a": 0.625,
+       "budget_not_reached": false,
+       "k_star_is_1": false
+      },
+      "tau_alert": -54.0,
+      "theta_alert": 54.0,
+      "tau_watch": -73.8,
+      "theta_watch": 73.8,
+      "watch_band_empty": false,
+      "partial_area_0.5_2.0": 0.689773,
+      "partial_area_hi_reached": true
+     },
+     "points": [
+      {
+       "tau": null,
+       "theta": null,
+       "fa_per_day": 0.0,
+       "sensitivity": 0.0,
+       "notifications_per_day": 0.0
+      },
+      {
+       "tau": 75.6,
+       "theta": -75.6,
+       "fa_per_day": 0.0,
+       "sensitivity": 0.0,
+       "notifications_per_day": 0.0
+      },
+      {
+       "tau": 73.8,
+       "theta": -73.8,
+       "fa_per_day": 0.0,
+       "sensitivity": 0.017857,
+       "notifications_per_day": 0.003921
+      },
+      {
+       "tau": 66.6,
+       "theta": -66.6,
+       "fa_per_day": 0.003921,
+       "sensitivity": 0.017857,
+       "notifications_per_day": 0.007842
+      },
+      {
+       "tau": 57.6,
+       "theta": -57.6,
+       "fa_per_day": 0.003921,
+       "sensitivity": 0.017857,
+       "notifications_per_day": 0.007842
+      },
+      {
+       "tau": 54.0,
+       "theta": -54.0,
+       "fa_per_day": 0.007842,
+       "sensitivity": 0.017857,
+       "notifications_per_day": 0.011764
+      },
+      {
+       "tau": 50.4,
+       "theta": -50.4,
+       "fa_per_day": 0.007842,
+       "sensitivity": 0.035714,
+       "notifications_per_day": 0.015685
+      },
+      {
+       "tau": 45.0,
+       "theta": -45.0,
+       "fa_per_day": 0.011764,
+       "sensitivity": 0.035714,
+       "notifications_per_day": 0.019606
+      },
+      {
+       "tau": 39.6,
+       "theta": -39.6,
+       "fa_per_day": 0.015685,
+       "sensitivity": 0.035714,
+       "notifications_per_day": 0.023527
+      },
+      {
+       "tau": 37.8,
+       "theta": -37.8,
+       "fa_per_day": 0.015685,
+       "sensitivity": 0.035714,
+       "notifications_per_day": 0.023527
+      },
+      {
+       "tau": 30.6,
+       "theta": -30.6,
+       "fa_per_day": 0.019606,
+       "sensitivity": 0.035714,
+       "notifications_per_day": 0.027449
+      },
+      {
+       "tau": 30.6,
+       "theta": -30.6,
+       "fa_per_day": 0.023527,
+       "sensitivity": 0.035714,
+       "notifications_per_day": 0.03137
+      },
+      {
+       "tau": 28.8,
+       "theta": -28.8,
+       "fa_per_day": 0.023527,
+       "sensitivity": 0.035714,
+       "notifications_per_day": 0.03137
+      },
+      {
+       "tau": 27.0,
+       "theta": -27.0,
+       "fa_per_day": 0.023527,
+       "sensitivity": 0.053571,
+       "notifications_per_day": 0.035291
+      },
+      {
+       "tau": 27.0,
+       "theta": -27.0,
+       "fa_per_day": 0.023527,
+       "sensitivity": 0.071429,
+       "notifications_per_day": 0.039212
+      },
+      {
+       "tau": 19.8,
+       "theta": -19.8,
+       "fa_per_day": 0.023527,
+       "sensitivity": 0.071429,
+       "notifications_per_day": 0.039212
+      },
+      {
+       "tau": 18.0,
+       "theta": -18.0,
+       "fa_per_day": 0.027449,
+       "sensitivity": 0.071429,
+       "notifications_per_day": 0.043134
+      },
+      {
+       "tau": 16.2,
+       "theta": -16.2,
+       "fa_per_day": 0.03137,
+       "sensitivity": 0.071429,
+       "notifications_per_day": 0.047055
+      },
+      {
+       "tau": 16.2,
+       "theta": -16.2,
+       "fa_per_day": 0.035291,
+       "sensitivity": 0.071429,
+       "notifications_per_day": 0.050976
+      },
+      {
+       "tau": 16.2,
+       "theta": -16.2,
+       "fa_per_day": 0.039212,
+       "sensitivity": 0.071429,
+       "notifications_per_day": 0.054897
+      },
+      {
+       "tau": 14.4,
+       "theta": -14.4,
+       "fa_per_day": 0.043134,
+       "sensitivity": 0.071429,
+       "notifications_per_day": 0.058819
+      },
+      {
+       "tau": 14.4,
+       "theta": -14.4,
+       "fa_per_day": 0.047055,
+       "sensitivity": 0.071429,
+       "notifications_per_day": 0.06274
+      },
+      {
+       "tau": 12.6,
+       "theta": -12.6,
+       "fa_per_day": 0.047055,
+       "sensitivity": 0.071429,
+       "notifications_per_day": 0.06274
+      },
+      {
+       "tau": 12.6,
+       "theta": -12.6,
+       "fa_per_day": 0.050976,
+       "sensitivity": 0.071429,
+       "notifications_per_day": 0.066661
+      },
+      {
+       "tau": 12.6,
+       "theta": -12.6,
+       "fa_per_day": 0.054897,
+       "sensitivity": 0.071429,
+       "notifications_per_day": 0.070582
+      },
+      {
+       "tau": 10.8,
+       "theta": -10.8,
+       "fa_per_day": 0.058819,
+       "sensitivity": 0.071429,
+       "notifications_per_day": 0.074504
+      },
+      {
+       "tau": 10.8,
+       "theta": -10.8,
+       "fa_per_day": 0.06274,
+       "sensitivity": 0.071429,
+       "notifications_per_day": 0.078425
+      },
+      {
+       "tau": 9.0,
+       "theta": -9.0,
+       "fa_per_day": 0.06274,
+       "sensitivity": 0.071429,
+       "notifications_per_day": 0.078425
+      },
+      {
+       "tau": 7.2,
+       "theta": -7.2,
+       "fa_per_day": 0.066661,
+       "sensitivity": 0.071429,
+       "notifications_per_day": 0.082346
+      },
+      {
+       "tau": 5.4,
+       "theta": -5.4,
+       "fa_per_day": 0.066661,
+       "sensitivity": 0.071429,
+       "notifications_per_day": 0.082346
+      },
+      {
+       "tau": 3.6,
+       "theta": -3.6,
+       "fa_per_day": 0.066661,
+       "sensitivity": 0.071429,
+       "notifications_per_day": 0.082346
+      },
+      {
+       "tau": 1.8,
+       "theta": -1.8,
+       "fa_per_day": 0.070582,
+       "sensitivity": 0.071429,
+       "notifications_per_day": 0.086267
+      },
+      {
+       "tau": 1.8,
+       "theta": -1.8,
+       "fa_per_day": 0.070582,
+       "sensitivity": 0.071429,
+       "notifications_per_day": 0.086267
+      },
+      {
+       "tau": 1.8,
+       "theta": -1.8,
+       "fa_per_day": 0.074504,
+       "sensitivity": 0.071429,
+       "notifications_per_day": 0.090189
+      },
+      {
+       "tau": 0.0,
+       "theta": -0.0,
+       "fa_per_day": 0.078425,
+       "sensitivity": 0.071429,
+       "notifications_per_day": 0.09411
+      },
+      {
+       "tau": 0.0,
+       "theta": -0.0,
+       "fa_per_day": 0.082346,
+       "sensitivity": 0.071429,
+       "notifications_per_day": 0.098031
+      },
+      {
+       "tau": -0.0,
+       "theta": 0.0,
+       "fa_per_day": 0.090189,
+       "sensitivity": 0.089286,
+       "notifications_per_day": 0.109795
+      },
+      {
+       "tau": -0.0,
+       "theta": 0.0,
+       "fa_per_day": 0.09411,
+       "sensitivity": 0.107143,
+       "notifications_per_day": 0.117637
+      },
+      {
+       "tau": -1.8,
+       "theta": 1.8,
+       "fa_per_day": 0.09411,
+       "sensitivity": 0.107143,
+       "notifications_per_day": 0.117637
+      },
+      {
+       "tau": -1.8,
+       "theta": 1.8,
+       "fa_per_day": 0.098031,
+       "sensitivity": 0.107143,
+       "notifications_per_day": 0.121559
+      },
+      {
+       "tau": -1.8,
+       "theta": 1.8,
+       "fa_per_day": 0.105874,
+       "sensitivity": 0.107143,
+       "notifications_per_day": 0.129401
+      },
+      {
+       "tau": -1.8,
+       "theta": 1.8,
+       "fa_per_day": 0.105874,
+       "sensitivity": 0.107143,
+       "notifications_per_day": 0.129401
+      },
+      {
+       "tau": -1.8,
+       "theta": 1.8,
+       "fa_per_day": 0.109795,
+       "sensitivity": 0.107143,
+       "notifications_per_day": 0.133322
+      },
+      {
+       "tau": -3.6,
+       "theta": 3.6,
+       "fa_per_day": 0.113716,
+       "sensitivity": 0.107143,
+       "notifications_per_day": 0.137244
+      },
+      {
+       "tau": -3.6,
+       "theta": 3.6,
+       "fa_per_day": 0.113716,
+       "sensitivity": 0.107143,
+       "notifications_per_day": 0.137244
+      },
+      {
+       "tau": -3.6,
+       "theta": 3.6,
+       "fa_per_day": 0.117637,
+       "sensitivity": 0.107143,
+       "notifications_per_day": 0.141165
+      },
+      {
+       "tau": -3.6,
+       "theta": 3.6,
+       "fa_per_day": 0.117637,
+       "sensitivity": 0.125,
+       "notifications_per_day": 0.145086
+      },
+      {
+       "tau": -5.4,
+       "theta": 5.4,
+       "fa_per_day": 0.121559,
+       "sensitivity": 0.125,
+       "notifications_per_day": 0.149007
+      },
+      {
+       "tau": -5.4,
+       "theta": 5.4,
+       "fa_per_day": 0.121559,
+       "sensitivity": 0.142857,
+       "notifications_per_day": 0.152929
+      },
+      {
+       "tau": -5.4,
+       "theta": 5.4,
+       "fa_per_day": 0.121559,
+       "sensitivity": 0.142857,
+       "notifications_per_day": 0.152929
+      },
+      {
+       "tau": -5.4,
+       "theta": 5.4,
+       "fa_per_day": 0.12548,
+       "sensitivity": 0.142857,
+       "notifications_per_day": 0.15685
+      },
+      {
+       "tau": -7.2,
+       "theta": 7.2,
+       "fa_per_day": 0.133322,
+       "sensitivity": 0.142857,
+       "notifications_per_day": 0.164692
+      },
+      {
+       "tau": -7.2,
+       "theta": 7.2,
+       "fa_per_day": 0.137244,
+       "sensitivity": 0.142857,
+       "notifications_per_day": 0.172535
+      },
+      {
+       "tau": -7.2,
+       "theta": 7.2,
+       "fa_per_day": 0.137244,
+       "sensitivity": 0.160714,
+       "notifications_per_day": 0.176456
+      },
+      {
+       "tau": -7.2,
+       "theta": 7.2,
+       "fa_per_day": 0.141165,
+       "sensitivity": 0.160714,
+       "notifications_per_day": 0.180377
+      },
+      {
+       "tau": -9.0,
+       "theta": 9.0,
+       "fa_per_day": 0.152929,
+       "sensitivity": 0.160714,
+       "notifications_per_day": 0.192141
+      },
+      {
+       "tau": -9.0,
+       "theta": 9.0,
+       "fa_per_day": 0.15685,
+       "sensitivity": 0.160714,
+       "notifications_per_day": 0.196062
+      },
+      {
+       "tau": -9.0,
+       "theta": 9.0,
+       "fa_per_day": 0.160771,
+       "sensitivity": 0.160714,
+       "notifications_per_day": 0.199984
+      },
+      {
+       "tau": -10.8,
+       "theta": 10.8,
+       "fa_per_day": 0.168614,
+       "sensitivity": 0.160714,
+       "notifications_per_day": 0.207826
+      },
+      {
+       "tau": -10.8,
+       "theta": 10.8,
+       "fa_per_day": 0.168614,
+       "sensitivity": 0.160714,
+       "notifications_per_day": 0.207826
+      },
+      {
+       "tau": -10.8,
+       "theta": 10.8,
+       "fa_per_day": 0.168614,
+       "sensitivity": 0.160714,
+       "notifications_per_day": 0.207826
+      },
+      {
+       "tau": -12.6,
+       "theta": 12.6,
+       "fa_per_day": 0.172535,
+       "sensitivity": 0.160714,
+       "notifications_per_day": 0.211747
+      },
+      {
+       "tau": -12.6,
+       "theta": 12.6,
+       "fa_per_day": 0.176456,
+       "sensitivity": 0.160714,
+       "notifications_per_day": 0.215669
+      },
+      {
+       "tau": -12.6,
+       "theta": 12.6,
+       "fa_per_day": 0.180377,
+       "sensitivity": 0.160714,
+       "notifications_per_day": 0.21959
+      },
+      {
+       "tau": -14.4,
+       "theta": 14.4,
+       "fa_per_day": 0.180377,
+       "sensitivity": 0.196429,
+       "notifications_per_day": 0.227432
+      },
+      {
+       "tau": -14.4,
+       "theta": 14.4,
+       "fa_per_day": 0.184299,
+       "sensitivity": 0.196429,
+       "notifications_per_day": 0.231354
+      },
+      {
+       "tau": -14.4,
+       "theta": 14.4,
+       "fa_per_day": 0.18822,
+       "sensitivity": 0.196429,
+       "notifications_per_day": 0.235275
+      },
+      {
+       "tau": -16.2,
+       "theta": 16.2,
+       "fa_per_day": 0.192141,
+       "sensitivity": 0.196429,
+       "notifications_per_day": 0.239196
+      },
+      {
+       "tau": -16.2,
+       "theta": 16.2,
+       "fa_per_day": 0.199984,
+       "sensitivity": 0.196429,
+       "notifications_per_day": 0.247039
+      },
+      {
+       "tau": -16.2,
+       "theta": 16.2,
+       "fa_per_day": 0.211747,
+       "sensitivity": 0.214286,
+       "notifications_per_day": 0.262724
+      },
+      {
+       "tau": -16.2,
+       "theta": 16.2,
+       "fa_per_day": 0.211747,
+       "sensitivity": 0.214286,
+       "notifications_per_day": 0.262724
+      },
+      {
+       "tau": -18.0,
+       "theta": 18.0,
+       "fa_per_day": 0.211747,
+       "sensitivity": 0.214286,
+       "notifications_per_day": 0.262724
+      },
+      {
+       "tau": -18.0,
+       "theta": 18.0,
+       "fa_per_day": 0.215669,
+       "sensitivity": 0.214286,
+       "notifications_per_day": 0.266645
+      },
+      {
+       "tau": -18.0,
+       "theta": 18.0,
+       "fa_per_day": 0.21959,
+       "sensitivity": 0.214286,
+       "notifications_per_day": 0.270566
+      },
+      {
+       "tau": -18.0,
+       "theta": 18.0,
+       "fa_per_day": 0.223511,
+       "sensitivity": 0.214286,
+       "notifications_per_day": 0.274487
+      },
+      {
+       "tau": -19.8,
+       "theta": 19.8,
+       "fa_per_day": 0.227432,
+       "sensitivity": 0.232143,
+       "notifications_per_day": 0.28233
+      },
+      {
+       "tau": -19.8,
+       "theta": 19.8,
+       "fa_per_day": 0.227432,
+       "sensitivity": 0.232143,
+       "notifications_per_day": 0.28233
+      },
+      {
+       "tau": -19.8,
+       "theta": 19.8,
+       "fa_per_day": 0.231354,
+       "sensitivity": 0.232143,
+       "notifications_per_day": 0.286251
+      },
+      {
+       "tau": -19.8,
+       "theta": 19.8,
+       "fa_per_day": 0.239196,
+       "sensitivity": 0.267857,
+       "notifications_per_day": 0.301936
+      },
+      {
+       "tau": -21.6,
+       "theta": 21.6,
+       "fa_per_day": 0.239196,
+       "sensitivity": 0.267857,
+       "notifications_per_day": 0.301936
+      },
+      {
+       "tau": -21.6,
+       "theta": 21.6,
+       "fa_per_day": 0.247039,
+       "sensitivity": 0.285714,
+       "notifications_per_day": 0.3137
+      },
+      {
+       "tau": -21.6,
+       "theta": 21.6,
+       "fa_per_day": 0.258802,
+       "sensitivity": 0.303571,
+       "notifications_per_day": 0.329385
+      },
+      {
+       "tau": -21.6,
+       "theta": 21.6,
+       "fa_per_day": 0.266645,
+       "sensitivity": 0.303571,
+       "notifications_per_day": 0.337227
+      },
+      {
+       "tau": -23.4,
+       "theta": 23.4,
+       "fa_per_day": 0.270566,
+       "sensitivity": 0.303571,
+       "notifications_per_day": 0.341149
+      },
+      {
+       "tau": -23.4,
+       "theta": 23.4,
+       "fa_per_day": 0.270566,
+       "sensitivity": 0.303571,
+       "notifications_per_day": 0.341149
+      },
+      {
+       "tau": -23.4,
+       "theta": 23.4,
+       "fa_per_day": 0.274487,
+       "sensitivity": 0.303571,
+       "notifications_per_day": 0.34507
+      },
+      {
+       "tau": -23.4,
+       "theta": 23.4,
+       "fa_per_day": 0.286251,
+       "sensitivity": 0.303571,
+       "notifications_per_day": 0.356834
+      },
+      {
+       "tau": -25.2,
+       "theta": 25.2,
+       "fa_per_day": 0.286251,
+       "sensitivity": 0.303571,
+       "notifications_per_day": 0.356834
+      },
+      {
+       "tau": -25.2,
+       "theta": 25.2,
+       "fa_per_day": 0.290172,
+       "sensitivity": 0.303571,
+       "notifications_per_day": 0.360755
+      },
+      {
+       "tau": -25.2,
+       "theta": 25.2,
+       "fa_per_day": 0.294094,
+       "sensitivity": 0.303571,
+       "notifications_per_day": 0.364676
+      },
+      {
+       "tau": -25.2,
+       "theta": 25.2,
+       "fa_per_day": 0.301936,
+       "sensitivity": 0.303571,
+       "notifications_per_day": 0.372519
+      },
+      {
+       "tau": -25.2,
+       "theta": 25.2,
+       "fa_per_day": 0.301936,
+       "sensitivity": 0.303571,
+       "notifications_per_day": 0.372519
+      },
+      {
+       "tau": -27.0,
+       "theta": 27.0,
+       "fa_per_day": 0.305857,
+       "sensitivity": 0.303571,
+       "notifications_per_day": 0.37644
+      },
+      {
+       "tau": -27.0,
+       "theta": 27.0,
+       "fa_per_day": 0.305857,
+       "sensitivity": 0.303571,
+       "notifications_per_day": 0.37644
+      },
+      {
+       "tau": -27.0,
+       "theta": 27.0,
+       "fa_per_day": 0.309779,
+       "sensitivity": 0.303571,
+       "notifications_per_day": 0.380361
+      },
+      {
+       "tau": -27.0,
+       "theta": 27.0,
+       "fa_per_day": 0.309779,
+       "sensitivity": 0.303571,
+       "notifications_per_day": 0.380361
+      },
+      {
+       "tau": -27.0,
+       "theta": 27.0,
+       "fa_per_day": 0.317621,
+       "sensitivity": 0.303571,
+       "notifications_per_day": 0.388204
+      },
+      {
+       "tau": -27.0,
+       "theta": 27.0,
+       "fa_per_day": 0.317621,
+       "sensitivity": 0.321429,
+       "notifications_per_day": 0.392125
+      },
+      {
+       "tau": -27.0,
+       "theta": 27.0,
+       "fa_per_day": 0.329385,
+       "sensitivity": 0.321429,
+       "notifications_per_day": 0.403889
+      },
+      {
+       "tau": -28.8,
+       "theta": 28.8,
+       "fa_per_day": 0.341149,
+       "sensitivity": 0.321429,
+       "notifications_per_day": 0.415652
+      },
+      {
+       "tau": -28.8,
+       "theta": 28.8,
+       "fa_per_day": 0.34507,
+       "sensitivity": 0.321429,
+       "notifications_per_day": 0.419574
+      },
+      {
+       "tau": -28.8,
+       "theta": 28.8,
+       "fa_per_day": 0.348991,
+       "sensitivity": 0.321429,
+       "notifications_per_day": 0.423495
+      },
+      {
+       "tau": -28.8,
+       "theta": 28.8,
+       "fa_per_day": 0.352912,
+       "sensitivity": 0.321429,
+       "notifications_per_day": 0.427416
+      },
+      {
+       "tau": -28.8,
+       "theta": 28.8,
+       "fa_per_day": 0.356834,
+       "sensitivity": 0.339286,
+       "notifications_per_day": 0.435259
+      },
+      {
+       "tau": -28.8,
+       "theta": 28.8,
+       "fa_per_day": 0.360755,
+       "sensitivity": 0.357143,
+       "notifications_per_day": 0.443101
+      },
+      {
+       "tau": -28.8,
+       "theta": 28.8,
+       "fa_per_day": 0.364676,
+       "sensitivity": 0.357143,
+       "notifications_per_day": 0.447022
+      },
+      {
+       "tau": -30.6,
+       "theta": 30.6,
+       "fa_per_day": 0.368597,
+       "sensitivity": 0.357143,
+       "notifications_per_day": 0.450944
+      },
+      {
+       "tau": -30.6,
+       "theta": 30.6,
+       "fa_per_day": 0.372519,
+       "sensitivity": 0.357143,
+       "notifications_per_day": 0.454865
+      },
+      {
+       "tau": -30.6,
+       "theta": 30.6,
+       "fa_per_day": 0.372519,
+       "sensitivity": 0.375,
+       "notifications_per_day": 0.458786
+      },
+      {
+       "tau": -30.6,
+       "theta": 30.6,
+       "fa_per_day": 0.380361,
+       "sensitivity": 0.375,
+       "notifications_per_day": 0.466629
+      },
+      {
+       "tau": -32.4,
+       "theta": 32.4,
+       "fa_per_day": 0.380361,
+       "sensitivity": 0.375,
+       "notifications_per_day": 0.466629
+      },
+      {
+       "tau": -32.4,
+       "theta": 32.4,
+       "fa_per_day": 0.380361,
+       "sensitivity": 0.392857,
+       "notifications_per_day": 0.47055
+      },
+      {
+       "tau": -32.4,
+       "theta": 32.4,
+       "fa_per_day": 0.380361,
+       "sensitivity": 0.392857,
+       "notifications_per_day": 0.47055
+      },
+      {
+       "tau": -32.4,
+       "theta": 32.4,
+       "fa_per_day": 0.384282,
+       "sensitivity": 0.392857,
+       "notifications_per_day": 0.474471
+      },
+      {
+       "tau": -32.4,
+       "theta": 32.4,
+       "fa_per_day": 0.399967,
+       "sensitivity": 0.392857,
+       "notifications_per_day": 0.490156
+      },
+      {
+       "tau": -34.2,
+       "theta": 34.2,
+       "fa_per_day": 0.411731,
+       "sensitivity": 0.392857,
+       "notifications_per_day": 0.50192
+      },
+      {
+       "tau": -34.2,
+       "theta": 34.2,
+       "fa_per_day": 0.411731,
+       "sensitivity": 0.392857,
+       "notifications_per_day": 0.50192
+      },
+      {
+       "tau": -34.2,
+       "theta": 34.2,
+       "fa_per_day": 0.411731,
+       "sensitivity": 0.392857,
+       "notifications_per_day": 0.50192
+      },
+      {
+       "tau": -34.2,
+       "theta": 34.2,
+       "fa_per_day": 0.415652,
+       "sensitivity": 0.392857,
+       "notifications_per_day": 0.505841
+      },
+      {
+       "tau": -34.2,
+       "theta": 34.2,
+       "fa_per_day": 0.423495,
+       "sensitivity": 0.392857,
+       "notifications_per_day": 0.513684
+      },
+      {
+       "tau": -34.2,
+       "theta": 34.2,
+       "fa_per_day": 0.423495,
+       "sensitivity": 0.392857,
+       "notifications_per_day": 0.513684
+      },
+      {
+       "tau": -34.2,
+       "theta": 34.2,
+       "fa_per_day": 0.427416,
+       "sensitivity": 0.392857,
+       "notifications_per_day": 0.517605
+      },
+      {
+       "tau": -36.0,
+       "theta": 36.0,
+       "fa_per_day": 0.431337,
+       "sensitivity": 0.392857,
+       "notifications_per_day": 0.521526
+      },
+      {
+       "tau": -36.0,
+       "theta": 36.0,
+       "fa_per_day": 0.435259,
+       "sensitivity": 0.392857,
+       "notifications_per_day": 0.525447
+      },
+      {
+       "tau": -36.0,
+       "theta": 36.0,
+       "fa_per_day": 0.43918,
+       "sensitivity": 0.392857,
+       "notifications_per_day": 0.529369
+      },
+      {
+       "tau": -36.0,
+       "theta": 36.0,
+       "fa_per_day": 0.43918,
+       "sensitivity": 0.392857,
+       "notifications_per_day": 0.529369
+      },
+      {
+       "tau": -36.0,
+       "theta": 36.0,
+       "fa_per_day": 0.450944,
+       "sensitivity": 0.392857,
+       "notifications_per_day": 0.541132
+      },
+      {
+       "tau": -36.0,
+       "theta": 36.0,
+       "fa_per_day": 0.478392,
+       "sensitivity": 0.392857,
+       "notifications_per_day": 0.568581
+      },
+      {
+       "tau": -36.0,
+       "theta": 36.0,
+       "fa_per_day": 0.482314,
+       "sensitivity": 0.392857,
+       "notifications_per_day": 0.572502
+      },
+      {
+       "tau": -37.8,
+       "theta": 37.8,
+       "fa_per_day": 0.486235,
+       "sensitivity": 0.392857,
+       "notifications_per_day": 0.576423
+      },
+      {
+       "tau": -37.8,
+       "theta": 37.8,
+       "fa_per_day": 0.497999,
+       "sensitivity": 0.392857,
+       "notifications_per_day": 0.588187
+      },
+      {
+       "tau": -37.8,
+       "theta": 37.8,
+       "fa_per_day": 0.497999,
+       "sensitivity": 0.392857,
+       "notifications_per_day": 0.588187
+      },
+      {
+       "tau": -37.8,
+       "theta": 37.8,
+       "fa_per_day": 0.521526,
+       "sensitivity": 0.428571,
+       "notifications_per_day": 0.619557
+      },
+      {
+       "tau": -37.8,
+       "theta": 37.8,
+       "fa_per_day": 0.525447,
+       "sensitivity": 0.428571,
+       "notifications_per_day": 0.623478
+      },
+      {
+       "tau": -37.8,
+       "theta": 37.8,
+       "fa_per_day": 0.537211,
+       "sensitivity": 0.428571,
+       "notifications_per_day": 0.635242
+      },
+      {
+       "tau": -39.6,
+       "theta": 39.6,
+       "fa_per_day": 0.548975,
+       "sensitivity": 0.428571,
+       "notifications_per_day": 0.647006
+      },
+      {
+       "tau": -39.6,
+       "theta": 39.6,
+       "fa_per_day": 0.552896,
+       "sensitivity": 0.428571,
+       "notifications_per_day": 0.650927
+      },
+      {
+       "tau": -39.6,
+       "theta": 39.6,
+       "fa_per_day": 0.560739,
+       "sensitivity": 0.428571,
+       "notifications_per_day": 0.65877
+      },
+      {
+       "tau": -39.6,
+       "theta": 39.6,
+       "fa_per_day": 0.580345,
+       "sensitivity": 0.428571,
+       "notifications_per_day": 0.678376
+      },
+      {
+       "tau": -39.6,
+       "theta": 39.6,
+       "fa_per_day": 0.588187,
+       "sensitivity": 0.428571,
+       "notifications_per_day": 0.686218
+      },
+      {
+       "tau": -39.6,
+       "theta": 39.6,
+       "fa_per_day": 0.592108,
+       "sensitivity": 0.428571,
+       "notifications_per_day": 0.69014
+      },
+      {
+       "tau": -41.4,
+       "theta": 41.4,
+       "fa_per_day": 0.59603,
+       "sensitivity": 0.428571,
+       "notifications_per_day": 0.694061
+      },
+      {
+       "tau": -41.4,
+       "theta": 41.4,
+       "fa_per_day": 0.603872,
+       "sensitivity": 0.428571,
+       "notifications_per_day": 0.701903
+      },
+      {
+       "tau": -41.4,
+       "theta": 41.4,
+       "fa_per_day": 0.623478,
+       "sensitivity": 0.428571,
+       "notifications_per_day": 0.72151
+      },
+      {
+       "tau": -41.4,
+       "theta": 41.4,
+       "fa_per_day": 0.623478,
+       "sensitivity": 0.428571,
+       "notifications_per_day": 0.72151
+      },
+      {
+       "tau": -41.4,
+       "theta": 41.4,
+       "fa_per_day": 0.650927,
+       "sensitivity": 0.428571,
+       "notifications_per_day": 0.748958
+      },
+      {
+       "tau": -41.4,
+       "theta": 41.4,
+       "fa_per_day": 0.654848,
+       "sensitivity": 0.428571,
+       "notifications_per_day": 0.75288
+      },
+      {
+       "tau": -43.2,
+       "theta": 43.2,
+       "fa_per_day": 0.65877,
+       "sensitivity": 0.428571,
+       "notifications_per_day": 0.756801
+      },
+      {
+       "tau": -43.2,
+       "theta": 43.2,
+       "fa_per_day": 0.666612,
+       "sensitivity": 0.428571,
+       "notifications_per_day": 0.764643
+      },
+      {
+       "tau": -43.2,
+       "theta": 43.2,
+       "fa_per_day": 0.678376,
+       "sensitivity": 0.428571,
+       "notifications_per_day": 0.776407
+      },
+      {
+       "tau": -43.2,
+       "theta": 43.2,
+       "fa_per_day": 0.682297,
+       "sensitivity": 0.464286,
+       "notifications_per_day": 0.788171
+      },
+      {
+       "tau": -43.2,
+       "theta": 43.2,
+       "fa_per_day": 0.709746,
+       "sensitivity": 0.464286,
+       "notifications_per_day": 0.819541
+      },
+      {
+       "tau": -43.2,
+       "theta": 43.2,
+       "fa_per_day": 0.709746,
+       "sensitivity": 0.482143,
+       "notifications_per_day": 0.823462
+      },
+      {
+       "tau": -43.2,
+       "theta": 43.2,
+       "fa_per_day": 0.709746,
+       "sensitivity": 0.482143,
+       "notifications_per_day": 0.823462
+      },
+      {
+       "tau": -45.0,
+       "theta": 45.0,
+       "fa_per_day": 0.713667,
+       "sensitivity": 0.482143,
+       "notifications_per_day": 0.827383
+      },
+      {
+       "tau": -45.0,
+       "theta": 45.0,
+       "fa_per_day": 0.713667,
+       "sensitivity": 0.482143,
+       "notifications_per_day": 0.827383
+      },
+      {
+       "tau": -45.0,
+       "theta": 45.0,
+       "fa_per_day": 0.713667,
+       "sensitivity": 0.482143,
+       "notifications_per_day": 0.827383
+      },
+      {
+       "tau": -45.0,
+       "theta": 45.0,
+       "fa_per_day": 0.717588,
+       "sensitivity": 0.482143,
+       "notifications_per_day": 0.831305
+      },
+      {
+       "tau": -45.0,
+       "theta": 45.0,
+       "fa_per_day": 0.725431,
+       "sensitivity": 0.482143,
+       "notifications_per_day": 0.839147
+      },
+      {
+       "tau": -45.0,
+       "theta": 45.0,
+       "fa_per_day": 0.741116,
+       "sensitivity": 0.5,
+       "notifications_per_day": 0.858753
+      },
+      {
+       "tau": -45.0,
+       "theta": 45.0,
+       "fa_per_day": 0.748958,
+       "sensitivity": 0.5,
+       "notifications_per_day": 0.866596
+      },
+      {
+       "tau": -45.0,
+       "theta": 45.0,
+       "fa_per_day": 0.756801,
+       "sensitivity": 0.5,
+       "notifications_per_day": 0.874438
+      },
+      {
+       "tau": -46.8,
+       "theta": 46.8,
+       "fa_per_day": 0.756801,
+       "sensitivity": 0.5,
+       "notifications_per_day": 0.874438
+      },
+      {
+       "tau": -46.8,
+       "theta": 46.8,
+       "fa_per_day": 0.760722,
+       "sensitivity": 0.5,
+       "notifications_per_day": 0.87836
+      },
+      {
+       "tau": -46.8,
+       "theta": 46.8,
+       "fa_per_day": 0.768565,
+       "sensitivity": 0.5,
+       "notifications_per_day": 0.886202
+      },
+      {
+       "tau": -46.8,
+       "theta": 46.8,
+       "fa_per_day": 0.768565,
+       "sensitivity": 0.517857,
+       "notifications_per_day": 0.890123
+      },
+      {
+       "tau": -46.8,
+       "theta": 46.8,
+       "fa_per_day": 0.772486,
+       "sensitivity": 0.517857,
+       "notifications_per_day": 0.894045
+      },
+      {
+       "tau": -46.8,
+       "theta": 46.8,
+       "fa_per_day": 0.78425,
+       "sensitivity": 0.517857,
+       "notifications_per_day": 0.905808
+      },
+      {
+       "tau": -46.8,
+       "theta": 46.8,
+       "fa_per_day": 0.796013,
+       "sensitivity": 0.535714,
+       "notifications_per_day": 0.921493
+      },
+      {
+       "tau": -48.6,
+       "theta": 48.6,
+       "fa_per_day": 0.796013,
+       "sensitivity": 0.535714,
+       "notifications_per_day": 0.921493
+      },
+      {
+       "tau": -48.6,
+       "theta": 48.6,
+       "fa_per_day": 0.811698,
+       "sensitivity": 0.535714,
+       "notifications_per_day": 0.937178
+      },
+      {
+       "tau": -48.6,
+       "theta": 48.6,
+       "fa_per_day": 0.831305,
+       "sensitivity": 0.535714,
+       "notifications_per_day": 0.956785
+      },
+      {
+       "tau": -48.6,
+       "theta": 48.6,
+       "fa_per_day": 0.835226,
+       "sensitivity": 0.535714,
+       "notifications_per_day": 0.960706
+      },
+      {
+       "tau": -48.6,
+       "theta": 48.6,
+       "fa_per_day": 0.84699,
+       "sensitivity": 0.553571,
+       "notifications_per_day": 0.976391
+      },
+      {
+       "tau": -50.4,
+       "theta": 50.4,
+       "fa_per_day": 0.850911,
+       "sensitivity": 0.553571,
+       "notifications_per_day": 0.980312
+      },
+      {
+       "tau": -50.4,
+       "theta": 50.4,
+       "fa_per_day": 0.854832,
+       "sensitivity": 0.553571,
+       "notifications_per_day": 0.984233
+      },
+      {
+       "tau": -50.4,
+       "theta": 50.4,
+       "fa_per_day": 0.862675,
+       "sensitivity": 0.571429,
+       "notifications_per_day": 0.995997
+      },
+      {
+       "tau": -50.4,
+       "theta": 50.4,
+       "fa_per_day": 0.882281,
+       "sensitivity": 0.571429,
+       "notifications_per_day": 1.015603
+      },
+      {
+       "tau": -50.4,
+       "theta": 50.4,
+       "fa_per_day": 0.882281,
+       "sensitivity": 0.571429,
+       "notifications_per_day": 1.015603
+      },
+      {
+       "tau": -50.4,
+       "theta": 50.4,
+       "fa_per_day": 0.894045,
+       "sensitivity": 0.589286,
+       "notifications_per_day": 1.027367
+      },
+      {
+       "tau": -50.4,
+       "theta": 50.4,
+       "fa_per_day": 0.90973,
+       "sensitivity": 0.589286,
+       "notifications_per_day": 1.043052
+      },
+      {
+       "tau": -52.2,
+       "theta": 52.2,
+       "fa_per_day": 0.90973,
+       "sensitivity": 0.589286,
+       "notifications_per_day": 1.043052
+      },
+      {
+       "tau": -52.2,
+       "theta": 52.2,
+       "fa_per_day": 0.913651,
+       "sensitivity": 0.589286,
+       "notifications_per_day": 1.046973
+      },
+      {
+       "tau": -52.2,
+       "theta": 52.2,
+       "fa_per_day": 0.921493,
+       "sensitivity": 0.589286,
+       "notifications_per_day": 1.054816
+      },
+      {
+       "tau": -52.2,
+       "theta": 52.2,
+       "fa_per_day": 0.9411,
+       "sensitivity": 0.589286,
+       "notifications_per_day": 1.074422
+      },
+      {
+       "tau": -52.2,
+       "theta": 52.2,
+       "fa_per_day": 0.9411,
+       "sensitivity": 0.589286,
+       "notifications_per_day": 1.074422
+      },
+      {
+       "tau": -52.2,
+       "theta": 52.2,
+       "fa_per_day": 0.97247,
+       "sensitivity": 0.625,
+       "notifications_per_day": 1.117556
+      },
+      {
+       "tau": -52.2,
+       "theta": 52.2,
+       "fa_per_day": 0.976391,
+       "sensitivity": 0.625,
+       "notifications_per_day": 1.121477
+      },
+      {
+       "tau": -52.2,
+       "theta": 52.2,
+       "fa_per_day": 0.995997,
+       "sensitivity": 0.625,
+       "notifications_per_day": 1.141083
+      },
+      {
+       "tau": -54.0,
+       "theta": 54.0,
+       "fa_per_day": 0.995997,
+       "sensitivity": 0.625,
+       "notifications_per_day": 1.141083
+      },
+      {
+       "tau": -54.0,
+       "theta": 54.0,
+       "fa_per_day": 0.999918,
+       "sensitivity": 0.625,
+       "notifications_per_day": 1.145004
+      },
+      {
+       "tau": -54.0,
+       "theta": 54.0,
+       "fa_per_day": 1.015603,
+       "sensitivity": 0.625,
+       "notifications_per_day": 1.160689
+      },
+      {
+       "tau": -54.0,
+       "theta": 54.0,
+       "fa_per_day": 1.031288,
+       "sensitivity": 0.625,
+       "notifications_per_day": 1.176374
+      },
+      {
+       "tau": -54.0,
+       "theta": 54.0,
+       "fa_per_day": 1.050895,
+       "sensitivity": 0.642857,
+       "notifications_per_day": 1.199902
+      },
+      {
+       "tau": -54.0,
+       "theta": 54.0,
+       "fa_per_day": 1.06658,
+       "sensitivity": 0.642857,
+       "notifications_per_day": 1.215587
+      },
+      {
+       "tau": -54.0,
+       "theta": 54.0,
+       "fa_per_day": 1.070501,
+       "sensitivity": 0.642857,
+       "notifications_per_day": 1.219508
+      },
+      {
+       "tau": -54.0,
+       "theta": 54.0,
+       "fa_per_day": 1.070501,
+       "sensitivity": 0.642857,
+       "notifications_per_day": 1.219508
+      },
+      {
+       "tau": -54.0,
+       "theta": 54.0,
+       "fa_per_day": 1.070501,
+       "sensitivity": 0.642857,
+       "notifications_per_day": 1.219508
+      },
+      {
+       "tau": -55.8,
+       "theta": 55.8,
+       "fa_per_day": 1.070501,
+       "sensitivity": 0.642857,
+       "notifications_per_day": 1.219508
+      },
+      {
+       "tau": -55.8,
+       "theta": 55.8,
+       "fa_per_day": 1.082265,
+       "sensitivity": 0.642857,
+       "notifications_per_day": 1.231272
+      },
+      {
+       "tau": -55.8,
+       "theta": 55.8,
+       "fa_per_day": 1.086186,
+       "sensitivity": 0.642857,
+       "notifications_per_day": 1.235193
+      },
+      {
+       "tau": -55.8,
+       "theta": 55.8,
+       "fa_per_day": 1.109713,
+       "sensitivity": 0.678571,
+       "notifications_per_day": 1.266563
+      },
+      {
+       "tau": -55.8,
+       "theta": 55.8,
+       "fa_per_day": 1.113635,
+       "sensitivity": 0.678571,
+       "notifications_per_day": 1.270484
+      },
+      {
+       "tau": -55.8,
+       "theta": 55.8,
+       "fa_per_day": 1.145004,
+       "sensitivity": 0.678571,
+       "notifications_per_day": 1.301854
+      },
+      {
+       "tau": -55.8,
+       "theta": 55.8,
+       "fa_per_day": 1.148926,
+       "sensitivity": 0.678571,
+       "notifications_per_day": 1.305776
+      },
+      {
+       "tau": -57.6,
+       "theta": 57.6,
+       "fa_per_day": 1.152847,
+       "sensitivity": 0.678571,
+       "notifications_per_day": 1.309697
+      },
+      {
+       "tau": -57.6,
+       "theta": 57.6,
+       "fa_per_day": 1.152847,
+       "sensitivity": 0.678571,
+       "notifications_per_day": 1.309697
+      },
+      {
+       "tau": -57.6,
+       "theta": 57.6,
+       "fa_per_day": 1.176374,
+       "sensitivity": 0.678571,
+       "notifications_per_day": 1.333224
+      },
+      {
+       "tau": -57.6,
+       "theta": 57.6,
+       "fa_per_day": 1.227351,
+       "sensitivity": 0.732143,
+       "notifications_per_day": 1.395964
+      },
+      {
+       "tau": -57.6,
+       "theta": 57.6,
+       "fa_per_day": 1.235193,
+       "sensitivity": 0.732143,
+       "notifications_per_day": 1.403807
+      },
+      {
+       "tau": -57.6,
+       "theta": 57.6,
+       "fa_per_day": 1.250878,
+       "sensitivity": 0.732143,
+       "notifications_per_day": 1.419492
+      },
+      {
+       "tau": -57.6,
+       "theta": 57.6,
+       "fa_per_day": 1.266563,
+       "sensitivity": 0.75,
+       "notifications_per_day": 1.439098
+      },
+      {
+       "tau": -59.4,
+       "theta": 59.4,
+       "fa_per_day": 1.270484,
+       "sensitivity": 0.75,
+       "notifications_per_day": 1.443019
+      },
+      {
+       "tau": -59.4,
+       "theta": 59.4,
+       "fa_per_day": 1.274406,
+       "sensitivity": 0.75,
+       "notifications_per_day": 1.446941
+      },
+      {
+       "tau": -59.4,
+       "theta": 59.4,
+       "fa_per_day": 1.286169,
+       "sensitivity": 0.75,
+       "notifications_per_day": 1.458704
+      },
+      {
+       "tau": -59.4,
+       "theta": 59.4,
+       "fa_per_day": 1.305776,
+       "sensitivity": 0.75,
+       "notifications_per_day": 1.474389
+      },
+      {
+       "tau": -59.4,
+       "theta": 59.4,
+       "fa_per_day": 1.305776,
+       "sensitivity": 0.75,
+       "notifications_per_day": 1.474389
+      },
+      {
+       "tau": -59.4,
+       "theta": 59.4,
+       "fa_per_day": 1.344988,
+       "sensitivity": 0.75,
+       "notifications_per_day": 1.513602
+      },
+      {
+       "tau": -59.4,
+       "theta": 59.4,
+       "fa_per_day": 1.368516,
+       "sensitivity": 0.767857,
+       "notifications_per_day": 1.541051
+      },
+      {
+       "tau": -59.4,
+       "theta": 59.4,
+       "fa_per_day": 1.372437,
+       "sensitivity": 0.767857,
+       "notifications_per_day": 1.544972
+      },
+      {
+       "tau": -61.2,
+       "theta": 61.2,
+       "fa_per_day": 1.372437,
+       "sensitivity": 0.767857,
+       "notifications_per_day": 1.548893
+      },
+      {
+       "tau": -61.2,
+       "theta": 61.2,
+       "fa_per_day": 1.372437,
+       "sensitivity": 0.767857,
+       "notifications_per_day": 1.548893
+      },
+      {
+       "tau": -61.2,
+       "theta": 61.2,
+       "fa_per_day": 1.376358,
+       "sensitivity": 0.767857,
+       "notifications_per_day": 1.552814
+      },
+      {
+       "tau": -61.2,
+       "theta": 61.2,
+       "fa_per_day": 1.388122,
+       "sensitivity": 0.767857,
+       "notifications_per_day": 1.564578
+      },
+      {
+       "tau": -61.2,
+       "theta": 61.2,
+       "fa_per_day": 1.443019,
+       "sensitivity": 0.785714,
+       "notifications_per_day": 1.611633
+      },
+      {
+       "tau": -61.2,
+       "theta": 61.2,
+       "fa_per_day": 1.443019,
+       "sensitivity": 0.785714,
+       "notifications_per_day": 1.611633
+      },
+      {
+       "tau": -61.2,
+       "theta": 61.2,
+       "fa_per_day": 1.486153,
+       "sensitivity": 0.803571,
+       "notifications_per_day": 1.658688
+      },
+      {
+       "tau": -61.2,
+       "theta": 61.2,
+       "fa_per_day": 1.497917,
+       "sensitivity": 0.803571,
+       "notifications_per_day": 1.670452
+      },
+      {
+       "tau": -61.2,
+       "theta": 61.2,
+       "fa_per_day": 1.501838,
+       "sensitivity": 0.803571,
+       "notifications_per_day": 1.674373
+      },
+      {
+       "tau": -63.0,
+       "theta": 63.0,
+       "fa_per_day": 1.501838,
+       "sensitivity": 0.803571,
+       "notifications_per_day": 1.674373
+      },
+      {
+       "tau": -63.0,
+       "theta": 63.0,
+       "fa_per_day": 1.509681,
+       "sensitivity": 0.803571,
+       "notifications_per_day": 1.682216
+      },
+      {
+       "tau": -63.0,
+       "theta": 63.0,
+       "fa_per_day": 1.533208,
+       "sensitivity": 0.803571,
+       "notifications_per_day": 1.705743
+      },
+      {
+       "tau": -63.0,
+       "theta": 63.0,
+       "fa_per_day": 1.564578,
+       "sensitivity": 0.803571,
+       "notifications_per_day": 1.737113
+      },
+      {
+       "tau": -63.0,
+       "theta": 63.0,
+       "fa_per_day": 1.580263,
+       "sensitivity": 0.803571,
+       "notifications_per_day": 1.752798
+      },
+      {
+       "tau": -63.0,
+       "theta": 63.0,
+       "fa_per_day": 1.631239,
+       "sensitivity": 0.839286,
+       "notifications_per_day": 1.815538
+      },
+      {
+       "tau": -63.0,
+       "theta": 63.0,
+       "fa_per_day": 1.658688,
+       "sensitivity": 0.839286,
+       "notifications_per_day": 1.842987
+      },
+      {
+       "tau": -63.0,
+       "theta": 63.0,
+       "fa_per_day": 1.674373,
+       "sensitivity": 0.839286,
+       "notifications_per_day": 1.858672
+      },
+      {
+       "tau": -64.8,
+       "theta": 64.8,
+       "fa_per_day": 1.678294,
+       "sensitivity": 0.839286,
+       "notifications_per_day": 1.862593
+      },
+      {
+       "tau": -64.8,
+       "theta": 64.8,
+       "fa_per_day": 1.682216,
+       "sensitivity": 0.839286,
+       "notifications_per_day": 1.866514
+      },
+      {
+       "tau": -64.8,
+       "theta": 64.8,
+       "fa_per_day": 1.690058,
+       "sensitivity": 0.839286,
+       "notifications_per_day": 1.874357
+      },
+      {
+       "tau": -64.8,
+       "theta": 64.8,
+       "fa_per_day": 1.701822,
+       "sensitivity": 0.839286,
+       "notifications_per_day": 1.88612
+      },
+      {
+       "tau": -64.8,
+       "theta": 64.8,
+       "fa_per_day": 1.721428,
+       "sensitivity": 0.857143,
+       "notifications_per_day": 1.905727
+      },
+      {
+       "tau": -64.8,
+       "theta": 64.8,
+       "fa_per_day": 1.780247,
+       "sensitivity": 0.857143,
+       "notifications_per_day": 1.964545
+      },
+      {
+       "tau": -64.8,
+       "theta": 64.8,
+       "fa_per_day": 1.82338,
+       "sensitivity": 0.857143,
+       "notifications_per_day": 2.007679
+      },
+      {
+       "tau": -64.8,
+       "theta": 64.8,
+       "fa_per_day": 1.835144,
+       "sensitivity": 0.857143,
+       "notifications_per_day": 2.019443
+      },
+      {
+       "tau": -66.6,
+       "theta": 66.6,
+       "fa_per_day": 1.835144,
+       "sensitivity": 0.857143,
+       "notifications_per_day": 2.019443
+      },
+      {
+       "tau": -66.6,
+       "theta": 66.6,
+       "fa_per_day": 1.842987,
+       "sensitivity": 0.857143,
+       "notifications_per_day": 2.027285
+      },
+      {
+       "tau": -66.6,
+       "theta": 66.6,
+       "fa_per_day": 1.905727,
+       "sensitivity": 0.857143,
+       "notifications_per_day": 2.090025
+      },
+      {
+       "tau": -66.6,
+       "theta": 66.6,
+       "fa_per_day": 1.968467,
+       "sensitivity": 0.875,
+       "notifications_per_day": 2.156687
+      },
+      {
+       "tau": -66.6,
+       "theta": 66.6,
+       "fa_per_day": 2.0116,
+       "sensitivity": 0.910714,
+       "notifications_per_day": 2.207663
+      },
+      {
+       "tau": -66.6,
+       "theta": 66.6,
+       "fa_per_day": 2.04297,
+       "sensitivity": 0.910714,
+       "notifications_per_day": 2.242954
+      },
+      {
+       "tau": -66.6,
+       "theta": 66.6,
+       "fa_per_day": 2.04297,
+       "sensitivity": 0.910714,
+       "notifications_per_day": 2.242954
+      },
+      {
+       "tau": -68.4,
+       "theta": 68.4,
+       "fa_per_day": 2.050813,
+       "sensitivity": 0.910714,
+       "notifications_per_day": 2.250797
+      },
+      {
+       "tau": -68.4,
+       "theta": 68.4,
+       "fa_per_day": 2.054734,
+       "sensitivity": 0.910714,
+       "notifications_per_day": 2.254718
+      },
+      {
+       "tau": -68.4,
+       "theta": 68.4,
+       "fa_per_day": 2.058655,
+       "sensitivity": 0.910714,
+       "notifications_per_day": 2.258639
+      },
+      {
+       "tau": -68.4,
+       "theta": 68.4,
+       "fa_per_day": 2.090025,
+       "sensitivity": 0.910714,
+       "notifications_per_day": 2.290009
+      },
+      {
+       "tau": -68.4,
+       "theta": 68.4,
+       "fa_per_day": 2.13708,
+       "sensitivity": 0.910714,
+       "notifications_per_day": 2.337064
+      },
+      {
+       "tau": -68.4,
+       "theta": 68.4,
+       "fa_per_day": 2.184135,
+       "sensitivity": 0.910714,
+       "notifications_per_day": 2.384119
+      },
+      {
+       "tau": -68.4,
+       "theta": 68.4,
+       "fa_per_day": 2.207663,
+       "sensitivity": 0.910714,
+       "notifications_per_day": 2.407646
+      },
+      {
+       "tau": -68.4,
+       "theta": 68.4,
+       "fa_per_day": 2.211584,
+       "sensitivity": 0.910714,
+       "notifications_per_day": 2.411568
+      },
+      {
+       "tau": -70.2,
+       "theta": 70.2,
+       "fa_per_day": 2.219427,
+       "sensitivity": 0.910714,
+       "notifications_per_day": 2.41941
+      },
+      {
+       "tau": -70.2,
+       "theta": 70.2,
+       "fa_per_day": 2.235112,
+       "sensitivity": 0.910714,
+       "notifications_per_day": 2.435095
+      },
+      {
+       "tau": -70.2,
+       "theta": 70.2,
+       "fa_per_day": 2.242954,
+       "sensitivity": 0.928571,
+       "notifications_per_day": 2.446859
+      },
+      {
+       "tau": -70.2,
+       "theta": 70.2,
+       "fa_per_day": 2.313536,
+       "sensitivity": 0.928571,
+       "notifications_per_day": 2.517441
+      },
+      {
+       "tau": -70.2,
+       "theta": 70.2,
+       "fa_per_day": 2.380198,
+       "sensitivity": 0.928571,
+       "notifications_per_day": 2.591945
+      },
+      {
+       "tau": -70.2,
+       "theta": 70.2,
+       "fa_per_day": 2.407646,
+       "sensitivity": 0.928571,
+       "notifications_per_day": 2.619394
+      },
+      {
+       "tau": -70.2,
+       "theta": 70.2,
+       "fa_per_day": 2.435095,
+       "sensitivity": 0.928571,
+       "notifications_per_day": 2.646843
+      },
+      {
+       "tau": -72.0,
+       "theta": 72.0,
+       "fa_per_day": 2.435095,
+       "sensitivity": 0.928571,
+       "notifications_per_day": 2.646843
+      },
+      {
+       "tau": -72.0,
+       "theta": 72.0,
+       "fa_per_day": 2.435095,
+       "sensitivity": 0.928571,
+       "notifications_per_day": 2.646843
+      },
+      {
+       "tau": -72.0,
+       "theta": 72.0,
+       "fa_per_day": 2.435095,
+       "sensitivity": 0.928571,
+       "notifications_per_day": 2.646843
+      },
+      {
+       "tau": -72.0,
+       "theta": 72.0,
+       "fa_per_day": 2.474308,
+       "sensitivity": 0.928571,
+       "notifications_per_day": 2.686055
+      },
+      {
+       "tau": -72.0,
+       "theta": 72.0,
+       "fa_per_day": 2.51352,
+       "sensitivity": 0.928571,
+       "notifications_per_day": 2.725268
+      },
+      {
+       "tau": -72.0,
+       "theta": 72.0,
+       "fa_per_day": 2.529205,
+       "sensitivity": 0.928571,
+       "notifications_per_day": 2.744874
+      },
+      {
+       "tau": -72.0,
+       "theta": 72.0,
+       "fa_per_day": 2.584103,
+       "sensitivity": 0.928571,
+       "notifications_per_day": 2.799771
+      },
+      {
+       "tau": -72.0,
+       "theta": 72.0,
+       "fa_per_day": 2.611551,
+       "sensitivity": 0.928571,
+       "notifications_per_day": 2.82722
+      },
+      {
+       "tau": -72.0,
+       "theta": 72.0,
+       "fa_per_day": 2.627236,
+       "sensitivity": 0.928571,
+       "notifications_per_day": 2.842905
+      },
+      {
+       "tau": -72.0,
+       "theta": 72.0,
+       "fa_per_day": 2.635079,
+       "sensitivity": 0.928571,
+       "notifications_per_day": 2.850747
+      },
+      {
+       "tau": -73.8,
+       "theta": 73.8,
+       "fa_per_day": 2.635079,
+       "sensitivity": 0.928571,
+       "notifications_per_day": 2.850747
+      },
+      {
+       "tau": -73.8,
+       "theta": 73.8,
+       "fa_per_day": 2.635079,
+       "sensitivity": 0.928571,
+       "notifications_per_day": 2.850747
+      },
+      {
+       "tau": -73.8,
+       "theta": 73.8,
+       "fa_per_day": 2.639,
+       "sensitivity": 0.928571,
+       "notifications_per_day": 2.854669
+      },
+      {
+       "tau": -73.8,
+       "theta": 73.8,
+       "fa_per_day": 2.654685,
+       "sensitivity": 0.928571,
+       "notifications_per_day": 2.870354
+      },
+      {
+       "tau": -73.8,
+       "theta": 73.8,
+       "fa_per_day": 2.705661,
+       "sensitivity": 0.928571,
+       "notifications_per_day": 2.92133
+      },
+      {
+       "tau": -73.8,
+       "theta": 73.8,
+       "fa_per_day": 2.772323,
+       "sensitivity": 0.928571,
+       "notifications_per_day": 2.991912
+      },
+      {
+       "tau": -73.8,
+       "theta": 73.8,
+       "fa_per_day": 2.823299,
+       "sensitivity": 0.928571,
+       "notifications_per_day": 3.038967
+      },
+      {
+       "tau": -73.8,
+       "theta": 73.8,
+       "fa_per_day": 2.842905,
+       "sensitivity": 0.928571,
+       "notifications_per_day": 3.058574
+      },
+      {
+       "tau": -75.6,
+       "theta": 75.6,
+       "fa_per_day": 2.842905,
+       "sensitivity": 0.928571,
+       "notifications_per_day": 3.058574
+      },
+      {
+       "tau": -75.6,
+       "theta": 75.6,
+       "fa_per_day": 2.850747,
+       "sensitivity": 0.928571,
+       "notifications_per_day": 3.066416
+      },
+      {
+       "tau": -75.6,
+       "theta": 75.6,
+       "fa_per_day": 2.909566,
+       "sensitivity": 0.928571,
+       "notifications_per_day": 3.125235
+      },
+      {
+       "tau": -75.6,
+       "theta": 75.6,
+       "fa_per_day": 2.98407,
+       "sensitivity": 0.928571,
+       "notifications_per_day": 3.199739
+      },
+      {
+       "tau": -75.6,
+       "theta": 75.6,
+       "fa_per_day": 3.058574,
+       "sensitivity": 0.928571,
+       "notifications_per_day": 3.274242
+      },
+      {
+       "tau": -75.6,
+       "theta": 75.6,
+       "fa_per_day": 3.113471,
+       "sensitivity": 0.928571,
+       "notifications_per_day": 3.32914
+      },
+      {
+       "tau": -77.4,
+       "theta": 77.4,
+       "fa_per_day": 3.113471,
+       "sensitivity": 0.928571,
+       "notifications_per_day": 3.32914
+      },
+      {
+       "tau": -77.4,
+       "theta": 77.4,
+       "fa_per_day": 3.113471,
+       "sensitivity": 0.928571,
+       "notifications_per_day": 3.32914
+      },
+      {
+       "tau": -77.4,
+       "theta": 77.4,
+       "fa_per_day": 3.129156,
+       "sensitivity": 0.928571,
+       "notifications_per_day": 3.344825
+      },
+      {
+       "tau": -77.4,
+       "theta": 77.4,
+       "fa_per_day": 3.176211,
+       "sensitivity": 0.928571,
+       "notifications_per_day": 3.39188
+      },
+      {
+       "tau": -77.4,
+       "theta": 77.4,
+       "fa_per_day": 3.227187,
+       "sensitivity": 0.946429,
+       "notifications_per_day": 3.446777
+      },
+      {
+       "tau": -77.4,
+       "theta": 77.4,
+       "fa_per_day": 3.336982,
+       "sensitivity": 0.946429,
+       "notifications_per_day": 3.556572
+      },
+      {
+       "tau": -77.4,
+       "theta": 77.4,
+       "fa_per_day": 3.376195,
+       "sensitivity": 0.946429,
+       "notifications_per_day": 3.595785
+      },
+      {
+       "tau": -77.4,
+       "theta": 77.4,
+       "fa_per_day": 3.376195,
+       "sensitivity": 0.946429,
+       "notifications_per_day": 3.595785
+      },
+      {
+       "tau": -79.2,
+       "theta": 79.2,
+       "fa_per_day": 3.376195,
+       "sensitivity": 0.946429,
+       "notifications_per_day": 3.595785
+      },
+      {
+       "tau": -79.2,
+       "theta": 79.2,
+       "fa_per_day": 3.380116,
+       "sensitivity": 0.946429,
+       "notifications_per_day": 3.603627
+      },
+      {
+       "tau": -79.2,
+       "theta": 79.2,
+       "fa_per_day": 3.399722,
+       "sensitivity": 0.946429,
+       "notifications_per_day": 3.623233
+      },
+      {
+       "tau": -79.2,
+       "theta": 79.2,
+       "fa_per_day": 3.474226,
+       "sensitivity": 0.946429,
+       "notifications_per_day": 3.697737
+      },
+      {
+       "tau": -79.2,
+       "theta": 79.2,
+       "fa_per_day": 3.572257,
+       "sensitivity": 0.946429,
+       "notifications_per_day": 3.795768
+      },
+      {
+       "tau": -79.2,
+       "theta": 79.2,
+       "fa_per_day": 3.623233,
+       "sensitivity": 0.946429,
+       "notifications_per_day": 3.846745
+      },
+      {
+       "tau": -79.2,
+       "theta": 79.2,
+       "fa_per_day": 3.654603,
+       "sensitivity": 0.946429,
+       "notifications_per_day": 3.878115
+      },
+      {
+       "tau": -81.0,
+       "theta": 81.0,
+       "fa_per_day": 3.654603,
+       "sensitivity": 0.946429,
+       "notifications_per_day": 3.878115
+      },
+      {
+       "tau": -81.0,
+       "theta": 81.0,
+       "fa_per_day": 3.666367,
+       "sensitivity": 0.946429,
+       "notifications_per_day": 3.889878
+      },
+      {
+       "tau": -81.0,
+       "theta": 81.0,
+       "fa_per_day": 3.685973,
+       "sensitivity": 0.946429,
+       "notifications_per_day": 3.909485
+      },
+      {
+       "tau": -81.0,
+       "theta": 81.0,
+       "fa_per_day": 3.73695,
+       "sensitivity": 0.946429,
+       "notifications_per_day": 3.960461
+      },
+      {
+       "tau": -81.0,
+       "theta": 81.0,
+       "fa_per_day": 3.787926,
+       "sensitivity": 0.946429,
+       "notifications_per_day": 4.011437
+      },
+      {
+       "tau": -81.0,
+       "theta": 81.0,
+       "fa_per_day": 3.79969,
+       "sensitivity": 0.946429,
+       "notifications_per_day": 4.023201
+      },
+      {
+       "tau": -81.0,
+       "theta": 81.0,
+       "fa_per_day": 3.842823,
+       "sensitivity": 0.946429,
+       "notifications_per_day": 4.066334
+      },
+      {
+       "tau": -81.0,
+       "theta": 81.0,
+       "fa_per_day": 3.897721,
+       "sensitivity": 0.946429,
+       "notifications_per_day": 4.121232
+      },
+      {
+       "tau": -81.0,
+       "theta": 81.0,
+       "fa_per_day": 3.909485,
+       "sensitivity": 0.946429,
+       "notifications_per_day": 4.132996
+      },
+      {
+       "tau": -81.0,
+       "theta": 81.0,
+       "fa_per_day": 3.909485,
+       "sensitivity": 0.946429,
+       "notifications_per_day": 4.132996
+      },
+      {
+       "tau": -82.8,
+       "theta": 82.8,
+       "fa_per_day": 3.913406,
+       "sensitivity": 0.946429,
+       "notifications_per_day": 4.136917
+      },
+      {
+       "tau": -82.8,
+       "theta": 82.8,
+       "fa_per_day": 3.917327,
+       "sensitivity": 0.946429,
+       "notifications_per_day": 4.140838
+      },
+      {
+       "tau": -82.8,
+       "theta": 82.8,
+       "fa_per_day": 3.929091,
+       "sensitivity": 0.946429,
+       "notifications_per_day": 4.152602
+      },
+      {
+       "tau": -82.8,
+       "theta": 82.8,
+       "fa_per_day": 3.960461,
+       "sensitivity": 0.946429,
+       "notifications_per_day": 4.183972
+      },
+      {
+       "tau": -82.8,
+       "theta": 82.8,
+       "fa_per_day": 4.011437,
+       "sensitivity": 0.946429,
+       "notifications_per_day": 4.234948
+      }
+     ],
+     "operating_point_at_tau_alert": {
+      "tau": -54.0,
+      "strict": true,
+      "episodes": 56,
+      "hits": 35,
+      "sensitivity": 0.625,
+      "missed_episode_rate": 0.375,
+      "warnable_episodes": 53,
+      "warnable_ceiling": 0.946429,
+      "notifications": {
+       "true": 35,
+       "false": 255,
+       "outcome_unknown": 2
+      },
+      "monitored_days": 255.020833,
+      "fa_per_day": 0.999918,
+      "alert_precision": 0.12069,
+      "lead_min": {
+       "median": 45.0,
+       "q25": 22.5,
+       "q75": 60.0,
+       "share_ge_30": 0.742857
+      },
+      "abstention": {
+       "readings": 24501,
+       "insufficient_data_share": 0.00853,
+       "warnable_episodes_without_forecast_in_window": 0
+      },
+      "per_patient_distribution": {
+       "patients": 22,
+       "patients_with_episodes": 13,
+       "sensitivity_q25_q50_q75": [
+        0.5,
+        0.571429,
+        0.875
+       ],
+       "fa_per_day_q25_q50_q75": [
+        0.369578,
+        1.036069,
+        1.352167
+       ]
+      }
+     }
+    },
+    "all": {
+     "summary": {
+      "grid_points": 1331,
+      "non_monotone_fa_steps": 0,
+      "monitored_days": 348.302083,
+      "episodes": 117.0,
+      "sens_at_1fa": 0.606838,
+      "first_crossing": {
+       "a": 227,
+       "k_star": 228,
+       "f_a": 0.999133,
+       "s_a": 0.606838,
+       "budget_not_reached": false,
+       "k_star_is_1": false
+      },
+      "tau_alert": -52.2,
+      "theta_alert": 52.2,
+      "tau_watch": -72.0,
+      "theta_watch": 72.0,
+      "watch_band_empty": false,
+      "partial_area_0.5_2.0": 0.680575,
+      "partial_area_hi_reached": true
+     },
+     "points": [
+      {
+       "tau": null,
+       "theta": null,
+       "fa_per_day": 0.0,
+       "sensitivity": 0.0,
+       "notifications_per_day": 0.0
+      },
+      {
+       "tau": 75.6,
+       "theta": -75.6,
+       "fa_per_day": 0.0,
+       "sensitivity": 0.0,
+       "notifications_per_day": 0.0
+      },
+      {
+       "tau": 73.8,
+       "theta": -73.8,
+       "fa_per_day": 0.0,
+       "sensitivity": 0.008547,
+       "notifications_per_day": 0.002871
+      },
+      {
+       "tau": 66.6,
+       "theta": -66.6,
+       "fa_per_day": 0.002871,
+       "sensitivity": 0.008547,
+       "notifications_per_day": 0.005742
+      },
+      {
+       "tau": 57.6,
+       "theta": -57.6,
+       "fa_per_day": 0.002871,
+       "sensitivity": 0.008547,
+       "notifications_per_day": 0.005742
+      },
+      {
+       "tau": 54.0,
+       "theta": -54.0,
+       "fa_per_day": 0.005742,
+       "sensitivity": 0.008547,
+       "notifications_per_day": 0.008613
+      },
+      {
+       "tau": 54.0,
+       "theta": -54.0,
+       "fa_per_day": 0.005742,
+       "sensitivity": 0.017094,
+       "notifications_per_day": 0.011484
+      },
+      {
+       "tau": 50.4,
+       "theta": -50.4,
+       "fa_per_day": 0.008613,
+       "sensitivity": 0.017094,
+       "notifications_per_day": 0.014355
+      },
+      {
+       "tau": 45.0,
+       "theta": -45.0,
+       "fa_per_day": 0.011484,
+       "sensitivity": 0.017094,
+       "notifications_per_day": 0.017226
+      },
+      {
+       "tau": 45.0,
+       "theta": -45.0,
+       "fa_per_day": 0.014355,
+       "sensitivity": 0.017094,
+       "notifications_per_day": 0.020097
+      },
+      {
+       "tau": 41.4,
+       "theta": -41.4,
+       "fa_per_day": 0.017226,
+       "sensitivity": 0.017094,
+       "notifications_per_day": 0.022969
+      },
+      {
+       "tau": 39.6,
+       "theta": -39.6,
+       "fa_per_day": 0.017226,
+       "sensitivity": 0.025641,
+       "notifications_per_day": 0.02584
+      },
+      {
+       "tau": 37.8,
+       "theta": -37.8,
+       "fa_per_day": 0.017226,
+       "sensitivity": 0.025641,
+       "notifications_per_day": 0.02584
+      },
+      {
+       "tau": 30.6,
+       "theta": -30.6,
+       "fa_per_day": 0.020097,
+       "sensitivity": 0.025641,
+       "notifications_per_day": 0.028711
+      },
+      {
+       "tau": 30.6,
+       "theta": -30.6,
+       "fa_per_day": 0.022969,
+       "sensitivity": 0.025641,
+       "notifications_per_day": 0.031582
+      },
+      {
+       "tau": 28.8,
+       "theta": -28.8,
+       "fa_per_day": 0.022969,
+       "sensitivity": 0.025641,
+       "notifications_per_day": 0.031582
+      },
+      {
+       "tau": 27.0,
+       "theta": -27.0,
+       "fa_per_day": 0.022969,
+       "sensitivity": 0.034188,
+       "notifications_per_day": 0.034453
+      },
+      {
+       "tau": 27.0,
+       "theta": -27.0,
+       "fa_per_day": 0.022969,
+       "sensitivity": 0.042735,
+       "notifications_per_day": 0.037324
+      },
+      {
+       "tau": 23.4,
+       "theta": -23.4,
+       "fa_per_day": 0.022969,
+       "sensitivity": 0.042735,
+       "notifications_per_day": 0.037324
+      },
+      {
+       "tau": 19.8,
+       "theta": -19.8,
+       "fa_per_day": 0.02584,
+       "sensitivity": 0.042735,
+       "notifications_per_day": 0.040195
+      },
+      {
+       "tau": 19.8,
+       "theta": -19.8,
+       "fa_per_day": 0.028711,
+       "sensitivity": 0.042735,
+       "notifications_per_day": 0.043066
+      },
+      {
+       "tau": 18.0,
+       "theta": -18.0,
+       "fa_per_day": 0.031582,
+       "sensitivity": 0.042735,
+       "notifications_per_day": 0.045937
+      },
+      {
+       "tau": 16.2,
+       "theta": -16.2,
+       "fa_per_day": 0.034453,
+       "sensitivity": 0.042735,
+       "notifications_per_day": 0.048808
+      },
+      {
+       "tau": 16.2,
+       "theta": -16.2,
+       "fa_per_day": 0.037324,
+       "sensitivity": 0.042735,
+       "notifications_per_day": 0.051679
+      },
+      {
+       "tau": 16.2,
+       "theta": -16.2,
+       "fa_per_day": 0.040195,
+       "sensitivity": 0.042735,
+       "notifications_per_day": 0.05455
+      },
+      {
+       "tau": 14.4,
+       "theta": -14.4,
+       "fa_per_day": 0.043066,
+       "sensitivity": 0.042735,
+       "notifications_per_day": 0.057421
+      },
+      {
+       "tau": 14.4,
+       "theta": -14.4,
+       "fa_per_day": 0.045937,
+       "sensitivity": 0.042735,
+       "notifications_per_day": 0.060292
+      },
+      {
+       "tau": 14.4,
+       "theta": -14.4,
+       "fa_per_day": 0.045937,
+       "sensitivity": 0.051282,
+       "notifications_per_day": 0.063164
+      },
+      {
+       "tau": 14.4,
+       "theta": -14.4,
+       "fa_per_day": 0.051679,
+       "sensitivity": 0.051282,
+       "notifications_per_day": 0.068906
+      },
+      {
+       "tau": 12.6,
+       "theta": -12.6,
+       "fa_per_day": 0.051679,
+       "sensitivity": 0.051282,
+       "notifications_per_day": 0.068906
+      },
+      {
+       "tau": 12.6,
+       "theta": -12.6,
+       "fa_per_day": 0.05455,
+       "sensitivity": 0.051282,
+       "notifications_per_day": 0.071777
+      },
+      {
+       "tau": 12.6,
+       "theta": -12.6,
+       "fa_per_day": 0.060292,
+       "sensitivity": 0.051282,
+       "notifications_per_day": 0.077519
+      },
+      {
+       "tau": 12.6,
+       "theta": -12.6,
+       "fa_per_day": 0.066035,
+       "sensitivity": 0.051282,
+       "notifications_per_day": 0.083261
+      },
+      {
+       "tau": 12.6,
+       "theta": -12.6,
+       "fa_per_day": 0.071777,
+       "sensitivity": 0.051282,
+       "notifications_per_day": 0.089003
+      },
+      {
+       "tau": 10.8,
+       "theta": -10.8,
+       "fa_per_day": 0.074648,
+       "sensitivity": 0.051282,
+       "notifications_per_day": 0.091874
+      },
+      {
+       "tau": 10.8,
+       "theta": -10.8,
+       "fa_per_day": 0.077519,
+       "sensitivity": 0.051282,
+       "notifications_per_day": 0.094745
+      },
+      {
+       "tau": 10.8,
+       "theta": -10.8,
+       "fa_per_day": 0.08039,
+       "sensitivity": 0.051282,
+       "notifications_per_day": 0.097616
+      },
+      {
+       "tau": 10.8,
+       "theta": -10.8,
+       "fa_per_day": 0.08039,
+       "sensitivity": 0.068376,
+       "notifications_per_day": 0.103359
+      },
+      {
+       "tau": 9.0,
+       "theta": -9.0,
+       "fa_per_day": 0.08039,
+       "sensitivity": 0.068376,
+       "notifications_per_day": 0.103359
+      },
+      {
+       "tau": 9.0,
+       "theta": -9.0,
+       "fa_per_day": 0.086132,
+       "sensitivity": 0.068376,
+       "notifications_per_day": 0.109101
+      },
+      {
+       "tau": 9.0,
+       "theta": -9.0,
+       "fa_per_day": 0.089003,
+       "sensitivity": 0.068376,
+       "notifications_per_day": 0.111972
+      },
+      {
+       "tau": 7.2,
+       "theta": -7.2,
+       "fa_per_day": 0.091874,
+       "sensitivity": 0.068376,
+       "notifications_per_day": 0.114843
+      },
+      {
+       "tau": 5.4,
+       "theta": -5.4,
+       "fa_per_day": 0.091874,
+       "sensitivity": 0.068376,
+       "notifications_per_day": 0.114843
+      },
+      {
+       "tau": 3.6,
+       "theta": -3.6,
+       "fa_per_day": 0.094745,
+       "sensitivity": 0.068376,
+       "notifications_per_day": 0.117714
+      },
+      {
+       "tau": 3.6,
+       "theta": -3.6,
+       "fa_per_day": 0.097616,
+       "sensitivity": 0.068376,
+       "notifications_per_day": 0.120585
+      },
+      {
+       "tau": 3.6,
+       "theta": -3.6,
+       "fa_per_day": 0.100487,
+       "sensitivity": 0.068376,
+       "notifications_per_day": 0.123456
+      },
+      {
+       "tau": 3.6,
+       "theta": -3.6,
+       "fa_per_day": 0.103359,
+       "sensitivity": 0.068376,
+       "notifications_per_day": 0.126327
+      },
+      {
+       "tau": 3.6,
+       "theta": -3.6,
+       "fa_per_day": 0.10623,
+       "sensitivity": 0.068376,
+       "notifications_per_day": 0.129198
+      },
+      {
+       "tau": 1.8,
+       "theta": -1.8,
+       "fa_per_day": 0.109101,
+       "sensitivity": 0.068376,
+       "notifications_per_day": 0.132069
+      },
+      {
+       "tau": 1.8,
+       "theta": -1.8,
+       "fa_per_day": 0.109101,
+       "sensitivity": 0.068376,
+       "notifications_per_day": 0.132069
+      },
+      {
+       "tau": 1.8,
+       "theta": -1.8,
+       "fa_per_day": 0.111972,
+       "sensitivity": 0.068376,
+       "notifications_per_day": 0.13494
+      },
+      {
+       "tau": 0.0,
+       "theta": -0.0,
+       "fa_per_day": 0.117714,
+       "sensitivity": 0.068376,
+       "notifications_per_day": 0.140682
+      },
+      {
+       "tau": 0.0,
+       "theta": -0.0,
+       "fa_per_day": 0.120585,
+       "sensitivity": 0.068376,
+       "notifications_per_day": 0.143554
+      },
+      {
+       "tau": 0.0,
+       "theta": -0.0,
+       "fa_per_day": 0.123456,
+       "sensitivity": 0.068376,
+       "notifications_per_day": 0.146425
+      },
+      {
+       "tau": -0.0,
+       "theta": 0.0,
+       "fa_per_day": 0.129198,
+       "sensitivity": 0.076923,
+       "notifications_per_day": 0.155038
+      },
+      {
+       "tau": -0.0,
+       "theta": 0.0,
+       "fa_per_day": 0.132069,
+       "sensitivity": 0.08547,
+       "notifications_per_day": 0.16078
+      },
+      {
+       "tau": -1.8,
+       "theta": 1.8,
+       "fa_per_day": 0.132069,
+       "sensitivity": 0.08547,
+       "notifications_per_day": 0.16078
+      },
+      {
+       "tau": -1.8,
+       "theta": 1.8,
+       "fa_per_day": 0.13494,
+       "sensitivity": 0.08547,
+       "notifications_per_day": 0.163651
+      },
+      {
+       "tau": -1.8,
+       "theta": 1.8,
+       "fa_per_day": 0.140682,
+       "sensitivity": 0.094017,
+       "notifications_per_day": 0.172264
+      },
+      {
+       "tau": -1.8,
+       "theta": 1.8,
+       "fa_per_day": 0.140682,
+       "sensitivity": 0.094017,
+       "notifications_per_day": 0.172264
+      },
+      {
+       "tau": -1.8,
+       "theta": 1.8,
+       "fa_per_day": 0.143554,
+       "sensitivity": 0.094017,
+       "notifications_per_day": 0.175135
+      },
+      {
+       "tau": -3.6,
+       "theta": 3.6,
+       "fa_per_day": 0.149296,
+       "sensitivity": 0.094017,
+       "notifications_per_day": 0.180877
+      },
+      {
+       "tau": -3.6,
+       "theta": 3.6,
+       "fa_per_day": 0.149296,
+       "sensitivity": 0.094017,
+       "notifications_per_day": 0.180877
+      },
+      {
+       "tau": -3.6,
+       "theta": 3.6,
+       "fa_per_day": 0.155038,
+       "sensitivity": 0.094017,
+       "notifications_per_day": 0.18662
+      },
+      {
+       "tau": -3.6,
+       "theta": 3.6,
+       "fa_per_day": 0.155038,
+       "sensitivity": 0.102564,
+       "notifications_per_day": 0.189491
+      },
+      {
+       "tau": -5.4,
+       "theta": 5.4,
+       "fa_per_day": 0.157909,
+       "sensitivity": 0.102564,
+       "notifications_per_day": 0.192362
+      },
+      {
+       "tau": -5.4,
+       "theta": 5.4,
+       "fa_per_day": 0.157909,
+       "sensitivity": 0.111111,
+       "notifications_per_day": 0.195233
+      },
+      {
+       "tau": -5.4,
+       "theta": 5.4,
+       "fa_per_day": 0.157909,
+       "sensitivity": 0.111111,
+       "notifications_per_day": 0.195233
+      },
+      {
+       "tau": -5.4,
+       "theta": 5.4,
+       "fa_per_day": 0.16078,
+       "sensitivity": 0.111111,
+       "notifications_per_day": 0.198104
+      },
+      {
+       "tau": -7.2,
+       "theta": 7.2,
+       "fa_per_day": 0.166522,
+       "sensitivity": 0.119658,
+       "notifications_per_day": 0.206717
+      },
+      {
+       "tau": -7.2,
+       "theta": 7.2,
+       "fa_per_day": 0.169393,
+       "sensitivity": 0.119658,
+       "notifications_per_day": 0.209588
+      },
+      {
+       "tau": -7.2,
+       "theta": 7.2,
+       "fa_per_day": 0.172264,
+       "sensitivity": 0.119658,
+       "notifications_per_day": 0.21533
+      },
+      {
+       "tau": -7.2,
+       "theta": 7.2,
+       "fa_per_day": 0.172264,
+       "sensitivity": 0.128205,
+       "notifications_per_day": 0.218201
+      },
+      {
+       "tau": -7.2,
+       "theta": 7.2,
+       "fa_per_day": 0.175135,
+       "sensitivity": 0.136752,
+       "notifications_per_day": 0.223944
+      },
+      {
+       "tau": -9.0,
+       "theta": 9.0,
+       "fa_per_day": 0.183749,
+       "sensitivity": 0.136752,
+       "notifications_per_day": 0.232557
+      },
+      {
+       "tau": -9.0,
+       "theta": 9.0,
+       "fa_per_day": 0.18662,
+       "sensitivity": 0.136752,
+       "notifications_per_day": 0.235428
+      },
+      {
+       "tau": -9.0,
+       "theta": 9.0,
+       "fa_per_day": 0.189491,
+       "sensitivity": 0.136752,
+       "notifications_per_day": 0.238299
+      },
+      {
+       "tau": -9.0,
+       "theta": 9.0,
+       "fa_per_day": 0.195233,
+       "sensitivity": 0.153846,
+       "notifications_per_day": 0.249783
+      },
+      {
+       "tau": -9.0,
+       "theta": 9.0,
+       "fa_per_day": 0.195233,
+       "sensitivity": 0.153846,
+       "notifications_per_day": 0.249783
+      },
+      {
+       "tau": -10.8,
+       "theta": 10.8,
+       "fa_per_day": 0.195233,
+       "sensitivity": 0.162393,
+       "notifications_per_day": 0.252654
+      },
+      {
+       "tau": -10.8,
+       "theta": 10.8,
+       "fa_per_day": 0.198104,
+       "sensitivity": 0.162393,
+       "notifications_per_day": 0.255525
+      },
+      {
+       "tau": -10.8,
+       "theta": 10.8,
+       "fa_per_day": 0.198104,
+       "sensitivity": 0.162393,
+       "notifications_per_day": 0.255525
+      },
+      {
+       "tau": -12.6,
+       "theta": 12.6,
+       "fa_per_day": 0.200975,
+       "sensitivity": 0.162393,
+       "notifications_per_day": 0.258396
+      },
+      {
+       "tau": -12.6,
+       "theta": 12.6,
+       "fa_per_day": 0.200975,
+       "sensitivity": 0.162393,
+       "notifications_per_day": 0.258396
+      },
+      {
+       "tau": -12.6,
+       "theta": 12.6,
+       "fa_per_day": 0.203846,
+       "sensitivity": 0.17094,
+       "notifications_per_day": 0.264139
+      },
+      {
+       "tau": -12.6,
+       "theta": 12.6,
+       "fa_per_day": 0.206717,
+       "sensitivity": 0.17094,
+       "notifications_per_day": 0.26701
+      },
+      {
+       "tau": -14.4,
+       "theta": 14.4,
+       "fa_per_day": 0.209588,
+       "sensitivity": 0.196581,
+       "notifications_per_day": 0.278494
+      },
+      {
+       "tau": -14.4,
+       "theta": 14.4,
+       "fa_per_day": 0.212459,
+       "sensitivity": 0.196581,
+       "notifications_per_day": 0.281365
+      },
+      {
+       "tau": -14.4,
+       "theta": 14.4,
+       "fa_per_day": 0.212459,
+       "sensitivity": 0.205128,
+       "notifications_per_day": 0.284236
+      },
+      {
+       "tau": -14.4,
+       "theta": 14.4,
+       "fa_per_day": 0.21533,
+       "sensitivity": 0.205128,
+       "notifications_per_day": 0.287107
+      },
+      {
+       "tau": -14.4,
+       "theta": 14.4,
+       "fa_per_day": 0.221072,
+       "sensitivity": 0.205128,
+       "notifications_per_day": 0.292849
+      },
+      {
+       "tau": -16.2,
+       "theta": 16.2,
+       "fa_per_day": 0.223944,
+       "sensitivity": 0.205128,
+       "notifications_per_day": 0.29572
+      },
+      {
+       "tau": -16.2,
+       "theta": 16.2,
+       "fa_per_day": 0.226815,
+       "sensitivity": 0.205128,
+       "notifications_per_day": 0.298591
+      },
+      {
+       "tau": -16.2,
+       "theta": 16.2,
+       "fa_per_day": 0.229686,
+       "sensitivity": 0.205128,
+       "notifications_per_day": 0.301462
+      },
+      {
+       "tau": -16.2,
+       "theta": 16.2,
+       "fa_per_day": 0.235428,
+       "sensitivity": 0.205128,
+       "notifications_per_day": 0.307205
+      },
+      {
+       "tau": -16.2,
+       "theta": 16.2,
+       "fa_per_day": 0.246912,
+       "sensitivity": 0.230769,
+       "notifications_per_day": 0.327302
+      },
+      {
+       "tau": -16.2,
+       "theta": 16.2,
+       "fa_per_day": 0.246912,
+       "sensitivity": 0.230769,
+       "notifications_per_day": 0.327302
+      },
+      {
+       "tau": -18.0,
+       "theta": 18.0,
+       "fa_per_day": 0.246912,
+       "sensitivity": 0.230769,
+       "notifications_per_day": 0.327302
+      },
+      {
+       "tau": -18.0,
+       "theta": 18.0,
+       "fa_per_day": 0.249783,
+       "sensitivity": 0.230769,
+       "notifications_per_day": 0.330173
+      },
+      {
+       "tau": -18.0,
+       "theta": 18.0,
+       "fa_per_day": 0.252654,
+       "sensitivity": 0.230769,
+       "notifications_per_day": 0.333044
+      },
+      {
+       "tau": -18.0,
+       "theta": 18.0,
+       "fa_per_day": 0.255525,
+       "sensitivity": 0.230769,
+       "notifications_per_day": 0.335915
+      },
+      {
+       "tau": -18.0,
+       "theta": 18.0,
+       "fa_per_day": 0.264139,
+       "sensitivity": 0.247863,
+       "notifications_per_day": 0.350271
+      },
+      {
+       "tau": -19.8,
+       "theta": 19.8,
+       "fa_per_day": 0.26701,
+       "sensitivity": 0.247863,
+       "notifications_per_day": 0.353142
+      },
+      {
+       "tau": -19.8,
+       "theta": 19.8,
+       "fa_per_day": 0.275623,
+       "sensitivity": 0.247863,
+       "notifications_per_day": 0.361755
+      },
+      {
+       "tau": -19.8,
+       "theta": 19.8,
+       "fa_per_day": 0.275623,
+       "sensitivity": 0.247863,
+       "notifications_per_day": 0.361755
+      },
+      {
+       "tau": -19.8,
+       "theta": 19.8,
+       "fa_per_day": 0.281365,
+       "sensitivity": 0.25641,
+       "notifications_per_day": 0.370368
+      },
+      {
+       "tau": -19.8,
+       "theta": 19.8,
+       "fa_per_day": 0.281365,
+       "sensitivity": 0.264957,
+       "notifications_per_day": 0.373239
+      },
+      {
+       "tau": -19.8,
+       "theta": 19.8,
+       "fa_per_day": 0.289978,
+       "sensitivity": 0.282051,
+       "notifications_per_day": 0.387595
+      },
+      {
+       "tau": -21.6,
+       "theta": 21.6,
+       "fa_per_day": 0.289978,
+       "sensitivity": 0.282051,
+       "notifications_per_day": 0.387595
+      },
+      {
+       "tau": -21.6,
+       "theta": 21.6,
+       "fa_per_day": 0.29572,
+       "sensitivity": 0.290598,
+       "notifications_per_day": 0.396208
+      },
+      {
+       "tau": -21.6,
+       "theta": 21.6,
+       "fa_per_day": 0.304334,
+       "sensitivity": 0.299145,
+       "notifications_per_day": 0.407692
+      },
+      {
+       "tau": -21.6,
+       "theta": 21.6,
+       "fa_per_day": 0.312947,
+       "sensitivity": 0.299145,
+       "notifications_per_day": 0.416305
+      },
+      {
+       "tau": -21.6,
+       "theta": 21.6,
+       "fa_per_day": 0.312947,
+       "sensitivity": 0.299145,
+       "notifications_per_day": 0.416305
+      },
+      {
+       "tau": -23.4,
+       "theta": 23.4,
+       "fa_per_day": 0.315818,
+       "sensitivity": 0.299145,
+       "notifications_per_day": 0.419176
+      },
+      {
+       "tau": -23.4,
+       "theta": 23.4,
+       "fa_per_day": 0.315818,
+       "sensitivity": 0.299145,
+       "notifications_per_day": 0.419176
+      },
+      {
+       "tau": -23.4,
+       "theta": 23.4,
+       "fa_per_day": 0.318689,
+       "sensitivity": 0.299145,
+       "notifications_per_day": 0.422047
+      },
+      {
+       "tau": -23.4,
+       "theta": 23.4,
+       "fa_per_day": 0.335915,
+       "sensitivity": 0.307692,
+       "notifications_per_day": 0.439274
+      },
+      {
+       "tau": -23.4,
+       "theta": 23.4,
+       "fa_per_day": 0.335915,
+       "sensitivity": 0.307692,
+       "notifications_per_day": 0.439274
+      },
+      {
+       "tau": -25.2,
+       "theta": 25.2,
+       "fa_per_day": 0.335915,
+       "sensitivity": 0.307692,
+       "notifications_per_day": 0.439274
+      },
+      {
+       "tau": -25.2,
+       "theta": 25.2,
+       "fa_per_day": 0.338786,
+       "sensitivity": 0.307692,
+       "notifications_per_day": 0.442145
+      },
+      {
+       "tau": -25.2,
+       "theta": 25.2,
+       "fa_per_day": 0.338786,
+       "sensitivity": 0.307692,
+       "notifications_per_day": 0.442145
+      },
+      {
+       "tau": -25.2,
+       "theta": 25.2,
+       "fa_per_day": 0.344529,
+       "sensitivity": 0.307692,
+       "notifications_per_day": 0.447887
+      },
+      {
+       "tau": -25.2,
+       "theta": 25.2,
+       "fa_per_day": 0.353142,
+       "sensitivity": 0.316239,
+       "notifications_per_day": 0.459371
+      },
+      {
+       "tau": -25.2,
+       "theta": 25.2,
+       "fa_per_day": 0.353142,
+       "sensitivity": 0.316239,
+       "notifications_per_day": 0.459371
+      },
+      {
+       "tau": -27.0,
+       "theta": 27.0,
+       "fa_per_day": 0.356013,
+       "sensitivity": 0.316239,
+       "notifications_per_day": 0.462242
+      },
+      {
+       "tau": -27.0,
+       "theta": 27.0,
+       "fa_per_day": 0.356013,
+       "sensitivity": 0.316239,
+       "notifications_per_day": 0.462242
+      },
+      {
+       "tau": -27.0,
+       "theta": 27.0,
+       "fa_per_day": 0.358884,
+       "sensitivity": 0.316239,
+       "notifications_per_day": 0.465113
+      },
+      {
+       "tau": -27.0,
+       "theta": 27.0,
+       "fa_per_day": 0.361755,
+       "sensitivity": 0.316239,
+       "notifications_per_day": 0.467985
+      },
+      {
+       "tau": -27.0,
+       "theta": 27.0,
+       "fa_per_day": 0.367497,
+       "sensitivity": 0.324786,
+       "notifications_per_day": 0.476598
+      },
+      {
+       "tau": -27.0,
+       "theta": 27.0,
+       "fa_per_day": 0.367497,
+       "sensitivity": 0.333333,
+       "notifications_per_day": 0.479469
+      },
+      {
+       "tau": -27.0,
+       "theta": 27.0,
+       "fa_per_day": 0.37611,
+       "sensitivity": 0.333333,
+       "notifications_per_day": 0.488082
+      },
+      {
+       "tau": -27.0,
+       "theta": 27.0,
+       "fa_per_day": 0.384724,
+       "sensitivity": 0.34188,
+       "notifications_per_day": 0.499566
+      },
+      {
+       "tau": -28.8,
+       "theta": 28.8,
+       "fa_per_day": 0.384724,
+       "sensitivity": 0.34188,
+       "notifications_per_day": 0.499566
+      },
+      {
+       "tau": -28.8,
+       "theta": 28.8,
+       "fa_per_day": 0.387595,
+       "sensitivity": 0.34188,
+       "notifications_per_day": 0.502437
+      },
+      {
+       "tau": -28.8,
+       "theta": 28.8,
+       "fa_per_day": 0.390466,
+       "sensitivity": 0.34188,
+       "notifications_per_day": 0.505308
+      },
+      {
+       "tau": -28.8,
+       "theta": 28.8,
+       "fa_per_day": 0.393337,
+       "sensitivity": 0.34188,
+       "notifications_per_day": 0.50818
+      },
+      {
+       "tau": -28.8,
+       "theta": 28.8,
+       "fa_per_day": 0.396208,
+       "sensitivity": 0.350427,
+       "notifications_per_day": 0.513922
+      },
+      {
+       "tau": -28.8,
+       "theta": 28.8,
+       "fa_per_day": 0.410563,
+       "sensitivity": 0.358974,
+       "notifications_per_day": 0.531148
+      },
+      {
+       "tau": -28.8,
+       "theta": 28.8,
+       "fa_per_day": 0.413434,
+       "sensitivity": 0.358974,
+       "notifications_per_day": 0.534019
+      },
+      {
+       "tau": -30.6,
+       "theta": 30.6,
+       "fa_per_day": 0.416305,
+       "sensitivity": 0.358974,
+       "notifications_per_day": 0.53689
+      },
+      {
+       "tau": -30.6,
+       "theta": 30.6,
+       "fa_per_day": 0.416305,
+       "sensitivity": 0.358974,
+       "notifications_per_day": 0.53689
+      },
+      {
+       "tau": -30.6,
+       "theta": 30.6,
+       "fa_per_day": 0.416305,
+       "sensitivity": 0.367521,
+       "notifications_per_day": 0.539761
+      },
+      {
+       "tau": -30.6,
+       "theta": 30.6,
+       "fa_per_day": 0.422047,
+       "sensitivity": 0.367521,
+       "notifications_per_day": 0.545503
+      },
+      {
+       "tau": -30.6,
+       "theta": 30.6,
+       "fa_per_day": 0.422047,
+       "sensitivity": 0.376068,
+       "notifications_per_day": 0.548375
+      },
+      {
+       "tau": -30.6,
+       "theta": 30.6,
+       "fa_per_day": 0.430661,
+       "sensitivity": 0.376068,
+       "notifications_per_day": 0.556988
+      },
+      {
+       "tau": -30.6,
+       "theta": 30.6,
+       "fa_per_day": 0.430661,
+       "sensitivity": 0.384615,
+       "notifications_per_day": 0.559859
+      },
+      {
+       "tau": -32.4,
+       "theta": 32.4,
+       "fa_per_day": 0.430661,
+       "sensitivity": 0.384615,
+       "notifications_per_day": 0.559859
+      },
+      {
+       "tau": -32.4,
+       "theta": 32.4,
+       "fa_per_day": 0.436403,
+       "sensitivity": 0.401709,
+       "notifications_per_day": 0.571343
+      },
+      {
+       "tau": -32.4,
+       "theta": 32.4,
+       "fa_per_day": 0.436403,
+       "sensitivity": 0.401709,
+       "notifications_per_day": 0.571343
+      },
+      {
+       "tau": -32.4,
+       "theta": 32.4,
+       "fa_per_day": 0.439274,
+       "sensitivity": 0.410256,
+       "notifications_per_day": 0.577085
+      },
+      {
+       "tau": -32.4,
+       "theta": 32.4,
+       "fa_per_day": 0.462242,
+       "sensitivity": 0.410256,
+       "notifications_per_day": 0.600054
+      },
+      {
+       "tau": -34.2,
+       "theta": 34.2,
+       "fa_per_day": 0.470856,
+       "sensitivity": 0.410256,
+       "notifications_per_day": 0.608667
+      },
+      {
+       "tau": -34.2,
+       "theta": 34.2,
+       "fa_per_day": 0.470856,
+       "sensitivity": 0.410256,
+       "notifications_per_day": 0.608667
+      },
+      {
+       "tau": -34.2,
+       "theta": 34.2,
+       "fa_per_day": 0.479469,
+       "sensitivity": 0.410256,
+       "notifications_per_day": 0.61728
+      },
+      {
+       "tau": -34.2,
+       "theta": 34.2,
+       "fa_per_day": 0.48234,
+       "sensitivity": 0.410256,
+       "notifications_per_day": 0.620151
+      },
+      {
+       "tau": -34.2,
+       "theta": 34.2,
+       "fa_per_day": 0.488082,
+       "sensitivity": 0.410256,
+       "notifications_per_day": 0.625893
+      },
+      {
+       "tau": -34.2,
+       "theta": 34.2,
+       "fa_per_day": 0.488082,
+       "sensitivity": 0.42735,
+       "notifications_per_day": 0.631636
+      },
+      {
+       "tau": -34.2,
+       "theta": 34.2,
+       "fa_per_day": 0.490953,
+       "sensitivity": 0.42735,
+       "notifications_per_day": 0.634507
+      },
+      {
+       "tau": -34.2,
+       "theta": 34.2,
+       "fa_per_day": 0.493824,
+       "sensitivity": 0.42735,
+       "notifications_per_day": 0.637378
+      },
+      {
+       "tau": -36.0,
+       "theta": 36.0,
+       "fa_per_day": 0.496695,
+       "sensitivity": 0.42735,
+       "notifications_per_day": 0.640249
+      },
+      {
+       "tau": -36.0,
+       "theta": 36.0,
+       "fa_per_day": 0.499566,
+       "sensitivity": 0.42735,
+       "notifications_per_day": 0.64312
+      },
+      {
+       "tau": -36.0,
+       "theta": 36.0,
+       "fa_per_day": 0.502437,
+       "sensitivity": 0.42735,
+       "notifications_per_day": 0.645991
+      },
+      {
+       "tau": -36.0,
+       "theta": 36.0,
+       "fa_per_day": 0.511051,
+       "sensitivity": 0.435897,
+       "notifications_per_day": 0.657475
+      },
+      {
+       "tau": -36.0,
+       "theta": 36.0,
+       "fa_per_day": 0.511051,
+       "sensitivity": 0.444444,
+       "notifications_per_day": 0.660346
+      },
+      {
+       "tau": -36.0,
+       "theta": 36.0,
+       "fa_per_day": 0.519664,
+       "sensitivity": 0.444444,
+       "notifications_per_day": 0.66896
+      },
+      {
+       "tau": -36.0,
+       "theta": 36.0,
+       "fa_per_day": 0.539761,
+       "sensitivity": 0.444444,
+       "notifications_per_day": 0.689057
+      },
+      {
+       "tau": -36.0,
+       "theta": 36.0,
+       "fa_per_day": 0.542632,
+       "sensitivity": 0.444444,
+       "notifications_per_day": 0.691928
+      },
+      {
+       "tau": -37.8,
+       "theta": 37.8,
+       "fa_per_day": 0.548375,
+       "sensitivity": 0.444444,
+       "notifications_per_day": 0.69767
+      },
+      {
+       "tau": -37.8,
+       "theta": 37.8,
+       "fa_per_day": 0.559859,
+       "sensitivity": 0.444444,
+       "notifications_per_day": 0.709155
+      },
+      {
+       "tau": -37.8,
+       "theta": 37.8,
+       "fa_per_day": 0.559859,
+       "sensitivity": 0.444444,
+       "notifications_per_day": 0.709155
+      },
+      {
+       "tau": -37.8,
+       "theta": 37.8,
+       "fa_per_day": 0.579956,
+       "sensitivity": 0.478632,
+       "notifications_per_day": 0.740736
+      },
+      {
+       "tau": -37.8,
+       "theta": 37.8,
+       "fa_per_day": 0.582827,
+       "sensitivity": 0.487179,
+       "notifications_per_day": 0.746478
+      },
+      {
+       "tau": -37.8,
+       "theta": 37.8,
+       "fa_per_day": 0.594312,
+       "sensitivity": 0.487179,
+       "notifications_per_day": 0.757963
+      },
+      {
+       "tau": -37.8,
+       "theta": 37.8,
+       "fa_per_day": 0.602925,
+       "sensitivity": 0.487179,
+       "notifications_per_day": 0.766576
+      },
+      {
+       "tau": -39.6,
+       "theta": 39.6,
+       "fa_per_day": 0.602925,
+       "sensitivity": 0.487179,
+       "notifications_per_day": 0.766576
+      },
+      {
+       "tau": -39.6,
+       "theta": 39.6,
+       "fa_per_day": 0.605796,
+       "sensitivity": 0.487179,
+       "notifications_per_day": 0.769447
+      },
+      {
+       "tau": -39.6,
+       "theta": 39.6,
+       "fa_per_day": 0.611538,
+       "sensitivity": 0.487179,
+       "notifications_per_day": 0.775189
+      },
+      {
+       "tau": -39.6,
+       "theta": 39.6,
+       "fa_per_day": 0.634507,
+       "sensitivity": 0.495726,
+       "notifications_per_day": 0.801029
+      },
+      {
+       "tau": -39.6,
+       "theta": 39.6,
+       "fa_per_day": 0.637378,
+       "sensitivity": 0.495726,
+       "notifications_per_day": 0.8039
+      },
+      {
+       "tau": -39.6,
+       "theta": 39.6,
+       "fa_per_day": 0.64312,
+       "sensitivity": 0.495726,
+       "notifications_per_day": 0.809642
+      },
+      {
+       "tau": -39.6,
+       "theta": 39.6,
+       "fa_per_day": 0.645991,
+       "sensitivity": 0.495726,
+       "notifications_per_day": 0.812513
+      },
+      {
+       "tau": -41.4,
+       "theta": 41.4,
+       "fa_per_day": 0.648862,
+       "sensitivity": 0.495726,
+       "notifications_per_day": 0.815384
+      },
+      {
+       "tau": -41.4,
+       "theta": 41.4,
+       "fa_per_day": 0.654604,
+       "sensitivity": 0.504274,
+       "notifications_per_day": 0.821126
+      },
+      {
+       "tau": -41.4,
+       "theta": 41.4,
+       "fa_per_day": 0.671831,
+       "sensitivity": 0.504274,
+       "notifications_per_day": 0.838353
+      },
+      {
+       "tau": -41.4,
+       "theta": 41.4,
+       "fa_per_day": 0.671831,
+       "sensitivity": 0.504274,
+       "notifications_per_day": 0.838353
+      },
+      {
+       "tau": -41.4,
+       "theta": 41.4,
+       "fa_per_day": 0.700541,
+       "sensitivity": 0.504274,
+       "notifications_per_day": 0.867063
+      },
+      {
+       "tau": -41.4,
+       "theta": 41.4,
+       "fa_per_day": 0.703412,
+       "sensitivity": 0.504274,
+       "notifications_per_day": 0.869935
+      },
+      {
+       "tau": -43.2,
+       "theta": 43.2,
+       "fa_per_day": 0.706283,
+       "sensitivity": 0.504274,
+       "notifications_per_day": 0.872806
+      },
+      {
+       "tau": -43.2,
+       "theta": 43.2,
+       "fa_per_day": 0.712026,
+       "sensitivity": 0.504274,
+       "notifications_per_day": 0.878548
+      },
+      {
+       "tau": -43.2,
+       "theta": 43.2,
+       "fa_per_day": 0.720639,
+       "sensitivity": 0.504274,
+       "notifications_per_day": 0.887161
+      },
+      {
+       "tau": -43.2,
+       "theta": 43.2,
+       "fa_per_day": 0.729252,
+       "sensitivity": 0.521368,
+       "notifications_per_day": 0.901516
+      },
+      {
+       "tau": -43.2,
+       "theta": 43.2,
+       "fa_per_day": 0.732123,
+       "sensitivity": 0.521368,
+       "notifications_per_day": 0.904387
+      },
+      {
+       "tau": -43.2,
+       "theta": 43.2,
+       "fa_per_day": 0.760834,
+       "sensitivity": 0.521368,
+       "notifications_per_day": 0.935969
+      },
+      {
+       "tau": -43.2,
+       "theta": 43.2,
+       "fa_per_day": 0.763705,
+       "sensitivity": 0.529915,
+       "notifications_per_day": 0.941711
+      },
+      {
+       "tau": -43.2,
+       "theta": 43.2,
+       "fa_per_day": 0.763705,
+       "sensitivity": 0.529915,
+       "notifications_per_day": 0.941711
+      },
+      {
+       "tau": -45.0,
+       "theta": 45.0,
+       "fa_per_day": 0.766576,
+       "sensitivity": 0.529915,
+       "notifications_per_day": 0.944582
+      },
+      {
+       "tau": -45.0,
+       "theta": 45.0,
+       "fa_per_day": 0.766576,
+       "sensitivity": 0.529915,
+       "notifications_per_day": 0.944582
+      },
+      {
+       "tau": -45.0,
+       "theta": 45.0,
+       "fa_per_day": 0.766576,
+       "sensitivity": 0.529915,
+       "notifications_per_day": 0.944582
+      },
+      {
+       "tau": -45.0,
+       "theta": 45.0,
+       "fa_per_day": 0.775189,
+       "sensitivity": 0.538462,
+       "notifications_per_day": 0.953196
+      },
+      {
+       "tau": -45.0,
+       "theta": 45.0,
+       "fa_per_day": 0.780931,
+       "sensitivity": 0.538462,
+       "notifications_per_day": 0.958938
+      },
+      {
+       "tau": -45.0,
+       "theta": 45.0,
+       "fa_per_day": 0.795287,
+       "sensitivity": 0.547009,
+       "notifications_per_day": 0.976164
+      },
+      {
+       "tau": -45.0,
+       "theta": 45.0,
+       "fa_per_day": 0.806771,
+       "sensitivity": 0.547009,
+       "notifications_per_day": 0.987648
+      },
+      {
+       "tau": -45.0,
+       "theta": 45.0,
+       "fa_per_day": 0.812513,
+       "sensitivity": 0.547009,
+       "notifications_per_day": 0.993391
+      },
+      {
+       "tau": -46.8,
+       "theta": 46.8,
+       "fa_per_day": 0.812513,
+       "sensitivity": 0.547009,
+       "notifications_per_day": 0.993391
+      },
+      {
+       "tau": -46.8,
+       "theta": 46.8,
+       "fa_per_day": 0.815384,
+       "sensitivity": 0.547009,
+       "notifications_per_day": 0.996262
+      },
+      {
+       "tau": -46.8,
+       "theta": 46.8,
+       "fa_per_day": 0.818255,
+       "sensitivity": 0.547009,
+       "notifications_per_day": 0.999133
+      },
+      {
+       "tau": -46.8,
+       "theta": 46.8,
+       "fa_per_day": 0.823997,
+       "sensitivity": 0.555556,
+       "notifications_per_day": 1.007746
+      },
+      {
+       "tau": -46.8,
+       "theta": 46.8,
+       "fa_per_day": 0.835482,
+       "sensitivity": 0.564103,
+       "notifications_per_day": 1.022101
+      },
+      {
+       "tau": -46.8,
+       "theta": 46.8,
+       "fa_per_day": 0.838353,
+       "sensitivity": 0.564103,
+       "notifications_per_day": 1.024972
+      },
+      {
+       "tau": -46.8,
+       "theta": 46.8,
+       "fa_per_day": 0.846966,
+       "sensitivity": 0.564103,
+       "notifications_per_day": 1.033586
+      },
+      {
+       "tau": -46.8,
+       "theta": 46.8,
+       "fa_per_day": 0.855579,
+       "sensitivity": 0.57265,
+       "notifications_per_day": 1.04507
+      },
+      {
+       "tau": -46.8,
+       "theta": 46.8,
+       "fa_per_day": 0.855579,
+       "sensitivity": 0.57265,
+       "notifications_per_day": 1.04507
+      },
+      {
+       "tau": -48.6,
+       "theta": 48.6,
+       "fa_per_day": 0.85845,
+       "sensitivity": 0.57265,
+       "notifications_per_day": 1.050812
+      },
+      {
+       "tau": -48.6,
+       "theta": 48.6,
+       "fa_per_day": 0.861321,
+       "sensitivity": 0.57265,
+       "notifications_per_day": 1.053683
+      },
+      {
+       "tau": -48.6,
+       "theta": 48.6,
+       "fa_per_day": 0.875677,
+       "sensitivity": 0.57265,
+       "notifications_per_day": 1.068038
+      },
+      {
+       "tau": -48.6,
+       "theta": 48.6,
+       "fa_per_day": 0.895774,
+       "sensitivity": 0.57265,
+       "notifications_per_day": 1.088136
+      },
+      {
+       "tau": -48.6,
+       "theta": 48.6,
+       "fa_per_day": 0.898645,
+       "sensitivity": 0.57265,
+       "notifications_per_day": 1.091007
+      },
+      {
+       "tau": -48.6,
+       "theta": 48.6,
+       "fa_per_day": 0.910129,
+       "sensitivity": 0.581197,
+       "notifications_per_day": 1.105362
+      },
+      {
+       "tau": -50.4,
+       "theta": 50.4,
+       "fa_per_day": 0.918743,
+       "sensitivity": 0.581197,
+       "notifications_per_day": 1.111104
+      },
+      {
+       "tau": -50.4,
+       "theta": 50.4,
+       "fa_per_day": 0.921614,
+       "sensitivity": 0.581197,
+       "notifications_per_day": 1.113976
+      },
+      {
+       "tau": -50.4,
+       "theta": 50.4,
+       "fa_per_day": 0.933098,
+       "sensitivity": 0.598291,
+       "notifications_per_day": 1.131202
+      },
+      {
+       "tau": -50.4,
+       "theta": 50.4,
+       "fa_per_day": 0.947453,
+       "sensitivity": 0.598291,
+       "notifications_per_day": 1.145557
+      },
+      {
+       "tau": -50.4,
+       "theta": 50.4,
+       "fa_per_day": 0.950324,
+       "sensitivity": 0.598291,
+       "notifications_per_day": 1.148428
+      },
+      {
+       "tau": -50.4,
+       "theta": 50.4,
+       "fa_per_day": 0.973293,
+       "sensitivity": 0.606838,
+       "notifications_per_day": 1.171397
+      },
+      {
+       "tau": -50.4,
+       "theta": 50.4,
+       "fa_per_day": 0.990519,
+       "sensitivity": 0.606838,
+       "notifications_per_day": 1.185752
+      },
+      {
+       "tau": -50.4,
+       "theta": 50.4,
+       "fa_per_day": 0.993391,
+       "sensitivity": 0.606838,
+       "notifications_per_day": 1.188623
+      },
+      {
+       "tau": -52.2,
+       "theta": 52.2,
+       "fa_per_day": 0.993391,
+       "sensitivity": 0.606838,
+       "notifications_per_day": 1.188623
+      },
+      {
+       "tau": -52.2,
+       "theta": 52.2,
+       "fa_per_day": 0.999133,
+       "sensitivity": 0.606838,
+       "notifications_per_day": 1.194366
+      },
+      {
+       "tau": -52.2,
+       "theta": 52.2,
+       "fa_per_day": 1.004875,
+       "sensitivity": 0.606838,
+       "notifications_per_day": 1.200108
+      },
+      {
+       "tau": -52.2,
+       "theta": 52.2,
+       "fa_per_day": 1.01923,
+       "sensitivity": 0.606838,
+       "notifications_per_day": 1.214463
+      },
+      {
+       "tau": -52.2,
+       "theta": 52.2,
+       "fa_per_day": 1.01923,
+       "sensitivity": 0.606838,
+       "notifications_per_day": 1.214463
+      },
+      {
+       "tau": -52.2,
+       "theta": 52.2,
+       "fa_per_day": 1.053683,
+       "sensitivity": 0.641026,
+       "notifications_per_day": 1.266142
+      },
+      {
+       "tau": -52.2,
+       "theta": 52.2,
+       "fa_per_day": 1.059425,
+       "sensitivity": 0.641026,
+       "notifications_per_day": 1.271884
+      },
+      {
+       "tau": -52.2,
+       "theta": 52.2,
+       "fa_per_day": 1.076652,
+       "sensitivity": 0.641026,
+       "notifications_per_day": 1.289111
+      },
+      {
+       "tau": -54.0,
+       "theta": 54.0,
+       "fa_per_day": 1.076652,
+       "sensitivity": 0.641026,
+       "notifications_per_day": 1.289111
+      },
+      {
+       "tau": -54.0,
+       "theta": 54.0,
+       "fa_per_day": 1.082394,
+       "sensitivity": 0.641026,
+       "notifications_per_day": 1.294853
+      },
+      {
+       "tau": -54.0,
+       "theta": 54.0,
+       "fa_per_day": 1.085265,
+       "sensitivity": 0.641026,
+       "notifications_per_day": 1.297724
+      },
+      {
+       "tau": -54.0,
+       "theta": 54.0,
+       "fa_per_day": 1.096749,
+       "sensitivity": 0.641026,
+       "notifications_per_day": 1.309208
+      },
+      {
+       "tau": -54.0,
+       "theta": 54.0,
+       "fa_per_day": 1.108233,
+       "sensitivity": 0.641026,
+       "notifications_per_day": 1.320693
+      },
+      {
+       "tau": -54.0,
+       "theta": 54.0,
+       "fa_per_day": 1.12546,
+       "sensitivity": 0.649573,
+       "notifications_per_day": 1.34079
+      },
+      {
+       "tau": -54.0,
+       "theta": 54.0,
+       "fa_per_day": 1.145557,
+       "sensitivity": 0.65812,
+       "notifications_per_day": 1.363759
+      },
+      {
+       "tau": -54.0,
+       "theta": 54.0,
+       "fa_per_day": 1.148428,
+       "sensitivity": 0.65812,
+       "notifications_per_day": 1.36663
+      },
+      {
+       "tau": -54.0,
+       "theta": 54.0,
+       "fa_per_day": 1.148428,
+       "sensitivity": 0.65812,
+       "notifications_per_day": 1.36663
+      },
+      {
+       "tau": -54.0,
+       "theta": 54.0,
+       "fa_per_day": 1.148428,
+       "sensitivity": 0.65812,
+       "notifications_per_day": 1.36663
+      },
+      {
+       "tau": -55.8,
+       "theta": 55.8,
+       "fa_per_day": 1.148428,
+       "sensitivity": 0.65812,
+       "notifications_per_day": 1.36663
+      },
+      {
+       "tau": -55.8,
+       "theta": 55.8,
+       "fa_per_day": 1.159913,
+       "sensitivity": 0.65812,
+       "notifications_per_day": 1.378114
+      },
+      {
+       "tau": -55.8,
+       "theta": 55.8,
+       "fa_per_day": 1.162784,
+       "sensitivity": 0.65812,
+       "notifications_per_day": 1.380985
+      },
+      {
+       "tau": -55.8,
+       "theta": 55.8,
+       "fa_per_day": 1.188623,
+       "sensitivity": 0.692308,
+       "notifications_per_day": 1.418309
+      },
+      {
+       "tau": -55.8,
+       "theta": 55.8,
+       "fa_per_day": 1.194366,
+       "sensitivity": 0.692308,
+       "notifications_per_day": 1.424051
+      },
+      {
+       "tau": -55.8,
+       "theta": 55.8,
+       "fa_per_day": 1.228818,
+       "sensitivity": 0.692308,
+       "notifications_per_day": 1.458504
+      },
+      {
+       "tau": -55.8,
+       "theta": 55.8,
+       "fa_per_day": 1.231689,
+       "sensitivity": 0.692308,
+       "notifications_per_day": 1.461375
+      },
+      {
+       "tau": -55.8,
+       "theta": 55.8,
+       "fa_per_day": 1.231689,
+       "sensitivity": 0.692308,
+       "notifications_per_day": 1.461375
+      },
+      {
+       "tau": -57.6,
+       "theta": 57.6,
+       "fa_per_day": 1.234561,
+       "sensitivity": 0.692308,
+       "notifications_per_day": 1.464246
+      },
+      {
+       "tau": -57.6,
+       "theta": 57.6,
+       "fa_per_day": 1.234561,
+       "sensitivity": 0.692308,
+       "notifications_per_day": 1.464246
+      },
+      {
+       "tau": -57.6,
+       "theta": 57.6,
+       "fa_per_day": 1.257529,
+       "sensitivity": 0.692308,
+       "notifications_per_day": 1.487215
+      },
+      {
+       "tau": -57.6,
+       "theta": 57.6,
+       "fa_per_day": 1.306337,
+       "sensitivity": 0.726496,
+       "notifications_per_day": 1.547507
+      },
+      {
+       "tau": -57.6,
+       "theta": 57.6,
+       "fa_per_day": 1.312079,
+       "sensitivity": 0.726496,
+       "notifications_per_day": 1.553249
+      },
+      {
+       "tau": -57.6,
+       "theta": 57.6,
+       "fa_per_day": 1.329306,
+       "sensitivity": 0.726496,
+       "notifications_per_day": 1.570476
+      },
+      {
+       "tau": -57.6,
+       "theta": 57.6,
+       "fa_per_day": 1.346532,
+       "sensitivity": 0.735043,
+       "notifications_per_day": 1.590573
+      },
+      {
+       "tau": -59.4,
+       "theta": 59.4,
+       "fa_per_day": 1.349403,
+       "sensitivity": 0.735043,
+       "notifications_per_day": 1.593444
+      },
+      {
+       "tau": -59.4,
+       "theta": 59.4,
+       "fa_per_day": 1.352274,
+       "sensitivity": 0.735043,
+       "notifications_per_day": 1.596315
+      },
+      {
+       "tau": -59.4,
+       "theta": 59.4,
+       "fa_per_day": 1.369501,
+       "sensitivity": 0.735043,
+       "notifications_per_day": 1.613542
+      },
+      {
+       "tau": -59.4,
+       "theta": 59.4,
+       "fa_per_day": 1.386727,
+       "sensitivity": 0.74359,
+       "notifications_per_day": 1.630768
+      },
+      {
+       "tau": -59.4,
+       "theta": 59.4,
+       "fa_per_day": 1.386727,
+       "sensitivity": 0.74359,
+       "notifications_per_day": 1.630768
+      },
+      {
+       "tau": -59.4,
+       "theta": 59.4,
+       "fa_per_day": 1.432664,
+       "sensitivity": 0.74359,
+       "notifications_per_day": 1.676705
+      },
+      {
+       "tau": -59.4,
+       "theta": 59.4,
+       "fa_per_day": 1.461375,
+       "sensitivity": 0.769231,
+       "notifications_per_day": 1.714029
+      },
+      {
+       "tau": -59.4,
+       "theta": 59.4,
+       "fa_per_day": 1.464246,
+       "sensitivity": 0.769231,
+       "notifications_per_day": 1.7169
+      },
+      {
+       "tau": -61.2,
+       "theta": 61.2,
+       "fa_per_day": 1.464246,
+       "sensitivity": 0.769231,
+       "notifications_per_day": 1.719772
+      },
+      {
+       "tau": -61.2,
+       "theta": 61.2,
+       "fa_per_day": 1.464246,
+       "sensitivity": 0.769231,
+       "notifications_per_day": 1.719772
+      },
+      {
+       "tau": -61.2,
+       "theta": 61.2,
+       "fa_per_day": 1.467117,
+       "sensitivity": 0.769231,
+       "notifications_per_day": 1.722643
+      },
+      {
+       "tau": -61.2,
+       "theta": 61.2,
+       "fa_per_day": 1.47573,
+       "sensitivity": 0.769231,
+       "notifications_per_day": 1.731256
+      },
+      {
+       "tau": -61.2,
+       "theta": 61.2,
+       "fa_per_day": 1.524539,
+       "sensitivity": 0.777778,
+       "notifications_per_day": 1.774322
+      },
+      {
+       "tau": -61.2,
+       "theta": 61.2,
+       "fa_per_day": 1.52741,
+       "sensitivity": 0.777778,
+       "notifications_per_day": 1.777193
+      },
+      {
+       "tau": -61.2,
+       "theta": 61.2,
+       "fa_per_day": 1.567605,
+       "sensitivity": 0.786325,
+       "notifications_per_day": 1.820259
+      },
+      {
+       "tau": -61.2,
+       "theta": 61.2,
+       "fa_per_day": 1.579089,
+       "sensitivity": 0.786325,
+       "notifications_per_day": 1.831743
+      },
+      {
+       "tau": -61.2,
+       "theta": 61.2,
+       "fa_per_day": 1.584831,
+       "sensitivity": 0.786325,
+       "notifications_per_day": 1.837485
+      },
+      {
+       "tau": -61.2,
+       "theta": 61.2,
+       "fa_per_day": 1.590573,
+       "sensitivity": 0.786325,
+       "notifications_per_day": 1.843228
+      },
+      {
+       "tau": -63.0,
+       "theta": 63.0,
+       "fa_per_day": 1.590573,
+       "sensitivity": 0.786325,
+       "notifications_per_day": 1.843228
+      },
+      {
+       "tau": -63.0,
+       "theta": 63.0,
+       "fa_per_day": 1.596315,
+       "sensitivity": 0.786325,
+       "notifications_per_day": 1.84897
+      },
+      {
+       "tau": -63.0,
+       "theta": 63.0,
+       "fa_per_day": 1.633639,
+       "sensitivity": 0.786325,
+       "notifications_per_day": 1.886294
+      },
+      {
+       "tau": -63.0,
+       "theta": 63.0,
+       "fa_per_day": 1.673834,
+       "sensitivity": 0.786325,
+       "notifications_per_day": 1.926489
+      },
+      {
+       "tau": -63.0,
+       "theta": 63.0,
+       "fa_per_day": 1.68819,
+       "sensitivity": 0.786325,
+       "notifications_per_day": 1.940844
+      },
+      {
+       "tau": -63.0,
+       "theta": 63.0,
+       "fa_per_day": 1.734127,
+       "sensitivity": 0.82906,
+       "notifications_per_day": 2.006879
+      },
+      {
+       "tau": -63.0,
+       "theta": 63.0,
+       "fa_per_day": 1.765709,
+       "sensitivity": 0.82906,
+       "notifications_per_day": 2.03846
+      },
+      {
+       "tau": -63.0,
+       "theta": 63.0,
+       "fa_per_day": 1.777193,
+       "sensitivity": 0.82906,
+       "notifications_per_day": 2.049945
+      },
+      {
+       "tau": -63.0,
+       "theta": 63.0,
+       "fa_per_day": 1.777193,
+       "sensitivity": 0.82906,
+       "notifications_per_day": 2.049945
+      },
+      {
+       "tau": -64.8,
+       "theta": 64.8,
+       "fa_per_day": 1.780064,
+       "sensitivity": 0.82906,
+       "notifications_per_day": 2.052816
+      },
+      {
+       "tau": -64.8,
+       "theta": 64.8,
+       "fa_per_day": 1.782935,
+       "sensitivity": 0.82906,
+       "notifications_per_day": 2.055687
+      },
+      {
+       "tau": -64.8,
+       "theta": 64.8,
+       "fa_per_day": 1.788677,
+       "sensitivity": 0.82906,
+       "notifications_per_day": 2.061429
+      },
+      {
+       "tau": -64.8,
+       "theta": 64.8,
+       "fa_per_day": 1.803033,
+       "sensitivity": 0.82906,
+       "notifications_per_day": 2.075784
+      },
+      {
+       "tau": -64.8,
+       "theta": 64.8,
+       "fa_per_day": 1.82313,
+       "sensitivity": 0.846154,
+       "notifications_per_day": 2.098753
+      },
+      {
+       "tau": -64.8,
+       "theta": 64.8,
+       "fa_per_day": 1.87768,
+       "sensitivity": 0.846154,
+       "notifications_per_day": 2.153303
+      },
+      {
+       "tau": -64.8,
+       "theta": 64.8,
+       "fa_per_day": 1.915004,
+       "sensitivity": 0.854701,
+       "notifications_per_day": 2.193498
+      },
+      {
+       "tau": -64.8,
+       "theta": 64.8,
+       "fa_per_day": 1.926489,
+       "sensitivity": 0.854701,
+       "notifications_per_day": 2.204983
+      },
+      {
+       "tau": -66.6,
+       "theta": 66.6,
+       "fa_per_day": 1.926489,
+       "sensitivity": 0.854701,
+       "notifications_per_day": 2.204983
+      },
+      {
+       "tau": -66.6,
+       "theta": 66.6,
+       "fa_per_day": 1.932231,
+       "sensitivity": 0.854701,
+       "notifications_per_day": 2.210725
+      },
+      {
+       "tau": -66.6,
+       "theta": 66.6,
+       "fa_per_day": 1.992523,
+       "sensitivity": 0.854701,
+       "notifications_per_day": 2.271017
+      },
+      {
+       "tau": -66.6,
+       "theta": 66.6,
+       "fa_per_day": 2.052816,
+       "sensitivity": 0.863248,
+       "notifications_per_day": 2.334181
+      },
+      {
+       "tau": -66.6,
+       "theta": 66.6,
+       "fa_per_day": 2.095882,
+       "sensitivity": 0.880342,
+       "notifications_per_day": 2.382989
+      },
+      {
+       "tau": -66.6,
+       "theta": 66.6,
+       "fa_per_day": 2.127464,
+       "sensitivity": 0.880342,
+       "notifications_per_day": 2.417442
+      },
+      {
+       "tau": -66.6,
+       "theta": 66.6,
+       "fa_per_day": 2.127464,
+       "sensitivity": 0.880342,
+       "notifications_per_day": 2.417442
+      },
+      {
+       "tau": -68.4,
+       "theta": 68.4,
+       "fa_per_day": 2.133206,
+       "sensitivity": 0.880342,
+       "notifications_per_day": 2.423184
+      },
+      {
+       "tau": -68.4,
+       "theta": 68.4,
+       "fa_per_day": 2.136077,
+       "sensitivity": 0.880342,
+       "notifications_per_day": 2.426055
+      },
+      {
+       "tau": -68.4,
+       "theta": 68.4,
+       "fa_per_day": 2.138948,
+       "sensitivity": 0.880342,
+       "notifications_per_day": 2.428926
+      },
+      {
+       "tau": -68.4,
+       "theta": 68.4,
+       "fa_per_day": 2.173401,
+       "sensitivity": 0.880342,
+       "notifications_per_day": 2.463379
+      },
+      {
+       "tau": -68.4,
+       "theta": 68.4,
+       "fa_per_day": 2.216467,
+       "sensitivity": 0.880342,
+       "notifications_per_day": 2.506445
+      },
+      {
+       "tau": -68.4,
+       "theta": 68.4,
+       "fa_per_day": 2.265275,
+       "sensitivity": 0.880342,
+       "notifications_per_day": 2.558124
+      },
+      {
+       "tau": -68.4,
+       "theta": 68.4,
+       "fa_per_day": 2.299728,
+       "sensitivity": 0.880342,
+       "notifications_per_day": 2.592577
+      },
+      {
+       "tau": -68.4,
+       "theta": 68.4,
+       "fa_per_day": 2.302599,
+       "sensitivity": 0.880342,
+       "notifications_per_day": 2.595448
+      },
+      {
+       "tau": -70.2,
+       "theta": 70.2,
+       "fa_per_day": 2.308341,
+       "sensitivity": 0.880342,
+       "notifications_per_day": 2.60119
+      },
+      {
+       "tau": -70.2,
+       "theta": 70.2,
+       "fa_per_day": 2.322696,
+       "sensitivity": 0.880342,
+       "notifications_per_day": 2.615546
+      },
+      {
+       "tau": -70.2,
+       "theta": 70.2,
+       "fa_per_day": 2.328439,
+       "sensitivity": 0.888889,
+       "notifications_per_day": 2.624159
+      },
+      {
+       "tau": -70.2,
+       "theta": 70.2,
+       "fa_per_day": 2.391602,
+       "sensitivity": 0.888889,
+       "notifications_per_day": 2.687322
+      },
+      {
+       "tau": -70.2,
+       "theta": 70.2,
+       "fa_per_day": 2.480605,
+       "sensitivity": 0.888889,
+       "notifications_per_day": 2.782068
+      },
+      {
+       "tau": -70.2,
+       "theta": 70.2,
+       "fa_per_day": 2.506445,
+       "sensitivity": 0.888889,
+       "notifications_per_day": 2.807907
+      },
+      {
+       "tau": -70.2,
+       "theta": 70.2,
+       "fa_per_day": 2.529414,
+       "sensitivity": 0.888889,
+       "notifications_per_day": 2.830876
+      },
+      {
+       "tau": -72.0,
+       "theta": 72.0,
+       "fa_per_day": 2.529414,
+       "sensitivity": 0.888889,
+       "notifications_per_day": 2.830876
+      },
+      {
+       "tau": -72.0,
+       "theta": 72.0,
+       "fa_per_day": 2.529414,
+       "sensitivity": 0.888889,
+       "notifications_per_day": 2.830876
+      },
+      {
+       "tau": -72.0,
+       "theta": 72.0,
+       "fa_per_day": 2.529414,
+       "sensitivity": 0.888889,
+       "notifications_per_day": 2.830876
+      },
+      {
+       "tau": -72.0,
+       "theta": 72.0,
+       "fa_per_day": 2.583964,
+       "sensitivity": 0.888889,
+       "notifications_per_day": 2.882555
+      },
+      {
+       "tau": -72.0,
+       "theta": 72.0,
+       "fa_per_day": 2.618417,
+       "sensitivity": 0.888889,
+       "notifications_per_day": 2.917008
+      },
+      {
+       "tau": -72.0,
+       "theta": 72.0,
+       "fa_per_day": 2.632772,
+       "sensitivity": 0.888889,
+       "notifications_per_day": 2.937106
+      },
+      {
+       "tau": -72.0,
+       "theta": 72.0,
+       "fa_per_day": 2.690193,
+       "sensitivity": 0.888889,
+       "notifications_per_day": 2.994527
+      },
+      {
+       "tau": -72.0,
+       "theta": 72.0,
+       "fa_per_day": 2.721775,
+       "sensitivity": 0.888889,
+       "notifications_per_day": 3.026109
+      },
+      {
+       "tau": -72.0,
+       "theta": 72.0,
+       "fa_per_day": 2.73326,
+       "sensitivity": 0.888889,
+       "notifications_per_day": 3.037593
+      },
+      {
+       "tau": -72.0,
+       "theta": 72.0,
+       "fa_per_day": 2.739002,
+       "sensitivity": 0.888889,
+       "notifications_per_day": 3.043335
+      },
+      {
+       "tau": -73.8,
+       "theta": 73.8,
+       "fa_per_day": 2.739002,
+       "sensitivity": 0.888889,
+       "notifications_per_day": 3.043335
+      },
+      {
+       "tau": -73.8,
+       "theta": 73.8,
+       "fa_per_day": 2.739002,
+       "sensitivity": 0.888889,
+       "notifications_per_day": 3.043335
+      },
+      {
+       "tau": -73.8,
+       "theta": 73.8,
+       "fa_per_day": 2.741873,
+       "sensitivity": 0.888889,
+       "notifications_per_day": 3.046206
+      },
+      {
+       "tau": -73.8,
+       "theta": 73.8,
+       "fa_per_day": 2.741873,
+       "sensitivity": 0.888889,
+       "notifications_per_day": 3.046206
+      },
+      {
+       "tau": -73.8,
+       "theta": 73.8,
+       "fa_per_day": 2.753357,
+       "sensitivity": 0.888889,
+       "notifications_per_day": 3.057691
+      },
+      {
+       "tau": -73.8,
+       "theta": 73.8,
+       "fa_per_day": 2.790681,
+       "sensitivity": 0.888889,
+       "notifications_per_day": 3.095015
+      },
+      {
+       "tau": -73.8,
+       "theta": 73.8,
+       "fa_per_day": 2.862458,
+       "sensitivity": 0.888889,
+       "notifications_per_day": 3.172533
+      },
+      {
+       "tau": -73.8,
+       "theta": 73.8,
+       "fa_per_day": 2.914137,
+       "sensitivity": 0.888889,
+       "notifications_per_day": 3.224213
+      },
+      {
+       "tau": -73.8,
+       "theta": 73.8,
+       "fa_per_day": 2.928492,
+       "sensitivity": 0.888889,
+       "notifications_per_day": 3.238568
+      },
+      {
+       "tau": -75.6,
+       "theta": 75.6,
+       "fa_per_day": 2.937106,
+       "sensitivity": 0.888889,
+       "notifications_per_day": 3.247181
+      },
+      {
+       "tau": -75.6,
+       "theta": 75.6,
+       "fa_per_day": 2.942848,
+       "sensitivity": 0.888889,
+       "notifications_per_day": 3.252923
+      },
+      {
+       "tau": -75.6,
+       "theta": 75.6,
+       "fa_per_day": 2.997398,
+       "sensitivity": 0.888889,
+       "notifications_per_day": 3.307474
+      },
+      {
+       "tau": -75.6,
+       "theta": 75.6,
+       "fa_per_day": 3.072046,
+       "sensitivity": 0.888889,
+       "notifications_per_day": 3.382122
+      },
+      {
+       "tau": -75.6,
+       "theta": 75.6,
+       "fa_per_day": 3.135209,
+       "sensitivity": 0.888889,
+       "notifications_per_day": 3.445285
+      },
+      {
+       "tau": -75.6,
+       "theta": 75.6,
+       "fa_per_day": 3.201244,
+       "sensitivity": 0.888889,
+       "notifications_per_day": 3.51132
+      },
+      {
+       "tau": -75.6,
+       "theta": 75.6,
+       "fa_per_day": 3.201244,
+       "sensitivity": 0.888889,
+       "notifications_per_day": 3.51132
+      },
+      {
+       "tau": -77.4,
+       "theta": 77.4,
+       "fa_per_day": 3.201244,
+       "sensitivity": 0.888889,
+       "notifications_per_day": 3.51132
+      },
+      {
+       "tau": -77.4,
+       "theta": 77.4,
+       "fa_per_day": 3.201244,
+       "sensitivity": 0.888889,
+       "notifications_per_day": 3.51132
+      },
+      {
+       "tau": -77.4,
+       "theta": 77.4,
+       "fa_per_day": 3.212728,
+       "sensitivity": 0.888889,
+       "notifications_per_day": 3.522804
+      },
+      {
+       "tau": -77.4,
+       "theta": 77.4,
+       "fa_per_day": 3.261537,
+       "sensitivity": 0.888889,
+       "notifications_per_day": 3.571612
+      },
+      {
+       "tau": -77.4,
+       "theta": 77.4,
+       "fa_per_day": 3.318958,
+       "sensitivity": 0.897436,
+       "notifications_per_day": 3.631905
+      },
+      {
+       "tau": -77.4,
+       "theta": 77.4,
+       "fa_per_day": 3.433801,
+       "sensitivity": 0.897436,
+       "notifications_per_day": 3.746748
+      },
+      {
+       "tau": -77.4,
+       "theta": 77.4,
+       "fa_per_day": 3.465383,
+       "sensitivity": 0.897436,
+       "notifications_per_day": 3.778329
+      },
+      {
+       "tau": -77.4,
+       "theta": 77.4,
+       "fa_per_day": 3.465383,
+       "sensitivity": 0.897436,
+       "notifications_per_day": 3.778329
+      },
+      {
+       "tau": -79.2,
+       "theta": 79.2,
+       "fa_per_day": 3.465383,
+       "sensitivity": 0.897436,
+       "notifications_per_day": 3.778329
+      },
+      {
+       "tau": -79.2,
+       "theta": 79.2,
+       "fa_per_day": 3.473996,
+       "sensitivity": 0.897436,
+       "notifications_per_day": 3.789814
+      },
+      {
+       "tau": -79.2,
+       "theta": 79.2,
+       "fa_per_day": 3.488351,
+       "sensitivity": 0.897436,
+       "notifications_per_day": 3.804169
+      },
+      {
+       "tau": -79.2,
+       "theta": 79.2,
+       "fa_per_day": 3.56587,
+       "sensitivity": 0.897436,
+       "notifications_per_day": 3.881688
+      },
+      {
+       "tau": -79.2,
+       "theta": 79.2,
+       "fa_per_day": 3.657744,
+       "sensitivity": 0.897436,
+       "notifications_per_day": 3.973562
+      },
+      {
+       "tau": -79.2,
+       "theta": 79.2,
+       "fa_per_day": 3.703682,
+       "sensitivity": 0.897436,
+       "notifications_per_day": 4.019499
+      },
+      {
+       "tau": -79.2,
+       "theta": 79.2,
+       "fa_per_day": 3.732392,
+       "sensitivity": 0.897436,
+       "notifications_per_day": 4.04821
+      },
+      {
+       "tau": -81.0,
+       "theta": 81.0,
+       "fa_per_day": 3.732392,
+       "sensitivity": 0.897436,
+       "notifications_per_day": 4.04821
+      },
+      {
+       "tau": -81.0,
+       "theta": 81.0,
+       "fa_per_day": 3.741005,
+       "sensitivity": 0.897436,
+       "notifications_per_day": 4.056823
+      },
+      {
+       "tau": -81.0,
+       "theta": 81.0,
+       "fa_per_day": 3.755361,
+       "sensitivity": 0.897436,
+       "notifications_per_day": 4.071179
+      },
+      {
+       "tau": -81.0,
+       "theta": 81.0,
+       "fa_per_day": 3.809911,
+       "sensitivity": 0.897436,
+       "notifications_per_day": 4.125729
+      },
+      {
+       "tau": -81.0,
+       "theta": 81.0,
+       "fa_per_day": 3.864462,
+       "sensitivity": 0.897436,
+       "notifications_per_day": 4.18315
+      },
+      {
+       "tau": -81.0,
+       "theta": 81.0,
+       "fa_per_day": 3.875946,
+       "sensitivity": 0.897436,
+       "notifications_per_day": 4.194635
+      },
+      {
+       "tau": -81.0,
+       "theta": 81.0,
+       "fa_per_day": 3.930496,
+       "sensitivity": 0.897436,
+       "notifications_per_day": 4.249185
+      },
+      {
+       "tau": -81.0,
+       "theta": 81.0,
+       "fa_per_day": 3.996531,
+       "sensitivity": 0.897436,
+       "notifications_per_day": 4.31522
+      },
+      {
+       "tau": -81.0,
+       "theta": 81.0,
+       "fa_per_day": 4.005144,
+       "sensitivity": 0.897436,
+       "notifications_per_day": 4.323833
+      }
+     ],
+     "operating_point_at_tau_alert": {
+      "tau": -52.2,
+      "strict": true,
+      "episodes": 117,
+      "hits": 71,
+      "sensitivity": 0.606838,
+      "missed_episode_rate": 0.393162,
+      "warnable_episodes": 106,
+      "warnable_ceiling": 0.905983,
+      "notifications": {
+       "true": 66,
+       "false": 348,
+       "outcome_unknown": 2
+      },
+      "monitored_days": 348.302083,
+      "fa_per_day": 0.999133,
+      "alert_precision": 0.15942,
+      "lead_min": {
+       "median": 30.0,
+       "q25": 30.0,
+       "q75": 45.0,
+       "share_ge_30": 0.760563
+      },
+      "abstention": {
+       "readings": 33464,
+       "insufficient_data_share": 0.007859,
+       "warnable_episodes_without_forecast_in_window": 0
+      },
+      "per_patient_distribution": {
+       "patients": 30,
+       "patients_with_episodes": 18,
+       "sensitivity_q25_q50_q75": [
+        0.35,
+        0.5,
+        0.653846
+       ],
+       "fa_per_day_q25_q50_q75": [
+        0.355419,
+        0.889345,
+        1.781575
+       ]
+      }
+     }
+    }
+   },
+   "bootstrap": {
+    "treated": {
+     "method": "paired patient-cluster bootstrap, percentile 95% interval",
+     "resamples": 2000,
+     "seed": 2027,
+     "patients": 22,
+     "point": {
+      "sens_at_1fa": 0.625,
+      "partial_area": 0.689773
+     },
+     "ci95": {
+      "sens_at_1fa": [
+       0.489796,
+       0.835832
+      ],
+      "partial_area": [
+       0.557404,
+       0.836396
+      ]
+     },
+     "undefined_resamples": {
+      "sens_at_1fa": 0,
+      "partial_area": 0
+     }
+    },
+    "all": {
+     "method": "paired patient-cluster bootstrap, percentile 95% interval",
+     "resamples": 2000,
+     "seed": 2027,
+     "patients": 30,
+     "point": {
+      "sens_at_1fa": 0.606838,
+      "partial_area": 0.680575
+     },
+     "ci95": {
+      "sens_at_1fa": [
+       0.417187,
+       0.80944
+      ],
+      "partial_area": [
+       0.491484,
+       0.830626
+      ]
+     },
+     "undefined_resamples": {
+      "sens_at_1fa": 0,
+      "partial_area": 0
+     }
+    }
+   }
+  },
+  "decomposition": {
+   "v5_legacy_semantics": [
+    {
+     "theta": 40,
+     "treated": {
+      "episodes": 56,
+      "hits": 24,
+      "sensitivity": 0.428571,
+      "fa_per_day": 0.59603,
+      "monitored_days": 255.020833,
+      "notifications": {
+       "true": 24,
+       "false": 152,
+       "outcome_unknown": 0
+      },
+      "alert_precision": 0.136364,
+      "lead_min": {
+       "median": 30.0,
+       "q25": 26.25,
+       "q75": 45.0,
+       "share_ge_30": 0.75
+      },
+      "warnable_ceiling": 0.946429
+     },
+     "all": {
+      "episodes": 117,
+      "hits": 58,
+      "sensitivity": 0.495726,
+      "fa_per_day": 0.648862,
+      "monitored_days": 348.302083,
+      "notifications": {
+       "true": 57,
+       "false": 226,
+       "outcome_unknown": 0
+      },
+      "alert_precision": 0.201413,
+      "lead_min": {
+       "median": 30.0,
+       "q25": 15.0,
+       "q75": 45.0,
+       "share_ge_30": 0.689655
+      },
+      "warnable_ceiling": 0.905983
+     }
+    },
+    {
+     "theta": 45,
+     "treated": {
+      "episodes": 56,
+      "hits": 27,
+      "sensitivity": 0.482143,
+      "fa_per_day": 0.717588,
+      "monitored_days": 255.020833,
+      "notifications": {
+       "true": 27,
+       "false": 183,
+       "outcome_unknown": 0
+      },
+      "alert_precision": 0.128571,
+      "lead_min": {
+       "median": 30.0,
+       "q25": 22.5,
+       "q75": 45.0,
+       "share_ge_30": 0.740741
+      },
+      "warnable_ceiling": 0.946429
+     },
+     "all": {
+      "episodes": 117,
+      "hits": 63,
+      "sensitivity": 0.538462,
+      "fa_per_day": 0.775189,
+      "monitored_days": 348.302083,
+      "notifications": {
+       "true": 60,
+       "false": 270,
+       "outcome_unknown": 0
+      },
+      "alert_precision": 0.181818,
+      "lead_min": {
+       "median": 30.0,
+       "q25": 30.0,
+       "q75": 45.0,
+       "share_ge_30": 0.761905
+      },
+      "warnable_ceiling": 0.905983
+     }
+    },
+    {
+     "theta": 50,
+     "treated": {
+      "episodes": 56,
+      "hits": 31,
+      "sensitivity": 0.553571,
+      "fa_per_day": 0.850911,
+      "monitored_days": 255.020833,
+      "notifications": {
+       "true": 31,
+       "false": 217,
+       "outcome_unknown": 0
+      },
+      "alert_precision": 0.125,
+      "lead_min": {
+       "median": 30.0,
+       "q25": 15.0,
+       "q75": 45.0,
+       "share_ge_30": 0.709677
+      },
+      "warnable_ceiling": 0.946429
+     },
+     "all": {
+      "episodes": 117,
+      "hits": 68,
+      "sensitivity": 0.581197,
+      "fa_per_day": 0.918743,
+      "monitored_days": 348.302083,
+      "notifications": {
+       "true": 65,
+       "false": 320,
+       "outcome_unknown": 0
+      },
+      "alert_precision": 0.168831,
+      "lead_min": {
+       "median": 30.0,
+       "q25": 30.0,
+       "q75": 45.0,
+       "share_ge_30": 0.779412
+      },
+      "warnable_ceiling": 0.905983
+     }
+    },
+    {
+     "theta": 55,
+     "treated": {
+      "episodes": 56,
+      "hits": 36,
+      "sensitivity": 0.642857,
+      "fa_per_day": 1.070501,
+      "monitored_days": 255.020833,
+      "notifications": {
+       "true": 36,
+       "false": 273,
+       "outcome_unknown": 0
+      },
+      "alert_precision": 0.116505,
+      "lead_min": {
+       "median": 45.0,
+       "q25": 30.0,
+       "q75": 60.0,
+       "share_ge_30": 0.777778
+      },
+      "warnable_ceiling": 0.946429
+     },
+     "all": {
+      "episodes": 117,
+      "hits": 77,
+      "sensitivity": 0.65812,
+      "fa_per_day": 1.148428,
+      "monitored_days": 348.302083,
+      "notifications": {
+       "true": 74,
+       "false": 400,
+       "outcome_unknown": 0
+      },
+      "alert_precision": 0.156118,
+      "lead_min": {
+       "median": 45.0,
+       "q25": 30.0,
+       "q75": 45.0,
+       "share_ge_30": 0.805195
+      },
+      "warnable_ceiling": 0.905983
+     }
+    },
+    {
+     "theta": 60,
+     "treated": {
+      "episodes": 56,
+      "hits": 43,
+      "sensitivity": 0.767857,
+      "fa_per_day": 1.372437,
+      "monitored_days": 255.020833,
+      "notifications": {
+       "true": 42,
+       "false": 350,
+       "outcome_unknown": 0
+      },
+      "alert_precision": 0.107143,
+      "lead_min": {
+       "median": 45.0,
+       "q25": 30.0,
+       "q75": 60.0,
+       "share_ge_30": 0.767442
+      },
+      "warnable_ceiling": 0.946429
+     },
+     "all": {
+      "episodes": 117,
+      "hits": 90,
+      "sensitivity": 0.769231,
+      "fa_per_day": 1.464246,
+      "monitored_days": 348.302083,
+      "notifications": {
+       "true": 86,
+       "false": 510,
+       "outcome_unknown": 0
+      },
+      "alert_precision": 0.144295,
+      "lead_min": {
+       "median": 45.0,
+       "q25": 30.0,
+       "q75": 45.0,
+       "share_ge_30": 0.777778
+      },
+      "warnable_ceiling": 0.905983
+     }
+    },
+    {
+     "theta": 65,
+     "treated": {
+      "episodes": 56,
+      "hits": 48,
+      "sensitivity": 0.857143,
+      "fa_per_day": 1.835144,
+      "monitored_days": 255.020833,
+      "notifications": {
+       "true": 44,
+       "false": 468,
+       "outcome_unknown": 0
+      },
+      "alert_precision": 0.085938,
+      "lead_min": {
+       "median": 45.0,
+       "q25": 30.0,
+       "q75": 60.0,
+       "share_ge_30": 0.8125
+      },
+      "warnable_ceiling": 0.946429
+     },
+     "all": {
+      "episodes": 117,
+      "hits": 100,
+      "sensitivity": 0.854701,
+      "fa_per_day": 1.926489,
+      "monitored_days": 348.302083,
+      "notifications": {
+       "true": 94,
+       "false": 671,
+       "outcome_unknown": 0
+      },
+      "alert_precision": 0.122876,
+      "lead_min": {
+       "median": 45.0,
+       "q25": 30.0,
+       "q75": 60.0,
+       "share_ge_30": 0.79
+      },
+      "warnable_ceiling": 0.905983
+     }
+    },
+    {
+     "theta": 70,
+     "treated": {
+      "episodes": 56,
+      "hits": 51,
+      "sensitivity": 0.910714,
+      "fa_per_day": 2.219427,
+      "monitored_days": 255.020833,
+      "notifications": {
+       "true": 48,
+       "false": 566,
+       "outcome_unknown": 0
+      },
+      "alert_precision": 0.078176,
+      "lead_min": {
+       "median": 45.0,
+       "q25": 30.0,
+       "q75": 60.0,
+       "share_ge_30": 0.784314
+      },
+      "warnable_ceiling": 0.946429
+     },
+     "all": {
+      "episodes": 117,
+      "hits": 103,
+      "sensitivity": 0.880342,
+      "fa_per_day": 2.308341,
+      "monitored_days": 348.302083,
+      "notifications": {
+       "true": 98,
+       "false": 804,
+       "outcome_unknown": 0
+      },
+      "alert_precision": 0.108647,
+      "lead_min": {
+       "median": 45.0,
+       "q25": 30.0,
+       "q75": 60.0,
+       "share_ge_30": 0.815534
+      },
+      "warnable_ceiling": 0.905983
+     }
+    },
+    {
+     "theta": 80,
+     "treated": {
+      "episodes": 56,
+      "hits": 53,
+      "sensitivity": 0.946429,
+      "fa_per_day": 3.654603,
+      "monitored_days": 255.020833,
+      "notifications": {
+       "true": 52,
+       "false": 932,
+       "outcome_unknown": 0
+      },
+      "alert_precision": 0.052846,
+      "lead_min": {
+       "median": 60.0,
+       "q25": 45.0,
+       "q75": 60.0,
+       "share_ge_30": 0.924528
+      },
+      "warnable_ceiling": 0.946429
+     },
+     "all": {
+      "episodes": 117,
+      "hits": 105,
+      "sensitivity": 0.897436,
+      "fa_per_day": 3.732392,
+      "monitored_days": 348.302083,
+      "notifications": {
+       "true": 103,
+       "false": 1300,
+       "outcome_unknown": 0
+      },
+      "alert_precision": 0.073414,
+      "lead_min": {
+       "median": 60.0,
+       "q25": 45.0,
+       "q75": 60.0,
+       "share_ge_30": 0.933333
+      },
+      "warnable_ceiling": 0.905983
+     }
+    }
+   ],
+   "v2_protocol_semantics": [
+    {
+     "theta": 40,
+     "treated": {
+      "episodes": 56,
+      "hits": 24,
+      "sensitivity": 0.428571,
+      "fa_per_day": 0.59603,
+      "monitored_days": 255.020833,
+      "notifications": {
+       "true": 24,
+       "false": 152,
+       "outcome_unknown": 1
+      },
+      "alert_precision": 0.136364,
+      "lead_min": {
+       "median": 30.0,
+       "q25": 26.25,
+       "q75": 45.0,
+       "share_ge_30": 0.75
+      },
+      "warnable_ceiling": 0.946429
+     },
+     "all": {
+      "episodes": 117,
+      "hits": 58,
+      "sensitivity": 0.495726,
+      "fa_per_day": 0.648862,
+      "monitored_days": 348.302083,
+      "notifications": {
+       "true": 57,
+       "false": 226,
+       "outcome_unknown": 1
+      },
+      "alert_precision": 0.201413,
+      "lead_min": {
+       "median": 30.0,
+       "q25": 15.0,
+       "q75": 45.0,
+       "share_ge_30": 0.689655
+      },
+      "warnable_ceiling": 0.905983
+     }
+    },
+    {
+     "theta": 45,
+     "treated": {
+      "episodes": 56,
+      "hits": 27,
+      "sensitivity": 0.482143,
+      "fa_per_day": 0.717588,
+      "monitored_days": 255.020833,
+      "notifications": {
+       "true": 27,
+       "false": 183,
+       "outcome_unknown": 2
+      },
+      "alert_precision": 0.128571,
+      "lead_min": {
+       "median": 30.0,
+       "q25": 22.5,
+       "q75": 45.0,
+       "share_ge_30": 0.740741
+      },
+      "warnable_ceiling": 0.946429
+     },
+     "all": {
+      "episodes": 117,
+      "hits": 63,
+      "sensitivity": 0.538462,
+      "fa_per_day": 0.775189,
+      "monitored_days": 348.302083,
+      "notifications": {
+       "true": 60,
+       "false": 270,
+       "outcome_unknown": 2
+      },
+      "alert_precision": 0.181818,
+      "lead_min": {
+       "median": 30.0,
+       "q25": 30.0,
+       "q75": 45.0,
+       "share_ge_30": 0.761905
+      },
+      "warnable_ceiling": 0.905983
+     }
+    },
+    {
+     "theta": 50,
+     "treated": {
+      "episodes": 56,
+      "hits": 31,
+      "sensitivity": 0.553571,
+      "fa_per_day": 0.850911,
+      "monitored_days": 255.020833,
+      "notifications": {
+       "true": 31,
+       "false": 217,
+       "outcome_unknown": 2
+      },
+      "alert_precision": 0.125,
+      "lead_min": {
+       "median": 30.0,
+       "q25": 15.0,
+       "q75": 45.0,
+       "share_ge_30": 0.709677
+      },
+      "warnable_ceiling": 0.946429
+     },
+     "all": {
+      "episodes": 117,
+      "hits": 68,
+      "sensitivity": 0.581197,
+      "fa_per_day": 0.918743,
+      "monitored_days": 348.302083,
+      "notifications": {
+       "true": 65,
+       "false": 320,
+       "outcome_unknown": 2
+      },
+      "alert_precision": 0.168831,
+      "lead_min": {
+       "median": 30.0,
+       "q25": 30.0,
+       "q75": 45.0,
+       "share_ge_30": 0.779412
+      },
+      "warnable_ceiling": 0.905983
+     }
+    },
+    {
+     "theta": 55,
+     "treated": {
+      "episodes": 56,
+      "hits": 36,
+      "sensitivity": 0.642857,
+      "fa_per_day": 1.070501,
+      "monitored_days": 255.020833,
+      "notifications": {
+       "true": 36,
+       "false": 273,
+       "outcome_unknown": 2
+      },
+      "alert_precision": 0.116505,
+      "lead_min": {
+       "median": 45.0,
+       "q25": 30.0,
+       "q75": 60.0,
+       "share_ge_30": 0.777778
+      },
+      "warnable_ceiling": 0.946429
+     },
+     "all": {
+      "episodes": 117,
+      "hits": 77,
+      "sensitivity": 0.65812,
+      "fa_per_day": 1.148428,
+      "monitored_days": 348.302083,
+      "notifications": {
+       "true": 74,
+       "false": 400,
+       "outcome_unknown": 2
+      },
+      "alert_precision": 0.156118,
+      "lead_min": {
+       "median": 45.0,
+       "q25": 30.0,
+       "q75": 45.0,
+       "share_ge_30": 0.805195
+      },
+      "warnable_ceiling": 0.905983
+     }
+    },
+    {
+     "theta": 60,
+     "treated": {
+      "episodes": 56,
+      "hits": 43,
+      "sensitivity": 0.767857,
+      "fa_per_day": 1.372437,
+      "monitored_days": 255.020833,
+      "notifications": {
+       "true": 42,
+       "false": 350,
+       "outcome_unknown": 3
+      },
+      "alert_precision": 0.107143,
+      "lead_min": {
+       "median": 45.0,
+       "q25": 30.0,
+       "q75": 60.0,
+       "share_ge_30": 0.767442
+      },
+      "warnable_ceiling": 0.946429
+     },
+     "all": {
+      "episodes": 117,
+      "hits": 90,
+      "sensitivity": 0.769231,
+      "fa_per_day": 1.464246,
+      "monitored_days": 348.302083,
+      "notifications": {
+       "true": 86,
+       "false": 510,
+       "outcome_unknown": 3
+      },
+      "alert_precision": 0.144295,
+      "lead_min": {
+       "median": 45.0,
+       "q25": 30.0,
+       "q75": 45.0,
+       "share_ge_30": 0.777778
+      },
+      "warnable_ceiling": 0.905983
+     }
+    },
+    {
+     "theta": 65,
+     "treated": {
+      "episodes": 56,
+      "hits": 48,
+      "sensitivity": 0.857143,
+      "fa_per_day": 1.835144,
+      "monitored_days": 255.020833,
+      "notifications": {
+       "true": 44,
+       "false": 468,
+       "outcome_unknown": 3
+      },
+      "alert_precision": 0.085938,
+      "lead_min": {
+       "median": 45.0,
+       "q25": 30.0,
+       "q75": 60.0,
+       "share_ge_30": 0.8125
+      },
+      "warnable_ceiling": 0.946429
+     },
+     "all": {
+      "episodes": 117,
+      "hits": 100,
+      "sensitivity": 0.854701,
+      "fa_per_day": 1.926489,
+      "monitored_days": 348.302083,
+      "notifications": {
+       "true": 94,
+       "false": 671,
+       "outcome_unknown": 3
+      },
+      "alert_precision": 0.122876,
+      "lead_min": {
+       "median": 45.0,
+       "q25": 30.0,
+       "q75": 60.0,
+       "share_ge_30": 0.79
+      },
+      "warnable_ceiling": 0.905983
+     }
+    },
+    {
+     "theta": 70,
+     "treated": {
+      "episodes": 56,
+      "hits": 51,
+      "sensitivity": 0.910714,
+      "fa_per_day": 2.219427,
+      "monitored_days": 255.020833,
+      "notifications": {
+       "true": 48,
+       "false": 566,
+       "outcome_unknown": 3
+      },
+      "alert_precision": 0.078176,
+      "lead_min": {
+       "median": 45.0,
+       "q25": 30.0,
+       "q75": 60.0,
+       "share_ge_30": 0.784314
+      },
+      "warnable_ceiling": 0.946429
+     },
+     "all": {
+      "episodes": 117,
+      "hits": 103,
+      "sensitivity": 0.880342,
+      "fa_per_day": 2.308341,
+      "monitored_days": 348.302083,
+      "notifications": {
+       "true": 98,
+       "false": 804,
+       "outcome_unknown": 4
+      },
+      "alert_precision": 0.108647,
+      "lead_min": {
+       "median": 45.0,
+       "q25": 30.0,
+       "q75": 60.0,
+       "share_ge_30": 0.815534
+      },
+      "warnable_ceiling": 0.905983
+     }
+    },
+    {
+     "theta": 80,
+     "treated": {
+      "episodes": 56,
+      "hits": 53,
+      "sensitivity": 0.946429,
+      "fa_per_day": 3.654603,
+      "monitored_days": 255.020833,
+      "notifications": {
+       "true": 52,
+       "false": 932,
+       "outcome_unknown": 5
+      },
+      "alert_precision": 0.052846,
+      "lead_min": {
+       "median": 60.0,
+       "q25": 45.0,
+       "q75": 60.0,
+       "share_ge_30": 0.924528
+      },
+      "warnable_ceiling": 0.946429
+     },
+     "all": {
+      "episodes": 117,
+      "hits": 105,
+      "sensitivity": 0.897436,
+      "fa_per_day": 3.732392,
+      "monitored_days": 348.302083,
+      "notifications": {
+       "true": 103,
+       "false": 1300,
+       "outcome_unknown": 7
+      },
+      "alert_precision": 0.073414,
+      "lead_min": {
+       "median": 60.0,
+       "q25": 45.0,
+       "q75": 60.0,
+       "share_ge_30": 0.933333
+      },
+      "warnable_ceiling": 0.905983
+     }
+    }
+   ]
+  }
+ },
+ "timing_s": {
+  "build_eval_inputs_s": 24.097,
+  "table_a2_eval_s": 0.222,
+  "one_threshold_eval_s": 0.015,
+  "curve_treated_s": 15.754,
+  "bootstrap_treated_s": 3.099,
+  "curve_all_s": 20.489,
+  "bootstrap_all_s": 3.952
+ }
+}

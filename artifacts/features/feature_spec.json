@@ -1,8 +1,8 @@
 {
- "spec_version": "1.0.0",
+ "spec_version": "1.0.1",
  "description": "HypoSense Twin v2 canonical feature specification (generated from src/hyposense/features/spec.py; do not edit by hand)",
  "constants": {
-  "spec_version": "1.0.0",
+  "spec_version": "1.0.1",
   "cgm_nominal_interval_min": 15,
   "lags_min": [
    15,
@@ -553,7 +553,7 @@
    "dtype": "float",
    "unit": "mg/dL",
    "source": "CGM readings of this recording with ts <= t",
-   "computation": "M0 trend projection g(t) + 30 x cgm_slope30 (executable spec audit2.py: least-squares slope over (t - 35 min, t], >= 3 readings)",
+   "computation": "M0 trend projection g(t) + 30 x cgm_slope30 (executable spec audit2.py: least-squares slope over (t - 35 min, t], >= 3 readings); computed exactly and rounded once, so a projection equal to theta is exactly theta",
    "availability": "readings in (t - 35 min, t]",
    "missing": "NAN_WITH_INDICATOR",
    "nan_meaning": "INSUFFICIENT_HISTORY (< 3 readings)",
@@ -564,7 +564,7 @@
    "ref": "App. D group 1; Table 11.1 M0",
    "status": "OPERATIONALISED",
    "lab": false,
-   "version": "1.0.0",
+   "version": "1.0.1",
    "causal": true,
    "models": [
     "M1",
@@ -579,7 +579,7 @@
    "dtype": "float",
    "unit": "mg/dL",
    "source": "CGM readings of this recording with ts <= t",
-   "computation": "M0 trend projection g(t) + 60 x cgm_slope30 (executable spec audit2.py: least-squares slope over (t - 35 min, t], >= 3 readings)",
+   "computation": "M0 trend projection g(t) + 60 x cgm_slope30 (executable spec audit2.py: least-squares slope over (t - 35 min, t], >= 3 readings); computed exactly and rounded once, so a projection equal to theta is exactly theta",
    "availability": "readings in (t - 35 min, t]",
    "missing": "NAN_WITH_INDICATOR",
    "nan_meaning": "INSUFFICIENT_HISTORY (< 3 readings)",
@@ -590,7 +590,7 @@
    "ref": "App. D group 1; Table 11.1 M0",
    "status": "OPERATIONALISED",
    "lab": false,
-   "version": "1.0.0",
+   "version": "1.0.1",
    "causal": true,
    "models": [
     "M1",
@@ -701,7 +701,7 @@
    "dtype": "float",
    "unit": "mg/dL/min",
    "source": "CGM readings of this recording with ts <= t",
-   "computation": "least-squares slope of g on time over (t - 30 - 5 min, t] (trend_window_tolerance_min = 5, the M0 window convention); exact sums",
+   "computation": "least-squares slope of g on time over (t - 30 - 5 min, t] (trend_window_tolerance_min = 5, the M0 window convention); exact rational arithmetic on the 0.1 mg/dL data grid, rounded once (v1.0.1, ADR-036)",
    "availability": "readings in (t - 35 min, t]",
    "missing": "NAN_WITH_INDICATOR",
    "nan_meaning": "INSUFFICIENT_HISTORY (< 3 readings in the window)",
@@ -712,7 +712,7 @@
    "ref": "App. D group 2",
    "status": "OPERATIONALISED",
    "lab": false,
-   "version": "1.0.0",
+   "version": "1.0.1",
    "causal": true,
    "models": [
     "M1",
@@ -727,7 +727,7 @@
    "dtype": "float",
    "unit": "mg/dL/min",
    "source": "CGM readings of this recording with ts <= t",
-   "computation": "least-squares slope of g on time over (t - 60 - 5 min, t] (trend_window_tolerance_min = 5, the M0 window convention); exact sums",
+   "computation": "least-squares slope of g on time over (t - 60 - 5 min, t] (trend_window_tolerance_min = 5, the M0 window convention); exact rational arithmetic on the 0.1 mg/dL data grid, rounded once (v1.0.1, ADR-036)",
    "availability": "readings in (t - 65 min, t]",
    "missing": "NAN_WITH_INDICATOR",
    "nan_meaning": "INSUFFICIENT_HISTORY (< 3 readings in the window)",
@@ -738,7 +738,7 @@
    "ref": "App. D group 2",
    "status": "OPERATIONALISED",
    "lab": false,
-   "version": "1.0.0",
+   "version": "1.0.1",
    "causal": true,
    "models": [
     "M1",
@@ -753,7 +753,7 @@
    "dtype": "float",
    "unit": "mg/dL/min",
    "source": "CGM readings of this recording with ts <= t",
-   "computation": "least-squares slope of g on time over (t - 120 - 5 min, t] (trend_window_tolerance_min = 5, the M0 window convention); exact sums",
+   "computation": "least-squares slope of g on time over (t - 120 - 5 min, t] (trend_window_tolerance_min = 5, the M0 window convention); exact rational arithmetic on the 0.1 mg/dL data grid, rounded once (v1.0.1, ADR-036)",
    "availability": "readings in (t - 125 min, t]",
    "missing": "REQUIRED",
    "nan_meaning": null,
@@ -762,7 +762,7 @@
    "ref": "App. D group 2",
    "status": "OPERATIONALISED",
    "lab": false,
-   "version": "1.0.0",
+   "version": "1.0.1",
    "causal": true,
    "models": [
     "M1",
@@ -789,7 +789,7 @@
    "ref": "App. D group 2",
    "status": "BLUEPRINT",
    "lab": false,
-   "version": "1.0.0",
+   "version": "1.0.1",
    "causal": true,
    "models": [
     "M1",
@@ -3255,5 +3255,5 @@
    ]
   }
  ],
- "sha256": "82fc54e9b3c7e3ed8638c282be253251c3bdd9b2fe8b0de9b1dda1afc0ac76d1"
+ "sha256": "90329804c62df16a6a24198e61a56b1df3b41a9f05be95036e19bbf3cf2e5f49"
 }

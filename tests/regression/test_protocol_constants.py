@@ -159,7 +159,7 @@ def test_exponential_kernels_satisfy_shape_constraint() -> None:
 # (Class B). Changing it requires bumping `features.spec_version`, regenerating
 # artifacts/features/feature_spec.json (`hyposense features spec`), a DECISION_LOG entry, and
 # updating this pin, never a silent edit.
-FEATURE_SPEC_SHA256 = "82fc54e9b3c7e3ed8638c282be253251c3bdd9b2fe8b0de9b1dda1afc0ac76d1"
+FEATURE_SPEC_SHA256 = "90329804c62df16a6a24198e61a56b1df3b41a9f05be95036e19bbf3cf2e5f49"
 
 
 def test_feature_spec_is_locked() -> None:
