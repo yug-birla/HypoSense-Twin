@@ -318,3 +318,31 @@ def test_meal_unknown_markers_and_recording_order() -> None:
     early = replace(early, events=(CGMReading("9001_1_20200901", T0 - 86400 * 10, 100.0, 2),))
     ordered = order_recordings([late, early])
     assert [s.identity.period for s in ordered] == [1, 0]  # by time, not by number
+
+
+def test_ledger_finalize_at_recording_end() -> None:
+    states = run(cgm(steady(0, 180)))
+    s = states[8].record_forecast(Forecast(states[8].ts or 0, "M3", "t", 0.2))  # t_f = 120
+    for e in cgm(steady(135, 180)):
+        s = s.update(e)
+    assert len(s.ledger.pending) == 1  # last reading exactly t_f + 60: not yet resolved
+    led, unknown = s.ledger.finalize(T0 + 180 * 60)
+    assert unknown == () and led.resolved.items()[0].outcome == 0  # FALSE (ANALYSIS_PLAN §2.4)
+    short = states[8].record_forecast(Forecast(states[8].ts or 0, "M3", "t", 0.2))
+    led2, unknown2 = short.ledger.finalize(T0 + 150 * 60)
+    assert len(unknown2) == 1 and len(led2.resolved) == 0  # OUTCOME-UNKNOWN
+
+
+def test_engine_cache_is_not_shared_through_replace() -> None:
+    a = run([*cgm(steady(0, 120)), *med("gliclazide 30 mg", "oral_agents", 30)])[-1]
+    b = run([*cgm(steady(0, 120)), *med("gliclazide 120 mg", "oral_agents", 30)])[-1]
+    t = a.ts or 0
+    first = a.medication.at(t).exposure["act_su"]
+    swapped = replace(a.medication, events=b.medication.events)
+    assert swapped.at(t).exposure["act_su"] == b.medication.at(t).exposure["act_su"] != first
+
+
+def test_unrecognised_regimen_text_is_flagged() -> None:
+    plaus = {k: (float(v[0]), float(v[1])) for k, v in CFG["features"]["static_plausible"].items()}
+    c = parse_context("p", "1_0_20200101", {"prescribed_hypoglycemic_agents": "xyzzy"}, D, plaus)
+    assert "regimen: no recognised drug in non-empty text" in c.issues

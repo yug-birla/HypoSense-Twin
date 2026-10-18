@@ -1,81 +1,205 @@
 # Feature Dictionary
 
-Status: **medication groups 7 (M3r) and 8 (M3) are CONTRACTS, implemented as causal state functions
-in S3.** Groups 1–6 are specified by Blueprint App. D and will be implemented in S4. Every
-feature at time t uses only information with timestamp ≤ t (bitwise truncation-equality tests).
-Missing values are NaN, never 0. Each optional feature carries an `_missing` indicator, added by
-the S4 feature builder.
+**Status: spec v1.0.0, implemented (S4).**
 
-| Group | Models | Source module |
-|---|---|---|
-| 1 CGM level · 2 CGM trend · 3 CGM variability/history · 4 time | M1–M3 | `features/` (S4) |
-| 5 static context (age, sex, BMI, weight, duration, HbA1c, eGFR, C-peptide, prescribed-regimen flags) | M2–M3 | `features/` (S4); regimen flags from `medication.recording.prescribed_classes` |
-| 6 meal timing | M2–M3 | `features/` (S4) |
-| **7 raw medication timing** | **M3r only** | `medication/timing.py::raw_timing` + shared engine flags |
-| **8 medication exposure state** | **M3 only** | `medication/exposure.py::ExposureEngine.compute` |
+**Authoritative definition:** `src/hyposense/features/spec.py`, the registry with one definition per
+feature. Its committed, generated export is
+[`artifacts/features/feature_spec.json`](../artifacts/features/feature_spec.json)
+(sha256 `82fc54e9…`). A test fails if the export drifts from the registry, and artefacts check
+feature names against it (`FeatureSpecMismatch`). This page is the human-readable summary; where
+they differ, the registry wins.
 
-M2 and M3 differ **only** by group 8. M2 and M3r differ only by group 7 (CLAUDE.md §5).
+**Sources verified for every group:**
+- Blueprint Appendix D Table D.1 (groups 1–8);
+- Table 11.1 (model ladder);
+- §10.2 and §25.1 (half-open windows; NaN, never 0; `_missing` indicators);
+- §12.2 and Table 12.1 (exposure, per-kg, missing timing);
+- the S3 contracts for groups 7 and 8 (this page, S3 version);
+- the executable specification `audit2.py` (M0 trend projection).
 
-## Group 7 — raw medication timing (M3r; 19 variables)
+## Model levels
 
-Categories: **insulin_bolus** (rapid, regular and premix injections; CSII boluses), **insulin_basal**
-(basal analogue and NPH injections), **su**, **glinide**.
-
-| Variable (per category) | Unit | Definition | Missing |
+| Level | Groups | Features | Role |
 |---|---|---|---|
-| `<cat>_min_since_last` | min | t − latest administration ≤ t, capped at 1440 | NaN if none logged before t |
-| `<cat>_last_dose` | IU / mg | dose of that administration | NaN if none, or dose unknown |
-| `<cat>_dose_24h` | IU / mg | total dose with ts in (t − 24 h, t] | NaN if any dose in the window is unknown |
-| `<cat>_n_24h` | count | administrations in (t − 24 h, t] | — |
-| `csii_active` | 0/1 | a programmed basal rate is in force at t (≤ 6 h after its entry, not suspended) | — |
-| `csii_rate_iu_h` | IU/h | the current programmed basal rate (0 if none) | — |
-| `iv_insulin_recent` | 0/1 | an i.v. insulin bag logged in (t − 4 h, t] | — |
+| M1 | G1 CGM level · G2 CGM trend · G3 CGM variability/history · G4 time | 38 | CGM-only baseline |
+| M2 | M1 + G5 static context · G6 meal timing | 72 | primary comparator |
+| M3r | M2 + G7 raw medication timing + G78 CSII / i.v. flags | 95 | representation check (C2b) |
+| M3 | M2 + G8 medication exposure state + G78 CSII / i.v. flags | 100 | proposed model |
 
-## Group 8 — medication exposure state (M3; baseline = blueprint representation)
+- **M3 − M2 is exactly G8 ∪ G78, and M3r − M2 is exactly G7 ∪ G78** (`test_level_membership`).
+  The confirmatory comparison changes one thing: medication exposure.
+- G7 never enters M3 and G8 never enters M3r.
+- The CSII / i.v. flags (G78) are defined once and shared by M3r and M3, as Table 11.1 lists
+  them for both.
 
-| Variable | Unit | Definition |
+## Conventions (all groups)
+
+- **Causality.** A feature at reading t uses only events with ts ≤ t. Same-timestamp order is
+  dose → meal → CGM, so a dose or meal charted at t is known at t.
+- **Tests.** Equality is checked bitwise:
+  - truncation equality at every label-eligible T time (`hyposense audit features`);
+  - Hypothesis truncation and future-perturbation tests;
+  - loader-level truncation.
+- **Recording-scoped.** All history (CGM, episodes, meals, medication) is per recording and never
+  crosses a recording boundary (ANALYSIS_PLAN §0 item 10).
+- **Windows.** History windows are half-open, (t − Δ, t].
+  - **Trend windows** (slopes, M0 projection) use (t − Δ − 5 min, t]. This is the executable
+    spec's M0 window, so a nominal 30-min window holds the readings at t − 30, t − 15 and t on
+    the 15-min grid.
+- **Arithmetic.** Sums are exact (`math.fsum`), and every NaN is the canonical NaN.
+  - Values are float64. The blueprint's float32 is not used, because rounding would blur
+    threshold ties.
+  - Snapshot digests are SHA-256.
+- **Time of day** uses the local clock (+08:00, ASSUMPTION).
+
+## Missingness policy (one per feature; no imputation anywhere)
+
+| Policy | Meaning |
+|---|---|
+| `REQUIRED` | Finite at every label-eligible time, guaranteed by the eligibility rules (reading at t, ≥ 7 readings in (t − 120, t], ≥ 120 min of record). It may be NaN only at non-eligible readings, and the audit asserts this. |
+| `NEVER_MISSING` | Finite at every reading: counts, flags, time, indicators, quality codes. |
+| `NAN_WITH_INDICATOR` | NaN when unknown. The listed indicator column is 1 exactly when the documented missingness source applies. Features with the same missingness source share one indicator. |
+
+**What a NaN means** is recorded per feature:
+- NOT_OBSERVED: nothing of that kind logged before t;
+- INSUFFICIENT_HISTORY;
+- UNKNOWN: the value is absent or unusable;
+- TIMING_UNKNOWN (Table 12.1).
+
+**ZERO is always a true zero**, documented per feature (e.g. "no exposure of this class at t",
+"nothing logged in the past 24 h").
+
+For the M3 exposure clusters, the class quality code (`quality_<class>`) *is* the indicator.
+The exposure is NaN exactly when the quality is TIMING_UNKNOWN, DOSE_UNKNOWN or
+FORMULATION_UNKNOWN. This is App. D's "timing-unknown indicators".
+
+## G1 CGM level (M1–M3)
+
+| Feature | Definition | Missing |
 |---|---|---|
-| `act_prandial` | IU/h | Σ dose × weight × a(t − tᵢ) over rapid-analogue and regular-human components (including premix fast fractions and CSII bolus/basal micro-boluses) |
-| `act_intermediate` | IU/h | the same for NPH components (NPH injections; protamine fraction of premixes) |
-| `act_basal` | IU/h | the same for basal analogues (flat kernels) |
-| `act_insulin_total` | IU/h | sum of the three |
-| `iob_insulin` | IU | insulin on board, Σ dose × (1 − A(t − tᵢ)), over all insulin components (basal included) |
-| `insulin_p30`, `insulin_p60` | IU/h | total insulin activity at t + 30 / t + 60 from doses with ts ≤ t, plus continuation of the currently programmed CSII basal rate. Never assumes future injections |
-| `act_su` | dimensionless | Σ (dose / D_max) × peak-normalised Bateman curve (formulation-specific for gliclazide) |
-| `su_p30`, `su_p60` | dimensionless | `act_su` projected from past doses |
-| `act_glinide`, `glinide_p30`, `glinide_p60` | dimensionless | as SU, for glinides |
-| `min_since_insulin`, `min_since_su`, `min_since_glinide` | min | capped at 1440. NaN if never logged |
-| `csii_active`, `csii_rate_iu_h`, `iv_insulin_recent` | — | as group 7 (shared flags) |
-| `quality_insulin`, `quality_sulfonylurea`, `quality_glinide` | enum code | KNOWN / PARTIAL / TIMING_UNKNOWN / DOSE_UNKNOWN / FORMULATION_UNKNOWN / NO_LOGGED_MEDICATION |
+| `cgm` | g(t) | REQUIRED |
+| `cgm_lag15`, `_lag30`, `_lag45`, `_lag60` | reading nearest to t − L within ± 7.5 min (ties → earlier) | NaN + `cgm_lagL_missing` |
+| `cgm_m0_proj30`, `cgm_m0_proj60` | g(t) + H × `cgm_slope30`, the M0 trend rule (audit2.py: LS slope over (t − 35, t], ≥ 3 readings) | NaN + `cgm_slope30_missing` |
 
-S4 derives `delta_insulin_60 = insulin_p60 − act_insulin_total` and `delta_su_60 = su_p60 − act_su`,
-the Δexposure terms of Blueprint App. D. It also derives `act_insulin_total_per_kg` when weight is
-known.
+## G2 CGM trend (M1–M3)
 
-### Missing / uncertainty semantics (Blueprint Table 12.1, S3 brief §3.15)
+| Feature | Definition | Missing |
+|---|---|---|
+| `cgm_slope30`, `cgm_slope60` | least-squares slope (mg/dL/min) over (t − Δ − 5, t], ≥ 3 readings | NaN + `cgm_slopeΔ_missing` |
+| `cgm_slope120` | same over (t − 125, t] | REQUIRED |
+| `cgm_accel` | slope30 − slope60 | NaN + both slope indicators |
+| `cgm_n_falling` | consecutive strictly falling steps ending at t; a step > 20 min ends the run | NEVER_MISSING |
 
-- **TIMING_UNKNOWN**: the class is prescribed (summary sheet) but nothing has been logged within
-  36 h, and no pump segment is active. Its exposure variables are NaN.
-- **DOSE_UNKNOWN** and **FORMULATION_UNKNOWN**: an affected administration is still within its
-  kernel support. That class's variables are NaN.
-- **PARTIAL**: the values are computed, but one of the following applies:
-  - an inferred formulation (gliclazide 15 mg);
-  - an i.v. insulin bag within 4 h, whose rate is unknown;
-  - pump delivery unknown after the 6-h continuation cap (within 24 h).
-- **NO_LOGGED_MEDICATION**: the class is neither prescribed nor logged. Variables are 0, which is a
-  true zero.
+## G3 CGM variability and personal history (M1–M3)
 
-### Conventions
+| Feature | Definition | Missing |
+|---|---|---|
+| `cgm_{min,mean,sd}_{2h,6h,24h}` | over (t − W, t]; SD with ddof = 1; a younger recording uses what it has | REQUIRED |
+| `cgm_cv_24h` | sd_24h / mean_24h | REQUIRED |
+| `cgm_min_below80_24h` | 15 min × readings < 80 in (t − 24 h, t] | REQUIRED |
+| `cgm_prior_l1_onsets` | L1 onsets confirmed by t (causal tracker, label rule with one-reading confirmation lag) | NEVER_MISSING |
+| `cgm_min_since_low70` | minutes since the latest reading < 70, capped at 1440 | NaN + indicator (no low yet) |
+| `cgm_pct_own` | mid-rank percentile of g(t) among the recording's readings ≤ t | NaN + indicator (< 24 h of history) |
+| `sensor_day` | ⌊(t − first reading)/24 h⌋ + 1 | NEVER_MISSING |
 
-- **Dose at exactly t:** a dose charted at t is known at t. Its activity is 0 at τ = 0, its
-  on-board value is the full dose, and minutes-since is 0.
-- **Summation:** exact (`math.fsum`), so full and truncated records give bitwise-identical values.
-- **Not clinically validated:** kernels are population-level label-derived shapes
-  (docs/medication/PARAMETER_SOURCES.md). They are neither patient-specific nor dosing tools.
+## G4 Time (M1–M3)
 
-## Groups excluded by design
+| Feature | Definition |
+|---|---|
+| `hour_sin` | sin(2πh/24) |
+| `hour_cos` | cos(2πh/24) |
+| `night` | 1 if 00:00 ≤ local time < 06:00 |
 
-- "Hypoglycemia (yes/no)" and any patient identifier: never features.
-- Treated status: population definition only, never a model input.
-- i.v. glucose: a confounder / data-quality flag only (S3.6). Not a feature: 3 events, E only,
-  rate unknown.
+## G5 Static context (M2–M3)
+
+- **Fields:**
+  - `age_y`, `sex_male`, `bmi`, `weight_kg`, `diabetes_duration_y`;
+  - the labs, `hba1c_mmol_mol`, `egfr` and `c_peptide_fasting_nmol_l`, which are tagged `lab` and
+    removed in SA8;
+  - each with its own `<name>_missing`.
+- **Source:** the recording's own summary row, through an allow-list. "Hypoglycemia (yes/no)" and
+  identifiers are never read.
+- **Missing values:** "/", blank, unparseable or outside a wide validity range → NaN, counted.
+- **Regimen flags** (parsed from "Hypoglycemic Agents" with the drug dictionary): `rx_insulin`,
+  `rx_premix`, `rx_basal` (basal analogue or NPH), `rx_short_rapid`, `rx_su`, `rx_glinide`,
+  `rx_metformin`, `rx_agi`, `rx_dpp4`, `rx_sglt2`, `rx_glp1`, `rx_tzd`.
+  - 0 = not named in the regimen.
+  - NaN + `rx_missing` if the field is empty. "none" gives all-zero flags.
+- **Temporal status** (Blueprint §10.2): labs may be measured up to 6 months before or after the
+  CGM period. They are patient-level context, constant over the recording and available at
+  every t. This is the accepted, documented residual risk, and SA8 removes them. They are never
+  treated as time-stamped events.
+
+## G6 Meal timing (M2–M3)
+
+| Feature | Definition | Missing |
+|---|---|---|
+| `meal_min_since` | minutes since the latest logged meal, capped at 720 | NaN + `meal_none_logged` |
+| `meal_last_3h` | meal logged in (t − 180, t] | NEVER_MISSING |
+| `meals_today` | meals since local midnight, up to t | NEVER_MISSING |
+| `meal_last_content_unknown` | latest meal's diet text is the "not recorded" marker ("Data not available" / 未记录) | NaN + `meal_none_logged` |
+
+A meal is a timed diet entry; entries sharing a timestamp form one meal. There is no
+carbohydrate estimation and no nutrition parsing (E3 deferred).
+
+## G7 Raw medication timing (M3r only; S3 contract)
+
+- **Categories:** `insulin_bolus` (rapid, regular and premix injections; CSII boluses),
+  `insulin_basal` (basal analogue and NPH injections), `su`, `glinide`.
+- **Per category:**
+  - `_min_since_last`: capped at 1440;
+  - `_last_dose`;
+  - `_dose_24h`: over (t − 24 h, t];
+  - `_n_24h`.
+- **Missing:**
+  - If the class is TIMING_UNKNOWN (prescribed, nothing logged within 36 h; Table 12.1),
+    min_since, last_dose and dose_24h are NaN. n_24h keeps the true count.
+  - `<cat>_missing` = min_since is NaN: never logged before t, or timing unknown.
+  - A dose of unknown size makes last_dose / dose_24h NaN. There are 0 such cases in the data;
+    any would pass as a native NaN.
+
+## G78 CSII / i.v. flags (M3r and M3)
+
+| Feature | Definition |
+|---|---|
+| `csii_active` | a programmed basal rate is in force (≤ 6 h after entry, not suspended) |
+| `csii_rate_iu_h` | the current programmed rate (0 if none) |
+| `iv_insulin_recent` | an i.v. insulin entry in (t − 4 h, t] |
+
+## G8 Medication exposure state (M3 only; S3 contract + S4 derived terms)
+
+| Feature | Definition |
+|---|---|
+| `act_prandial`, `act_intermediate`, `act_basal`, `act_insulin_total` | insulin activity (IU/h) by kernel family and in total |
+| `iob_insulin` | insulin on board (IU) |
+| `insulin_p30`, `insulin_p60` | total activity at t + 30 / 60 from doses ≤ t (+ the current CSII basal rate) |
+| `act_su`, `su_p30`, `su_p60` | dose/D_max-scaled Bateman exposure (dimensionless) and its projections |
+| `act_glinide`, `glinide_p30`, `glinide_p60` | the same for glinides |
+| `min_since_insulin`, `min_since_su`, `min_since_glinide` | capped at 1440; NaN + `min_since_<x>_missing` if never logged |
+| `delta_insulin_60` | insulin_p60 − act_insulin_total (App. D "Δexposure next 60 min") |
+| `delta_su_60` | su_p60 − act_su |
+| `act_insulin_total_per_kg` | act_insulin_total / weight_kg. NaN if weight is unknown; weight is never imputed |
+| `quality_insulin`, `quality_sulfonylurea`, `quality_glinide` | QualityState codes: 0 KNOWN, 1 PARTIAL, 2 TIMING_UNKNOWN, 3 DOSE_UNKNOWN, 4 FORMULATION_UNKNOWN, 5 NO_LOGGED_MEDICATION |
+
+The exposure clusters are NaN when the class quality is TIMING_UNKNOWN, DOSE_UNKNOWN or
+FORMULATION_UNKNOWN. NO_LOGGED_MEDICATION gives a true 0. Kernel parameters and their provenance
+are in configs/pharma.yaml and docs/medication/PARAMETER_SOURCES.md. The kernels are
+population-level shapes, not clinically validated and not dosing tools.
+
+## Non-feature columns of the offline table (metadata; never model inputs)
+
+| Column | Meaning |
+|---|---|
+| `sufficient`, `gap_before`, `floor`, `rapid_change`, `warmup`, `history_ok` | data-quality state at t (policy sufficiency, Table 14.1 priority 2) |
+| `sensor_fault_suspected` | P-C8a causal flag |
+| `in_episode_causal` | the causal tracker's in-episode status (policy LOW NOW / refractory, S7) |
+
+Label columns (eligible, y) and the hindsight sensor-floor-run mask for SA9 / P-B6 are joined
+offline from `labels/`. The live path never sees them.
+
+## Excluded by design
+
+- "Hypoglycemia (yes/no)", patient or recording identifiers, the treated status (population
+  only), CBG (display only), the forecast state and outcome ledger (display and audit only), and
+  i.v. glucose (confounder flag only, ADR-028).
+- No carbohydrate estimate, no physiological-model output (group 9 / M4 not planned).

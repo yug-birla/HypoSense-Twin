@@ -28,7 +28,6 @@ class CGMFeatureConfig:
     stat_windows: tuple[tuple[int, str], ...]  # (seconds, label)
     below_mgdl: float
     interval_min: float
-    low_mgdl: float
     low_cap_min: float
     pct_min_history_s: int
     night_hours: tuple[int, int]
@@ -39,6 +38,19 @@ class CGMFeatureConfig:
     def from_config(cls, cfg: dict[str, Any]) -> CGMFeatureConfig:
         f = cfg["features"]
         labels = {120: "2h", 360: "6h", 1440: "24h"}
+        # Feature NAMES encode these constants (cgm_lag15, cgm_slope30, cgm_sd_24h, ...). A config
+        # change must come with a new spec version, never silently stale names.
+        fixed = {
+            "lags_min": [15, 30, 45, 60],
+            "slope_windows_min": [30, 60, 120],
+            "m0_projections_min": [30, 60],
+            "stat_windows_min": [120, 360, 1440],
+            "below_threshold_mgdl": 80,
+            "meal_recent_window_min": 180,
+        }
+        for key, value in fixed.items():
+            if f[key] != value:
+                raise ValueError(f"features.{key}={f[key]!r} contradicts spec names ({value!r})")
         return cls(
             lags_s=tuple(int(x) * 60 for x in f["lags_min"]),
             lag_tol_s=float(f["lag_tolerance_min"]) * 60,
@@ -49,7 +61,6 @@ class CGMFeatureConfig:
             stat_windows=tuple((int(w) * 60, labels[int(w)]) for w in f["stat_windows_min"]),
             below_mgdl=float(f["below_threshold_mgdl"]),
             interval_min=float(f["cgm_nominal_interval_min"]),
-            low_mgdl=float(cfg["event"]["threshold_mgdl"]),
             low_cap_min=float(f["min_since_low_cap_min"]),
             pct_min_history_s=int(f["own_percentile_min_history_h"]) * 3600,
             night_hours=(int(f["night_hours"][0]), int(f["night_hours"][1])),

@@ -152,3 +152,18 @@ def test_exponential_kernels_satisfy_shape_constraint() -> None:
     for name, k in pharma["insulin"].items():
         if k["family"] == "exponential":
             assert 0 < k["t_peak_min"]["value"] < k["t_dur_min"]["value"] / 2, name
+
+
+# ---------------- S4: feature specification lock ----------------
+# The feature specification (definitions, groups, levels, constants) is a scientific artefact
+# (Class B). Changing it requires bumping `features.spec_version`, regenerating
+# artifacts/features/feature_spec.json (`hyposense features spec`), a DECISION_LOG entry, and
+# updating this pin, never a silent edit.
+FEATURE_SPEC_SHA256 = "82fc54e9b3c7e3ed8638c282be253251c3bdd9b2fe8b0de9b1dda1afc0ac76d1"
+
+
+def test_feature_spec_is_locked() -> None:
+    from hyposense.features.spec import level_names, spec_sha256
+
+    assert spec_sha256(_load("default.yaml")["features"]) == FEATURE_SPEC_SHA256
+    assert [len(level_names(lvl)) for lvl in ("M1", "M2", "M3r", "M3")] == [38, 72, 95, 100]

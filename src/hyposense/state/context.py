@@ -10,6 +10,13 @@ patient-level context, not time-stamped events. They are constant over the recor
 available at every t. This is the accepted, documented residual risk; SA8 removes them. They are
 never reinterpreted as time-varying information.
 
+The prescribed regimen ("Hypoglycemic Agents") is stay-level information of the same kind. It
+is used at every t: in M2 as `rx_*` flags, and in M3 / M3r through the TIMING_UNKNOWN rule
+(Table 12.1). It may describe treatment started during the stay. MEASURED on T (aggregate):
+of 19 insulin-prescribed recordings, all logged insulin, the first dose at most 9.2 h after the
+recording start; of 5 SU-prescribed recordings, 1 never logged SU, the others at most 20 h after.
+The risk is small and is documented (DECISION_LOG ADR-033); no SA removes it.
+
 Allow-list, not deny-list: only the fields below are read. "Hypoglycemia (yes/no)" and patient
 identifiers are never read (`FORBIDDEN_FEATURE_COLUMNS`). Missing values ("/" in the sheet,
 blank, unparseable or outside the plausible range) become NaN, never 0, and are counted in
@@ -125,6 +132,9 @@ def parse_context(
         classes: frozenset[str] = frozenset()
         issues.append("regimen: missing")
     else:
+        text = str(row.get(REGIMEN_COLUMN)).strip().lower()
+        if not drugs and text not in MISSING_MARKERS:
+            issues.append("regimen: no recognised drug in non-empty text")
         entries = [d.by_canonical(c) for c in drugs]
         classes = frozenset(e.drug_class for e in entries)
         regimen = {

@@ -142,3 +142,25 @@ def test_static_context_on_tuning(t_data) -> None:  # type: ignore[no-untyped-de
         "egfr: missing",
         "hba1c_mmol_mol: missing",
     ]
+
+
+def test_adapter_refuses_sealed_patients_before_freeze(make_workbook, tmp_path) -> None:  # type: ignore[no-untyped-def]
+    """Defence in depth: even a SYNTHETIC record carrying an E patient's id is refused."""
+    from datetime import datetime
+
+    from hyposense.data.loader import load_recording
+    from hyposense.data.partition import load_partition
+    from hyposense.state.stream import recording_stream
+    from tests.conftest import row
+
+    e_pid = sorted(p for p, part in load_partition().items() if part == "E")[0]
+    path = make_workbook(
+        f"{e_pid}_0_20210301.xlsx",
+        [row(datetime(2021, 3, 1, 6, 0), 100.0)],
+        sheet_name=f"{e_pid}_0_20210301",
+        directory=tmp_path,
+    )
+    with pytest.raises(SealedPartitionError):
+        recording_stream(
+            load_recording(path), load_dictionary(), PHARMA["formulation_rules"], None, PLAUS
+        )

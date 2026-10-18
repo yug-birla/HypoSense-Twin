@@ -287,3 +287,40 @@ def test_snapshot_is_a_selection_of_the_union() -> None:
         assert snap.names == level_names(lvl) and snap.ts == T0 + 300 * 60
         assert snap.values.tobytes() == union[LEVEL_INDEX[lvl]].tobytes()
         assert snap.spec_sha256 == BUILDER.spec_sha256 and len(snap.digest) == 64
+
+
+def test_frame_hash_depends_on_values_not_memory_layout() -> None:
+    import pandas as pd
+
+    from hyposense.features.export import frame_sha256
+
+    def make() -> pd.DataFrame:
+        return pd.DataFrame(
+            {
+                "patient_key": ["".join(["shanghai_t2dm:", "1"])] * 3,
+                "x": [1.0, float("nan"), 2.0],
+                "ok": [True, False, True],
+            }
+        )
+
+    a, b = make(), make()
+    assert frame_sha256(a) == frame_sha256(b) == frame_sha256(a.copy(deep=True))
+    b.loc[1, "patient_key"] = "shanghai_t2dm:2"
+    assert frame_sha256(a) != frame_sha256(b)
+
+
+def test_raw_timing_indicator_covers_unknown_dose() -> None:
+    f = feats([*cgm(steady(0, 120)), *med("novolin r", "insulin_sc", 30)])  # dose not stated
+    assert math.isnan(f["insulin_bolus_last_dose"]) and f["insulin_bolus_min_since_last"] == 90
+    assert f["insulin_bolus_missing"] == 1.0
+
+
+def test_config_that_contradicts_feature_names_is_refused() -> None:
+    import copy
+
+    from hyposense.features.cgm import CGMFeatureConfig
+
+    bad = copy.deepcopy(CFG)
+    bad["features"]["lags_min"] = [10, 20, 30, 40]
+    with pytest.raises(ValueError, match="contradicts spec names"):
+        CGMFeatureConfig.from_config(bad)

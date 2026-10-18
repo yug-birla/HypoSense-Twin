@@ -13,6 +13,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from enum import StrEnum
+from functools import lru_cache
 from pathlib import Path
 
 from hyposense.common.config import REPO_ROOT, load_config
@@ -41,6 +42,22 @@ class Dataset:
     manifest_files_sha256: str
     recordings: tuple[Recording, ...]
     summary: SummaryTable
+
+
+@lru_cache(maxsize=1)
+def _sealed_patient_ids() -> frozenset[str]:
+    return frozenset(pid for pid, part in load_partition().items() if part == "E")
+
+
+def assert_not_sealed(patient_id: str) -> None:
+    """Defence in depth for every real-data feature path (S4 independent review): before
+    freeze, refuse any record of a sealed-evaluation (E) patient, whatever the caller's
+    scope. The confirmatory stage will authorise E through the freeze record (ALL_AFTER_FREEZE),
+    which does not exist yet."""
+    if patient_id in _sealed_patient_ids():
+        raise SealedPartitionError(
+            f"patient {patient_id} belongs to the sealed evaluation partition (no freeze record)"
+        )
 
 
 def extracted_root() -> Path:

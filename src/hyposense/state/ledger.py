@@ -64,3 +64,17 @@ class OutcomeLedger:
             else:
                 still.append(f)
         return replace(self, pending=tuple(still), resolved=resolved)
+
+    def finalize(self, last_reading_ts: int) -> tuple[OutcomeLedger, tuple[Forecast, ...]]:
+        """At recording end (ANALYSIS_PLAN §2 item 4). A pending forecast whose window is fully
+        observed (last reading >= t_f + H) had no confirmed onset: its outcome is 0. An onset at
+        the very last reading cannot be confirmed (it needs the next reading), the same rule as
+        the labels. Forecasts whose window is not fully observed come back as OUTCOME-UNKNOWN."""
+        resolved = self.resolved
+        unknown: list[Forecast] = []
+        for f in self.pending:
+            if last_reading_ts >= f.ts + self.horizon_s:
+                resolved = resolved.append(LedgerEntry(f, 0, last_reading_ts))
+            else:
+                unknown.append(f)
+        return replace(self, pending=(), resolved=resolved), tuple(unknown)

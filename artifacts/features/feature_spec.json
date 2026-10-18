@@ -2212,7 +2212,7 @@
    "computation": "dose of the latest administration",
    "availability": "administrations up to t",
    "missing": "NAN_WITH_INDICATOR",
-   "nan_meaning": "NOT_OBSERVED, TIMING_UNKNOWN for class insulin (Table 12.1), or dose unknown (0 cases in the data)",
+   "nan_meaning": "NOT_OBSERVED, TIMING_UNKNOWN for class insulin (Table 12.1), or the dose is unknown (0 cases in T)",
    "indicators": [
     "insulin_bolus_missing"
    ],
@@ -2235,7 +2235,7 @@
    "computation": "total dose in (t - 24 h, t]",
    "availability": "administrations in (t - 24 h, t]",
    "missing": "NAN_WITH_INDICATOR",
-   "nan_meaning": "TIMING_UNKNOWN for class insulin (Table 12.1), or a dose in the window is unknown (0 cases in the data)",
+   "nan_meaning": "TIMING_UNKNOWN for class insulin (Table 12.1), or a dose in the window is unknown (0 cases in T)",
    "indicators": [
     "insulin_bolus_missing"
    ],
@@ -2302,7 +2302,7 @@
    "computation": "dose of the latest administration",
    "availability": "administrations up to t",
    "missing": "NAN_WITH_INDICATOR",
-   "nan_meaning": "NOT_OBSERVED, TIMING_UNKNOWN for class insulin (Table 12.1), or dose unknown (0 cases in the data)",
+   "nan_meaning": "NOT_OBSERVED, TIMING_UNKNOWN for class insulin (Table 12.1), or the dose is unknown (0 cases in T)",
    "indicators": [
     "insulin_basal_missing"
    ],
@@ -2325,7 +2325,7 @@
    "computation": "total dose in (t - 24 h, t]",
    "availability": "administrations in (t - 24 h, t]",
    "missing": "NAN_WITH_INDICATOR",
-   "nan_meaning": "TIMING_UNKNOWN for class insulin (Table 12.1), or a dose in the window is unknown (0 cases in the data)",
+   "nan_meaning": "TIMING_UNKNOWN for class insulin (Table 12.1), or a dose in the window is unknown (0 cases in T)",
    "indicators": [
     "insulin_basal_missing"
    ],
@@ -2392,7 +2392,7 @@
    "computation": "dose of the latest administration",
    "availability": "administrations up to t",
    "missing": "NAN_WITH_INDICATOR",
-   "nan_meaning": "NOT_OBSERVED, TIMING_UNKNOWN for class sulfonylurea (Table 12.1), or dose unknown (0 cases in the data)",
+   "nan_meaning": "NOT_OBSERVED, TIMING_UNKNOWN for class sulfonylurea (Table 12.1), or the dose is unknown (0 cases in T)",
    "indicators": [
     "su_missing"
    ],
@@ -2415,7 +2415,7 @@
    "computation": "total dose in (t - 24 h, t]",
    "availability": "administrations in (t - 24 h, t]",
    "missing": "NAN_WITH_INDICATOR",
-   "nan_meaning": "TIMING_UNKNOWN for class sulfonylurea (Table 12.1), or a dose in the window is unknown (0 cases in the data)",
+   "nan_meaning": "TIMING_UNKNOWN for class sulfonylurea (Table 12.1), or a dose in the window is unknown (0 cases in T)",
    "indicators": [
     "su_missing"
    ],
@@ -2482,7 +2482,7 @@
    "computation": "dose of the latest administration",
    "availability": "administrations up to t",
    "missing": "NAN_WITH_INDICATOR",
-   "nan_meaning": "NOT_OBSERVED, TIMING_UNKNOWN for class glinide (Table 12.1), or dose unknown (0 cases in the data)",
+   "nan_meaning": "NOT_OBSERVED, TIMING_UNKNOWN for class glinide (Table 12.1), or the dose is unknown (0 cases in T)",
    "indicators": [
     "glinide_missing"
    ],
@@ -2505,7 +2505,7 @@
    "computation": "total dose in (t - 24 h, t]",
    "availability": "administrations in (t - 24 h, t]",
    "missing": "NAN_WITH_INDICATOR",
-   "nan_meaning": "TIMING_UNKNOWN for class glinide (Table 12.1), or a dose in the window is unknown (0 cases in the data)",
+   "nan_meaning": "TIMING_UNKNOWN for class glinide (Table 12.1), or a dose in the window is unknown (0 cases in T)",
    "indicators": [
     "glinide_missing"
    ],
@@ -2546,7 +2546,7 @@
    "dtype": "binary",
    "unit": "0/1",
    "source": "indicator",
-   "computation": "1 if insulin_bolus_min_since_last is NaN (none logged before t, or class insulin TIMING_UNKNOWN), else 0",
+   "computation": "1 if any of insulin_bolus_min_since_last / _last_dose / _dose_24h is NaN (none logged before t, class insulin TIMING_UNKNOWN, or a dose of unknown size), else 0",
    "availability": "same information as the features it indicates",
    "missing": "NEVER_MISSING",
    "nan_meaning": null,
@@ -2567,7 +2567,7 @@
    "dtype": "binary",
    "unit": "0/1",
    "source": "indicator",
-   "computation": "1 if insulin_basal_min_since_last is NaN (none logged before t, or class insulin TIMING_UNKNOWN), else 0",
+   "computation": "1 if any of insulin_basal_min_since_last / _last_dose / _dose_24h is NaN (none logged before t, class insulin TIMING_UNKNOWN, or a dose of unknown size), else 0",
    "availability": "same information as the features it indicates",
    "missing": "NEVER_MISSING",
    "nan_meaning": null,
@@ -2588,7 +2588,7 @@
    "dtype": "binary",
    "unit": "0/1",
    "source": "indicator",
-   "computation": "1 if su_min_since_last is NaN (none logged before t, or class sulfonylurea TIMING_UNKNOWN), else 0",
+   "computation": "1 if any of su_min_since_last / _last_dose / _dose_24h is NaN (none logged before t, class sulfonylurea TIMING_UNKNOWN, or a dose of unknown size), else 0",
    "availability": "same information as the features it indicates",
    "missing": "NEVER_MISSING",
    "nan_meaning": null,
@@ -2609,7 +2609,7 @@
    "dtype": "binary",
    "unit": "0/1",
    "source": "indicator",
-   "computation": "1 if glinide_min_since_last is NaN (none logged before t, or class glinide TIMING_UNKNOWN), else 0",
+   "computation": "1 if any of glinide_min_since_last / _last_dose / _dose_24h is NaN (none logged before t, class glinide TIMING_UNKNOWN, or a dose of unknown size), else 0",
    "availability": "same information as the features it indicates",
    "missing": "NEVER_MISSING",
    "nan_meaning": null,
@@ -3255,5 +3255,5 @@
    ]
   }
  ],
- "sha256": "0e87630cbbfdc7fb5f813d4c373ab9ac393f171c9ff764da80f7139343f97a2e"
+ "sha256": "82fc54e9b3c7e3ed8638c282be253251c3bdd9b2fe8b0de9b1dda1afc0ac76d1"
 }

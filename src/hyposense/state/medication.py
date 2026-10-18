@@ -46,7 +46,10 @@ class MedicationExposureState:
     kernels: KernelSet
     prescribed: frozenset[str]  # classes named in the prescribed regimen (static summary)
     events: AppendLog[MedicationEvent] = field(default_factory=AppendLog)
-    _cache: _EngineCache = field(default_factory=_EngineCache, compare=False, repr=False)
+    # init=False: dataclasses.replace() never carries a cache over to different events
+    _cache: _EngineCache = field(
+        default_factory=_EngineCache, init=False, compare=False, repr=False
+    )
 
     def add(self, e: MedicationEvent) -> MedicationExposureState:
         return MedicationExposureState(self.kernels, self.prescribed, self.events.append(e))

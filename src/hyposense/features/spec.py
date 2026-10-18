@@ -494,7 +494,7 @@ def _g6() -> list[FeatureDef]:
     ]
 
 
-_CAT_CLASS = {
+CATEGORY_CLASS = {
     "insulin_bolus": "insulin",
     "insulin_basal": "insulin",
     "su": "sulfonylurea",
@@ -505,7 +505,7 @@ _CAT_CLASS = {
 def _g7() -> list[FeatureDef]:
     src = "parsed medication events with ts <= t (medication.timing.raw_timing)"
     out = []
-    for cat, cls in _CAT_CLASS.items():
+    for cat, cls in CATEGORY_CLASS.items():
         unit = "IU" if cat.startswith("insulin") else "mg"
         tu = f"TIMING_UNKNOWN for class {cls} (Table 12.1)"
         out += [
@@ -532,7 +532,7 @@ def _g7() -> list[FeatureDef]:
                 "dose of the latest administration",
                 "administrations up to t",
                 Missing.NAN_WITH_INDICATOR,
-                f"NOT_OBSERVED, {tu}, or dose unknown (0 cases in the data)",
+                f"NOT_OBSERVED, {tu}, or the dose is unknown (0 cases in T)",
                 (f"{cat}_missing",),
                 ref="App. D group 7; FEATURE_DICTIONARY",
                 status="S3_CONTRACT",
@@ -546,7 +546,7 @@ def _g7() -> list[FeatureDef]:
                 "total dose in (t - 24 h, t]",
                 "administrations in (t - 24 h, t]",
                 Missing.NAN_WITH_INDICATOR,
-                f"{tu}, or a dose in the window is unknown (0 cases in the data)",
+                f"{tu}, or a dose in the window is unknown (0 cases in T)",
                 (f"{cat}_missing",),
                 zero_meaning="nothing of this category logged in the past 24 h",
                 ref="App. D group 7; FEATURE_DICTIONARY",
@@ -570,10 +570,11 @@ def _g7() -> list[FeatureDef]:
         _ind(
             f"{cat}_missing",
             Group.G7,
-            f"{cat}_min_since_last is NaN (none logged before t, or class {cls} TIMING_UNKNOWN)",
+            f"any of {cat}_min_since_last / _last_dose / _dose_24h is NaN (none logged before "
+            f"t, class {cls} TIMING_UNKNOWN, or a dose of unknown size)",
             ref="§25.1; FEATURE_DICTIONARY",
         )
-        for cat, cls in _CAT_CLASS.items()
+        for cat, cls in CATEGORY_CLASS.items()
     ]
     return out
 

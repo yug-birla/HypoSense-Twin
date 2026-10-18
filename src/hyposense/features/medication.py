@@ -14,15 +14,10 @@ from __future__ import annotations
 
 import math
 
+from hyposense.features.spec import CATEGORY_CLASS
 from hyposense.medication.exposure import QualityState
 from hyposense.state.medication import MedicationSnapshot
 
-CATEGORY_CLASS = {
-    "insulin_bolus": "insulin",
-    "insulin_basal": "insulin",
-    "su": "sulfonylurea",
-    "glinide": "glinide",
-}
 G8_EXPOSURE = (
     "act_prandial",
     "act_intermediate",
@@ -52,7 +47,9 @@ def raw_timing_features(m: MedicationSnapshot) -> dict[str, float]:
             v = m.timing[f"{cat}_{var}"]
             out[f"{cat}_{var}"] = math.nan if unknown and var != "n_24h" else v
     for cat in CATEGORY_CLASS:
-        out[f"{cat}_missing"] = float(math.isnan(out[f"{cat}_min_since_last"]))
+        out[f"{cat}_missing"] = float(
+            any(math.isnan(out[f"{cat}_{v}"]) for v in ("min_since_last", "last_dose", "dose_24h"))
+        )
     return out
 
 

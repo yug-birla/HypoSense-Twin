@@ -13,6 +13,7 @@ import json
 from pathlib import Path
 from typing import Any
 
+import numpy as np
 import pandas as pd
 
 from hyposense.common.config import REPO_ROOT, config_hash, load_config
@@ -45,11 +46,10 @@ def frame_sha256(df: pd.DataFrame) -> str:
     parts = [canonical_json([list(map(str, df.columns)), [str(t) for t in df.dtypes]]).encode()]
     for c in df.columns:
         col = df[c]
-        parts.append(
-            col.astype(str).str.cat(sep="|").encode()
-            if col.dtype == object
-            else col.to_numpy().tobytes()
-        )
+        if pd.api.types.is_numeric_dtype(col) or pd.api.types.is_bool_dtype(col):
+            parts.append(np.ascontiguousarray(col.to_numpy()).tobytes())
+        else:  # strings / objects: hash the values, never the memory layout (pointers)
+            parts.append(col.astype(str).str.cat(sep="|").encode("utf-8"))
     return sha256_bytes(b"".join(parts))
 
 

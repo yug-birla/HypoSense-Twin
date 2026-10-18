@@ -24,6 +24,7 @@ from typing import Any
 import numpy as np
 import pandas as pd
 
+from hyposense.data.dataset import assert_not_sealed
 from hyposense.data.loader import cgm_series
 from hyposense.data.records import Recording, RecordingIdentity
 from hyposense.medication.dictionary import DrugDictionary
@@ -107,6 +108,7 @@ def recording_stream(
     plausible: Mapping[str, tuple[float, float]],
 ) -> RecordingStream:
     ident = rec.identity
+    assert_not_sealed(ident.patient_id)  # sealed partition: no E features before freeze
     context = parse_context(ident.patient_key, ident.recording_key, summary_row, d, plausible)
     series = cgm_series(rec)
     cgm: list[StateEvent] = [

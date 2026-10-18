@@ -212,12 +212,19 @@ def _bounds(name: str, cfg: dict[str, Any]) -> tuple[float, float] | None:
         return (0.0, 5.0)
     if name in plaus:
         return (float(plaus[name][0]), float(plaus[name][1]))
-    if name.startswith(("cgm_lag", "cgm_min_", "cgm_mean_")) or name == "cgm":
+    if name.startswith(("cgm_lag", "cgm_mean_")) or name in (
+        "cgm",
+        "cgm_min_2h",
+        "cgm_min_6h",
+        "cgm_min_24h",
+    ):
         return (20.0, 600.0)
     if name == "cgm_pct_own":
         return (0.0, 100.0)
     if name in ("hour_sin", "hour_cos"):
         return (-1.0, 1.0)
+    if name == "cgm_min_below80_24h":
+        return (0.0, 1440.0)
     if "min_since" in name:
         return (0.0, 720.0 if name.startswith("meal") else 1440.0)
     if name.startswith(("act_", "iob", "insulin_p", "su_p", "glinide_p")) or name.endswith(
@@ -269,8 +276,11 @@ def feature_statistics(
             "unique": len(np.unique(fin)),
         }
         if len(fin):
-            q = np.percentile(fin, [0, 1, 5, 25, 50, 75, 95, 99, 100])
-            s["min_p1_p5_p25_p50_p75_p95_p99_max"] = [_r(x) for x in q]
+            if f.group is Group.G5:  # ~34 recordings: extremes would be individual values
+                s["p25_p50_p75"] = [_r(x) for x in np.percentile(fin, [25, 50, 75])]
+            else:
+                q = np.percentile(fin, [0, 1, 5, 25, 50, 75, 95, 99, 100])
+                s["min_p1_p5_p25_p50_p75_p95_p99_max"] = [_r(x) for x in q]
             s["mean"] = _r(float(fin.mean())) if f.dtype != "categorical" else None
             top = float(pd.Series(fin).value_counts(normalize=True).iloc[0])
             s["top_value_share"] = _r(top)
