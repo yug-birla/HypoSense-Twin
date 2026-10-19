@@ -1057,3 +1057,44 @@ docs/FRONTEND.md.
   - P-B8, P-B6, P-C7, P-C9, P-C10, ANALYSIS_PLAN §5.
 - **Review** (independent): no CRITICAL findings; F1–F9 addressed (code or documentation).
 - **Class**: B · **Date**: 2026-10-19 · **Commits**: 6b1ad05, 913864e, e0931cf, d8d3c7c, eb5baae
+
+## DEC-2026-10-19-M · Final pre-freeze resolution (owner-approved)
+
+Owner approval 2026-10-19. Canonical text: ANALYSIS_PLAN §5 and §6 (FINAL). Branch
+`prefreeze-finalization`.
+
+- **P-B10 → canonical calibrator = `isotonic_interp_floored`.** FINAL HUMAN PROTOCOL DECISION,
+  distinct from the experimental verdict, which stays **INCONCLUSIVE** (DEC-2026-10-19-L,
+  unchanged).
+  - **Reasons:** no exact 0 %/100 % outputs; sens@1FA and partial area unchanged; canonical
+    log-loss cost negligible (0.04019 vs 0.04017); 11/15 development configurations favoured
+    adoption; the unfloored calibrator gave exact edge probabilities on held-out rows in 11/15.
+  - **Floor:** the pre-specified p_lo rule, with no new value.
+- **P-B12 → LOW_CONFIDENCE removed from the live product:** policy metadata, API, SSE, UI,
+  summary and active docs. The history (tested, rejected) is preserved. Genuine quality flags
+  are kept: SENSOR FAULT SUSPECTED, MED_TIMING_UNKNOWN, INPUT REJECTED / EVENT_REJECTED,
+  INSUFFICIENT DATA and SYSTEM ERROR.
+- **P-B8 → canonical M3 = full M3 (100 features).** M3_compact is a DEVELOPMENT ablation only.
+  - **Reasons:** no consistent advantage (P-B11); M3 ranked first more often; slightly lower
+    variability of the primary metric; the intended full exposure representation is more
+    defensible.
+- **P-B6 → SENSITIVITY ONLY (SA9).** The canonical population is unchanged.
+  - **Reasons:** evidence comes from very few affected T patients; the result depends partly on
+    calibration.
+- **P-C7 → approved for the POLICY ONLY.** The warm-up re-anchors after a CGM gap > 120 min
+  (strict), and LOW NOW still applies. Labels and label eligibility are unchanged.
+  - **Consequence:** a label-eligible time after such a gap cannot alert, for every model alike.
+  - **Measured on T:** 0 gaps > 120 min, so T results are unaffected. In E it affects at most
+    one recording.
+- **P-C9 → CGM-level rule = POST-HOC DEVELOPMENT REFERENCE** (alerts at CGM < 81 mg/dL; S6
+  diagnostic; not retuned). It is not M0, not M1, plays no role in G4 or H1, and is never
+  confirmatory.
+- **P-C10 → option (b):** keep the current clinical state, show the INPUT REJECTED badge,
+  quarantine and log the rejected input, continue processing later valid events, and keep the
+  circuit breaker. A rejected CGM reading remains SYSTEM ERROR.
+- **ANALYSIS_PLAN §5 → FINAL** (17 items) and **§6 → FINAL** (Blueprint §15 selection rule and
+  Table 20.4).
+- **Pharmacist review:** the Blueprint §12.3 requires it before freeze. No human review has been
+  received, and no owner waiver ("no pharmacist available") is recorded, so **freeze is blocked
+  on this item only**. Nothing about the review is fabricated.
+- **Class**: C (owner-approved) · **Date**: 2026-10-19

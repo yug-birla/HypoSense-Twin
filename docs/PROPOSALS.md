@@ -197,7 +197,7 @@ Status values: **AWAITING APPROVAL** · **APPROVED** · **REJECTED** · **EXPERI
 8. **Recommendation.** Approve.
 
 ### P-C7 · Sensor replacement within a recording should restart the warm-up period
-**Status: AWAITING APPROVAL (low impact).** S7 shipped WITHOUT it: the blueprint warm-up rule is active and the config hook is ready (DEC-2026-10-18-J) · raised 2026-10-18 (S1 audit)
+**Status: APPROVED 2026-10-19 (DEC-2026-10-19-M) for the POLICY only: warm-up re-anchors after a CGM gap > 120 min (`policy.warmup_restart_after_gap_min`); labels unchanged. ANALYSIS_PLAN §5.4 item 16.**
 
 1. **Current specification.** Warm-up = "first 2 hours of a recording" (§10.1; policy priority 2).
 2. **Problem.** Recording 2029_0_20210526 contains a documented CGM device replacement (the
@@ -254,7 +254,7 @@ Status values: **AWAITING APPROVAL** · **APPROVED** · **REJECTED** · **EXPERI
 ---
 
 ### P-C9 · Add a CGM-level rule as a reference baseline for interpreting C0 (S6 finding)
-**Status: AWAITING APPROVAL (before freeze; not blocking S7)**
+**Status: APPROVED 2026-10-19 as a POST-HOC DEVELOPMENT REFERENCE only (DEC-2026-10-19-M; ANALYSIS_PLAN §5.4 item 15). Not pre-specified; not M0/M1; no role in G4/H1.**
 1. **Current specification.** C0 = M1 vs M0. M0 is the 60-min linear trend projection
    (Table 19.1, ANALYSIS_PLAN §0d). Interpretation-matrix row: "Learned models ≤ M0 →
    trend extrapolation is as good as ML".
@@ -281,7 +281,7 @@ Status values: **AWAITING APPROVAL** · **APPROVED** · **REJECTED** · **EXPERI
 8. **Recommendation.** Approve as a secondary analysis (S8 in Table 20.3 numbering, or "C0b").
 
 ### P-C10 · Display state after a rejected NON-CGM input event (S7 review F7)
-**Status: AWAITING DECISION (display semantics; does not affect any endpoint)**
+**Status: APPROVED 2026-10-19, option (b): keep the clinical state + INPUT REJECTED badge (DEC-2026-10-19-M; ANALYSIS_PLAN §5.4 item 17).**
 1. **Current specification.** Table 14.1 priority 1: SYSTEM ERROR on an inference exception or
    artefact mismatch. S7 also treats a rejected input event (malformed, late, duplicate) as
    SYSTEM_ERROR at its time.
@@ -304,7 +304,7 @@ Status values: **AWAITING APPROVAL** · **APPROVED** · **REJECTED** · **EXPERI
 ## Class B — experiments or a-priori decisions on development data (T) before freeze
 
 ### P-B12 · Operational definition of the LOW CONFIDENCE tag (S7 measurement)
-**Status: DONE → REMOVE TAG by the pre-specified rule (DEC-2026-10-19-L). Implementation in the live runner/UI awaits owner confirmation.**
+**Status: DONE → REMOVE TAG by the pre-specified rule (DEC-2026-10-19-L). Removal from the live product APPROVED and implemented (DEC-2026-10-19-M).**
 - **Problem.** Table 14.1 says "any input outside the development 0.5th–99.5th percentile".
   Applied per feature, it tags 16.1% of forecasts in-sample on T. A tag that common
   carries little information.
@@ -318,6 +318,7 @@ Status values: **AWAITING APPROVAL** · **APPROVED** · **REJECTED** · **EXPERI
 
 
 ### P-B10 · Floored calibrator (S6 review F1)
+**FINAL HUMAN PROTOCOL DECISION 2026-10-19 (DEC-2026-10-19-M): adopt the floored calibrator as canonical; the experimental verdict below stays INCONCLUSIVE.**
 **Status: DONE → INCONCLUSIVE by the pre-specified rule (R3 4/15); current calibrator unchanged. The current one is inadmissible in 11/15 configurations; owner decision (DEC-2026-10-19-L).**
 - **Problem.** Isotonic and isotonic_interp output exactly 0 on thousands of T rows.
   - The P-B1 decision hinges on 3 positives at a calibrated 0.
@@ -472,6 +473,7 @@ the margin comes from 3 positives at a calibrated 0 (DEC-2026-10-18-I F1) → ch
 - **Classification**: B.
 
 ### P-B6 · Development-stage handling of sensor-artefact recordings in T (S6)
+**FINAL 2026-10-19 (DEC-2026-10-19-M): SENSITIVITY ONLY (SA9); canonical training/evaluation unchanged.**
 **Status: RUN in S6 on M1 only. (c) Rule met (calibrator-dependent; 2 affected patients).
 Adoption is PENDING implementation for all models and an owner decision before freeze
 (DEC-2026-10-18-I F2). (b) reported.**
@@ -506,6 +508,7 @@ Adoption is PENDING implementation for all models and an owner decision before f
 - **Classification**: B.
 
 ### P-B8 · Compact M3 (redundancy) and product-specific basal durations (S6)
+**FINAL 2026-10-19 (DEC-2026-10-19-M): canonical M3 = full M3_baseline; M3_compact = DEVELOPMENT ablation only (P-B11: no consistent advantage).**
 **Status: (a) RUN in S6: candidate preferred by the pre-registered rule (DEC-2026-10-18-H); replacing M3_baseline needs OWNER APPROVAL before freeze. (b) not run (SA6).**
 - **Evidence (MEASURED, S3; T only)**:
   - Spearman ρ(insulin_p60, act_insulin_total) = 0.974, so the projections are nearly redundant

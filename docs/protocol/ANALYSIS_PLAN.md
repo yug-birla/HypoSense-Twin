@@ -37,9 +37,13 @@ Implementation: `src/hyposense/labels/`. Fixtures: `tests/unit/label_fixtures.py
    - **t − recording start ≥ 120 min.** This equals the policy's warm-up rule (Table 14.1,
      priority 2), so no label-eligible time can fall in a period where the policy cannot alert.
    - **≥ 7 readings in the half-open window (t − 120 min, t].**
-   - The warm-up anchor can be re-set after long gaps through
-     `eligibility.warmup_restart_after_gap_min`. This is the P-C7 hook, currently `null`
-     (PENDING).
+   - **Labels are not re-anchored after long gaps** (`eligibility.warmup_restart_after_gap_min`
+     = `null`, final). P-C7 (approved 2026-10-19) re-anchors the **policy** warm-up only (§5.6
+     item 16). Consequence: after a CGM gap > 120 min, a time can be label-eligible while the
+     policy shows INSUFFICIENT DATA, so it cannot alert. This applies identically to every model.
+     MEASURED on T: 0 gaps > 120 min (maximum gap 60 min), so no T time is affected. In E it
+     can affect at most the post-gap readings of the one recording with a documented sensor
+     replacement (S1 audit).
 6. **Follow-up**: last reading − t ≥ 60 min, OR an L1 onset in (t, t + 60 min].
 7. **Label**: y(t) = 1 iff an L1 onset lies in (t, t + 60 min]. y is undefined (−1) at
    non-eligible readings. Every reading carries the first failing eligibility rule, in the
@@ -250,53 +254,132 @@ must include fixtures for:
 
 ## 5. Primary analysis, bootstrap, secondary and sensitivity analyses
 
-Status: **DRAFT (S5), awaiting owner approval. Required before freeze; not blocking S6
-development work.** Implementation: `src/hyposense/evaluation/`. Metric definitions:
-`artifacts/evaluation/metric_registry.json`, generated from `evaluation/registry.py`.
+Status: **FINAL (2026-10-19, owner-approved pre-freeze resolution; DEC-2026-10-19-M).** This
+section and §0–§4 are the single canonical definition of every scientific procedure. Where
+another document differs, this plan wins. Implementation: `src/hyposense/evaluation/`. Metric
+definitions: `artifacts/evaluation/metric_registry.json`, generated from `evaluation/registry.py`.
 
 ### 5.1 Primary analysis (Blueprint §15, Table 20.1; unchanged)
-- **Endpoint:** Δ = sens@1FA(M3) − sens@1FA(M2), for E-treated patients, on pooled
+- **Endpoint:** Δ = sens@1FA(M3) − sens@1FA(M2) on E-treated patients, using pooled
   out-of-fold predictions.
 - **Rules:** the §2 policy-replay semantics and the §3.4 first-crossing rule.
 - **H1 is supported iff** the lower bound of the 95 % paired patient-cluster bootstrap interval
-  of Δ is greater than 0.
+  of Δ is > 0.
 
 ### 5.2 Bootstrap (Blueprint Table 20.1, App. E; `configs/default.yaml` `bootstrap`)
 - **Settings:** B = 2,000 resamples, seed 2027, percentile 95 % interval.
 - **Unit:** the patient. All of a drawn patient's recordings, episodes and prediction times
-  travel together. Readings, windows and episodes are never resampled on their own.
+  travel together; readings, windows and episodes are never resampled on their own.
 - **Multiplicity:** a patient drawn k times counts k times (weights = draw counts).
-- **Pairing:** one set of draws, shared by both models. Δ is computed on each resample;
-  separate intervals are never compared.
+- **Pairing:** one set of draws, shared by both models. Δ is computed on each resample; separate
+  intervals are never compared.
 - **Each resample** re-applies the full §3.4 rule on its own curve. The implementation evaluates
   per-patient step functions on the pooled grid. A grid value that is not a resampled patient's
   score repeats an adjacent point of the resample's own curve, so first-crossing values and
   areas are exactly those of the resample's own grid.
 - **G5 (Table 21.1):** the number of resamples in which a statistic is undefined (no episodes)
-  is reported. G5 requires it to be 0 for both models.
+  is reported, and G5 requires it to be 0 for both models.
 
-### 5.3 Implementation clarifications of §2–3 (S5)
-None of these changes a number on the current tuning data. Each is tested.
-1. **Cooldown scope.** The 60-min cooldown runs within a recording; each recording is one state
-   (§0 item 10). The recordings of a patient do not overlap in time (MEASURED on T).
-2. **Ties are exact.** M0 projections and CGM slopes are computed in exact rational arithmetic on
-   the 0.1 mg/dL data grid and rounded once (ADR-036). Mathematically equal scores are therefore
-   bitwise equal and switch together (§3.4). A projection exactly equal to θ does not alert,
-   because the rule is strict.
-3. **Partial area (§3.7).** Each segment of the first-crossing path is clipped to [0.5, 2.0]
-   FA/day and integrated with its sign, so a non-monotone stretch counts as the path runs. For a
-   monotone curve this is the ordinary trapezoidal area. The M0 curves on T have 0 non-monotone
-   steps.
-4. **Window-level metrics** (log-loss, Brier, AUPRC, calibration) are defined only for
-   probabilities. M0 has none, so they are reported as not applicable, never forced.
-5. **Abstention coverage (Table 20.2).** The share of CGM readings in INSUFFICIENT DATA, plus the
-   number of warnable episodes with no forecast at any label-eligible reading of their warning
-   window.
+### 5.3 Metric definitions (resolves every open clarification)
+1. **Threshold tie rule.** Learned models alert at `p ≥ τ` (inclusive); M0 at `score > τ`
+   (strict, §3.1). Grid values are the distinct scores (§3.2), so readings with equal scores
+   switch together. M0 projections and CGM slopes are computed in exact rational arithmetic on
+   the 0.1 mg/dL grid and rounded once (ADR-036), so mathematically equal scores are bitwise
+   equal. A projection exactly equal to θ does not alert.
+2. **Operating-curve first-crossing rule.** As §3.4, exactly: the first index k* with F > B; a =
+   k* − 1; linear interpolation between a and k*; `budget_not_reached` if no point exceeds B;
+   interpolation from the sentinel (0, 0) if k* = 1; later dips below B are ignored.
+3. **Non-monotone partial area (§3.7).** Each segment of the first-crossing path is clipped to
+   [0.5, 2.0] FA/day and integrated with its sign, so a non-monotone stretch counts as the path
+   runs. The result is normalised by 1.5. Points after the first crossing of 2.0 are excluded.
+4. **Cooldown scope.** The 60-min notification cooldown runs within a recording, continuously
+   across every reading, including readings with no forecast (§2 item 1). It never crosses
+   recordings (each recording is one state, §0 item 10). Cooldown affects notifications and
+   FA/day, never the ALERT state or hits.
+5. **Probability-metric applicability.** Log-loss, Brier, AUPRC, ECE, calibration slope and
+   intercept, and reliability are defined only for models with probabilities (M1, M2, M3r, M3).
+   They are computed on label-eligible rows from the **calibrated** probabilities. For M0 and the
+   CGM-level reference they are reported as "not applicable", never forced.
+6. **Abstention coverage (Table 20.2).** Coverage = the share of CGM readings in INSUFFICIENT
+   DATA, plus the number of warnable episodes with no forecast at any label-eligible reading of
+   their warning window [onset − 60, onset − 15] min.
+7. **Log-loss clipping.** Reported log-loss clips probabilities to [1e−15, 1 − 1e−15]. With the
+   canonical floored calibrator (item 12), no output reaches 0 or 1, so the clip never binds for
+   the canonical models. The P-B10 decision used unclipped log-loss (LL_u; +∞ on a certain miss).
 
-### 5.4 Secondary, sensitivity and robustness analyses
-Blueprint Table 20.3 (S1–S7, SA1–SA8, R1–R4) and §0c SA9 apply unchanged. Each reuses §2–3
-and §5.2 exactly. Development (T) results are labelled DEVELOPMENT and are never pooled with
-confirmatory results.
+### 5.4 Canonical choices fixed for the confirmatory run
+8. **P-B8 comparison population (historical, development).** The S6 P-B8 rule compared log-loss
+   on all T patients and sens@1FA on T-treated patients. It plays no confirmatory role.
+9. **P-B6 scores.** The P-B6 / SA9 comparison uses **calibrated** probabilities. The training
+   exclusion is applied to training rows only; the evaluation population and labels are never
+   changed. The comparison metric is log-loss on patients unaffected by the mask.
+10. **P-B10 population (historical, development).** The P-B10 decision set is the P-B1 set: all
+    T patients' pooled outer held-out eligible rows. sens@1FA and partial area (R0) use T-treated
+    patients.
+11. **P-B10 calibrator protocol.** As pre-specified in docs/PROPOSALS.md (commit 6b1ad05). Formal
+    verdict: **INCONCLUSIVE** (R3 4/15). The historical verdict is preserved unchanged.
+12. **Canonical calibrator (final human protocol decision, distinct from the experimental
+    verdict).** `isotonic_interp_floored` (`configs/default.yaml calibration.method`).
+    - **Fit:** an isotonic fit on the training patients' inner out-of-fold raw predictions,
+      linear interpolation between block centroids, outputs clamped to [p_lo, 1 − p_lo], with
+      p_lo = (positives in the lowest isotonic block + 0.5) / (block size + 1), computed on the
+      same fitting data.
+    - **Reasons:** removes exact 0 % / 100 % outputs; sensitivity and partial area are unchanged
+      (monotone map); the canonical log-loss cost is negligible (0.04019 vs 0.04017); 11/15
+      development configurations favoured adoption; the unfloored calibrator produced exact
+      edge probabilities on held-out rows in 11/15 configurations.
+    - **Applies to** every learned model, in both the evaluation (fold-wise) and the deployed
+      artefact.
+13. **Canonical M3** = the full exposure representation (`features.spec` level M3, 100
+    features). M3_compact is a DEVELOPMENT ablation only and is never deployed or confirmatory.
+14. **P-B6 / SA9 is SENSITIVITY ONLY.** Canonical training and evaluation use every
+    label-eligible row. The P-B6 mask (sensor-artefact runs, ANALYSIS_PLAN §0c) defines a
+    separately labelled sensitivity analysis, never the canonical population.
+15. **CGM-level reference (P-C9): POST-HOC DEVELOPMENT REFERENCE.** score = −CGM(t), alerting at
+    CGM < 81 mg/dL on T (sens@1FA 0.911 on T-treated, S6 diagnostic, not retuned). It is not
+    pre-specified. It does not replace M0 or M1, does not change G4 or H1, and is never a
+    confirmatory comparator. If reported on E, it is labelled post-hoc and descriptive.
+16. **P-C7 post-gap sufficiency (policy only).** After a CGM gap > 120 min (strict; a gap of
+    exactly 120 min does not restart), the policy warm-up re-anchors at the first post-gap
+    reading.
+    - **Forecast:** no forecast is requested until 120 min have elapsed from that reading **and**
+      ≥ 7 readings lie in the half-open window (t − 120 min, t]. Pre-gap readings cannot satisfy
+      either requirement.
+    - **Until then:** the state is INSUFFICIENT DATA, so no ALERT and no WATCH.
+    - **LOW NOW** (§1) still applies whenever the observed CGM(t) < 70 mg/dL.
+    - **Unchanged:** labels and label eligibility (§0 item 5).
+    - **Config:** `policy.warmup_restart_after_gap_min = 120`.
+17. **P-C10 rejected auxiliary input.**
+    - **Quarantine:** a rejected non-CGM event (dose, meal, capillary glucose; malformed,
+      implausible, out of order, duplicate or from another recording) is quarantined and
+      logged.
+    - **State unaffected:** the current valid clinical state is kept, never replaced by SYSTEM
+      ERROR. An INPUT REJECTED badge and the EVENT_REJECTED tag (36 h) are shown.
+    - **Later events:** valid events continue to be processed.
+    - **Rejected CGM readings** remain SYSTEM ERROR at their time.
+    - **Circuit breaker:** after 5 consecutive rejections the runner halts until reset.
+
+### 5.5 Secondary, sensitivity and robustness analyses
+- **Scope:** Blueprint Table 20.3 (S1–S7, SA1–SA8, R1–R4) and §0c SA9 apply unchanged. Each
+  reuses §2–3 and §5.2–5.4 exactly, including the canonical calibrator.
+- **Labelling:** development (T) results are labelled DEVELOPMENT, and sensitivity results
+  SENSITIVITY. Neither is pooled with confirmatory results.
+
+### 5.6 Decisions recorded at freeze
+The decisions above are recorded in DEC-2026-10-19-M. Item numbers 1–17 are the resolution
+checklist of the pre-freeze stage.
 
 ## 6. Interpretation matrix and model-selection rule
-PENDING (S5). Blueprint §15 and Table 20.4 apply unchanged.
+
+Status: **FINAL (2026-10-19).** Adopted verbatim from the blueprint; nothing added after seeing
+T results.
+- **Model-selection rule (Blueprint §15, pre-specified):**
+  - Deploy M3 if H1 is supported.
+  - Otherwise deploy whichever of M2 and M3 has the higher point estimate of sens@1FA, but
+    only if its log-loss is not worse; ties go to the simpler model (M2).
+  - M0 is deployed only if no learned model beats it.
+- **Interpretation matrix:** Blueprint Table 20.4 (outcome → legitimate conclusion → selected
+  architecture) applies unchanged.
+- **CGM-level reference (§5.4 item 15):** plays no role in model selection or interpretation of
+  H1.
+
