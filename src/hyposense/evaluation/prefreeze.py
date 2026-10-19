@@ -122,11 +122,25 @@ def stability_label(deltas: Sequence[float]) -> str:
     """P-B11 reading: stable if one sign in >= 13/15; unstable if the minority sign >= 4/15."""
     pos = sum(d > 0 for d in deltas)
     neg = sum(d < 0 for d in deltas)
+    if pos == neg == 0:
+        return "tied"  # every configuration tied (reported separately; not "leaning")
     if max(pos, neg) >= 13:
         return "stable"
     if min(pos, neg) >= 4:
         return "unstable"
     return "leaning"
+
+
+def pb12_criteria(
+    rate: float, separation: float, ci95: Sequence[float], positive_configs: int
+) -> dict[str, bool]:
+    """Pre-specified P-B12 criteria: (a) rate in [1 %, 10 %]; (b) separation > 0 with the 95 %
+    CI excluding 0; (c) separation > 0 in >= 12/15 configurations."""
+    return {
+        "a_rate": PB12_RATE[0] <= rate <= PB12_RATE[1],
+        "b_separation": separation > 0 and ci95[0] > 0,
+        "c_stability": positive_configs >= 12,
+    }
 
 
 def pb12_decision(
@@ -580,11 +594,12 @@ def run_prefreeze(workers: int = 6) -> dict[str, Any]:
     for c, d in pb12["candidates"].items():
         d["separation_per_configuration"] = seps[c]
         d["separation_positive_configs"] = sum(v > 0 for v in seps[c] if math.isfinite(v))
-        sep_ok[c] = d["separation_bss"] > 0 and d["separation_ci95"][0] > 0
-        stable[c] = d["separation_positive_configs"] >= 12
-        rate_ok = PB12_RATE[0] <= d["rate"] <= PB12_RATE[1]
-        useful[c] = rate_ok and sep_ok[c] and stable[c]
-        d["criteria"] = {"a_rate": rate_ok, "b_separation": sep_ok[c], "c_stability": stable[c]}
+        crit = pb12_criteria(
+            d["rate"], d["separation_bss"], d["separation_ci95"], d["separation_positive_configs"]
+        )
+        sep_ok[c], stable[c] = crit["b_separation"], crit["c_stability"]
+        useful[c] = all(crit.values())
+        d["criteria"] = crit
         separation[c] = d["separation_bss"]
     pb12["decision"] = pb12_decision(useful, sep_ok, stable, separation)
 

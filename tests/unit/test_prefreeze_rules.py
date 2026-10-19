@@ -104,3 +104,29 @@ def test_frozen_params_are_full_precision_s6_values() -> None:
     for k, v in rounded.items():
         assert abs(params[k] - v) <= 1e-6
     assert params["learning_rate"] != rounded["learning_rate"]  # really the unrounded value
+
+
+def test_rule_boundaries_are_inclusive_as_written() -> None:
+    from hyposense.evaluation.prefreeze import pb10_integrity, pb12_criteria
+
+    cur = m(0.0400, 0.0010)
+    assert pb10_outcome(cur, m(0.0400 * 0.99, 0.0010), m(0, 0)) == "ADOPT floored"  # exactly 1 %
+    assert pb10_outcome(cur, m(0.0400 * 1.01, 0.0010), m(0, 0)) == "KEEP CURRENT"
+    assert pb10_outcome(cur, m(0.0400, 0.0010 * 1.10), m(0, 0)) == "NO MATERIAL DIFFERENCE"
+    assert pb10_decision("KEEP CURRENT", True, ["KEEP CURRENT"] * 10 + ["X"] * 5) == "KEEP CURRENT"
+    row = {"sens_at_1fa": 0.9, "partial_area": 0.9}
+    shifted = {"sens_at_1fa": 0.905, "partial_area": 0.895}  # within 0.01
+    assert pb10_integrity({"M1": {"isotonic_interp": row, "isotonic_interp_floored": shifted}})
+    worse = {"sens_at_1fa": 0.92, "partial_area": 0.9}
+    assert not pb10_integrity({"M1": {"isotonic_interp": row, "isotonic_interp_floored": worse}})
+    assert pb12_criteria(0.01, 0.1, [0.01, 0.2], 12) == {
+        "a_rate": True,
+        "b_separation": True,
+        "c_stability": True,
+    }
+    assert pb12_criteria(0.1001, 0.1, [0.0, 0.2], 11) == {
+        "a_rate": False,
+        "b_separation": False,
+        "c_stability": False,
+    }
+    assert stability_label([0] * 15) == "tied"
