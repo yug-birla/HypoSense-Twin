@@ -479,6 +479,34 @@ Decision tables: `experiments/runs/T-AGG-dev-prefreeze-20261019T032309Z/prefreez
   - 30 injected bad inputs, 0 later decisions changed;
   - latency p99 4.8 ms.
 
+## T-AGG-dev-r4-20261019T055800Z — R4 per-model tuning (T, frozen before E)
+- Commit f154e63 (clean); 177 s. S6 procedure (Optuna TPE, seed 2026, same space and trials) per level.
+- Result (MEASURED): M2 trial 29 / 39 rounds / inner LL 0.04674; M3r trial 0 / 131 / 0.04739;
+  M3 trial 28 / 76 / 0.04659. Used only by robustness analysis R4 (ANALYSIS_PLAN §5.7 item 27).
+
+## T-AGG-rehearsal-20261019T060915Z — S9 smoke rehearsal (DISCARDED scratch)
+- Uncommitted code, bootstrap B = 20 (debug override, rehearsal only); 681 s.
+- Purpose: exercise the confirmatory runner end to end. Found and fixed one bug (a wrong config
+  path for the SA5 tail parameter) and diagnosed R3 (learner property, ANALYSIS_PLAN item 26).
+- Not evidence and not committed (dirty code); superseded by the run below.
+
+## T-AGG-rehearsal-20261019T070224Z — S9 full rehearsal on T (REHEARSAL, never evidence)
+- Date: 2026-10-19 · commit 94a7246 (clean) · B = 2000 · 4 workers · 2,050 s (bootstrap 1,644 s).
+- Purpose: run the identical confirmatory code on T before freeze (ANALYSIS_PLAN §5.7).
+- Integrity checks (MEASURED):
+  - T rows of the S9 table equal the S4/S6 development table.
+  - The primary M2 / M3 sens@1FA (0.875 / 0.911) and all checked paired CIs equal the
+    independent S6 run exactly (M3−M2 −0.0417 to 0.0877; C0 0.0944 to 0.4373;
+    C2a −0.0541 to 0.1072).
+  - SA7 seeds 2028/2029 equal the pre-freeze fit-variance grid.
+  - The final model equals candidate 3271a320.
+  - Held-out replay of every T recording with its fold model reproduces the pooled OOF
+    probabilities bitwise (31,416 decisions, 0 mismatches).
+- Rehearsal outputs: H1 not supported on T, and the §6 rule selects M3. These are development
+  numbers and not an answer to H1.
+- Report: experiments/runs/T-AGG-rehearsal-20261019T070224Z/report/ (stamped REHEARSAL).
+  Row-level outputs are private in data/processed/confirm/.
+
 ## Evidence inherited from the blueprint (not reproduced here)
 
 | Item | Source | Status in this repo |
