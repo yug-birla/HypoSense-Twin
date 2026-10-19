@@ -31,7 +31,7 @@ class UserRole(StrEnum):
     RESEARCHER = "researcher"
 
 
-RECORDING_KEY = r"^[0-9]{4}_[0-9]+_[0-9]{8}$"
+RECORDING_KEY = r"^N?[0-9]{4}_[0-9]+_[0-9]{8}$"  # N = new-data (intake) session
 
 
 # ---------------------------------------------------------------- requests
@@ -56,7 +56,7 @@ class SeekRequest(Strict):
 
 
 class AckRequest(Strict):
-    decision_id: str = Field(min_length=1, max_length=64, pattern=r"^[0-9_]+@[0-9]+(#e[0-9]+)?$")
+    decision_id: str = Field(min_length=1, max_length=64, pattern=r"^N?[0-9_]+@[0-9]+(#e[0-9]+)?$")
     reason: AckReason
     user_role: UserRole
 
@@ -100,6 +100,8 @@ class Bed(Strict):
     rank: int
     recording_key: str
     patient_key: str
+    source: str = "HISTORICAL_REPLAY"  # | "NEW_DATA_SESSION"
+    label: str | None = None  # pseudonymous display label of a new-data session
     now_ts: int
     last_reading_ts: int | None
     data_age_s: int | None
@@ -170,6 +172,8 @@ class Notification(Strict):
 class PatientView(Strict):
     recording_key: str
     patient_key: str
+    source: str = "HISTORICAL_REPLAY"  # | "NEW_DATA_SESSION"
+    label: str | None = None
     now_ts: int
     model_status: str
     current: DecisionView
@@ -389,8 +393,106 @@ class AckRecord(Loose):
     decision_id: str
     recording_key: str
     decision_ts: int
-    ack_offset_s: int
+    ack_offset_s: int | None  # None for a new-data session (no replay clock)
     reason: str
     user_role: str
     model_version: str
     received_utc: str
+
+
+# ---------------------------------------------------------------- new-data intake
+class IntakeQuestion(Strict):
+    id: str
+    field: str
+    prompt: str
+    reason: str
+    kind: str  # "choice" | "text"
+    options: list[tuple[str, str]]
+    required: bool
+    suggested: str | None = None
+    answer: str | None = None
+    error: str | None = None
+
+
+class IntakeFinding(Strict):
+    severity: str  # "blocking" | "warning" | "info"
+    code: str
+    message: str
+    count: int
+
+
+class IntakeContextField(Strict):
+    name: str
+    label: str
+    value: str
+
+
+class IntakeDraft(Strict):
+    draft_id: str
+    patient_id: str
+    label: str | None
+    file_name: str | None
+    status: str  # "BLOCKED" | "NEEDS_ANSWERS" | "READY"
+    findings: list[IntakeFinding]
+    questions: list[IntakeQuestion]
+    mapping: list[dict[str, Any]]
+    preview_headers: list[str]
+    preview: list[dict[str, Any]]
+    summary: dict[str, Any]
+    context: list[IntakeContextField]
+    notice: str
+
+
+class IntakeUpload(Strict):
+    file_name: Annotated[str, Field(max_length=200)]
+    content_base64: Annotated[str, Field(max_length=7_000_000)]
+    label: Annotated[str | None, Field(default=None, max_length=24, pattern=r"^[A-Za-z0-9 _-]*$")]
+
+
+class IntakeNew(Strict):
+    label: Annotated[str | None, Field(default=None, max_length=24, pattern=r"^[A-Za-z0-9 _-]*$")]
+
+
+class IntakeAnswers(Strict):
+    answers: dict[str, Annotated[str, Field(max_length=200)]] = {}
+    context: dict[str, Annotated[str, Field(max_length=200)]] = {}
+
+
+class IntakeCommitted(Strict):
+    recording_key: str
+    decisions: int
+    states: dict[str, int]
+
+
+class Observation(Strict):
+    kind: str  # cgm | cbg | meal | medication
+    local_time: Annotated[str, Field(max_length=16)]
+    value: float | None = None
+    unit: str | None = None
+    text: Annotated[str | None, Field(default=None, max_length=200)]
+    column: str | None = None
+
+
+class ObservationResult(Strict):
+    recording_key: str
+    kind: str
+    local_time: str
+    events: int
+    decisions: list[str]
+
+
+class LiveSessionInfo(Strict):
+    recording_key: str
+    patient_key: str
+    label: str | None
+    origin: str
+    created_utc: str
+    cgm_readings: int
+    last_local: str | None
+    observations_added: int
+
+
+class AskAnswer(Strict):
+    intent: str
+    question: str
+    lines: list[str]

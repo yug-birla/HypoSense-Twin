@@ -125,3 +125,48 @@ def test_replay_dashboard_acknowledge_audit(server: tuple[str, Any]) -> None:
     )
     assert not errors, errors
     assert {"LOW_NOW", "ALERT", "WATCH", "NO_ALERT"} <= seen
+
+
+def test_new_patient_upload_questions_twin_and_append(
+    server: tuple[str, Any], tmp_path: Any
+) -> None:
+    """Checkpoint B/C path in a real browser: SYNTHETIC upload → questions → twin → append."""
+    from playwright.sync_api import expect, sync_playwright
+    from tests.unit.intake_helpers import synthetic_csv
+
+    base, svc = server
+    csv = tmp_path / "SYNTHETIC.csv"
+    csv.write_bytes(synthetic_csv())
+    with sync_playwright() as p:
+        try:
+            br = p.chromium.launch(channel="msedge")
+        except Exception:
+            pytest.skip("Microsoft Edge not available to Playwright")
+        page = br.new_page(viewport={"width": 1440, "height": 900})
+        errors: list[str] = []
+        page.on("pageerror", lambda e: errors.append(str(e)))
+        page.goto(base + "/intake/")
+        page.get_by_label("Recording file").set_input_files(str(csv))
+        expect(page.get_by_text("Cannot be accepted yet")).to_be_visible()
+        for label, value in (
+            ("“Timestamp” contain", "ts_local"),
+            ("“Glucose” contain", "cgm"),
+            ("“Meal” contain", "diet_en"),
+            ("Which unit", "mg/dL"),
+            ("Which clock", "local"),
+        ):
+            with page.expect_response(lambda r: "/answers" in r.url):
+                page.get_by_label(label).select_option(value)
+        expect(page.get_by_text("Ready to create")).to_be_visible()
+        page.get_by_role("button", name="Create patient twin").click()
+        page.wait_for_url("**/patient/?key=N*")
+        expect(page.get_by_text("New data session")).to_be_visible()
+        key = page.url.split("key=")[1]
+        n0 = len(svc.live[key].runner.decisions)
+        page.get_by_label("Value").fill("130")
+        page.get_by_role("button", name="Add to twin").click()
+        expect(page.get_by_text("Added cgm")).to_be_visible()
+        assert len(svc.live[key].runner.decisions) == n0 + 1
+        assert svc.live[key].runner.stream.identity.patient_key.startswith("intake:")
+        assert not errors
+        br.close()

@@ -29,8 +29,9 @@ export function duration(seconds: number): string {
 }
 
 /** Pseudonymous display id from the dataset recording key ("2001_0_20201102" -> "2001 · R0"). */
-export function bedLabel(recordingKey: string): string {
+export function bedLabel(recordingKey: string, label?: string | null): string {
   const [p, r] = recordingKey.split("_");
+  if (recordingKey.startsWith("N")) return label ? `${label} · ${p}` : `New patient ${p}`;
   return `${p ?? recordingKey} · R${r ?? "?"}`;
 }
 

@@ -376,6 +376,29 @@ Evidence exports serve as the G7 fallback (ADR-013).
   - It sits outside `evaluation/`, so the live API keeps its import boundary
     (`test_live_path_does_not_import_offline_modules`).
 
+### 4.13 New-data intake (product extension; DEC-2026-10-19-P)
+
+- **`intake/upload.py`:** safe in-memory read of CSV/XLSX (type, signature, size, row/column
+  limits, one sheet, duplicate headers).
+- **`intake/draft.py`:**
+  - findings → deterministic questions (column meaning, glucose unit, clock / UTC offset, pump
+    insulin, medication clarification);
+  - normalisation to dataset headers;
+  - unit conversion (mmol/L × 18.016);
+  - patient-local clock encoding;
+  - then `data.loader.parse_recording_frame` (the dataset parser) → `recording_stream`.
+- **`intake/session.py`:** an append-only live twin. Each observation is one more canonical row;
+  the frame is re-parsed and the new stream must extend the old one exactly; only the new events
+  are fed to the `TwinRunner`.
+- **`api/service.py`:**
+  - `_all_runners()` serves replay beds and new-data sessions to the same ward, patient,
+    acknowledgement and `ask` views, with `source` = HISTORICAL_REPLAY | NEW_DATA_SESSION;
+  - intake and session endpoints are listed in docs/INTAKE.md.
+- **Guards:**
+  - `intake` is part of the live-path import boundary (no labels, evaluation or audit imports);
+  - keys use the `intake:` prefix and never touch T or E;
+  - memory only; logs under `logs/replay/intake/` are git-ignored and deleted with the session.
+
 ## 5. Leakage controls (Blueprint Fig. 10.1, CLAUDE.md §11)
 
 | Risk | Control | Test |

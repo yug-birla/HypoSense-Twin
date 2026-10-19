@@ -11,6 +11,7 @@ export const useMeta = () => useQuery({ queryKey: ["meta"], queryFn: api.meta, s
 export const useHealth = () => useQuery({ queryKey: ["health"], queryFn: api.health, refetchInterval: 10_000 });
 export const useStatus = () => useQuery({ queryKey: ["status"], queryFn: api.status, refetchInterval: SAFETY_MS });
 export const useWard = () => useQuery({ queryKey: ["ward"], queryFn: api.ward, refetchInterval: SAFETY_MS });
+export const useSessions = () => useQuery({ queryKey: ["sessions"], queryFn: api.sessions, refetchInterval: SAFETY_MS });
 export const useCases = () => useQuery({ queryKey: ["cases"], queryFn: api.cases, staleTime: Infinity });
 export const useEvidence = () => useQuery({ queryKey: ["evidence"], queryFn: api.evidence, staleTime: Infinity });
 export const useConfirmatory = () => useQuery({ queryKey: ["confirmatory"], queryFn: api.confirmatory, staleTime: Infinity });

@@ -148,8 +148,8 @@ def test_api_contract_and_acknowledgement(client: Any, streams: list[RecordingSt
             "/api/acknowledgements",
             json={"decision_id": "1_0_1@1", "reason": "known", "user_role": "nurse"},
         ).status_code
-        == 409
-    )
+        == 404  # refused: unknown decision (acknowledgement also serves new-data sessions,
+    )  # which exist without a replay, so "no replay selected" is no longer the reason)
     keys = [x["recording_key"] for x in cases[:3]]
     st = c.post("/api/replay/select", json={"recording_keys": keys}).json()
     assert st["recordings"] == sorted(keys) and st["offset_s"] == 0

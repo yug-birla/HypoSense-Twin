@@ -38,6 +38,8 @@ export function queriesFor(msg: StreamMessage): string[][] {
       return [["ward"], ["patient"]];
     case "acknowledgement":
       return [["ward"], ["patient"]];
+    case "session_removed":
+      return [["ward"], ["patient"], ["sessions"]];
     default:
       return [];
   }
@@ -90,7 +92,7 @@ export function StreamProvider({ children }: { children: ReactNode }) {
         setStatus("live");
         for (const k of ["status", "ward", "patient", "health"]) qc.invalidateQueries({ queryKey: [k] }); // resync live views
       };
-      for (const t of ["session", "tick", "decision", "notification", "error", "bed_state", "acknowledgement"]) {
+      for (const t of ["session", "tick", "decision", "notification", "error", "bed_state", "acknowledgement", "session_removed"]) {
         es.addEventListener(t, onMessage as EventListener);
       }
       es.onerror = () => {

@@ -21,6 +21,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/confirmatory": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Confirmatory
+         * @description S9 result (PENDING until the single official run exists and verifies).
+         */
+        get: operations["confirmatory_api_confirmatory_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/evidence": {
         parameters: {
             query?: never;
@@ -55,6 +75,92 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/intake/drafts/{draft_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Intake Get */
+        get: operations["intake_get_api_intake_drafts__draft_id__get"];
+        put?: never;
+        post?: never;
+        /** Intake Discard */
+        delete: operations["intake_discard_api_intake_drafts__draft_id__delete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/intake/drafts/{draft_id}/answers": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Intake Answer */
+        post: operations["intake_answer_api_intake_drafts__draft_id__answers_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/intake/drafts/{draft_id}/commit": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Intake Commit */
+        post: operations["intake_commit_api_intake_drafts__draft_id__commit_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/intake/new": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Intake New */
+        post: operations["intake_new_api_intake_new_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/intake/upload": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Intake Upload */
+        post: operations["intake_upload_api_intake_upload_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/meta": {
         parameters: {
             query?: never;
@@ -81,6 +187,23 @@ export interface paths {
         };
         /** Patient */
         get: operations["patient_api_patients__recording_key__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/patients/{recording_key}/ask": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Ask */
+        get: operations["ask_api_patients__recording_key__ask_get"];
         put?: never;
         post?: never;
         delete?: never;
@@ -259,6 +382,57 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/sessions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Sessions */
+        get: operations["sessions_api_sessions_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/sessions/{recording_key}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Delete Session */
+        delete: operations["delete_session_api_sessions__recording_key__delete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/sessions/{recording_key}/observations": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Observe */
+        post: operations["observe_api_sessions__recording_key__observations_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/stream": {
         parameters: {
             query?: never;
@@ -306,7 +480,7 @@ export interface components {
         /** AckRecord */
         AckRecord: {
             /** Ack Offset S */
-            ack_offset_s: number;
+            ack_offset_s: number | null;
             /** Decision Id */
             decision_id: string;
             /** Decision Ts */
@@ -334,6 +508,15 @@ export interface components {
             /** Seconds */
             seconds: number;
         };
+        /** AskAnswer */
+        AskAnswer: {
+            /** Intent */
+            intent: string;
+            /** Lines */
+            lines: string[];
+            /** Question */
+            question: string;
+        };
         /** Bed */
         Bed: {
             /** Badges */
@@ -347,6 +530,8 @@ export interface components {
             decision: components["schemas"]["DecisionView"];
             /** Info Tags */
             info_tags: string[];
+            /** Label */
+            label?: string | null;
             /** Last Reading Ts */
             last_reading_ts: number | null;
             /** Now Ts */
@@ -359,6 +544,11 @@ export interface components {
             reason: string;
             /** Recording Key */
             recording_key: string;
+            /**
+             * Source
+             * @default HISTORICAL_REPLAY
+             */
+            source: string;
             /** Stale */
             stale: boolean;
             /** Summary */
@@ -589,6 +779,129 @@ export interface components {
             /** Status */
             status: string;
         };
+        /** IntakeAnswers */
+        IntakeAnswers: {
+            /**
+             * Answers
+             * @default {}
+             */
+            answers: {
+                [key: string]: string;
+            };
+            /**
+             * Context
+             * @default {}
+             */
+            context: {
+                [key: string]: string;
+            };
+        };
+        /** IntakeCommitted */
+        IntakeCommitted: {
+            /** Decisions */
+            decisions: number;
+            /** Recording Key */
+            recording_key: string;
+            /** States */
+            states: {
+                [key: string]: number;
+            };
+        };
+        /** IntakeContextField */
+        IntakeContextField: {
+            /** Label */
+            label: string;
+            /** Name */
+            name: string;
+            /** Value */
+            value: string;
+        };
+        /** IntakeDraft */
+        IntakeDraft: {
+            /** Context */
+            context: components["schemas"]["IntakeContextField"][];
+            /** Draft Id */
+            draft_id: string;
+            /** File Name */
+            file_name: string | null;
+            /** Findings */
+            findings: components["schemas"]["IntakeFinding"][];
+            /** Label */
+            label: string | null;
+            /** Mapping */
+            mapping: {
+                [key: string]: unknown;
+            }[];
+            /** Notice */
+            notice: string;
+            /** Patient Id */
+            patient_id: string;
+            /** Preview */
+            preview: {
+                [key: string]: unknown;
+            }[];
+            /** Preview Headers */
+            preview_headers: string[];
+            /** Questions */
+            questions: components["schemas"]["IntakeQuestion"][];
+            /** Status */
+            status: string;
+            /** Summary */
+            summary: {
+                [key: string]: unknown;
+            };
+        };
+        /** IntakeFinding */
+        IntakeFinding: {
+            /** Code */
+            code: string;
+            /** Count */
+            count: number;
+            /** Message */
+            message: string;
+            /** Severity */
+            severity: string;
+        };
+        /** IntakeNew */
+        IntakeNew: {
+            /** Label */
+            label?: string | null;
+        };
+        /** IntakeQuestion */
+        IntakeQuestion: {
+            /** Answer */
+            answer?: string | null;
+            /** Error */
+            error?: string | null;
+            /** Field */
+            field: string;
+            /** Id */
+            id: string;
+            /** Kind */
+            kind: string;
+            /** Options */
+            options: [
+                string,
+                string
+            ][];
+            /** Prompt */
+            prompt: string;
+            /** Reason */
+            reason: string;
+            /** Required */
+            required: boolean;
+            /** Suggested */
+            suggested?: string | null;
+        };
+        /** IntakeUpload */
+        IntakeUpload: {
+            /** Content Base64 */
+            content_base64: string;
+            /** File Name */
+            file_name: string;
+            /** Label */
+            label?: string | null;
+        };
         /** LadderModel */
         LadderModel: {
             calibration?: components["schemas"]["Calibration"] | null;
@@ -644,6 +957,25 @@ export interface components {
             resolved_ts: number | null;
             /** State */
             state: string | null;
+        };
+        /** LiveSessionInfo */
+        LiveSessionInfo: {
+            /** Cgm Readings */
+            cgm_readings: number;
+            /** Created Utc */
+            created_utc: string;
+            /** Label */
+            label: string | null;
+            /** Last Local */
+            last_local: string | null;
+            /** Observations Added */
+            observations_added: number;
+            /** Origin */
+            origin: string;
+            /** Patient Key */
+            patient_key: string;
+            /** Recording Key */
+            recording_key: string;
         };
         /** Meta */
         Meta: {
@@ -730,6 +1062,34 @@ export interface components {
              */
             true: number;
         };
+        /** Observation */
+        Observation: {
+            /** Column */
+            column?: string | null;
+            /** Kind */
+            kind: string;
+            /** Local Time */
+            local_time: string;
+            /** Text */
+            text?: string | null;
+            /** Unit */
+            unit?: string | null;
+            /** Value */
+            value?: number | null;
+        };
+        /** ObservationResult */
+        ObservationResult: {
+            /** Decisions */
+            decisions: string[];
+            /** Events */
+            events: number;
+            /** Kind */
+            kind: string;
+            /** Local Time */
+            local_time: string;
+            /** Recording Key */
+            recording_key: string;
+        };
         /** OperatingPoint */
         OperatingPoint: {
             /** Alert Precision */
@@ -792,6 +1152,8 @@ export interface components {
             halted: boolean;
             /** Input Rejected */
             input_rejected: boolean;
+            /** Label */
+            label?: string | null;
             last_forecast: components["schemas"]["ForecastView"] | null;
             /** Ledger */
             ledger: {
@@ -817,6 +1179,11 @@ export interface components {
             recording_key: string;
             /** Rejected Events */
             rejected_events: number;
+            /**
+             * Source
+             * @default HISTORICAL_REPLAY
+             */
+            source: string;
             /** Stale */
             stale: boolean;
             /** Summary */
@@ -1001,6 +1368,28 @@ export interface operations {
             };
         };
     };
+    confirmatory_api_confirmatory_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+        };
+    };
     evidence_api_evidence_get: {
         parameters: {
             query?: never;
@@ -1037,6 +1426,198 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Health"];
+                };
+            };
+        };
+    };
+    intake_get_api_intake_drafts__draft_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                draft_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["IntakeDraft"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    intake_discard_api_intake_drafts__draft_id__delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                draft_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    intake_answer_api_intake_drafts__draft_id__answers_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                draft_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["IntakeAnswers"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["IntakeDraft"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    intake_commit_api_intake_drafts__draft_id__commit_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                draft_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["IntakeCommitted"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    intake_new_api_intake_new_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["IntakeNew"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["IntakeDraft"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    intake_upload_api_intake_upload_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["IntakeUpload"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["IntakeDraft"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
                 };
             };
         };
@@ -1079,6 +1660,39 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["PatientView"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    ask_api_patients__recording_key__ask_get: {
+        parameters: {
+            query: {
+                intent: string;
+            };
+            header?: never;
+            path: {
+                recording_key: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AskAnswer"];
                 };
             };
             /** @description Validation Error */
@@ -1344,6 +1958,90 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ReplayStatus"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    sessions_api_sessions_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LiveSessionInfo"][];
+                };
+            };
+        };
+    };
+    delete_session_api_sessions__recording_key__delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                recording_key: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    observe_api_sessions__recording_key__observations_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                recording_key: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["Observation"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ObservationResult"];
                 };
             };
             /** @description Validation Error */

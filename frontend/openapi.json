@@ -15,8 +15,15 @@
    "AckRecord": {
     "properties": {
      "ack_offset_s": {
-      "title": "Ack Offset S",
-      "type": "integer"
+      "anyOf": [
+       {
+        "type": "integer"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Ack Offset S"
      },
      "decision_id": {
       "title": "Decision Id",
@@ -66,7 +73,7 @@
      "decision_id": {
       "maxLength": 64,
       "minLength": 1,
-      "pattern": "^[0-9_]+@[0-9]+(#e[0-9]+)?$",
+      "pattern": "^N?[0-9_]+@[0-9]+(#e[0-9]+)?$",
       "title": "Decision Id",
       "type": "string"
      },
@@ -99,6 +106,33 @@
      "seconds"
     ],
     "title": "AdvanceRequest",
+    "type": "object"
+   },
+   "AskAnswer": {
+    "additionalProperties": false,
+    "properties": {
+     "intent": {
+      "title": "Intent",
+      "type": "string"
+     },
+     "lines": {
+      "items": {
+       "type": "string"
+      },
+      "title": "Lines",
+      "type": "array"
+     },
+     "question": {
+      "title": "Question",
+      "type": "string"
+     }
+    },
+    "required": [
+     "intent",
+     "question",
+     "lines"
+    ],
+    "title": "AskAnswer",
     "type": "object"
    },
    "Bed": {
@@ -147,6 +181,17 @@
       "title": "Info Tags",
       "type": "array"
      },
+     "label": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Label"
+     },
      "last_reading_ts": {
       "anyOf": [
        {
@@ -176,6 +221,11 @@
      },
      "recording_key": {
       "title": "Recording Key",
+      "type": "string"
+     },
+     "source": {
+      "default": "HISTORICAL_REPLAY",
+      "title": "Source",
       "type": "string"
      },
      "stale": {
@@ -987,6 +1037,364 @@
     "title": "Health",
     "type": "object"
    },
+   "IntakeAnswers": {
+    "additionalProperties": false,
+    "properties": {
+     "answers": {
+      "additionalProperties": {
+       "maxLength": 200,
+       "type": "string"
+      },
+      "default": {},
+      "title": "Answers",
+      "type": "object"
+     },
+     "context": {
+      "additionalProperties": {
+       "maxLength": 200,
+       "type": "string"
+      },
+      "default": {},
+      "title": "Context",
+      "type": "object"
+     }
+    },
+    "title": "IntakeAnswers",
+    "type": "object"
+   },
+   "IntakeCommitted": {
+    "additionalProperties": false,
+    "properties": {
+     "decisions": {
+      "title": "Decisions",
+      "type": "integer"
+     },
+     "recording_key": {
+      "title": "Recording Key",
+      "type": "string"
+     },
+     "states": {
+      "additionalProperties": {
+       "type": "integer"
+      },
+      "title": "States",
+      "type": "object"
+     }
+    },
+    "required": [
+     "recording_key",
+     "decisions",
+     "states"
+    ],
+    "title": "IntakeCommitted",
+    "type": "object"
+   },
+   "IntakeContextField": {
+    "additionalProperties": false,
+    "properties": {
+     "label": {
+      "title": "Label",
+      "type": "string"
+     },
+     "name": {
+      "title": "Name",
+      "type": "string"
+     },
+     "value": {
+      "title": "Value",
+      "type": "string"
+     }
+    },
+    "required": [
+     "name",
+     "label",
+     "value"
+    ],
+    "title": "IntakeContextField",
+    "type": "object"
+   },
+   "IntakeDraft": {
+    "additionalProperties": false,
+    "properties": {
+     "context": {
+      "items": {
+       "$ref": "#/components/schemas/IntakeContextField"
+      },
+      "title": "Context",
+      "type": "array"
+     },
+     "draft_id": {
+      "title": "Draft Id",
+      "type": "string"
+     },
+     "file_name": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "File Name"
+     },
+     "findings": {
+      "items": {
+       "$ref": "#/components/schemas/IntakeFinding"
+      },
+      "title": "Findings",
+      "type": "array"
+     },
+     "label": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Label"
+     },
+     "mapping": {
+      "items": {
+       "additionalProperties": true,
+       "type": "object"
+      },
+      "title": "Mapping",
+      "type": "array"
+     },
+     "notice": {
+      "title": "Notice",
+      "type": "string"
+     },
+     "patient_id": {
+      "title": "Patient Id",
+      "type": "string"
+     },
+     "preview": {
+      "items": {
+       "additionalProperties": true,
+       "type": "object"
+      },
+      "title": "Preview",
+      "type": "array"
+     },
+     "preview_headers": {
+      "items": {
+       "type": "string"
+      },
+      "title": "Preview Headers",
+      "type": "array"
+     },
+     "questions": {
+      "items": {
+       "$ref": "#/components/schemas/IntakeQuestion"
+      },
+      "title": "Questions",
+      "type": "array"
+     },
+     "status": {
+      "title": "Status",
+      "type": "string"
+     },
+     "summary": {
+      "additionalProperties": true,
+      "title": "Summary",
+      "type": "object"
+     }
+    },
+    "required": [
+     "draft_id",
+     "patient_id",
+     "label",
+     "file_name",
+     "status",
+     "findings",
+     "questions",
+     "mapping",
+     "preview_headers",
+     "preview",
+     "summary",
+     "context",
+     "notice"
+    ],
+    "title": "IntakeDraft",
+    "type": "object"
+   },
+   "IntakeFinding": {
+    "additionalProperties": false,
+    "properties": {
+     "code": {
+      "title": "Code",
+      "type": "string"
+     },
+     "count": {
+      "title": "Count",
+      "type": "integer"
+     },
+     "message": {
+      "title": "Message",
+      "type": "string"
+     },
+     "severity": {
+      "title": "Severity",
+      "type": "string"
+     }
+    },
+    "required": [
+     "severity",
+     "code",
+     "message",
+     "count"
+    ],
+    "title": "IntakeFinding",
+    "type": "object"
+   },
+   "IntakeNew": {
+    "additionalProperties": false,
+    "properties": {
+     "label": {
+      "anyOf": [
+       {
+        "maxLength": 24,
+        "pattern": "^[A-Za-z0-9 _-]*$",
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Label"
+     }
+    },
+    "title": "IntakeNew",
+    "type": "object"
+   },
+   "IntakeQuestion": {
+    "additionalProperties": false,
+    "properties": {
+     "answer": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Answer"
+     },
+     "error": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Error"
+     },
+     "field": {
+      "title": "Field",
+      "type": "string"
+     },
+     "id": {
+      "title": "Id",
+      "type": "string"
+     },
+     "kind": {
+      "title": "Kind",
+      "type": "string"
+     },
+     "options": {
+      "items": {
+       "maxItems": 2,
+       "minItems": 2,
+       "prefixItems": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "string"
+        }
+       ],
+       "type": "array"
+      },
+      "title": "Options",
+      "type": "array"
+     },
+     "prompt": {
+      "title": "Prompt",
+      "type": "string"
+     },
+     "reason": {
+      "title": "Reason",
+      "type": "string"
+     },
+     "required": {
+      "title": "Required",
+      "type": "boolean"
+     },
+     "suggested": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Suggested"
+     }
+    },
+    "required": [
+     "id",
+     "field",
+     "prompt",
+     "reason",
+     "kind",
+     "options",
+     "required"
+    ],
+    "title": "IntakeQuestion",
+    "type": "object"
+   },
+   "IntakeUpload": {
+    "additionalProperties": false,
+    "properties": {
+     "content_base64": {
+      "maxLength": 7000000,
+      "title": "Content Base64",
+      "type": "string"
+     },
+     "file_name": {
+      "maxLength": 200,
+      "title": "File Name",
+      "type": "string"
+     },
+     "label": {
+      "anyOf": [
+       {
+        "maxLength": 24,
+        "pattern": "^[A-Za-z0-9 _-]*$",
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Label"
+     }
+    },
+    "required": [
+     "file_name",
+     "content_base64"
+    ],
+    "title": "IntakeUpload",
+    "type": "object"
+   },
    "LadderModel": {
     "properties": {
      "calibration": {
@@ -1237,6 +1645,69 @@
     "title": "LedgerEntry",
     "type": "object"
    },
+   "LiveSessionInfo": {
+    "additionalProperties": false,
+    "properties": {
+     "cgm_readings": {
+      "title": "Cgm Readings",
+      "type": "integer"
+     },
+     "created_utc": {
+      "title": "Created Utc",
+      "type": "string"
+     },
+     "label": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Label"
+     },
+     "last_local": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Last Local"
+     },
+     "observations_added": {
+      "title": "Observations Added",
+      "type": "integer"
+     },
+     "origin": {
+      "title": "Origin",
+      "type": "string"
+     },
+     "patient_key": {
+      "title": "Patient Key",
+      "type": "string"
+     },
+     "recording_key": {
+      "title": "Recording Key",
+      "type": "string"
+     }
+    },
+    "required": [
+     "recording_key",
+     "patient_key",
+     "label",
+     "origin",
+     "created_utc",
+     "cgm_readings",
+     "last_local",
+     "observations_added"
+    ],
+    "title": "LiveSessionInfo",
+    "type": "object"
+   },
    "Meta": {
     "properties": {
      "api_version": {
@@ -1435,6 +1906,108 @@
      }
     },
     "title": "NotificationCounts",
+    "type": "object"
+   },
+   "Observation": {
+    "additionalProperties": false,
+    "properties": {
+     "column": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Column"
+     },
+     "kind": {
+      "title": "Kind",
+      "type": "string"
+     },
+     "local_time": {
+      "maxLength": 16,
+      "title": "Local Time",
+      "type": "string"
+     },
+     "text": {
+      "anyOf": [
+       {
+        "maxLength": 200,
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Text"
+     },
+     "unit": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Unit"
+     },
+     "value": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Value"
+     }
+    },
+    "required": [
+     "kind",
+     "local_time"
+    ],
+    "title": "Observation",
+    "type": "object"
+   },
+   "ObservationResult": {
+    "additionalProperties": false,
+    "properties": {
+     "decisions": {
+      "items": {
+       "type": "string"
+      },
+      "title": "Decisions",
+      "type": "array"
+     },
+     "events": {
+      "title": "Events",
+      "type": "integer"
+     },
+     "kind": {
+      "title": "Kind",
+      "type": "string"
+     },
+     "local_time": {
+      "title": "Local Time",
+      "type": "string"
+     },
+     "recording_key": {
+      "title": "Recording Key",
+      "type": "string"
+     }
+    },
+    "required": [
+     "recording_key",
+     "kind",
+     "local_time",
+     "events",
+     "decisions"
+    ],
+    "title": "ObservationResult",
     "type": "object"
    },
    "OperatingPoint": {
@@ -1675,6 +2248,17 @@
       "title": "Input Rejected",
       "type": "boolean"
      },
+     "label": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Label"
+     },
      "last_forecast": {
       "anyOf": [
        {
@@ -1739,6 +2323,11 @@
      "rejected_events": {
       "title": "Rejected Events",
       "type": "integer"
+     },
+     "source": {
+      "default": "HISTORICAL_REPLAY",
+      "title": "Source",
+      "type": "string"
      },
      "stale": {
       "title": "Stale",
@@ -2236,6 +2825,27 @@
     "summary": "Acknowledge"
    }
   },
+  "/api/confirmatory": {
+   "get": {
+    "description": "S9 result (PENDING until the single official run exists and verifies).",
+    "operationId": "confirmatory_api_confirmatory_get",
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "additionalProperties": true,
+         "title": "Response Confirmatory Api Confirmatory Get",
+         "type": "object"
+        }
+       }
+      },
+      "description": "Successful Response"
+     }
+    },
+    "summary": "Confirmatory"
+   }
+  },
   "/api/evidence": {
    "get": {
     "operationId": "evidence_api_evidence_get",
@@ -2270,6 +2880,239 @@
      }
     },
     "summary": "Health"
+   }
+  },
+  "/api/intake/drafts/{draft_id}": {
+   "delete": {
+    "operationId": "intake_discard_api_intake_drafts__draft_id__delete",
+    "parameters": [
+     {
+      "in": "path",
+      "name": "draft_id",
+      "required": true,
+      "schema": {
+       "title": "Draft Id",
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "204": {
+      "description": "Successful Response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      },
+      "description": "Validation Error"
+     }
+    },
+    "summary": "Intake Discard"
+   },
+   "get": {
+    "operationId": "intake_get_api_intake_drafts__draft_id__get",
+    "parameters": [
+     {
+      "in": "path",
+      "name": "draft_id",
+      "required": true,
+      "schema": {
+       "title": "Draft Id",
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/IntakeDraft"
+        }
+       }
+      },
+      "description": "Successful Response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      },
+      "description": "Validation Error"
+     }
+    },
+    "summary": "Intake Get"
+   }
+  },
+  "/api/intake/drafts/{draft_id}/answers": {
+   "post": {
+    "operationId": "intake_answer_api_intake_drafts__draft_id__answers_post",
+    "parameters": [
+     {
+      "in": "path",
+      "name": "draft_id",
+      "required": true,
+      "schema": {
+       "title": "Draft Id",
+       "type": "string"
+      }
+     }
+    ],
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/IntakeAnswers"
+       }
+      }
+     },
+     "required": true
+    },
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/IntakeDraft"
+        }
+       }
+      },
+      "description": "Successful Response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      },
+      "description": "Validation Error"
+     }
+    },
+    "summary": "Intake Answer"
+   }
+  },
+  "/api/intake/drafts/{draft_id}/commit": {
+   "post": {
+    "operationId": "intake_commit_api_intake_drafts__draft_id__commit_post",
+    "parameters": [
+     {
+      "in": "path",
+      "name": "draft_id",
+      "required": true,
+      "schema": {
+       "title": "Draft Id",
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/IntakeCommitted"
+        }
+       }
+      },
+      "description": "Successful Response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      },
+      "description": "Validation Error"
+     }
+    },
+    "summary": "Intake Commit"
+   }
+  },
+  "/api/intake/new": {
+   "post": {
+    "operationId": "intake_new_api_intake_new_post",
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/IntakeNew"
+       }
+      }
+     },
+     "required": true
+    },
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/IntakeDraft"
+        }
+       }
+      },
+      "description": "Successful Response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      },
+      "description": "Validation Error"
+     }
+    },
+    "summary": "Intake New"
+   }
+  },
+  "/api/intake/upload": {
+   "post": {
+    "operationId": "intake_upload_api_intake_upload_post",
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/IntakeUpload"
+       }
+      }
+     },
+     "required": true
+    },
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/IntakeDraft"
+        }
+       }
+      },
+      "description": "Successful Response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      },
+      "description": "Validation Error"
+     }
+    },
+    "summary": "Intake Upload"
    }
   },
   "/api/meta": {
@@ -2327,6 +3170,55 @@
      }
     },
     "summary": "Patient"
+   }
+  },
+  "/api/patients/{recording_key}/ask": {
+   "get": {
+    "operationId": "ask_api_patients__recording_key__ask_get",
+    "parameters": [
+     {
+      "in": "path",
+      "name": "recording_key",
+      "required": true,
+      "schema": {
+       "title": "Recording Key",
+       "type": "string"
+      }
+     },
+     {
+      "in": "query",
+      "name": "intent",
+      "required": true,
+      "schema": {
+       "maxLength": 32,
+       "title": "Intent",
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/AskAnswer"
+        }
+       }
+      },
+      "description": "Successful Response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      },
+      "description": "Validation Error"
+     }
+    },
+    "summary": "Ask"
    }
   },
   "/api/replay/advance": {
@@ -2611,6 +3503,109 @@
      }
     },
     "summary": "Step"
+   }
+  },
+  "/api/sessions": {
+   "get": {
+    "operationId": "sessions_api_sessions_get",
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "items": {
+          "$ref": "#/components/schemas/LiveSessionInfo"
+         },
+         "title": "Response Sessions Api Sessions Get",
+         "type": "array"
+        }
+       }
+      },
+      "description": "Successful Response"
+     }
+    },
+    "summary": "Sessions"
+   }
+  },
+  "/api/sessions/{recording_key}": {
+   "delete": {
+    "operationId": "delete_session_api_sessions__recording_key__delete",
+    "parameters": [
+     {
+      "in": "path",
+      "name": "recording_key",
+      "required": true,
+      "schema": {
+       "title": "Recording Key",
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "204": {
+      "description": "Successful Response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      },
+      "description": "Validation Error"
+     }
+    },
+    "summary": "Delete Session"
+   }
+  },
+  "/api/sessions/{recording_key}/observations": {
+   "post": {
+    "operationId": "observe_api_sessions__recording_key__observations_post",
+    "parameters": [
+     {
+      "in": "path",
+      "name": "recording_key",
+      "required": true,
+      "schema": {
+       "title": "Recording Key",
+       "type": "string"
+      }
+     }
+    ],
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/Observation"
+       }
+      }
+     },
+     "required": true
+    },
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ObservationResult"
+        }
+       }
+      },
+      "description": "Successful Response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      },
+      "description": "Validation Error"
+     }
+    },
+    "summary": "Observe"
    }
   },
   "/api/stream": {

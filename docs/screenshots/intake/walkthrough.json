@@ -1,0 +1,8 @@
+{
+ "recording_key": "N0001_0_20300301",
+ "after_cgm": "Added cgm at 2030-03-03 23:50 \u2192 INSUFFICIENT DATA.",
+ "ward_has_new": true,
+ "console_errors": [
+  "Failed to load resource: the server responded with a status of 422 (Unprocessable Entity)"
+ ]
+}

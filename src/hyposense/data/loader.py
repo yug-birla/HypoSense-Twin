@@ -37,6 +37,7 @@ from hyposense.data.records import (
     IssueCode,
     LoadIssue,
     Recording,
+    RecordingIdentity,
     Severity,
     check_frame,
     parse_recording_name,
@@ -157,6 +158,21 @@ def load_recording(
     cgm_range: tuple[float, float] = CGM_PLAUSIBLE_RANGE,
 ) -> Recording:
     identity = parse_recording_name(path.name)
+    sheet, raw = read_workbook(path)
+    return parse_recording_frame(raw, identity, sheet, utc_offset=utc_offset, cgm_range=cgm_range)
+
+
+def parse_recording_frame(
+    raw: pd.DataFrame,
+    identity: RecordingIdentity,
+    sheet: str,
+    *,
+    utc_offset: str = DEFAULT_UTC_OFFSET,
+    cgm_range: tuple[float, float] = CGM_PLAUSIBLE_RANGE,
+) -> Recording:
+    """The canonical parse of one recording's raw object frame (header row = columns). Shared by
+    the dataset loader and the new-data intake, so both produce identical Recordings for the same
+    content."""
     key = identity.recording_key
     offset_s = parse_utc_offset(utc_offset)
     issues: list[LoadIssue] = []
@@ -171,7 +187,6 @@ def load_recording(
             severity = "warning"
         issues.append(LoadIssue(code, severity, key, row, column, detail))
 
-    sheet, raw = read_workbook(path)
     if sheet != key:
         add(IssueCode.SHEET_NAME_MISMATCH, detail=f"sheet {sheet!r} != file {key!r}")
     cmap = map_columns(list(raw.columns))

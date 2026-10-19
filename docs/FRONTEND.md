@@ -88,6 +88,25 @@ never colour alone (text + icon + colour).
 - **INTEGRITY FAILURE:** shown if verification fails.
 - A rehearsal is never served. Tests: `src/test/confirmatory.test.tsx`.
 
+### Add patient and new-data sessions (DEC-2026-10-19-P)
+- **`app/intake/page.tsx` + `components/intake/Intake.tsx`:**
+  - pseudonymous label;
+  - upload or empty patient;
+  - server questions (required first; suggestions marked, never preselected);
+  - validation findings by severity;
+  - file preview with mapping;
+  - optional context;
+  - "Create patient twin", enabled only when the draft is READY.
+- **`components/intake/SessionPanels.tsx`:** the NEW DATA SESSION banner (DEVELOPMENT, not
+  clinically validated, not research data), Add observation (CGM, capillary glucose, meal,
+  medication) and Remove session.
+- **`components/patient/AskPanel.tsx`:** fixed questions answered by the backend.
+- **Ward:** new-data beds carry a NEW DATA tag and are listed with replay beds, but are never
+  counted in evidence.
+- **Tests:** `src/test/intake.test.tsx`; browser E2E
+  `tests/e2e/test_ui_e2e.py::test_new_patient_upload_questions_twin_and_append`.
+- **Screenshots:** `docs/screenshots/intake/` (SYNTHETIC only, safe to commit).
+
 ## 5. Design research (principles extracted; nothing copied)
 
 | Reference | Pattern | Adopt? | HypoSense mapping |

@@ -26,6 +26,7 @@ LIVE_PATH = [
     "policy",
     "replay",
     "api",
+    "intake",
 ]
 FORBIDDEN_FOR_LIVE = {"hyposense.labels", "hyposense.evaluation", "hyposense.audit"}
 FORBIDDEN_EXTRA = {"policy": {"hyposense.models", "hyposense.calibration"}}

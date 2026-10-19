@@ -18,7 +18,7 @@ export function PatientHeader({ v, offsetS }: { v: PatientView; offsetS: number 
       <div className="grid grid-cols-[minmax(260px,1.4fr)_repeat(3,minmax(120px,0.6fr))] items-stretch divide-x divide-line">
         <div className="flex flex-col gap-2 px-5 py-4">
           <div className="flex items-center gap-3">
-            <h1 className="text-display font-semibold tracking-tight text-ink">{bedLabel(v.recording_key)}</h1>
+            <h1 className="text-display font-semibold tracking-tight text-ink">{bedLabel(v.recording_key, v.label)}</h1>
             <StatePill state={v.current.state} size="lg" />
           </div>
           <p className="text-body text-ink-2">{v.summary}</p>
@@ -166,7 +166,7 @@ export function AckPanel({ v, offsetS }: { v: PatientView; offsetS: number }) {
   const done = v.notifications.filter((n) => n.acknowledged);
   return (
     <Panel title="Notifications" aside={<span className="text-small text-ink-3 tnum">{pending.length} awaiting</span>}>
-      {v.notifications.length === 0 && <p className="text-small text-ink-3">No notifications in this replay yet.</p>}
+      {v.notifications.length === 0 && <p className="text-small text-ink-3">No notifications yet.</p>}
       <ul className="flex flex-col gap-1.5">
         {[...pending].reverse().map((n) => (
           <li key={n.decision_id} className="flex items-center justify-between gap-2 rounded-md border border-alert-line bg-alert-tint px-3 py-2">

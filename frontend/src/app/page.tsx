@@ -56,6 +56,8 @@ export default function WardPage() {
   const lost = useConnectionLost() || ward.isError;
   const [picking, setPicking] = useState(false);
   const hasSession = (status.data?.recordings.length ?? 0) > 0;
+  const liveBeds = ward.data?.beds.filter((b) => b.source === "NEW_DATA_SESSION").length ?? 0;
+  const showWard = (hasSession && !picking) || liveBeds > 0;
 
   return (
     <div>
@@ -73,9 +75,9 @@ export default function WardPage() {
       <div className="flex flex-col gap-4 p-6">
         {status.isError && <ErrorBox title="HypoSense service unavailable" detail="Start it with `hyposense serve`." onRetry={() => status.refetch()} />}
         {(!hasSession || picking) && status.isSuccess && <CasePicker onDone={() => setPicking(false)} />}
-        {hasSession && !picking && (
+        {showWard && (
           <>
-            <ReplayBar />
+            {hasSession && !picking && <ReplayBar />}
             {ward.isError && <ErrorBox title="Ward unavailable" detail={(ward.error as Error).message} onRetry={() => ward.refetch()} />}
             {!ward.data && !ward.isError && <Skeleton className="h-64 w-full" />}
             {ward.data && ward.data.beds.length > 0 && lost && (
@@ -91,7 +93,8 @@ export default function WardPage() {
                 <p className="text-[11.5px] text-ink-4">
                   Risk = model-estimated probability of a CGM-detected low within 60 minutes (DEVELOPMENT model). States
                   are decided by the backend policy; LOW NOW always reflects an observed reading. Times are the record’s
-                  local clock.
+                  local clock. Beds marked NEW DATA are separate development sessions, never part of the research
+                  evidence.
                 </p>
               </>
             )}

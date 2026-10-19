@@ -17,7 +17,7 @@ import threading
 from collections.abc import Sequence
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any
+from typing import Any, ClassVar
 
 from hyposense.api import schemas as S
 from hyposense.common.config import REPO_ROOT, load_config
@@ -25,11 +25,15 @@ from hyposense.common.provenance import make_run_id, utc_now_iso
 from hyposense.features.cgm import CGMFeatureConfig, trend_slope
 from hyposense.features.snapshot import FeatureBuilder
 from hyposense.features.spec import BY_NAME
+from hyposense.intake.draft import Draft
+from hyposense.intake.session import LiveSession
 from hyposense.models.artifact import RuntimeModel, load_artifact
 from hyposense.policy.decide import PolicyDecision, PolicyState, current
 from hyposense.policy.messages import (
     GROUP_LABEL,
     LABEL_CAVEAT,
+    REASON_TEXT,
+    clock_text,
     probability_text,
     reason_line,
     summary,
@@ -56,6 +60,18 @@ STATE_ORDER = {
     PolicyState.NO_ALERT: 5,
 }
 TRACE_S = 24 * 3600
+_CTX_LABEL = {
+    "age_y": "age",
+    "sex_male": "sex",
+    "bmi": "BMI",
+    "weight_kg": "weight",
+    "diabetes_duration_y": "diabetes duration",
+    "hba1c_mmol_mol": "HbA1c",
+    "egfr": "eGFR",
+    "c_peptide_fasting_nmol_l": "fasting C-peptide",
+}
+REPLAY = "HISTORICAL_REPLAY"
+NEW_DATA = "NEW_DATA_SESSION"
 SUBSCRIBER_QUEUE = 1000
 MAX_SUBSCRIBERS = 16
 INFO_TAG_PREFIXES = ("MED_TIMING_UNKNOWN", "EVENT_REJECTED")
@@ -165,6 +181,10 @@ class Service:
         self.subscribers: set[asyncio.Queue[dict[str, Any] | None]] = set()
         self._shown_last: dict[str, tuple[str, float | None, str | None]] = {}
         self._confirm_view: dict[str, Any] | None = None
+        # new-data intake (memory only; never research data; deleted on request or on exit)
+        self.drafts: dict[str, Draft] = {}
+        self.live: dict[str, LiveSession] = {}
+        self._intake_seq = 0
 
     def _load_folds(self, h: HeldOut) -> None:
         self.fold_of = {
@@ -268,9 +288,8 @@ class Service:
     def _publish_bed_states(self) -> None:
         """Push every change of the DISPLAYED state (incl. staleness via policy.current), so a
         stream client never shows an expired decision as current (no UI-side policy logic)."""
-        s = self._require()
-        for i, r in enumerate(s.runners):
-            rec, d = self._shown(i, r)
+        for r, now, _ in self._all_runners():
+            rec, d = self._shown(r, now)
             did = rec.decision_id if rec is not None and rec.decision is d else None
             key = (d.state.value, d.p, did)
             if self._shown_last.get(r.recording_key) != key:
@@ -279,7 +298,7 @@ class Service:
                     {
                         "type": "bed_state",
                         "recording_key": r.recording_key,
-                        "now_ts": s.now(i),
+                        "now_ts": now,
                         **decision_view(rec, d, self.model.status).model_dump(),
                     }
                 )
@@ -339,9 +358,15 @@ class Service:
             )
         return out
 
-    def _shown(self, i: int, r: TwinRunner) -> tuple[DecisionRecord | None, PolicyDecision]:
-        s = self._require()
-        now = s.now(i)
+    def _all_runners(self) -> list[tuple[TwinRunner, int, str]]:
+        """(runner, data time now, source) for every bed: replay beds, then new-data sessions."""
+        out: list[tuple[TwinRunner, int, str]] = []
+        if self.session is not None:
+            out += [(r, self.session.now(i), REPLAY) for i, r in enumerate(self.session.runners)]
+        out += [(ls.runner, ls.now, NEW_DATA) for _, ls in sorted(self.live.items())]
+        return out
+
+    def _shown(self, r: TwinRunner, now: int) -> tuple[DecisionRecord | None, PolicyDecision]:
         rec = r.current
         if rec is None:
             return None, PolicyDecision(now, PolicyState.INSUFFICIENT_DATA, None, ("NO_READING",))
@@ -361,18 +386,15 @@ class Service:
 
     def ward(self) -> S.Ward:
         s = self.session
-        if s is None:
-            return S.Ward(session_id=None, offset_s=0, beds=[])
         rows = []
-        for i, r in enumerate(s.runners):
-            rec, d = self._shown(i, r)
+        for r, now, source in self._all_runners():
+            rec, d = self._shown(r, now)
             unack = sum(1 for n in self._notifications(r) if not n.acknowledged)
             key = (STATE_ORDER[d.state], -(d.p if d.p is not None else -1.0), r.recording_key)
-            rows.append((key, i, r, rec, d, unack))
+            rows.append((key, now, source, r, rec, d, unack))
         rows.sort(key=lambda x: x[0])
         beds = []
-        for k, (_, i, r, rec, d, unack) in enumerate(rows):
-            now = s.now(i)
+        for k, (_, now, source, r, rec, d, unack) in enumerate(rows):
             last = int(r.state.cgm.series.ts[-1]) if r.state.cgm.n else None
             groups = [g.group for g in self._factor_groups(r, d)] if d.p is not None else []
             beds.append(
@@ -380,6 +402,8 @@ class Service:
                     rank=k + 1,
                     recording_key=r.recording_key,
                     patient_key=r.patient_key,
+                    source=source,
+                    label=self._label(r.recording_key),
                     now_ts=now,
                     last_reading_ts=last,
                     data_age_s=None if last is None else now - last,
@@ -395,7 +419,7 @@ class Service:
                     unacknowledged_notifications=unack,
                 )
             )
-        return S.Ward(session_id=self.session_id, offset_s=s.offset, beds=beds)
+        return S.Ward(session_id=self.session_id, offset_s=0 if s is None else s.offset, beds=beds)
 
     # ------------------------------------------------------------------ display helpers
     def _current_reading(self, r: TwinRunner, d: PolicyDecision) -> bool:
@@ -439,12 +463,15 @@ class Service:
             out.append("INPUT_REJECTED")
         return out
 
-    def _runner(self, key: str) -> tuple[int, TwinRunner]:
-        s = self._require()
-        for i, r in enumerate(s.runners):
+    def _runner(self, key: str) -> tuple[TwinRunner, int, str]:
+        for r, now, source in self._all_runners():
             if r.recording_key == key:
-                return i, r
-        raise NotFound(f"recording {key} is not in the current replay")
+                return r, now, source
+        raise NotFound(f"recording {key} is not in the current replay or a new-data session")
+
+    def _label(self, key: str) -> str | None:
+        ls = self.live.get(key)
+        return None if ls is None else ls.label
 
     def _factor_groups(self, r: TwinRunner, shown: PolicyDecision) -> list[S.FactorGroup]:
         """Explanation of the CURRENT forecast only; none for a non-forecast or stale state."""
@@ -475,10 +502,9 @@ class Service:
         ]
 
     def patient(self, key: str) -> S.PatientView:
-        i, r = self._runner(key)
-        rec, d = self._shown(i, r)
+        r, now, source = self._runner(key)
+        rec, d = self._shown(r, now)
         st = r.state
-        now = self._require().now(i)
         lo = now - TRACE_S
         ts, vals = st.cgm.series.ts, st.cgm.series.values
         keep = ts >= lo
@@ -531,6 +557,8 @@ class Service:
         return S.PatientView(
             recording_key=key,
             patient_key=r.patient_key,
+            source=source,
+            label=self._label(key),
             now_ts=now,
             model_status=self.model.status,
             current=decision_view(rec, d, self.model.status),
@@ -609,9 +637,9 @@ class Service:
 
     # ------------------------------------------------------------------ acknowledgement
     def acknowledge(self, req: S.AckRequest) -> dict[str, Any]:
-        s = self._require()
+        s = self.session
         found = None
-        for r in s.runners:
+        for r, _, _ in self._all_runners():
             for x in r.decisions:
                 if x.decision_id == req.decision_id:
                     found = x
@@ -625,17 +653,350 @@ class Service:
             "decision_id": req.decision_id,
             "recording_key": found.recording_key,
             "decision_ts": found.decision.ts,
-            "ack_offset_s": s.offset,
+            "ack_offset_s": None if s is None or found.recording_key in self.live else s.offset,
             "reason": req.reason.value,
             "user_role": req.user_role.value,
             "model_version": self.model.model_version,
             "received_utc": utc_now_iso(),
         }
         self.acks[req.decision_id] = rec
-        if s.log is not None:
-            s.log.write("acks", rec)
+        ls = self.live.get(found.recording_key)
+        log = ls.log if ls is not None else (None if s is None else s.log)
+        if log is not None:
+            log.write("acks", rec)
         self.publish({"type": "acknowledgement", **rec})
         return rec
+
+    # ------------------------------------------------------------------ ask about this patient
+    ASK_INTENTS: ClassVar[dict[str, str]] = {
+        "why_state": "Why is this patient showing this state?",
+        "missing": "What information is missing?",
+        "changed": "What changed since the previous reading?",
+        "medications": "Which medication entries were recorded (last 24 h)?",
+        "quality": "What do the data-quality notes mean?",
+        "evidence": "What evidence supports this display?",
+    }
+
+    def ask(self, key: str, intent: str) -> S.AskAnswer:
+        """Fixed intents answered ONLY from fields the twin already holds (no free text, no
+        generated prose, no diagnosis, dose or treatment advice)."""
+        if intent not in self.ASK_INTENTS:
+            raise InvalidRequest(f"unsupported question; choose one of {sorted(self.ASK_INTENTS)}")
+        r, now, source = self._runner(key)
+        _, d = self._shown(r, now)
+        st = r.state
+        off = self.cgm_cfg.utc_offset_s
+        lines: list[str] = []
+        if intent == "why_state":
+            lines.append(f"Current state: {d.state.value.replace('_', ' ')}.")
+            lines += list(texts(d))
+            if d.p is not None:
+                lines.append(
+                    f"Estimated risk of a CGM-detected low within 60 min: {probability_text(d.p)}."
+                )
+                groups = self._factor_groups(r, d)
+                if groups:
+                    lines.append(
+                        "Factor groups most associated with this forecast (statistical "
+                        "associations, not causes): "
+                        + ", ".join(f"{g.label} ({g.direction.replace('_', ' ')})" for g in groups)
+                        + "."
+                    )
+            else:
+                lines.append("No risk estimate is shown for this state.")
+        elif intent == "missing":
+            if not st.cgm.n:
+                lines.append("No CGM reading yet: a forecast needs recent CGM history.")
+            if st.quality is not None and st.quality.reasons:
+                lines += [
+                    "Data-quality condition now: " + REASON_TEXT.get(x, x).rstrip(".") + "."
+                    for x in st.quality.reasons
+                ]
+            if st.ts is not None:
+                q = st.medication.at(st.ts).quality
+                unk = [c for c, v in sorted(q.items()) if v.value != "OK"]
+                for c in unk:
+                    lines.append(
+                        f"Medication record for {c}: {q[c].value.replace('_', ' ').lower()}."
+                    )
+            ctx = r.stream.context
+            miss = sorted(_CTX_LABEL.get(k, k) for k, v in ctx.values.items() if v != v)  # NaN
+            if miss:
+                lines.append(
+                    "Patient context not available (treated as missing): " + ", ".join(miss) + "."
+                )
+            if all(v != v for v in ctx.regimen.values()):
+                lines.append("Prescribed regimen not available.")
+            if not lines:
+                lines.append("No required information is missing for the current display.")
+        elif intent == "changed":
+            recs = [x for x in r.decisions if x.cgm_mgdl is not None]
+            if len(recs) < 2:
+                lines.append("There is no previous reading to compare with.")
+            else:
+                a_, b_ = recs[-2], recs[-1]
+                lines.append(
+                    f"Reading {clock_text(a_.decision.ts, off)} → "
+                    f"{clock_text(b_.decision.ts, off)}: "
+                    f"CGM {a_.cgm_mgdl:g} → {b_.cgm_mgdl:g} mg/dL."
+                )
+                lines.append(
+                    f"State {a_.decision.state.value.replace('_', ' ')} → "
+                    f"{b_.decision.state.value.replace('_', ' ')}; risk "
+                    f"{probability_text(a_.decision.p) or 'none'} → "
+                    f"{probability_text(b_.decision.p) or 'none'}."
+                )
+                between = [
+                    e
+                    for e in r.stream.events[a_.seq + 1 : b_.seq]
+                    if type(e).__name__ != "CGMReading"
+                ]
+                kinds: dict[str, int] = {}
+                for e in between:
+                    kinds[type(e).__name__] = kinds.get(type(e).__name__, 0) + 1
+                lines.append(
+                    "Other entries in between: "
+                    + (", ".join(f"{n} {k}" for k, n in sorted(kinds.items())) or "none")
+                    + "."
+                )
+        elif intent == "medications":
+            items = [e for e in st.medication.events.items() if e.ts >= now - TRACE_S]
+            if not items:
+                lines.append("No medication entry was recorded in the last 24 h.")
+            for e in items[-20:]:
+                dose = (
+                    "dose unknown" if e.dose is None else f"{e.dose:g} {e.dose_unit or ''}".strip()
+                )
+                lines.append(
+                    f"{clock_text(e.ts, off)} · {e.canonical or 'unrecognised entry'} · {dose}"
+                    f" · {e.route or 'route unknown'}"
+                    f" (as recorded; parse {e.parse_status.value.lower()})"
+                )
+        elif intent == "quality":
+            reasons = list(st.quality.reasons) if st.quality is not None else []
+            lines += [REASON_TEXT.get(x, x) for x in reasons] or ["No data-quality condition now."]
+            if r.rejected:
+                lines.append(f"{len(r.rejected)} input event(s) were rejected and not used.")
+            if r.halted:
+                lines.append("Processing halted after repeated errors: no current state is shown.")
+        else:
+            lines.append(
+                f"Model {self.model.model_version} ({self.model.status}); thresholds and policy "
+                "frozen in the model artefact."
+            )
+            lines.append(
+                "Evidence is development evidence on the tuning partition; the confirmatory "
+                f"result is {self._confirm_label().split(' ')[0]} (see Evidence)."
+            )
+            if source == NEW_DATA:
+                lines.append(
+                    "This patient is a new-data session: the model was not trained or evaluated "
+                    "on these data, and no accuracy claim applies to them."
+                )
+        lines.append("This is research decision support: no diagnosis, dose or treatment advice.")
+        return S.AskAnswer(intent=intent, question=self.ASK_INTENTS[intent], lines=lines)
+
+    # ------------------------------------------------------------------ new-data intake
+    INTAKE_NOTICE = (
+        "New data are a separate DEVELOPMENT session: never training data, never part of the "
+        "research partitions, kept in memory only and deleted when the session is removed or the "
+        "server stops. Forecasts use the DEVELOPMENT research model and are not clinically "
+        "validated."
+    )
+    MAX_DRAFTS = 8
+    MAX_LIVE = 8
+
+    def _new_patient_id(self) -> str:
+        self._intake_seq += 1
+        return f"N{self._intake_seq:04d}"
+
+    def _draft(self, draft_id: str) -> Draft:
+        d = self.drafts.get(draft_id)
+        if d is None:
+            raise NotFound("unknown or expired intake draft")
+        return d
+
+    def _draft_view(self, d: Draft) -> S.IntakeDraft:
+        from hyposense.intake.draft import CONTEXT_FIELDS
+
+        r = d.evaluate()
+        headers = [] if d.raw is None else [str(c) for c in d.raw.columns]
+        return S.IntakeDraft(
+            draft_id=d.draft_id,
+            patient_id=d.patient_id,
+            label=d.label,
+            file_name=d.file_name,
+            status=r.status,
+            findings=[S.IntakeFinding(**vars(f)) for f in r.findings],
+            questions=[
+                S.IntakeQuestion(**{**vars(q), "options": [tuple(o) for o in q.options]})
+                for q in r.questions
+            ],
+            mapping=r.mapping,
+            preview_headers=headers,
+            preview=r.preview,
+            summary=r.summary,
+            context=[
+                S.IntakeContextField(name=n, label=lbl, value=d.context.get(n, ""))
+                for n, (_, lbl) in CONTEXT_FIELDS.items()
+            ],
+            notice=self.INTAKE_NOTICE,
+        )
+
+    def _admit_draft(self) -> None:
+        if len(self.drafts) >= self.MAX_DRAFTS:
+            raise Busy("too many open intake drafts; discard one first")
+
+    def intake_upload(self, req: S.IntakeUpload) -> S.IntakeDraft:
+        import base64
+        import binascii
+
+        from hyposense.intake.upload import UploadRejected, read_upload
+
+        self._admit_draft()
+        try:
+            content = base64.b64decode(req.content_base64, validate=True)
+        except (binascii.Error, ValueError) as exc:
+            raise InvalidRequest("the upload is not valid base64") from exc
+        try:
+            table = read_upload(req.file_name, content)
+        except UploadRejected as exc:
+            raise InvalidRequest(str(exc)) from exc
+        pid = self._new_patient_id()
+        label = (req.label or "").strip() or None
+        d = Draft(f"draft-{pid}", pid, table.frame, table.file_name, label)
+        self.drafts[d.draft_id] = d
+        return self._draft_view(d)
+
+    def intake_new(self, req: S.IntakeNew) -> S.IntakeDraft:
+        self._admit_draft()
+        pid = self._new_patient_id()
+        d = Draft(f"draft-{pid}", pid, None, None, (req.label or "").strip() or None)
+        self.drafts[d.draft_id] = d
+        return self._draft_view(d)
+
+    def intake_get(self, draft_id: str) -> S.IntakeDraft:
+        return self._draft_view(self._draft(draft_id))
+
+    def intake_answer(self, draft_id: str, req: S.IntakeAnswers) -> S.IntakeDraft:
+        from hyposense.intake.draft import CONTEXT_FIELDS
+
+        d = self._draft(draft_id)
+        unknown = set(req.context) - set(CONTEXT_FIELDS)
+        if unknown:
+            raise InvalidRequest(f"unknown context field(s): {sorted(unknown)}")
+        for k, v in req.answers.items():
+            if v == "":
+                d.answers.pop(k, None)
+            else:
+                d.answers[k] = v
+        d.context.update(req.context)
+        return self._draft_view(d)
+
+    def intake_discard(self, draft_id: str) -> None:
+        self.drafts.pop(draft_id, None)
+
+    def intake_commit(self, draft_id: str) -> S.IntakeCommitted:
+        from datetime import date
+
+        from hyposense.intake.session import start_session
+
+        d = self._draft(draft_id)
+        if len(self.live) >= self.MAX_LIVE:
+            raise Busy("too many new-data sessions; remove one first")
+        r = d.evaluate()
+        if r.status != "READY":
+            raise Conflict(f"the draft is not ready ({r.status}); resolve the open items first")
+        ident = r.stream.identity if r.stream is not None else d.identity(date.today())
+        audit = [
+            {
+                "at_utc": utc_now_iso(),
+                "kind": "intake",
+                "file_type": None if d.file_name is None else d.file_name.rsplit(".", 1)[-1],
+                "answers": sorted(d.answers),  # question ids only (no values, no file content)
+                "context_fields": sorted(k for k, v in d.context.items() if v.strip()),
+            }
+        ]
+        log = DecisionLog(
+            self.log_root / "intake" / f"{make_run_id('intake')}-{d.patient_id}",
+            {
+                "session": ident.recording_key,
+                "source": NEW_DATA,
+                "model_version": self.model.model_version,
+                "model_status": self.model.status,
+                "artifact_manifest_sha256": self.model.manifest_sha256,
+                "created_utc": utc_now_iso(),
+            },
+        )
+        ls, decisions = start_session(
+            ident,
+            d.label,
+            "upload" if d.raw is not None else "manual",
+            r.frame,
+            r.summary_row,
+            self.pipe,
+            log,
+            audit,
+        )
+        self.live[ls.key] = ls
+        del self.drafts[draft_id]
+        states: dict[str, int] = {}
+        for x in decisions:
+            states[x.decision.state.value] = states.get(x.decision.state.value, 0) + 1
+        self._publish_bed_states()
+        return S.IntakeCommitted(recording_key=ls.key, decisions=len(decisions), states=states)
+
+    def live_sessions(self) -> list[S.LiveSessionInfo]:
+        from hyposense.intake.draft import local_text
+
+        out = []
+        for k, ls in sorted(self.live.items()):
+            st = ls.runner.state
+            out.append(
+                S.LiveSessionInfo(
+                    recording_key=k,
+                    patient_key=ls.identity.patient_key,
+                    label=ls.label,
+                    origin=ls.origin,
+                    created_utc=ls.created_utc,
+                    cgm_readings=st.cgm.n,
+                    last_local=None if not st.cgm.n else local_text(int(st.cgm.series.ts[-1])),
+                    observations_added=sum(1 for a in ls.audit if a["kind"] != "intake"),
+                )
+            )
+        return out
+
+    def observe(self, key: str, obs: S.Observation) -> S.ObservationResult:
+        from hyposense.intake.session import ObservationRejected, append_observation
+
+        ls = self.live.get(key)
+        if ls is None:
+            raise NotFound("observations can only be added to a new-data session")
+        try:
+            entry = append_observation(ls, obs.model_dump())
+        except ObservationRejected as exc:
+            raise InvalidRequest(str(exc)) from exc
+        self._publish_bed_states()
+        return S.ObservationResult(
+            recording_key=key,
+            kind=entry["kind"],
+            local_time=entry["local_time"],
+            events=entry["events"],
+            decisions=entry["decisions"],
+        )
+
+    def delete_session(self, key: str) -> None:
+        """Remove a new-data session from memory and delete its decision log."""
+        import shutil
+
+        ls = self.live.pop(key, None)
+        if ls is None:
+            raise NotFound("unknown new-data session")
+        if ls.log is not None:
+            ls.log.close()
+            shutil.rmtree(ls.log.directory, ignore_errors=True)
+        self._shown_last.pop(key, None)
+        self.publish({"type": "session_removed", "recording_key": key})
 
     # ------------------------------------------------------------------ evidence / meta
     def meta(self) -> dict[str, Any]:

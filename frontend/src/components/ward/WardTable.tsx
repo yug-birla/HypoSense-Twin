@@ -44,10 +44,15 @@ function Row({ bed, offsetS }: { bed: Bed; offsetS: number }) {
         <Link
           href={href}
           onClick={(e) => e.stopPropagation()}
-          aria-label={`${bedLabel(bed.recording_key)}: ${bed.summary}${bed.unacknowledged_notifications ? `; ${bed.unacknowledged_notifications} unacknowledged notifications` : ""}`}
+          aria-label={`${bedLabel(bed.recording_key, bed.label)}${bed.source === "NEW_DATA_SESSION" ? " (new data session)" : ""}: ${bed.summary}${bed.unacknowledged_notifications ? `; ${bed.unacknowledged_notifications} unacknowledged notifications` : ""}`}
           className="font-medium text-ink hover:text-accent hover:underline">
-          {bedLabel(bed.recording_key)}
+          {bedLabel(bed.recording_key, bed.label)}
         </Link>
+        {bed.source === "NEW_DATA_SESSION" && (
+          <span className="mt-0.5 block w-fit rounded-xs border border-watch-line bg-watch-tint px-1 text-[9.5px] font-semibold uppercase tracking-wide text-watch-ink">
+            New data
+          </span>
+        )}
       </span>
       <span role="cell">
         <StatePill state={bed.decision.state} />

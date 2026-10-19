@@ -2,7 +2,7 @@
 import * as RT from "@radix-ui/react-tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import clsx from "clsx";
-import { Activity, FlaskConical, LayoutList, UserRound } from "lucide-react";
+import { Activity, FlaskConical, LayoutList, UserPlus, UserRound } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 import { Suspense, useState, type ReactNode } from "react";
@@ -13,6 +13,7 @@ const NAV = [
   { href: "/", label: "Ward board", icon: LayoutList },
   { href: "/patient/", label: "Patient review", icon: UserRound },
   { href: "/evidence/", label: "Evidence", icon: FlaskConical },
+  { href: "/intake/", label: "Add patient", icon: UserPlus },
 ];
 
 function Nav() {
@@ -80,7 +81,7 @@ function ResearchStatus() {
           {meta.data?.model_status ?? "DEVELOPMENT"} · Research prototype
         </p>
         <p className="mt-1 text-[11.5px] leading-4 text-watch-ink">
-          Not a medical device. Replay of tuning-partition records; evidence is not clinically validated.
+          Not a medical device. Replay of tuning-partition records and separate new-data sessions; not clinically validated.
         </p>
       </div>
       <p

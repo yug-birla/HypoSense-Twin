@@ -12,6 +12,7 @@ from __future__ import annotations
 import asyncio
 import json
 import logging
+import re
 import time
 import uuid
 from collections.abc import AsyncIterator, Callable
@@ -54,6 +55,18 @@ class Gate:
         self.svc.bind_loop(asyncio.get_running_loop())
         async with self.lock:
             return fn(*args, **kw)
+
+
+def _draft_id(v: str) -> str:
+    if not re.fullmatch(r"draft-N[0-9]{4}", v):
+        raise NotFound("unknown or expired intake draft")
+    return v
+
+
+def _key(v: str) -> str:
+    if not re.fullmatch(S.RECORDING_KEY, v):
+        raise NotFound("unknown recording")
+    return v
 
 
 def create_app(svc: Service, clock: bool = True) -> FastAPI:
@@ -187,9 +200,50 @@ def create_app(svc: Service, clock: bool = True) -> FastAPI:
             raise NotFound("unknown recording")
         return await g.read(svc.patient, recording_key)
 
+    @app.get("/api/patients/{recording_key}/ask", response_model=S.AskAnswer)
+    async def ask(recording_key: str, intent: str = Query(max_length=32)) -> S.AskAnswer:
+        return await g.read(svc.ask, _key(recording_key), intent)
+
     @app.post("/api/acknowledgements", status_code=201, response_model=S.AckRecord)
     async def acknowledge(req: S.AckRequest) -> dict[str, Any]:
         return await g.read(svc.acknowledge, req)
+
+    # ---------------------------------------------------------------- new-data intake
+    @app.post("/api/intake/upload", response_model=S.IntakeDraft)
+    async def intake_upload(req: S.IntakeUpload) -> S.IntakeDraft:
+        return await g.mutate(svc.intake_upload, req)
+
+    @app.post("/api/intake/new", response_model=S.IntakeDraft)
+    async def intake_new(req: S.IntakeNew) -> S.IntakeDraft:
+        return await g.mutate(svc.intake_new, req)
+
+    @app.get("/api/intake/drafts/{draft_id}", response_model=S.IntakeDraft)
+    async def intake_get(draft_id: str) -> S.IntakeDraft:
+        return await g.mutate(svc.intake_get, _draft_id(draft_id))
+
+    @app.post("/api/intake/drafts/{draft_id}/answers", response_model=S.IntakeDraft)
+    async def intake_answer(draft_id: str, req: S.IntakeAnswers) -> S.IntakeDraft:
+        return await g.mutate(svc.intake_answer, _draft_id(draft_id), req)
+
+    @app.post("/api/intake/drafts/{draft_id}/commit", response_model=S.IntakeCommitted)
+    async def intake_commit(draft_id: str) -> S.IntakeCommitted:
+        return await g.mutate(svc.intake_commit, _draft_id(draft_id))
+
+    @app.delete("/api/intake/drafts/{draft_id}", status_code=204)
+    async def intake_discard(draft_id: str) -> None:
+        await g.mutate(svc.intake_discard, _draft_id(draft_id))
+
+    @app.get("/api/sessions", response_model=list[S.LiveSessionInfo])
+    async def sessions() -> list[S.LiveSessionInfo]:
+        return await g.read(svc.live_sessions)
+
+    @app.post("/api/sessions/{recording_key}/observations", response_model=S.ObservationResult)
+    async def observe(recording_key: str, obs: S.Observation) -> S.ObservationResult:
+        return await g.mutate(svc.observe, _key(recording_key), obs)
+
+    @app.delete("/api/sessions/{recording_key}", status_code=204)
+    async def delete_session(recording_key: str) -> None:
+        await g.mutate(svc.delete_session, _key(recording_key))
 
     @app.get("/api/stream")
     async def stream(max_events: int | None = Query(default=None, ge=1, le=10_000)) -> Any:

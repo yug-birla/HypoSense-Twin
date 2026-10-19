@@ -11,21 +11,24 @@ import { ExposureChart } from "@/components/patient/ExposureChart";
 import { GlucoseChart } from "@/components/patient/GlucoseChart";
 import { AckPanel, LedgerPanel, PatientHeader, QualityPanel, WhyPanel } from "@/components/patient/Panels";
 import { Empty, ErrorBox, Panel, Skeleton, StatePill } from "@/components/ui/primitives";
+import { ObservationPanel, RemoveSession, SessionBanner } from "@/components/intake/SessionPanels";
+import { AskPanel } from "@/components/patient/AskPanel";
 
 function Chooser() {
   const ward = useWard();
   return (
     <div>
-      <PageHeader title="Patient review" sub="Select a bed from the current replay." />
+      <PageHeader title="Patient review" sub="Select a bed from the current replay or a new-data session." />
       <div className="p-6">
         {!ward.data?.beds.length ? (
           <Panel>
             <Empty title="No replay running">
-              Start a ward replay on the <Link className="text-accent underline" href="/">Ward board</Link>.
+              Start a ward replay on the <Link className="text-accent underline" href="/">Ward board</Link>, or{" "}
+              <Link className="text-accent underline" href="/intake/">add a patient</Link>.
             </Empty>
           </Panel>
         ) : (
-          <Panel title="Beds in this replay" bodyClass="p-2">
+          <Panel title="Beds" bodyClass="p-2">
             <ul className="grid grid-cols-[repeat(auto-fill,minmax(220px,1fr))] gap-1.5">
               {ward.data.beds.map((b) => (
                 <li key={b.recording_key}>
@@ -33,7 +36,7 @@ function Chooser() {
                     href={`/patient/?key=${encodeURIComponent(b.recording_key)}`}
                     className="flex items-center justify-between rounded-md border border-line px-3 py-2 hover:bg-sunken"
                   >
-                    <span className="font-medium">{bedLabel(b.recording_key)}</span>
+                    <span className="font-medium">{bedLabel(b.recording_key, b.label)}</span>
                     <StatePill state={b.decision.state} size="sm" />
                   </Link>
                 </li>
@@ -57,7 +60,7 @@ function Review({ k }: { k: string }) {
     return (
       <div className="p-6">
         <ErrorBox
-          title={nf ? "This bed is not in the current replay" : "Patient view unavailable"}
+          title={nf ? "This bed is not in the current replay or a new-data session" : "Patient view unavailable"}
           detail={nf ? "Select a bed from the Ward board." : (q.error as Error).message}
           onRetry={nf ? undefined : () => q.refetch()}
         />
@@ -80,14 +83,24 @@ function Review({ k }: { k: string }) {
     );
   }
   const v = q.data;
+  const live = v.source === "NEW_DATA_SESSION";
   return (
     <div className="flex flex-col gap-4 p-6">
       <nav aria-label="Breadcrumb" className="-mb-1 text-small text-ink-3">
         <Link href="/" className="hover:text-accent hover:underline">Ward board</Link>
         <span aria-hidden className="mx-1.5 text-ink-4">/</span>
-        <span className="text-ink-2">{bedLabel(v.recording_key)}</span>
+        <span className="text-ink-2">{bedLabel(v.recording_key, v.label)}</span>
       </nav>
-      <ReplayBar compact />
+      {live ? (
+        <div className="flex flex-col gap-2">
+          <SessionBanner v={v} />
+          <div className="flex justify-end">
+            <RemoveSession k={v.recording_key} />
+          </div>
+        </div>
+      ) : (
+        <ReplayBar compact />
+      )}
       <PatientHeader v={v} offsetS={offset} />
       <div className="grid grid-cols-1 gap-4 xl:grid-cols-[minmax(0,1fr)_340px]">
         <div className="flex min-w-0 flex-col gap-4">
@@ -102,9 +115,11 @@ function Review({ k }: { k: string }) {
           </Panel>
         </div>
         <div className="grid grid-cols-1 content-start gap-4 md:grid-cols-2 xl:grid-cols-1">
+          {live && <ObservationPanel key={v.recording_key} v={v} offsetS={offset} />}
           <WhyPanel v={v} />
           <AckPanel v={v} offsetS={offset} />
           <QualityPanel v={v} />
+          <AskPanel k={v.recording_key} />
         </div>
       </div>
       <LedgerPanel v={v} offsetS={offset} />

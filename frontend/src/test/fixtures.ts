@@ -6,6 +6,8 @@ export function bed(over: Partial<Bed> = {}): Bed {
     rank: 1,
     recording_key: "9001_0_20200101",
     patient_key: "synthetic:9001",
+    source: "HISTORICAL_REPLAY",
+    label: null,
     now_ts: 1_600_000_000,
     last_reading_ts: 1_600_000_000,
     data_age_s: 0,
@@ -38,6 +40,8 @@ export function patient(over: Partial<PatientView> = {}): PatientView {
   return {
     recording_key: "9001_0_20200101",
     patient_key: "synthetic:9001",
+    source: "HISTORICAL_REPLAY",
+    label: null,
     now_ts: 1_600_000_000,
     model_status: "DEVELOPMENT",
     current: bed().decision,

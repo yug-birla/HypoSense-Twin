@@ -1172,3 +1172,40 @@ Owner approval 2026-10-19. Canonical text: ANALYSIS_PLAN §5 and §6 (FINAL). Br
   - Disclosed in item 26. The learner is **not** changed, since changing a pre-specified
     robustness learner after seeing its rehearsal output would be result-driven.
 - **Class:** A (presentation engineering) / C-pending (item 33 is in P-C11) · **Date:** 2026-10-19
+
+## DEC-2026-10-19-P · New-data intake (product extension): adapter-based, memory-only, no protocol change
+
+- **Context:** the owner requires the twin to accept data from patients outside ShanghaiT2DM:
+  upload, deterministic clarification questions, live updates. Previously only T replay existed.
+- **Decision (Class A/B engineering; no Class C change):**
+  - `data.loader.load_recording` is split into read + `parse_recording_frame`, a pure refactor.
+    Uploads use the same parser, then `recording_stream`, `TwinRunner`, features, model,
+    calibration and policy. No second pipeline exists.
+  - A new `intake` package handles safe upload reading, findings → questions → re-validation,
+    and the append-only live session (re-parse + prefix check, so new events follow the
+    canonical path).
+  - **Clock encoding:** patient-local wall time is stored at the reference offset
+    (`time.assumed_utc_offset`), so time-of-day features see the patient's local hour. UTC
+    input is converted with the stated patient offset. Features, labels, kernels, model
+    contract and policy are unchanged.
+  - **Not research data:**
+    - Data are held in memory only, with `intake:` patient keys.
+    - They are never merged into T or E, and nothing is retrained, recalibrated or
+      re-thresholded.
+    - Forecasts use the served DEVELOPMENT model, labelled "no accuracy claim applies".
+  - **Ask about this patient:** fixed intents answered from existing state only; no free text,
+    no generation, no advice.
+- **Alternatives rejected:**
+  - A separate upload feature pipeline: duplicated scientific logic and parity risk.
+  - Inferring units or time zones from magnitudes or offsets: silent guessing.
+  - Persisting uploads to disk or a database: privacy cost with no requirement.
+  - Rewriting the past on out-of-order input: breaks causality and replayability.
+- **Evidence (MEASURED):**
+  - Parity test: a real T recording uploaded as CSV gives identical events, decisions and
+    probabilities to the historical adapter.
+  - Incremental twin = full-file twin.
+  - 22 intake integration tests, 1 browser E2E, 4 Vitest.
+- **Freeze implications:** `src/` and `frontend/src/` changed, so the freeze-candidate pair must
+  be rebuilt on the final commit. The loader refactor must leave the candidate results hash
+  unchanged (`c0cbe721…`).
+- **Class:** A/B · **Date:** 2026-10-19

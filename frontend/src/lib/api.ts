@@ -19,6 +19,14 @@ export type LadderModel = Schemas["LadderModel"];
 export type AckRequest = Schemas["AckRequest"];
 export type AckRecord = Schemas["AckRecord"];
 export type Health = Schemas["Health"];
+export type IntakeDraft = Schemas["IntakeDraft"];
+export type IntakeQuestion = Schemas["IntakeQuestion"];
+export type IntakeFinding = Schemas["IntakeFinding"];
+export type IntakeCommitted = Schemas["IntakeCommitted"];
+export type Observation = Schemas["Observation"];
+export type ObservationResult = Schemas["ObservationResult"];
+export type LiveSessionInfo = Schemas["LiveSessionInfo"];
+export type AskAnswer = Schemas["AskAnswer"];
 export type { ConfirmatoryDoc } from "@/components/evidence/Confirmatory";
 import type { ConfirmatoryDoc } from "@/components/evidence/Confirmatory";
 
@@ -34,7 +42,7 @@ export class ApiError extends Error {
   }
 }
 
-async function request<T>(method: "GET" | "POST", path: string, body?: unknown): Promise<T> {
+async function request<T>(method: "GET" | "POST" | "DELETE", path: string, body?: unknown): Promise<T> {
   let res: Response;
   try {
     res = await fetch(`${API_BASE}${path}`, {
@@ -58,6 +66,7 @@ async function request<T>(method: "GET" | "POST", path: string, body?: unknown):
     }
     throw new ApiError(res.status, kind, detail);
   }
+  if (res.status === 204) return undefined as T;
   return (await res.json()) as T;
 }
 
@@ -78,5 +87,19 @@ export const api = {
   step: (n: number) => request<ReplayStatus>("POST", "/api/replay/step", { n }),
   advance: (seconds: number) => request<ReplayStatus>("POST", "/api/replay/advance", { seconds }),
   seek: (offset_s: number) => request<ReplayStatus>("POST", "/api/replay/seek", { offset_s }),
+  ask: (key: string, intent: string) =>
+    request<AskAnswer>("GET", `/api/patients/${encodeURIComponent(key)}/ask?intent=${encodeURIComponent(intent)}`),
   acknowledge: (req: AckRequest) => request<AckRecord>("POST", "/api/acknowledgements", req),
+  // new-data intake (DEVELOPMENT sessions; memory only on the server)
+  intakeUpload: (file_name: string, content_base64: string, label: string | null) =>
+    request<IntakeDraft>("POST", "/api/intake/upload", { file_name, content_base64, label }),
+  intakeNew: (label: string | null) => request<IntakeDraft>("POST", "/api/intake/new", { label }),
+  intakeAnswer: (id: string, answers: Record<string, string>, context: Record<string, string>) =>
+    request<IntakeDraft>("POST", `/api/intake/drafts/${encodeURIComponent(id)}/answers`, { answers, context }),
+  intakeCommit: (id: string) => request<IntakeCommitted>("POST", `/api/intake/drafts/${encodeURIComponent(id)}/commit`),
+  intakeDiscard: (id: string) => request<void>("DELETE", `/api/intake/drafts/${encodeURIComponent(id)}`),
+  sessions: () => request<LiveSessionInfo[]>("GET", "/api/sessions"),
+  observe: (key: string, obs: Observation) =>
+    request<ObservationResult>("POST", `/api/sessions/${encodeURIComponent(key)}/observations`, obs),
+  deleteSession: (key: string) => request<void>("DELETE", `/api/sessions/${encodeURIComponent(key)}`),
 };
