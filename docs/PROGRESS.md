@@ -840,3 +840,31 @@ Human gates: pharmacist review, and the P-C11 decision (docs/protocol/P-C11_APPR
 ### Next Task
 - Human gates: pharmacist review and the P-C11 decision.
 - GitHub: no remote is configured; a repository URL is needed to push.
+
+## 2026-10-20 — GitHub publication and README rewrite
+
+### Work Completed
+- Published to https://github.com/yug-birla/HypoSense-Twin at the owner's instruction. The
+  branch was renamed `prefreeze-finalization` → `main`, then a normal push (no force).
+- Root README restructured for judges, engineers, researchers and clinicians. Changes:
+  - a hero section and a product tour;
+  - a verified quick start;
+  - the four worlds of the twin, prediction states, model ladder and evaluation design;
+  - development results traced to `T-AGG-dev-s6-20261018T144427Z`;
+  - limitations, citation and a documentation map.
+- `scripts/ui_readme_showcase.py` captures the README screenshots from the running app. It
+  uses SYNTHETIC new-data sessions only and no replay, so no T trace appears. Output:
+  docs/screenshots/readme/.
+- Quick start verified from a fresh clone of the GitHub repository:
+  `uv sync` → `npm ci` / `npm run build` (0 vulnerabilities) → data fetch / extract / manifest
+  (111 files verified) → `serve`. Health check: artifact verified; UI returns HTTP 200.
+
+### Problems Found
+- Without the dataset, `hyposense serve` stops with a `FileNotFoundError` traceback instead of
+  a plain message. Documented in the README; not fixed, because `cli.py` is in the frozen code
+  paths and the candidate pair would have to be rebuilt.
+- DEMO_GUIDE referred to a README section number that no longer exists, and to the old
+  "Overview" page name. Both fixed.
+
+### Next Task
+Human gates: the pharmacist review and the P-C11 decision.

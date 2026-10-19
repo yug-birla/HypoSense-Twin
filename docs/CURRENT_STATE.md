@@ -17,8 +17,10 @@ This is the canonical snapshot. Read it first, then [NEXT_STEPS.md](NEXT_STEPS.m
   - Observed vs predicted made explicit; plain evidence layer.
   - axe: 0 violations on 6 pages. Tests: Vitest 42, Python 572, E2E 3.
   - See docs/UX_REVIEW.md.
-- **Branch:** `prefreeze-finalization`. It is not merged to main; the merge happens after the
-  freeze record exists.
+- **Branch:** `main`, published at https://github.com/yug-birla/HypoSense-Twin (2026-10-20).
+  At the owner's instruction, `prefreeze-finalization` was renamed to `main` and pushed (the old
+  main was its ancestor; no history lost). `main` is therefore **pre-freeze**; the freeze record
+  will be committed on it.
 - **Product:** the following are all verified in Microsoft Edge:
   - T replay;
   - new-data intake: upload or manual entry, deterministic questions, a live append-only twin,
@@ -70,7 +72,7 @@ None. Work stopped at the freeze boundary (human gates).
 
 ## Pending Components (dependency order)
 1. Pharmacist review or explicit owner waiver (human). Owner approval of P-C11.
-2. `hyposense freeze` → merge `prefreeze-finalization` to main.
+2. `hyposense freeze` on main → commit and push `FREEZE.json`.
 3. S9: `hyposense confirm --freeze artifacts/freeze/FREEZE.json`, exactly once.
 4. S10:
    - `hyposense report` → docs/results/;
@@ -153,7 +155,7 @@ P-C9 and P-C10 (DEC-2026-10-19-M). The LLM layer was dropped.
 2. **Owner:** approve P-C11 (ANALYSIS_PLAN §5.7 items 1–33).
 3. Then:
    - `uv run hyposense freeze`
-   - merge to main
+   - commit and push `FREEZE.json` on main
    - `uv run hyposense confirm --freeze artifacts/freeze/FREEZE.json` (once)
    - `uv run hyposense report`
    - `uv run hyposense serve --held-out`

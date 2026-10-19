@@ -26,8 +26,9 @@ needed.
 
 3. `uv run hyposense freeze`. All checks must PASS, and `artifacts/freeze/FREEZE.json` is
    written. Commit it.
-4. Merge `prefreeze-finalization` into main, then verify the freeze record on main:
-   `verify_freeze_record`, which the confirm command performs.
+4. Push the freeze commit to `origin/main` (no force). The work is already on main: it was
+   renamed from `prefreeze-finalization` and pushed on 2026-10-20. The confirm command verifies
+   the freeze record (`verify_freeze_record`).
 5. `uv run hyposense confirm --freeze artifacts/freeze/FREEZE.json`, **exactly once**.
    - Expected runtime about 35 min, at 4 workers.
    - Commit `experiments/runs/E-AGG-confirm-*`; row-level outputs stay private.

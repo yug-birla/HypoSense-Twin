@@ -1,0 +1,22 @@
+{
+ "states": {
+  "SYNTHETIC-low": [
+   "LOW_NOW",
+   null
+  ],
+  "SYNTHETIC-falling": [
+   "ALERT",
+   "42%"
+  ],
+  "SYNTHETIC-gap": [
+   "INSUFFICIENT_DATA",
+   null
+  ],
+  "SYNTHETIC-steady": [
+   "NO_ALERT",
+   "<1%"
+  ]
+ },
+ "focus": "N0002_0_20300301",
+ "console_errors": []
+}

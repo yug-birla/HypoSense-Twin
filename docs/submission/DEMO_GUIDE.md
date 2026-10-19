@@ -3,7 +3,7 @@
 **Setup** (once):
 1. `uv sync`.
 2. `cd frontend && npm ci && npm run build && cd ..`.
-3. Fetch the data (README §7).
+3. Fetch the data ([README → Quick start](../../README.md#quick-start)).
 4. Start the server: `uv run hyposense serve --port 8765`.
 5. Open http://127.0.0.1:8765.
 
@@ -12,8 +12,8 @@ nothing is staged. Say "development" whenever a number appears.
 
 | Time | Screen | What to do | What to say |
 |---|---|---|---|
-| 0:00 | Overview | Read the first paragraph aloud | "HypoSense estimates whether a CGM-detected low will begin in the next hour, so staff can check earlier. Research prototype; never suggests doses." |
-| 0:30 | Overview, *How the twin works* | Point to the 5 steps, then the three state groups | "LOW NOW is observed. ALERT, WATCH and NO ALERT are predictions. No forecast is never shown as low risk." |
+| 0:00 | Welcome | Read the first paragraph aloud | "HypoSense estimates whether a CGM-detected low will begin in the next hour, so staff can check earlier. Research prototype; never suggests doses." |
+| 0:30 | Welcome, *the four worlds* and *Observe · Forecast · Review* | Point to the four worlds, then the status meanings | "LOW NOW is observed. ALERT, WATCH and NO ALERT are predictions. No forecast is never shown as low risk." |
 | 1:00 | Guided demo | *Start the guided demo* → *Start the replay* | "Eight real recorded patients, in catalogue order, not chosen for good results." |
 | 1:30 | Ward board | *Advance 2 hours*; hover a status | "The board orders patients by status, then risk. The rules run on the server." |
 | 2:00 | Patient (first alert) | *Fast-forward to the first alert* | "The first alert in time order: patient 2012 at 14:48, estimated risk 15 %. The solid tile is the observed glucose (81 mg/dL); the dashed tile is the prediction. An alert is a forecast, not a low." |
