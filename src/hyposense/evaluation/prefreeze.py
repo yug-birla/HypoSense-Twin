@@ -13,7 +13,6 @@ All results are DEVELOPMENT; P-B6 (M1_pb6) is SENSITIVITY.
 
 from __future__ import annotations
 
-import csv
 import json
 import math
 import os
@@ -43,11 +42,11 @@ from hyposense.evaluation.metrics import (
     select_threshold,
     window_metrics,
 )
-from hyposense.evaluation.s7_artifact import S6_RUN, frozen_s6
+from hyposense.evaluation.s7_artifact import S6_RUN, frozen_params, frozen_s6
 from hyposense.features.spec import BY_NAME, Group, level_names
 from hyposense.medication.exposure import QualityState
 from hyposense.models.artifact import RANGE_DTYPES
-from hyposense.models.lgbm import base_params, train
+from hyposense.models.lgbm import train
 
 F64 = npt.NDArray[np.float64]
 
@@ -157,22 +156,6 @@ def ladder_order(metrics: dict[str, Any], ck: str, cal: str) -> list[str]:
 
 
 # ---------------------------------------------------------------- inputs
-def frozen_params(cfg: dict[str, Any]) -> tuple[dict[str, Any], int]:
-    """S6 best trial at full precision (results.json stores 6-digit rounding)."""
-    s6 = frozen_s6()
-    tun = s6["results"]["tuning"]
-    path = REPO_ROOT / "experiments" / "runs" / S6_RUN / "trials.csv"
-    with path.open(encoding="utf-8") as f:
-        row = next(r for r in csv.DictReader(f) if int(r["trial"]) == int(tun["best_trial"]))
-    best: dict[str, Any] = {}
-    for k, v in tun["best_params"].items():
-        full = int(row[k]) if isinstance(v, int) else float(row[k])
-        if abs(float(full) - float(v)) > 1e-6:
-            raise AssertionError(f"trials.csv {k}={full} does not match results {v}")
-        best[k] = full
-    return {**base_params(cfg), **best}, int(tun["num_boost_round"])
-
-
 # ---------------------------------------------------------------- worker
 def task_fit(args: tuple[Any, ...]) -> dict[str, Any]:
     key, name, spec, params, rounds, train_p, test_p, inner = args
@@ -251,6 +234,24 @@ def _metrics(
             unique=len(np.unique(q)),
         )
     return out
+
+
+def _window(y: npt.NDArray[np.int64], q: F64) -> dict[str, Any]:
+    wm = window_metrics(y, q)
+    cal = calibration(y, q)
+    return {
+        "ll_u": ll_unclipped(y, q),
+        "log_loss": wm["log_loss"],
+        "brier": wm["brier"],
+        "auprc": wm["auprc"],
+        "ece": cal["ece"],
+        "slope": cal["slope"],
+        "intercept": cal["intercept"],
+        "exact0": int((q == 0.0).sum()),
+        "exact1": int((q == 1.0).sum()),
+        "positives_at_exact0": int(((q == 0.0) & (y == 1)).sum()),
+        "unique": len(np.unique(q)),
+    }
 
 
 def _subset(
@@ -425,33 +426,36 @@ def run_prefreeze(workers: int = 6) -> dict[str, Any]:
     ckeys = [f"f{fs}_m{ms}" for fs, ms in configs]
     canon = f"f{CANONICAL[0]}_m{CANONICAL[1]}"
 
-    # ---- P-B10
+    # ---- P-B10: LL_u / ECE on the P-B1 set = ALL patients' pooled outer held-out eligible
+    # rows (pre-specified); sens@1FA / partial area on treated patients (R0)
+    elig_all = dev.table["eligible"].to_numpy(bool)
+    y_all = dev.table["y"].to_numpy(np.int64)
+    pb1_set: dict[str, dict[str, dict[str, Any]]] = {}
+    for (fs, ms), by_model in scores.items():
+        for name in ("M1", "M1_pb6"):
+            if name in by_model:
+                pb1_set.setdefault(f"f{fs}_m{ms}", {})[name] = {
+                    c: _window(y_all[elig_all], p[elig_all]) for c, p in by_model[name].items()
+                }
+
     def outcome(ck: str, model: str = "M1") -> str:
-        m = metrics[ck][model]
+        m = pb1_set[ck][model]
         return pb10_outcome(m[CURRENT], m[FLOORED], m[PLATT])
 
     integrity = pb10_integrity({m: metrics[canon][m] for m in GRID_MODELS})
     per_cfg = [outcome(ck) for ck in ckeys]
     pb10 = {
-        "evaluation_set": "M1, pooled outer held-out eligible rows, canonical configuration",
+        "evaluation_set": (
+            "M1, canonical configuration: LL_u/LL/Brier/ECE/slope/exact-0/1 on ALL patients' "
+            "pooled outer held-out eligible rows (P-B1 set); sens@1FA/area/tau on treated"
+        ),
         "candidates": {
             c: {
-                k: metrics[canon]["M1"][c][k]
-                for k in (
-                    "ll_u",
-                    "log_loss",
-                    "brier",
-                    "auprc",
-                    "ece",
-                    "slope",
-                    "intercept",
-                    "exact0",
-                    "exact1",
-                    "unique",
-                    "sens_at_1fa",
-                    "partial_area",
-                    "tau_alert",
-                )
+                **pb1_set[canon]["M1"][c],
+                **{
+                    k: metrics[canon]["M1"][c][k]
+                    for k in ("sens_at_1fa", "partial_area", "tau_alert")
+                },
             }
             for c in CALS
         },
@@ -462,10 +466,10 @@ def run_prefreeze(workers: int = 6) -> dict[str, Any]:
         "floors_canonical_M1": floors[CANONICAL]["M1"],
         "sensitivity_M1_pb6": {
             c: {
-                k: metrics[canon]["M1_pb6"][c][k]
-                for k in ("ll_u", "ece", "sens_at_1fa", "partial_area", "exact0")
+                **pb1_set[canon]["M1_pb6"][c],
+                **{k: metrics[canon]["M1_pb6"][c][k] for k in ("sens_at_1fa", "partial_area")},
             }
-            for c in (CURRENT, FLOORED)
+            for c in (CURRENT, FLOORED, PLATT)
         },
         "sensitivity_M1_pb6_outcome": outcome(canon, "M1_pb6"),
     }
@@ -607,6 +611,7 @@ def run_prefreeze(workers: int = 6) -> dict[str, Any]:
         },
         "metrics_treated": metrics,
         "metrics_all_canonical": all_pop,
+        "pb1_set_windows": pb1_set,
         "pb10": pb10,
         "pb11": pb11,
         "pb12": pb12,

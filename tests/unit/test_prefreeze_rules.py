@@ -90,3 +90,17 @@ def test_pb12_decision_rule() -> None:
     assert d((False, False, False), (True, False, False), (True, False, False)) == "KEEP CURRENT"
     assert d((False,) * 3, (False,) * 3, (True,) * 3) == "REMOVE TAG"
     assert d((False,) * 3, (False, True, False), (False,) * 3) == "INCONCLUSIVE"
+
+
+def test_frozen_params_are_full_precision_s6_values() -> None:
+    """S6 used the full-precision best trial (the pre-freeze integrity gate reproduces S6's OOF
+    hash with them); results.json only stores a 6-digit rounding."""
+    from hyposense.common.config import load_config
+    from hyposense.evaluation.s7_artifact import frozen_params, frozen_s6
+
+    params, rounds = frozen_params(load_config())
+    rounded = frozen_s6()["results"]["tuning"]["best_params"]
+    assert rounds == 113
+    for k, v in rounded.items():
+        assert abs(params[k] - v) <= 1e-6
+    assert params["learning_rate"] != rounded["learning_rate"]  # really the unrounded value

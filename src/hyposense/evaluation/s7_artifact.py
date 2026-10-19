@@ -17,6 +17,7 @@ features (P-B8 pending). The result is labelled DEVELOPMENT and is never evidenc
 
 from __future__ import annotations
 
+import csv
 import json
 import time
 from pathlib import Path
@@ -51,19 +52,33 @@ def frozen_s6(run: str = S6_RUN) -> dict[str, Any]:
     return doc
 
 
+def frozen_params(cfg: dict[str, Any]) -> tuple[dict[str, Any], int]:
+    """S6 best trial at full precision (results.json stores 6-digit rounding)."""
+    s6 = frozen_s6()
+    tun = s6["results"]["tuning"]
+    path = REPO_ROOT / "experiments" / "runs" / S6_RUN / "trials.csv"
+    with path.open(encoding="utf-8") as f:
+        row = next(r for r in csv.DictReader(f) if int(r["trial"]) == int(tun["best_trial"]))
+    best: dict[str, Any] = {}
+    for k, v in tun["best_params"].items():
+        full = int(row[k]) if isinstance(v, int) else float(row[k])
+        if abs(float(full) - float(v)) > 1e-6:
+            raise AssertionError(f"trials.csv {k}={full} does not match results {v}")
+        best[k] = full
+    return {**base_params(cfg), **best}, int(tun["num_boost_round"])
+
+
 def build_dev_artifact(level: str = "M3", out_root: Path = MODELS_DIR) -> dict[str, Any]:
     started = utc_now_iso()
     t0 = time.perf_counter()
     cfg, pharma = load_config(), load_config("pharma.yaml")
     s6 = frozen_s6()
-    tuning = s6["results"]["tuning"]
     method = s6["results"]["pb1_calibration"]["decision"]
     dev = load_dev()
     t = dev.table
     spec = model_sets()[level]
     feats, cat = list(spec["features"]), spec["categorical"]
-    params = {**base_params(cfg), **tuning["best_params"]}
-    rounds = int(tuning["num_boost_round"])
+    params, rounds = frozen_params(cfg)  # full precision (results.json rounds to 6 digits)
     elig = t["eligible"].to_numpy(bool)
     y = t["y"].to_numpy(np.int64)
     pk = t["patient_key"].to_numpy()
