@@ -107,15 +107,15 @@ export function DemoProvider({ children }: { children: ReactNode }) {
 
   const show = useCallback(
     (step: number, alertKey: string | null) => {
-      const patient = alertKey ? `/patient/?key=${encodeURIComponent(alertKey)}` : "/ward/";
+      const patient = (tab: string) => (alertKey ? `/patient/?key=${encodeURIComponent(alertKey)}&tab=${tab}` : "/ward/");
       const target: Record<number, [string, string | null]> = {
         0: ["/", "how"],
         1: ["/ward/", null],
         2: ["/ward/", null],
-        3: [patient, null],
-        4: [patient, "why"],
-        5: [patient, "medication"],
-        6: [patient, "history"],
+        3: [patient("overview"), null],
+        4: [patient("explain"), "why"],
+        5: [patient("medications"), "medication"],
+        6: [patient("history"), "history"],
         7: ["/evidence/", null],
       };
       const [href, anchor] = target[step] ?? ["/", null];

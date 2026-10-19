@@ -108,7 +108,7 @@ def test_replay_dashboard_acknowledge_audit(server: tuple[str, Any]) -> None:
         # the browser reflects backend state changes (stream-triggered refresh)
         page.wait_for_timeout(1500)
         assert page.get_by_text("NEED ATTENTION", exact=False).count() >= 1
-        page.goto(f"{base}/patient/?key={target}")
+        page.goto(f"{base}/patient/?key={target}&tab=history")
         page.wait_for_selector("section[aria-label='What is happening now']", timeout=30_000)
         page.get_by_role("button", name="Acknowledge…").first.click()
         record = page.get_by_role("button", name="Record acknowledgement")
@@ -147,8 +147,9 @@ def test_new_patient_upload_questions_twin_and_append(
         errors: list[str] = []
         page.on("pageerror", lambda e: errors.append(str(e)))
         page.goto(base + "/intake/")
+        page.get_by_text("Live", exact=True).wait_for(timeout=30_000)  # hydrated
         page.get_by_label("Recording file").set_input_files(str(csv))
-        expect(page.get_by_text("Cannot be accepted yet")).to_be_visible()
+        expect(page.get_by_text("Cannot be accepted yet")).to_be_visible(timeout=30_000)
         for label, value in (
             ("“Timestamp” contain", "ts_local"),
             ("“Glucose” contain", "cgm"),
@@ -161,7 +162,7 @@ def test_new_patient_upload_questions_twin_and_append(
         expect(page.get_by_text("Ready to create")).to_be_visible()
         page.get_by_role("button", name="Create patient twin").click()
         page.wait_for_url("**/patient/?key=N*")
-        expect(page.get_by_text("New data session")).to_be_visible()
+        expect(page.get_by_text("New data session", exact=True)).to_be_visible()
         key = page.url.split("key=")[1]
         n0 = len(svc.live[key].runner.decisions)
         page.get_by_label("Value").fill("130")

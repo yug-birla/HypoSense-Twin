@@ -6,10 +6,10 @@ import { AXIS, Chart, TOOLTIP, type ChartOption } from "@/components/ui/Chart";
 export const MODEL_ORDER = ["M0", "M1", "M2", "M3r", "M3"] as const;
 export const MODEL_COLOR: Record<string, string> = {
   M0: "#9aa3b2",
-  M1: "#7c8ca3",
-  M2: "#3f6fa8",
-  M3r: "#8b5cc7",
-  M3: "#0e6e6a",
+  M1: "#3b82f6",
+  M2: "#1f9d64",
+  M3r: "#d08a1f",
+  M3: "#6d4fe0",
 };
 export const MODEL_DESC: Record<string, string> = {
   M0: "Trend projection (no learning)",
@@ -67,8 +67,8 @@ export function ReliabilityChart({ ev, pop, model }: { ev: Evidence; pop: "treat
           type: "line",
           data: bins.map((b) => [b.mean_p, b.mean_y, b.n]),
           symbolSize: 6,
-          lineStyle: { color: MODEL_COLOR[model] ?? "#0e6e6a", width: 1.5 },
-          itemStyle: { color: MODEL_COLOR[model] ?? "#0e6e6a" },
+          lineStyle: { color: MODEL_COLOR[model] ?? "#5f4fd1", width: 1.5 },
+          itemStyle: { color: MODEL_COLOR[model] ?? "#5f4fd1" },
         },
       ],
     };
@@ -84,7 +84,7 @@ export function IntervalBar({
   lo,
   hi,
   zero,
-  color = "#0e6e6a",
+  color = "#5f4fd1",
 }: {
   point: number | null | undefined;
   ci: number[] | null | undefined;

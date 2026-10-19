@@ -80,7 +80,7 @@ def main() -> None:
             shot(page, f"07_overview_{w}")
         page.set_viewport_size({"width": 1440, "height": 900})
         if key:
-            page.goto(a.base + f"/patient/?key={key}")
+            page.goto(a.base + f"/patient/?key={key}&tab=explain")
             page.get_by_role("button", name="After the last alert?").click()
             expect(page.get_by_text("What happened after the last alert?")).to_be_visible()
             ask = page.get_by_role("region", name="Ask about this patient")

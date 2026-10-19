@@ -5,7 +5,13 @@ This is the canonical snapshot. Read it first, then [NEXT_STEPS.md](NEXT_STEPS.m
 [PROGRESS.md](PROGRESS.md)._
 
 ## Current Phase
-**JUDGE-READY PRODUCT (UX redesign DEC-2026-10-19-Q); FREEZE BLOCKED BY HUMAN GATES.**
+**OWNER DESIGN ADOPTED (DEC-2026-10-20-S) ON THE JUDGE-READY PRODUCT; P-C11 AUDIT FIXES IN (DEC-2026-10-19-R); FREEZE BLOCKED BY HUMAN GATES.**
+- New design:
+  - Welcome, Ward board, Replay studio, Patient review (tabs incl. Twin anatomy and
+    Explainability), Evidence garden.
+  - Mockup elements with invented content were not implemented (listed in DEC-2026-10-20-S).
+  - Tests: Python 578, Vitest 42, E2E 3. axe: 0 violations.
+  - Report: docs/submission/TEST_REPORT.md.
 - **UX:**
   - Overview at `/` and a guided demo on the real replay.
   - Observed vs predicted made explicit; plain evidence layer.
@@ -99,7 +105,7 @@ None. Work stopped at the freeze boundary (human gates).
 ## Testing Status
 | Suite | Result |
 |---|---|
-| Python (unit, leakage, regression, integration, E2E) | **572 passed** (inside `hyposense freeze`, 2026-10-19, on `7f31b71`) |
+| Python (unit, leakage, regression, integration, E2E) | **578 passed** (2026-10-20) |
 | Frontend (Vitest) | **42 passed** |
 | Lint / format / types | ruff clean; mypy --strict clean (108 files); tsc strict clean |
 

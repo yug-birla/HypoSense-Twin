@@ -76,7 +76,7 @@ function Analyses({ rows }: { rows: Row[] }) {
     <table className="w-full text-small">
       <caption className="sr-only">Pre-specified secondary, sensitivity and robustness analyses</caption>
       <thead>
-        <tr className="border-b border-line bg-[#fafbfc] text-left">
+        <tr className="border-b border-line bg-sunken text-left">
           {["Analysis", "Patients", "Episodes", "M2", "M3", "Δ M3 − M2 (95% CI)"].map((h, i) => (
             <th key={h} scope="col" className={clsx("label-caps px-3 py-2", i >= 1 && "text-right")}>
               {h}
@@ -149,7 +149,7 @@ function Result({ c }: { c: ConfirmatoryDoc }) {
       <table className="w-full text-small">
         <caption className="sr-only">Model ladder on the primary population</caption>
         <thead>
-          <tr className="border-b border-line bg-[#fafbfc] text-left">
+          <tr className="border-b border-line bg-sunken text-left">
             {["Model", "Inputs", "Sensitivity @ 1 FA/day (95% CI)", "", "Log-loss", "Deployed: sens · FA/day · precision"].map((h, i) => (
               <th key={i} scope="col" className={clsx("label-caps px-3 py-2", i >= 4 && "text-right")}>
                 {h}

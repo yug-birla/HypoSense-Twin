@@ -391,3 +391,24 @@ def test_ask_intents_are_fixed_and_answer_from_state(client: Any) -> None:
     missing = c.get(f"/api/patients/{key}/ask", params={"intent": "missing"}).json()["lines"]
     assert any("Patient context not available" in x for x in missing)
     assert c.get(f"/api/patients/{key}/ask", params={"intent": "what dose?"}).status_code == 422
+
+
+def test_display_fields_are_observed_values_only(client: Any) -> None:
+    """Ward sparkline/delta and patient profile/twin come from recorded data only."""
+    c, svc = client
+    key = _commit_frame(c, synthetic_frame(days=2))
+    bed = next(b for b in c.get("/api/ward").json()["beds"] if b["recording_key"] == key)
+    runner = svc.live[key].runner
+    ts, vals = runner.state.cgm.series.ts, runner.state.cgm.series.values  # noqa: PD011 (CGM series, not pandas)
+    assert [tuple(x) for x in bed["spark"]] == [
+        (int(a), float(b)) for a, b in zip(ts, vals, strict=True) if a >= bed["now_ts"] - 7200
+    ]
+    assert bed["delta_2h"] == round(float(vals[-1] - vals[-9]), 1)  # 15-min sampling: 8 back
+    pv = c.get(f"/api/patients/{key}").json()
+    assert "age_y" not in pv["profile"]  # no context given: nothing is invented
+    tw = pv["twin"]
+    assert set(tw) == {"glucose", "meals", "medication", "data_quality", "memory"}
+    assert tw["glucose"]["cgm"] == float(vals[-1])
+    assert tw["data_quality"]["readings_last_2h"] == 8
+    ev = c.get("/api/ward").json()["events"]
+    assert all(e["kind"] in ("state", "notification") for e in ev)

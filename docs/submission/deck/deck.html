@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>HypoSense Twin — deck</title>
+<style>
+  @page { size: 1280px 720px; margin: 0; }
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: "Segoe UI", Inter, Arial, sans-serif; color: #101828; background: #fff; }
+  .slide { width: 1280px; height: 720px; padding: 56px 72px; page-break-after: always; position: relative; overflow: hidden; display: flex; flex-direction: column; gap: 18px; }
+  .slide:last-child { page-break-after: auto; }
+  h1 { font-size: 46px; margin: 0; letter-spacing: -0.5px; }
+  h2 { font-size: 32px; margin: 0; letter-spacing: -0.3px; }
+  p, li { font-size: 21px; line-height: 1.45; margin: 0; }
+  ul { margin: 0; padding-left: 26px; display: flex; flex-direction: column; gap: 8px; }
+  .kicker { font-size: 14px; letter-spacing: 1.6px; text-transform: uppercase; color: #5f4fd1; font-weight: 700; }
+  .note { position: absolute; bottom: 22px; left: 72px; right: 72px; font-size: 13px; color: #667085; display: flex; justify-content: space-between; }
+  .tag { display: inline-block; padding: 3px 10px; border-radius: 4px; font-size: 13px; font-weight: 700; letter-spacing: .5px; }
+  .dev { background: #fef8e7; color: #854d0e; border: 1px solid #f6dd96; }
+  .pend { background: #f2f4f7; color: #344054; border: 1px solid #d0d5dd; }
+  .flow { display: flex; gap: 10px; align-items: stretch; }
+  .box { flex: 1; border: 1px solid #d0d5dd; border-radius: 10px; padding: 14px; font-size: 16px; line-height: 1.35; background: #fafbfc; }
+  .box b { display: block; font-size: 17px; margin-bottom: 4px; color: #5f4fd1; }
+  .arrow { align-self: center; color: #98a2b3; font-size: 22px; }
+  table { border-collapse: collapse; font-size: 19px; }
+  th, td { border-bottom: 1px solid #eaecf0; padding: 8px 18px 8px 0; text-align: left; }
+  th { font-size: 13px; text-transform: uppercase; letter-spacing: 1px; color: #667085; }
+  .shot { border: 1px solid #d0d5dd; border-radius: 8px; max-height: 470px; max-width: 100%; object-fit: cover; object-position: top; }
+  .two { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; align-items: start; }
+  .big { font-size: 64px; font-weight: 700; color: #5f4fd1; }
+  .title { background: #101828; color: #fff; justify-content: center; }
+  .title .kicker { color: #c4b5fd; }
+  .title p { color: #d0d5dd; }
+</style>
+</head>
+<body>
+
+<section class="slide title">
+  <div class="kicker">Research prototype · not clinically validated</div>
+  <h1>HypoSense Twin</h1>
+  <p style="font-size:26px;max-width:960px">An exposure-aware digital twin that estimates whether a CGM-detected low-glucose episode will begin within the next hour — so staff can check the patient earlier.</p>
+  <p>Development evidence only · the pre-registered confirmatory evaluation is pending.</p>
+</section>
+
+<section class="slide">
+  <div class="kicker">1 · Problem</div>
+  <h2>Lows are easy to miss between scheduled glucose checks</h2>
+  <ul>
+    <li>Adults with type 2 diabetes on insulin or sulfonylureas can develop low glucose (hypoglycaemia).</li>
+    <li>On a ward, capillary glucose is usually checked on a timetable; an episode can start in between.</li>
+    <li>A continuous glucose monitor (CGM) shows where glucose <i>is</i> — not where it is heading in the next hour.</li>
+  </ul>
+  <p style="margin-top:8px">Goal: warn <b>15–60 minutes before</b> a CGM-detected low begins, at a fixed budget of about <b>one false alert per patient-day</b>.</p>
+  <div class="note"><span>No burden statistics are used as proof of impact.</span><span>HypoSense Twin</span></div>
+</section>
+
+<section class="slide">
+  <div class="kicker">2 · Insight</div>
+  <h2>Medicines keep acting after they are given</h2>
+  <p>Insulin and secretagogues act for hours. HypoSense tracks the <b>recorded doses</b> and estimates how much may still be <b>active</b>, using documented, label-sourced pharmacological profiles.</p>
+  <div class="flow" style="margin-top:12px">
+    <div class="box"><b>Recorded</b>dose and time, as entered in the record</div>
+    <div class="arrow">→</div>
+    <div class="box"><b>Estimated activity</b>a model-based curve over the next hours — never a measured blood level, never a dosing suggestion</div>
+    <div class="arrow">→</div>
+    <div class="box"><b>Twin feature</b>"medicine activity now and soon", available to the forecast</div>
+  </div>
+  <p style="margin-top:10px">Scientific question: does this exposure information improve early warning beyond CGM + context?</p>
+</section>
+
+<section class="slide">
+  <div class="kicker">3 · The digital twin</div>
+  <h2>One causal pipeline for replay and live data</h2>
+  <div class="flow">
+    <div class="box"><b>Data</b>CGM, doses, meals, context — file replay, CSV/XLSX upload or manual entry</div>
+    <div class="arrow">→</div>
+    <div class="box"><b>Validation</b>one canonical parser; nothing guessed, nothing silently dropped</div>
+    <div class="arrow">→</div>
+    <div class="box"><b>Patient state</b>glucose history, data quality, medicine exposure, forecast ledger</div>
+    <div class="arrow">→</div>
+    <div class="box"><b>Forecast</b>100 time-valid features → LightGBM → calibrated risk</div>
+    <div class="arrow">→</div>
+    <div class="box"><b>Fixed rules</b>ALERT · WATCH · NO ALERT · LOW NOW · or "no forecast"</div>
+  </div>
+  <ul style="margin-top:12px">
+    <li>Features use only information available at the prediction time — verified bitwise at every development time point.</li>
+    <li>"Low risk" and "not enough data" are different states and are never confused.</li>
+    <li>Every forecast is later checked against what the CGM actually showed.</li>
+  </ul>
+</section>
+
+<section class="slide">
+  <div class="kicker">4 · Product</div>
+  <h2>Understandable in 30 seconds</h2>
+  <div class="two">
+    <img class="shot" src="../../screenshots/app/overview.png" alt="Overview page">
+    <ul>
+      <li><b>Welcome</b> — what it is, the four parts of the twin, what each state means</li>
+      <li><b>Guided demo</b> — 8 steps on the real replay</li>
+      <li><b>Ward board</b> — who needs attention now</li>
+      <li><b>Patient review</b> — observed now vs predicted next 60 min; twin anatomy; why; what happened afterwards</li>
+      <li><b>Add patient</b> — upload or enter data; clarifying questions</li>
+      <li><b>Evidence garden</b> — plain language first, every number on demand</li>
+    </ul>
+  </div>
+</section>
+
+<section class="slide">
+  <div class="kicker">5 · New patients</div>
+  <h2>New data: it asks, it never guesses</h2>
+  <div class="two">
+    <img class="shot" src="../../screenshots/intake/02_questions_blocked.png" alt="Clarification questions (synthetic data)">
+    <ul>
+      <li>Upload CSV/XLSX or start an empty patient.</li>
+      <li>Questions only where the data need them — column meaning, glucose unit, clock, unreadable medicine entries — each with <i>why we ask</i> and <i>what if you can't answer</i>.</li>
+      <li>Same parser and twin as the research data (parity-tested).</li>
+      <li>Never training data; kept in memory; no accuracy claim for uploaded patients.</li>
+    </ul>
+  </div>
+  <div class="note"><span>Screenshot: SYNTHETIC data.</span><span>HypoSense Twin</span></div>
+</section>
+
+<section class="slide">
+  <div class="kicker">6 · The experiment</div>
+  <h2>One pre-registered question, a fair ladder, a sealed test set</h2>
+  <table>
+    <tr><th>Model</th><th>Adds</th></tr>
+    <tr><td>M0</td><td>glucose trend rule (no learning)</td></tr>
+    <tr><td>M1</td><td>learned CGM features</td></tr>
+    <tr><td>M2</td><td>+ patient context and meals</td></tr>
+    <tr><td>M3r</td><td>+ raw medicine timing</td></tr>
+    <tr><td>M3</td><td>+ estimated medicine exposure</td></tr>
+  </table>
+  <p><b>H1:</b> M3 warns more episodes than M2 at 1 false alert per patient-day in treated patients of the sealed partition — supported only if the 95% paired patient-bootstrap interval of the difference is above 0.</p>
+  <p>Patients split once before modelling: 30 development · 70 sealed (never opened so far).</p>
+</section>
+
+<section class="slide">
+  <div class="kicker">7 · Results so far <span class="tag dev">DEVELOPMENT</span></div>
+  <h2>Development data: no reliable difference yet</h2>
+  <table>
+    <tr><th>Sensitivity @ 1 FA/day (treated, 22 patients, 56 episodes)</th><th>Estimate</th><th>95% CI</th></tr>
+    <tr><td>M0 trend rule</td><td>62.6 %</td><td>49.1 – 83.7</td></tr>
+    <tr><td>M1 CGM</td><td>85.7 %</td><td>71.9 – 100</td></tr>
+    <tr><td>M2 + context</td><td>87.5 %</td><td>78.1 – 100</td></tr>
+    <tr><td>M3 + exposure</td><td>91.1 %</td><td>78.8 – 100</td></tr>
+  </table>
+  <p>M3 − M2 = <b>+3.6 points (−4.2 to +8.8)</b>: the interval includes zero. Tuning happened on these patients, so numbers are optimistic. <span class="tag pend">CONFIRMATORY: PENDING</span></p>
+  <div class="note"><span>Source: run T-AGG-dev-s6-20261018T144427Z.</span><span>HypoSense Twin</span></div>
+</section>
+
+<section class="slide">
+  <div class="kicker">8 · Honesty</div>
+  <h2>False alerts are shown, not hidden</h2>
+  <ul>
+    <li>In the guided demo, the first real alert (risk 15 %) was <b>not</b> followed by a low — the history shows it as such.</li>
+    <li>Labels are CGM-detected; CGM and capillary glucose often disagree around 70 mg/dL.</li>
+    <li>One public dataset, one centre, internal validation, small numbers.</li>
+    <li>Medicine profiles await clinical-pharmacist review.</li>
+    <li>Never recommends doses or treatment; never calls a patient "safe".</li>
+  </ul>
+</section>
+
+<section class="slide">
+  <div class="kicker">9 · Trust and reproducibility</div>
+  <h2>Built so the result cannot be tuned after the fact</h2>
+  <ul>
+    <li>Sealed evaluation data are refused by the code until a verified protocol freeze exists; the confirmatory run executes once.</li>
+    <li>Freeze records hashes of code, configuration, data, partition, analysis plan, locks and model.</li>
+    <li>Model rebuilt repeatedly with an identical results hash; replay decision logs are identical run to run.</li>
+    <li>572 Python tests, 42 frontend tests, 3 browser end-to-end tests; 0 accessibility violations (axe, WCAG 2 A/AA).</li>
+  </ul>
+</section>
+
+<section class="slide">
+  <div class="kicker">10 · Status and next steps</div>
+  <h2>Engineering complete · science one step from the decisive test</h2>
+  <ul>
+    <li><b>Done:</b> data audit, labels, exposure engine, twin, ladder, policy, replay, API, frontend, new-patient intake, confirmatory runner (rehearsed on development data).</li>
+    <li><b>Pending (human):</b> clinical-pharmacist review of medicine profiles; owner approval of the confirmatory operational definitions.</li>
+    <li><b>Then:</b> protocol freeze → one confirmatory run on the sealed patients → model selection by the pre-registered rule → report, whatever the result.</li>
+  </ul>
+  <p style="margin-top:8px">Data: ShanghaiT2DM (Zhao et al., Scientific Data 2023; CC BY 4.0).</p>
+</section>
+
+</body>
+</html>

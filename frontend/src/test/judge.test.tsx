@@ -26,7 +26,7 @@ function wrap(ui: ReactNode) {
 describe("overview", () => {
   it("says what HypoSense is, that it is a prototype, and offers three ways in", () => {
     wrap(<OverviewPage />);
-    expect(screen.getByRole("heading", { name: "HypoSense Twin" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: /HypoSense Twin/ })).toBeInTheDocument();
     expect(screen.getByText(/Research prototype · not clinically validated/)).toBeInTheDocument();
     for (const t of ["Guided demo (5 min)", "Explore the ward replay", "Add patient data"]) expect(screen.getByText(t)).toBeInTheDocument();
     expect(screen.getByText("PENDING")).toBeInTheDocument();

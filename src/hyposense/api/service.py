@@ -19,6 +19,8 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, ClassVar
 
+import numpy as np
+
 from hyposense.api import schemas as S
 from hyposense.common.config import REPO_ROOT, load_config
 from hyposense.common.provenance import make_run_id, utc_now_iso
@@ -443,9 +445,160 @@ class Service:
                     badges=self._badges(r, d, now),
                     info_tags=[t for t in d.tags if t.startswith(INFO_TAG_PREFIXES)],
                     unacknowledged_notifications=unack,
+                    spark=self._spark(r, now),
+                    delta_2h=self._delta_2h(r),
+                    treated=self._treated(r),
                 )
             )
-        return S.Ward(session_id=self.session_id, offset_s=0 if s is None else s.offset, beds=beds)
+        return S.Ward(
+            session_id=self.session_id,
+            offset_s=0 if s is None else s.offset,
+            beds=beds,
+            events=self._events(),
+        )
+
+    # ------------------------------------------------------------------ display-only views
+    def _spark(self, r: TwinRunner, now: int) -> list[tuple[int, float]]:
+        ts, vals = r.state.cgm.series.ts, r.state.cgm.series.values
+        keep = ts >= now - 7200
+        return [(int(a), float(b)) for a, b in zip(ts[keep], vals[keep], strict=True)]
+
+    @staticmethod
+    def _delta_2h(r: TwinRunner) -> float | None:
+        ts, vals = r.state.cgm.series.ts, r.state.cgm.series.values
+        if not len(ts):
+            return None
+        target = int(ts[-1]) - 7200
+        i = int(np.searchsorted(ts, target))
+        if i >= len(ts) or abs(int(ts[i]) - target) > 900:
+            return None
+        return round(float(vals[-1] - vals[i]), 1)
+
+    @staticmethod
+    def _treated(r: TwinRunner) -> bool | None:
+        reg = r.stream.context.regimen
+        flags = [reg.get(k) for k in ("rx_insulin", "rx_su", "rx_glinide")]
+        if all(f is None or f != f for f in flags):  # regimen unknown (NaN)
+            return None
+        return any(f == 1.0 for f in flags)
+
+    def _events(self, limit: int = 8) -> list[S.WardEvent]:
+        out: list[tuple[int, S.WardEvent]] = []
+        for r, now, _ in self._all_runners():
+            prev: str | None = None
+            changes = []
+            for x in r.decisions:
+                st = x.decision.state.value
+                if x.decision.notify or st != prev:
+                    changes.append(x)
+                prev = st
+            for x in changes[-limit:]:
+                age = now - x.decision.ts
+                out.append(
+                    (
+                        age,
+                        S.WardEvent(
+                            recording_key=r.recording_key,
+                            label=self._label(r.recording_key),
+                            ts=x.decision.ts,
+                            age_s=age,
+                            kind="notification" if x.decision.notify else "state",
+                            state=x.decision.state.value,
+                            p_text=probability_text(x.decision.p),
+                            cgm_mgdl=x.cgm_mgdl,
+                        ),
+                    )
+                )
+        out.sort(key=lambda t: (t[0], t[1].recording_key))
+        return [e for _, e in out[:limit]]
+
+    def _profile(self, r: TwinRunner, now: int) -> dict[str, Any]:
+        ctx = r.stream.context
+        v = {k: x for k, x in ctx.values.items() if x == x}  # drop NaN (missing)
+        first = r.stream.first_ts
+        out: dict[str, Any] = {
+            "age_y": v.get("age_y"),
+            "sex": None if "sex_male" not in v else ("male" if v["sex_male"] == 1.0 else "female"),
+            "diabetes_duration_y": v.get("diabetes_duration_y"),
+            "bmi": v.get("bmi"),
+            "hba1c_mmol_mol": v.get("hba1c_mmol_mol"),
+            "prescribed_classes": sorted(ctx.prescribed_classes),
+            "treated": self._treated(r),
+            "days_monitored": None if first is None else round(max(0, now - first) / 86400, 1),
+        }
+        return {k: x for k, x in out.items() if x is not None}
+
+    _TWIN_FEATURES: ClassVar[dict[str, tuple[str, ...]]] = {
+        "glucose": (
+            "cgm",
+            "cgm_slope30",
+            "cgm_sd_2h",
+            "cgm_min_2h",
+            "cgm_mean_24h",
+            "cgm_cv_24h",
+            "cgm_min_since_low70",
+            "cgm_prior_l1_onsets",
+        ),
+        "medication": (
+            "act_insulin_total",
+            "iob_insulin",
+            "act_basal",
+            "act_prandial",
+            "act_su",
+            "act_glinide",
+            "min_since_insulin",
+            "min_since_su",
+            "min_since_glinide",
+        ),
+        "data_quality": ("sensor_day",),
+        "meals": ("meal_min_since", "meal_last_3h", "meals_today", "hour_sin", "night"),
+    }
+
+    def _twin(self, r: TwinRunner, now: int) -> dict[str, Any]:
+        """The four state blocks, read from the canonical feature builder at the twin's
+        current state (display only; nothing new is computed or decided here)."""
+        st = r.state
+        vals: dict[str, float] = {}
+        if st.cgm.n:
+            try:
+                snap = self.pipe.builder.snapshot(st, "M3")
+                vals = {n: float(x) for n, x in zip(snap.names, snap.values, strict=True) if x == x}
+            except Exception:  # display only: never fail the view
+                vals = {}
+        pick = {
+            w: {n: round(vals[n], 3) for n in names if n in vals}
+            for w, names in self._TWIN_FEATURES.items()
+        }
+        ts = st.cgm.series.ts
+        recent = int((ts > now - 7200).sum()) if len(ts) else 0
+        led = st.ledger
+        resolved = [x for x in led.resolved.items() if x.forecast.p is not None]
+        notes = [x for x in r.decisions if x.decision.notify]
+        med_q = {}
+        if st.ts is not None:
+            med_q = {c: q.value for c, q in sorted(st.medication.at(st.ts).quality.items())}
+        return {
+            "glucose": pick["glucose"],
+            "meals": pick["meals"],
+            "medication": {**pick["medication"], "quality": med_q},
+            "data_quality": {
+                **pick["data_quality"],
+                "readings_last_2h": recent,
+                "expected_readings_2h": 8,  # 15-min sampling (ShanghaiT2DM)
+                "conditions": list(st.quality.reasons) if st.quality is not None else [],
+                "rejected_inputs": len(r.rejected),
+                "halted": r.halted,
+            },
+            "memory": {
+                "forecasts_pending": sum(1 for f in led.pending if f.p is not None),
+                "followed_by_low": sum(1 for x in resolved if x.outcome == 1),
+                "not_followed_by_low": sum(1 for x in resolved if x.outcome == 0),
+                "outcome_unknown": r.unknown_outcomes or 0,
+                "notifications": len(notes),
+                "unacknowledged": sum(1 for x in notes if x.decision_id not in self.acks),
+                "low_episodes_so_far": int(vals.get("cgm_prior_l1_onsets", 0)),
+            },
+        }
 
     # ------------------------------------------------------------------ display helpers
     def _current_reading(self, r: TwinRunner, d: PolicyDecision) -> bool:
@@ -509,14 +662,22 @@ class Service:
             return []
         return self._groups(snap, r.pipe.model)
 
-    def _groups(self, snap: Any, model: RuntimeModel) -> list[S.FactorGroup]:
+    def _all_groups(self, r: TwinRunner, shown: PolicyDecision) -> list[S.FactorGroup]:
+        lf = r.last_forecast
+        snap = r.last_snapshot
+        if lf is None or lf.decision is not shown or snap is None or snap.digest != lf.input_digest:
+            return []
+        return self._groups(snap, r.pipe.model, None)
+
+    def _groups(self, snap: Any, model: RuntimeModel, top: int | None = 3) -> list[S.FactorGroup]:
         """Contributions of the model that actually scored the recording (its fold model in
         held-out replay)."""
         sums: dict[str, float] = {}
         for f, c in model.contributions(snap).items():
             g = BY_NAME[f].group.value
             sums[g] = sums.get(g, 0.0) + c
-        top = sorted(sums.items(), key=lambda kv: (-abs(kv[1]), kv[0]))[:3]
+        ranked = sorted(sums.items(), key=lambda kv: (-abs(kv[1]), kv[0]))
+        top_groups = ranked if top is None else ranked[:top]
         return [
             S.FactorGroup(
                 group=g,
@@ -524,7 +685,7 @@ class Service:
                 contribution=v,
                 direction="raises_risk" if v > 0 else "lowers_risk",
             )
-            for g, v in top
+            for g, v in top_groups
         ]
 
     def patient(self, key: str) -> S.PatientView:
@@ -640,6 +801,9 @@ class Service:
             rejected_events=len(r.rejected),
             halted=r.halted,
             caveat=LABEL_CAVEAT,
+            profile=self._profile(r, now),
+            twin=self._twin(r, now),
+            contributions=self._all_groups(r, d),
         )
 
     def _ledger_row(

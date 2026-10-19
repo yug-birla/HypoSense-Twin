@@ -25,11 +25,11 @@ export function StatePill({
       aria-description={explain ? stateMeaning(state).text : undefined}
       data-state={state}
       className={clsx(
-        "inline-flex items-center gap-1.5 whitespace-nowrap rounded-sm border font-semibold tracking-wide",
+        "inline-flex items-center gap-1.5 whitespace-nowrap rounded-full border font-semibold tracking-wide",
         muted ? "border-line bg-surface text-ink-3" : s.pill,
-        size === "sm" && "h-5 px-1.5 text-[10.5px]",
-        size === "md" && "h-6 px-2 text-[11.5px]",
-        size === "lg" && "h-8 px-3 text-[13px]",
+        size === "sm" && "h-6 px-2 text-[10.5px]",
+        size === "md" && "h-7 px-2.5 text-[11.5px]",
+        size === "lg" && "h-9 px-3.5 text-[13px]",
       )}
     >
       <Icon aria-hidden className={size === "lg" ? "size-4" : "size-3.5"} strokeWidth={2.25} />
@@ -53,7 +53,7 @@ export function Help({ children, label = "What does this mean?" }: { children: R
 /* Expandable technical detail (progressive disclosure). */
 export function Details({ summary, children }: { summary: ReactNode; children: ReactNode }) {
   return (
-    <details className="group rounded-md border border-line bg-[#fafbfc] px-3 py-2 text-small">
+    <details className="group rounded-md border border-line bg-sunken px-3 py-2 text-small">
       <summary className="cursor-pointer select-none font-medium text-ink-2 marker:text-ink-4">{summary}</summary>
       <div className="mt-2 text-ink-2">{children}</div>
     </details>
@@ -112,14 +112,14 @@ export function Panel({
   id?: string;
 }) {
   return (
-    <section id={id} aria-label={typeof title === "string" ? title : undefined} className={clsx("rounded-lg border border-line bg-surface", className)}>
+    <section id={id} aria-label={typeof title === "string" ? title : undefined} className={clsx("card", className)}>
       {title !== undefined && (
-        <header className="flex min-h-10 items-center justify-between gap-3 border-b border-line px-4 py-2">
+        <header className="flex min-h-12 items-center justify-between gap-3 px-5 pt-4">
           <h2 className="text-section font-semibold text-ink">{title}</h2>
           {aside}
         </header>
       )}
-      <div className={clsx("p-4", bodyClass)}>{children}</div>
+      <div className={clsx("px-5 pb-5 pt-3", bodyClass)}>{children}</div>
     </section>
   );
 }
@@ -135,9 +135,9 @@ export function Button({
       type="button"
       {...rest}
       className={clsx(
-        "inline-flex items-center justify-center gap-1.5 rounded-md font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-45",
-        size === "md" ? "h-8 px-3 text-body" : "h-7 px-2 text-small",
-        variant === "primary" && "bg-ink text-white hover:bg-ink-2",
+        "inline-flex items-center justify-center gap-1.5 rounded-full font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-45",
+        size === "md" ? "h-9 px-4 text-body" : "h-8 px-3 text-small",
+        variant === "primary" && "bg-accent text-white shadow-[0_4px_12px_rgba(95,79,209,0.28)] hover:bg-[#4f40bd]",
         variant === "secondary" && "border border-line-strong bg-surface text-ink hover:bg-sunken",
         variant === "ghost" && "text-ink-2 hover:bg-sunken",
         className,

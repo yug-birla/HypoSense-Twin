@@ -116,12 +116,27 @@ class Bed(Strict):
     badges: list[str]
     info_tags: list[str]  # informational tags (MED_TIMING_UNKNOWN:*, EVENT_REJECTED)
     unacknowledged_notifications: int
+    spark: list[tuple[int, float]] = []  # observed CGM, last 2 h (display only)
+    delta_2h: float | None = None  # latest CGM minus the reading ~2 h earlier (observed)
+    treated: bool | None = None  # insulin / secretagogue prescribed or recorded (context)
+
+
+class WardEvent(Strict):
+    recording_key: str
+    label: str | None
+    ts: int
+    age_s: int  # at that bed's current clock
+    kind: str  # "state" | "notification"
+    state: str
+    p_text: str | None
+    cgm_mgdl: float | None
 
 
 class Ward(Strict):
     session_id: str | None
     offset_s: int
     beds: list[Bed]
+    events: list[WardEvent] = []  # recent state changes and notifications (display only)
 
 
 class FactorGroup(Strict):
@@ -202,6 +217,9 @@ class PatientView(Strict):
     rejected_events: int
     halted: bool
     caveat: str
+    profile: dict[str, Any] = {}  # recorded context (missing values omitted, never guessed)
+    twin: dict[str, Any] = {}  # the four state blocks, from the canonical feature builder
+    contributions: list[FactorGroup] = []  # every factor group of the current forecast
 
 
 class Case(Strict):

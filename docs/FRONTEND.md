@@ -118,6 +118,30 @@ never colour alone (text + icon + colour).
 - **`components/evidence/PlainEvidence.tsx`:** the plain-language evidence layer and metric
   glossary.
 
+### Owner design adoption (DEC-2026-10-20-S)
+- **Theme tokens** (`globals.css`):
+  - violet accent `#5f4fd1` and lavender canvas;
+  - semantic state colours unchanged;
+  - text colours ≥ 4.5:1 (WCAG AA);
+  - `.card` and `.hero-grad` utilities.
+- **Shell** (`AppShell.tsx`):
+  - grouped sidebar with the mascot (`components/brand/Mascot.tsx`, decorative SVG);
+  - top bar with patient search (board only), research-mode chip and connection state;
+  - `PageHeader` renders the gradient hero with an optional mascot speech bubble.
+- **Pages:**
+  - `/` Welcome;
+  - `/ward/`;
+  - `/replay/` Replay studio;
+  - `/patient/?key=&tab=overview|medications|twin|explain|history`;
+  - `/evidence/` (tabs);
+  - `/intake/`;
+  - `/demo/`.
+  - Twin anatomy and Explainability in the sidebar open the last viewed patient
+    (`lib/lastPatient.ts`, sessionStorage convenience).
+- **Patient components:** `components/patient/Twin.tsx` (ProfileCard, StatusRail, TwinAnatomy,
+  Explainability, RecentReadings, RecentMedication, DataQualityCard).
+- **Mockup elements not implemented** (fabricated or unsupported): see DEC-2026-10-20-S.
+
 ## 5. Design research (principles extracted; nothing copied)
 
 | Reference | Pattern | Adopt? | HypoSense mapping |

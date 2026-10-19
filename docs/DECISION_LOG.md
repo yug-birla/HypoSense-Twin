@@ -1262,3 +1262,47 @@ Owner approval 2026-10-19. Canonical text: ANALYSIS_PLAN §5 and §6 (FINAL). Br
 - **Re-verification:** the full rehearsal on T and the candidate pair are re-run after these
   fixes.
 - **Class:** A (implementation) / C pending (text) · **Date:** 2026-10-19
+
+## DEC-2026-10-20-S · Owner's new frontend design adopted (visual + IA), without fabricated content
+
+- **Context:** the owner supplied six mockups (Welcome, Ward Board, Patient Review, Twin Anatomy,
+  Explainability, Evidence Garden).
+- **Adopted:**
+  - **Visual:** lavender/violet theme, rounded cards, gradient hero banners with a droplet mascot
+    (inline SVG, decorative), new sidebar and top bar.
+  - **Navigation:** Welcome · Ward board · Patient review · Replay studio · Twin anatomy ·
+    Explainability · Evidence garden · Add patient · Guided demo.
+  - **Ward board:** greeting with real counts; state tiles and filters; 2-hour sparklines and
+    2-hour change; "glucose now" strip; "Twin insights" (counts only); recent events.
+  - **Patient review:** profile from recorded context only; tabs Overview / Medications / Twin
+    anatomy / Explainability / History & alerts; right rail with observed vs predicted, twin
+    summary and actions.
+  - **Twin anatomy:** the four state blocks with values read from the canonical feature builder.
+  - **Explainability:** reason cards from the real grouped TreeSHAP; all-group contribution chart.
+  - **Evidence garden:** tabs, KPI tiles, dataset overview (documented audit facts), key
+    takeaways.
+- **Backend (display only, no scientific change):** bed `spark` / `delta_2h` / `treated`; ward
+  `events`; patient `profile` / `twin` / `contributions`. Tested
+  (`test_display_fields_are_observed_values_only`).
+- **Deliberately NOT implemented from the mockups, because each would show invented or
+  unsupported information:**
+  - Fabricated metrics: "p < 0.001", "+0.12 (0.06–0.18)", "sensitivity 0.83",
+    "sens @ 0.1 FP/h" (wrong metric), AUPRC table, "results on a sealed evaluation set". The
+    sealed test has not run.
+  - **"Counterfactual exploration"** ("if the insulin dose were 4 units, risk 78% → 52%"). It
+    implies dosing advice, and model what-ifs are not evidence about a patient.
+  - **"Next 2 hours 15/30/60 min" risks.** The model predicts one 60-minute horizon only.
+  - **"Twin confidence 82%"** and **"Model is 78% confident".** No such quantity exists; a
+    calibrated risk is not confidence.
+  - **"Similar past episodes" / "observed vs similar historical patterns".** Not implemented
+    and not validated.
+  - **A risk % on LOW NOW rows.** The policy gives no probability for an observed low.
+  - **Mockup patient demographics, the clinician name and avatar, "time in range" and the sample
+    patient panel.** They would be fabricated.
+  - **Data Explorer and Settings pages.** No functionality behind them.
+  - **"15 min reading interval" tile.** Replaced by "No forecast possible" (a real state count).
+- **Verification:**
+  - Microsoft Edge at 1440 / 1280 / 1024 px, 0 console errors.
+  - axe: 0 violations on 6 pages (`T-AGG-s8-ui-audit-20261019T182505Z`).
+  - Vitest 42; E2E 3.
+- **Class:** A · **Date:** 2026-10-20

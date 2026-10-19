@@ -120,8 +120,8 @@ export function GlucoseChart({
         data: series,
         showSymbol: false,
         connectNulls: false,
-        lineStyle: { width: 1.75, color: "#1f2937" },
-        itemStyle: { color: "#1f2937" },
+        lineStyle: { width: 1.75, color: "#4338ca" },
+        itemStyle: { color: "#4338ca" },
         markArea: {
           silent: true,
           data: [
@@ -137,7 +137,7 @@ export function GlucoseChart({
           data: [
             { yAxis: 70, lineStyle: { color: "#b42318", type: "dashed", width: 1 }, label: { formatter: "70 mg/dL", position: "insideStartTop", color: "#8f1d14" } },
             { yAxis: 54, lineStyle: { color: "#8f1d14", type: "dotted", width: 1 }, label: { formatter: "54", position: "insideStartBottom", color: "#8f1d14" } },
-            { xAxis: t1, lineStyle: { color: "#0e6e6a", width: 1 }, label: { formatter: "now", position: "end", color: "#0e6e6a" } },
+            { xAxis: t1, lineStyle: { color: "#5f4fd1", width: 1 }, label: { formatter: "now", position: "end", color: "#5f4fd1" } },
           ],
         },
       },
@@ -188,8 +188,8 @@ export function GlucoseChart({
         data: risk,
         showSymbol: false,
         connectNulls: false,
-        lineStyle: { width: 1.25, color: "#0e6e6a" },
-        itemStyle: { color: "#0e6e6a" },
+        lineStyle: { width: 1.25, color: "#e0457b" },
+        itemStyle: { color: "#e0457b" },
         areaStyle: { color: "rgba(14,110,106,0.08)" },
         markLine: {
           silent: true,

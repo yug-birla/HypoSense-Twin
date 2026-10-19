@@ -258,7 +258,7 @@ function Preview({ d }: { d: IntakeDraft }) {
       <div className="overflow-x-auto">
         <table className="w-full text-small">
           <thead>
-            <tr className="border-b border-line bg-[#fafbfc] text-left">
+            <tr className="border-b border-line bg-sunken text-left">
               {d.preview_headers.map((h) => {
                 const m = d.mapping.find((x) => x.header === h);
                 return (
@@ -291,6 +291,7 @@ function Preview({ d }: { d: IntakeDraft }) {
 
 function Review({ d, setD, onReset }: { d: IntakeDraft; setD: (d: IntakeDraft) => void; onReset: () => void }) {
   const [busy, setBusy] = useState(false);
+  const [creating, setCreating] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
   const qc = useQueryClient();
@@ -306,6 +307,7 @@ function Review({ d, setD, onReset }: { d: IntakeDraft; setD: (d: IntakeDraft) =
     }
   };
   const commit = async () => {
+    setCreating(true);
     setBusy(true);
     setError(null);
     try {
@@ -316,6 +318,7 @@ function Review({ d, setD, onReset }: { d: IntakeDraft; setD: (d: IntakeDraft) =
     } catch (e) {
       setError(errText(e));
       setBusy(false);
+      setCreating(false);
     }
   };
   const st = STATUS_TEXT[d.status] ?? { tone: "warn" as const, text: d.status };
@@ -350,8 +353,8 @@ function Review({ d, setD, onReset }: { d: IntakeDraft; setD: (d: IntakeDraft) =
           >
             Discard
           </Button>
-          <Button variant="primary" disabled={busy || d.status !== "READY"} onClick={() => void commit()}>
-            Create patient twin
+          <Button variant="primary" disabled={busy || d.status !== "READY"} onClick={() => void commit()} aria-label="Create patient twin">
+            {creating ? "Building the twin… (a few seconds per week of data)" : "Create patient twin"}
           </Button>
         </span>
       </div>

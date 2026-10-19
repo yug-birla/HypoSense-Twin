@@ -545,6 +545,8 @@ export interface components {
             /** Data Age S */
             data_age_s: number | null;
             decision: components["schemas"]["DecisionView"];
+            /** Delta 2H */
+            delta_2h?: number | null;
             /** Info Tags */
             info_tags: string[];
             /** Label */
@@ -566,10 +568,20 @@ export interface components {
              * @default HISTORICAL_REPLAY
              */
             source: string;
+            /**
+             * Spark
+             * @default []
+             */
+            spark: [
+                number,
+                number
+            ][];
             /** Stale */
             stale: boolean;
             /** Summary */
             summary: string;
+            /** Treated */
+            treated?: boolean | null;
             trend: components["schemas"]["Trend"];
             /** Unacknowledged Notifications */
             unacknowledged_notifications: number;
@@ -1166,6 +1178,11 @@ export interface components {
             cgm_low: boolean;
             /** Cgm Mgdl */
             cgm_mgdl: number | null;
+            /**
+             * Contributions
+             * @default []
+             */
+            contributions: components["schemas"]["FactorGroup"][];
             current: components["schemas"]["DecisionView"];
             /** Data Age S */
             data_age_s: number | null;
@@ -1212,6 +1229,13 @@ export interface components {
             now_ts: number;
             /** Patient Key */
             patient_key: string;
+            /**
+             * Profile
+             * @default {}
+             */
+            profile: {
+                [key: string]: unknown;
+            };
             /** Recording Key */
             recording_key: string;
             /** Rejected Events */
@@ -1228,6 +1252,13 @@ export interface components {
             /** Timeline */
             timeline: components["schemas"]["TimelinePoint"][];
             trend: components["schemas"]["Trend"];
+            /**
+             * Twin
+             * @default {}
+             */
+            twin: {
+                [key: string]: unknown;
+            };
         };
         /** ReliabilityBin */
         ReliabilityBin: {
@@ -1358,10 +1389,34 @@ export interface components {
         Ward: {
             /** Beds */
             beds: components["schemas"]["Bed"][];
+            /**
+             * Events
+             * @default []
+             */
+            events: components["schemas"]["WardEvent"][];
             /** Offset S */
             offset_s: number;
             /** Session Id */
             session_id: string | null;
+        };
+        /** WardEvent */
+        WardEvent: {
+            /** Age S */
+            age_s: number;
+            /** Cgm Mgdl */
+            cgm_mgdl: number | null;
+            /** Kind */
+            kind: string;
+            /** Label */
+            label: string | null;
+            /** P Text */
+            p_text: string | null;
+            /** Recording Key */
+            recording_key: string;
+            /** State */
+            state: string;
+            /** Ts */
+            ts: number;
         };
     };
     responses: never;

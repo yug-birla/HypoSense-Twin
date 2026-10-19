@@ -817,3 +817,26 @@ Human gates: pharmacist review (or explicit owner waiver) and P-C11 decision (se
 
 ### Next Task
 Human gates: pharmacist review, and the P-C11 decision (docs/protocol/P-C11_APPROVAL_MATRIX.md).
+
+## 2026-10-19/20 — P-C11 implementation audit, README, submission preview, owner design
+
+### Work Completed
+- Independent audit of §5.7 items 1–33 against the code: 6 defects found and fixed before
+  freeze (DEC-2026-10-19-R). The rehearsal was re-run: primary result identical, fixes verified.
+- README rewritten. Submission preview added in docs/submission: deck (PDF), demo guide, model
+  card, honesty card, test report.
+- Owner's new frontend design implemented on real data only (DEC-2026-10-20-S). Display-only
+  backend fields were added for it.
+- Performance measured (TEST_REPORT): building a twin from an upload takes ~6.5 ms per reading
+  in the canonical engine. Not optimised; the UI shows progress.
+
+### Problems Found and Fixed
+- E2E tests failed for two harness reasons, not product defects: the file was set before the
+  page had loaded its scripts (now waits for "Live"), and one locator was ambiguous.
+- A 4.45:1 contrast on white-on-violet small text was fixed (axe now 0).
+- A ward screenshot with replayed T patients was moved out of docs/ into the git-ignored
+  artifacts/.
+
+### Next Task
+- Human gates: pharmacist review and the P-C11 decision.
+- GitHub: no remote is configured; a repository URL is needed to push.

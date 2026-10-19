@@ -51,7 +51,7 @@ export function PatientHeader({ v, offsetS }: { v: PatientView; offsetS: number 
             {lastTs !== null ? ` · ${clock(lastTs, offsetS)}` : ""}
           </p>
         </div>
-        <div className="m-3 flex flex-col justify-center gap-0.5 rounded-md border border-dashed border-line-strong bg-[#fafbfc] px-4 py-3">
+        <div className="m-3 flex flex-col justify-center gap-0.5 rounded-md border border-dashed border-line-strong bg-sunken px-4 py-3">
           <p className="label-caps flex items-center gap-1.5">
             <span aria-hidden className="size-2 rounded-full border border-ink-3" /> Predicted · next 60 min
           </p>
@@ -318,7 +318,7 @@ export function LedgerPanel({ v, offsetS }: { v: PatientView; offsetS: number })
       ) : (
         <table className="w-full text-small">
           <thead>
-            <tr className="border-b border-line bg-[#fafbfc] text-left">
+            <tr className="border-b border-line bg-sunken text-left">
               {["Forecast at", "State", "Estimated risk", "Notified", "What the CGM showed in the next 60 min", "Known at"].map((h) => (
                 <th key={h} scope="col" className="label-caps px-4 py-2 font-semibold">
                   {h}

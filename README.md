@@ -89,16 +89,18 @@ system on historical data and is **not** real-time clinical monitoring.
 
 | Feature | Description |
 |---|---|
-| **Overview** | What HypoSense is, how the twin works (5 steps), what each status means, where to start |
+| **Welcome** | What HypoSense is, the four parts of the twin, how it works (5 steps), what each status means, where to start |
 | **Guided demo** | An 8-step tour that drives the real replay. It fast-forwards to the first alert in replay order and then shows what actually happened, including false alerts |
-| **Ward board** | Who needs attention now: status, latest glucose and trend, risk for the next 60 min, a plain reason, data freshness and unacknowledged alerts |
-| **Patient twin** | Organised as four questions: what is happening now (observed vs predicted shown separately), how did we get here, why is HypoSense showing this, and what happened after each forecast |
+| **Ward board** | Who needs attention now: state tiles and filters; per patient the latest glucose, 2-hour sparkline and change, risk for the next 60 min, status with a plain reason, data freshness, unacknowledged alerts; plus "glucose now" across patients, twin insights (counts) and recent events |
+| **Replay studio** | Choose recordings and play, pause, step, seek or speed up the deterministic replay |
+| **Patient review** | Profile from recorded context; tabs Overview · Medications · Twin anatomy · Explainability · History & alerts; a status rail that separates **observed now** from **predicted · next 60 min**, a twin summary and actions |
+| **Twin anatomy** | The four state blocks of the twin (Glucose, Medication, Data Quality, Memory) with the values the model actually sees |
 | **Glucose timeline** | Observed CGM, low episodes, notifications, the model's risk with thresholds, recorded doses and meals |
 | **Medication exposure** | Recorded doses (bars) vs model-estimated activity (curves). The curves are estimates, never measured blood levels |
-| **Explanations** | Plain reason, then the information groups most associated with the estimate (grouped TreeSHAP; associations, not causes), then technical detail on demand |
+| **Explainability** | "Why is the twin worried?": the plain reason, cards for the information groups pushing the estimate up (grouped TreeSHAP; associations, not causes), all-group contribution chart, key values, technical detail on demand |
 | **Forecast/outcome history** | Every forecast is later checked against what the CGM showed in the next 60 minutes; earlier forecasts are never rewritten |
 | **Alert acknowledgement** | Four fixed reasons, written to an audit log |
-| **Evidence view** | A plain-language summary first, then the model ladder, operating curves, paired confidence intervals, calibration, quality gates, leakage safeguards and provenance. Confirmatory panel (PENDING) |
+| **Evidence garden** | Tabs: Overview (plain-language summary, KPIs), Model comparison (ladder, operating curves, paired CIs), Calibration, Confirmatory test (PENDING), Data & safeguards, Provenance; dataset overview and key takeaways |
 | **Add patient** | Upload a CSV/XLSX recording or start an empty patient; 5-step flow |
 | **Clarification questions** | Deterministic and asked only when the data need them (column meaning, glucose unit, clock / UTC offset, pump insulin, unreadable medication entries). Each says why it is asked and what happens if unanswered. Nothing is guessed |
 | **Manual observations** | Append CGM, capillary glucose, meals and medication to a live twin, strictly in time order |
@@ -120,7 +122,7 @@ flowchart LR
   F --> G["Calibration<br/>floored isotonic"]
   G --> H["Deterministic policy<br/>ALERT · WATCH · NO ALERT · LOW NOW · INSUFFICIENT DATA"]
   H --> I["FastAPI + SSE<br/>hyposense serve"]
-  I --> J["Next.js frontend<br/>Overview · Ward · Patient · Evidence · Add patient"]
+  I --> J["Next.js frontend<br/>Welcome · Ward · Patient · Replay · Evidence · Add patient"]
 ```
 
 **Scientific pipeline (separate from the runtime):**
@@ -205,14 +207,15 @@ demo*. The guide stays in the corner (it can be minimised) as you move between p
    followed by a low (a false alert), and the demo says so.
 7. Open the evidence.
 
-**Historical replay.** *Ward board* → *Start replay of 8 recorded patients* (or choose others).
+**Historical replay.** *Replay studio* or *Ward board* → *Start replay of 8 recorded patients* (or choose others).
 Use Play/Pause, speed, *Next event*, *+1 hour* and the position slider. Hover any status for its
 meaning, and click a row to open the patient.
 
-**Reviewing a prediction.** On a patient page, the solid **Observed now** tile is the latest
-CGM. The dashed **Predicted · next 60 min** tile is the model's estimated risk, marked
-DEVELOPMENT. *Why is HypoSense showing this?* gives the reason and the associated information;
-*Technical detail* shows the probability, thresholds and reason codes.
+**Reviewing a prediction.** On a patient page, the status rail shows **Observed now** (the
+latest CGM) separately from **Predicted · next 60 min** (the model's estimated risk, marked
+DEVELOPMENT). The *Explainability* tab gives the reason and the associated information, with
+*Technical detail* for the probability, thresholds and reason codes. *Twin anatomy* shows the
+four state blocks.
 
 **Adding a patient.** *Add patient* → optional pseudonymous label → *Choose file…* (CSV/XLSX
 with a header row: date/time, CGM, optional capillary glucose, meals, medication) or *Start new
@@ -227,7 +230,8 @@ recorded. *Create patient twin* becomes available when the draft is ready.
 glucose, meal, medication given). Observations must be later than the latest one; the twin is
 append-only. *Remove session* deletes the session and its log.
 
-**Asking about the patient.** Pick one of the fixed questions in *Ask about this patient*.
+**Asking about the patient.** On the *Explainability* tab, pick one of the fixed questions in
+*Ask about this patient*.
 
 **Exploring the evidence.** *Evidence* → *Understand the evidence* (plain language), then
 *Technical evidence*.
@@ -240,7 +244,7 @@ All screenshots in this repository show either SYNTHETIC data or aggregate stati
 
 | Add patient: clarification questions | New-data patient twin (SYNTHETIC) |
 |---|---|
-| ![Questions](docs/screenshots/intake/02_questions_blocked.png) | ![Patient twin](docs/screenshots/intake/05b_patient_after_append_and_ask.png) |
+| ![Questions](docs/screenshots/intake/02_questions_blocked.png) | ![Patient twin](docs/screenshots/intake/05_patient_new_session.png) |
 
 | Evidence (development, aggregate) | Out-of-order observation refused |
 |---|---|
@@ -397,7 +401,7 @@ HypoSense/
 |---|---|
 | Data, labels, medication exposure, state engine, causal features | **Complete** (audited; leakage tests pass) |
 | Model ladder, calibration, policy, replay, API | **Complete** (development) |
-| Frontend (Overview, Guided demo, Ward, Patient, Add patient, Evidence) | **Complete**; WCAG 2 A/AA axe audit: 0 violations |
+| Frontend (Welcome, Ward board, Patient review with Twin anatomy and Explainability, Replay studio, Evidence garden, Add patient, Guided demo) | **Complete**; WCAG 2 A/AA axe audit: 0 violations |
 | New-patient intake, questions, live sessions, Ask | **Complete** (development sessions, never research data) |
 | Confirmatory runner and report generator | **Built and rehearsed on T**; not run on E |
 | Clinical-pharmacist review of medication kernels | **PENDING** ([docs/medication/PHARMACIST_REVIEW.md](docs/medication/PHARMACIST_REVIEW.md)) |

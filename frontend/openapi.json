@@ -174,6 +174,17 @@
      "decision": {
       "$ref": "#/components/schemas/DecisionView"
      },
+     "delta_2h": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Delta 2H"
+     },
      "info_tags": {
       "items": {
        "type": "string"
@@ -228,6 +239,24 @@
       "title": "Source",
       "type": "string"
      },
+     "spark": {
+      "default": [],
+      "items": {
+       "maxItems": 2,
+       "minItems": 2,
+       "prefixItems": [
+        {
+         "type": "integer"
+        },
+        {
+         "type": "number"
+        }
+       ],
+       "type": "array"
+      },
+      "title": "Spark",
+      "type": "array"
+     },
      "stale": {
       "title": "Stale",
       "type": "boolean"
@@ -235,6 +264,17 @@
      "summary": {
       "title": "Summary",
       "type": "string"
+     },
+     "treated": {
+      "anyOf": [
+       {
+        "type": "boolean"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Treated"
      },
      "trend": {
       "$ref": "#/components/schemas/Trend"
@@ -2245,6 +2285,14 @@
       ],
       "title": "Cgm Mgdl"
      },
+     "contributions": {
+      "default": [],
+      "items": {
+       "$ref": "#/components/schemas/FactorGroup"
+      },
+      "title": "Contributions",
+      "type": "array"
+     },
      "current": {
       "$ref": "#/components/schemas/DecisionView"
      },
@@ -2381,6 +2429,12 @@
       "title": "Patient Key",
       "type": "string"
      },
+     "profile": {
+      "additionalProperties": true,
+      "default": {},
+      "title": "Profile",
+      "type": "object"
+     },
      "recording_key": {
       "title": "Recording Key",
       "type": "string"
@@ -2411,6 +2465,12 @@
      },
      "trend": {
       "$ref": "#/components/schemas/Trend"
+     },
+     "twin": {
+      "additionalProperties": true,
+      "default": {},
+      "title": "Twin",
+      "type": "object"
      }
     },
     "required": [
@@ -2820,6 +2880,14 @@
       "title": "Beds",
       "type": "array"
      },
+     "events": {
+      "default": [],
+      "items": {
+       "$ref": "#/components/schemas/WardEvent"
+      },
+      "title": "Events",
+      "type": "array"
+     },
      "offset_s": {
       "title": "Offset S",
       "type": "integer"
@@ -2842,6 +2910,76 @@
      "beds"
     ],
     "title": "Ward",
+    "type": "object"
+   },
+   "WardEvent": {
+    "additionalProperties": false,
+    "properties": {
+     "age_s": {
+      "title": "Age S",
+      "type": "integer"
+     },
+     "cgm_mgdl": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Cgm Mgdl"
+     },
+     "kind": {
+      "title": "Kind",
+      "type": "string"
+     },
+     "label": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Label"
+     },
+     "p_text": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "P Text"
+     },
+     "recording_key": {
+      "title": "Recording Key",
+      "type": "string"
+     },
+     "state": {
+      "title": "State",
+      "type": "string"
+     },
+     "ts": {
+      "title": "Ts",
+      "type": "integer"
+     }
+    },
+    "required": [
+     "recording_key",
+     "label",
+     "ts",
+     "age_s",
+     "kind",
+     "state",
+     "p_text",
+     "cgm_mgdl"
+    ],
+    "title": "WardEvent",
     "type": "object"
    }
   }

@@ -69,7 +69,7 @@ describe("ward board", () => {
     ];
     wrap(<WardTable beds={beds} offsetS={0} />);
     const rows = screen.getAllByRole("row").slice(1);
-    expect(rows.map((r) => within(r).getAllByRole("cell")[1]!.textContent)).toEqual(["9001 · R0", "9002 · R0", "9003 · R0", "9004 · R0"]);
+    expect(rows.map((r) => within(r).getAllByRole("link")[0]!.textContent)).toEqual(["9001 · R0", "9002 · R0", "9003 · R0", "9004 · R0"]);
     expect(within(rows[0]!).getByText("LOW NOW")).toBeInTheDocument();
     expect(within(rows[0]!).getAllByText("Sensor fault suspected").length).toBeGreaterThan(0);
     expect(within(rows[1]!).getByText("20%")).toBeInTheDocument();
