@@ -44,6 +44,7 @@ CODE_PATHS = (
     "frontend/package-lock.json",
     "frontend/src",
 )
+# implemented at S9; it must verify this record before any E access
 CONFIRMATORY_COMMAND = "uv run hyposense confirm --freeze artifacts/freeze/FREEZE.json"
 
 
@@ -105,6 +106,7 @@ def e_partition_runs(runs_dir: Path) -> list[str]:
         try:
             doc = json.loads(f.read_text("utf-8"))
         except (OSError, ValueError):
+            bad.append(f"{f.parent.name} (unreadable: cannot prove it is not E)")
             continue
         part = doc.get("results", {}).get("partition", doc.get("partition"))
         if part == "E" or f.parent.name.startswith("E-"):
@@ -224,11 +226,21 @@ def evaluate(run_tests: bool = True) -> tuple[list[dict[str, Any]], dict[str, An
             d = REPO_ROOT / facts["candidate"]["artifact_directory"]
             m = load_artifact(d, cfg, pharma)
             facts["candidate"]["manifest_sha256"] = m.manifest_sha256
+            same_files = m.manifest["files"] == facts["candidate"]["files"]
+            tracked = _git(
+                "ls-files", "--error-unmatch", str(d.relative_to(REPO_ROOT) / "model.txt")
+            )
+            ok = (
+                m.calibrator.method == cfg["calibration"]["method"]
+                and same_files
+                and tracked is not None
+            )
             _check(
                 checks,
                 "candidate_artifact_loads",
-                m.calibrator.method == cfg["calibration"]["method"],
-                f"{m.model_version} ({m.calibrator.method})",
+                ok,
+                f"{m.model_version} ({m.calibrator.method}); files match run record: "
+                f"{same_files}; committed: {tracked is not None}",
             )
         except Exception as exc:
             _check(checks, "candidate_artifact_loads", False, f"{type(exc).__name__}: {exc}")
@@ -244,7 +256,19 @@ def evaluate(run_tests: bool = True) -> tuple[list[dict[str, Any]], dict[str, An
         )
         tail = proc.stdout.strip().splitlines()[-1:] if proc.stdout else []
         _check(checks, "python_test_suite", proc.returncode == 0, " ".join(tail))
-        facts["tests"] = {"returncode": proc.returncode, "summary": " ".join(tail)}
+        npm = "npm.cmd" if sys.platform == "win32" else "npm"
+        try:
+            fe = subprocess.run(
+                [npm, "test"], cwd=REPO_ROOT / "frontend", capture_output=True, text=True
+            )
+            fe_ok, fe_tail = fe.returncode == 0, (fe.stdout.strip().splitlines() or [""])[-1]
+        except OSError as exc:
+            fe_ok, fe_tail = False, f"npm unavailable: {exc}"
+        _check(checks, "frontend_test_suite", fe_ok, fe_tail)
+        facts["tests"] = {
+            "python": {"returncode": proc.returncode, "summary": " ".join(tail)},
+            "frontend": {"ok": fe_ok, "summary": fe_tail},
+        }
     else:
         _check(checks, "python_test_suite", False, "not run (--check without --tests)")
 
@@ -283,6 +307,12 @@ def freeze(write: bool, run_tests: bool = True) -> dict[str, Any]:
         return report
     if not write:
         report["result"] = "ALL CHECKS PASS (no record written: --check)"
+        return report
+    if FREEZE_JSON.exists():
+        report["result"] = (
+            "ERROR — FREEZE ABORTED: a freeze record already exists (never overwritten)"
+        )
+        report["errors"] = 1
         return report
     record = {
         "freeze_id": f"protocol-freeze-v1-{utc_now_iso()}",

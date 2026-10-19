@@ -202,9 +202,20 @@ export default function EvidencePage() {
                 }
               >
                 <ReliabilityChart ev={q.data} pop={pop} model={calModel} />
-                <p className="text-[11px] text-ink-4">Bins: deciles of predicted probability (held-out development predictions).</p>
+                <p className="text-[11px] text-ink-4">
+                  Reliability bins from the S6 run ({q.data.s6_calibrator}, superseded); deciles of held-out development
+                  predictions.
+                </p>
                 <p className="mt-1 text-small text-ink-3 tnum">
-                  ECE {num(q.data.ladder[pop]?.models[calModel]?.calibration?.ece, 4)} · slope {num(q.data.ladder[pop]?.models[calModel]?.calibration?.slope, 2)} · calibrator {q.data.calibration_decision}
+                  Served calibrator <span className="font-medium text-ink">{q.data.calibration_decision}</span>
+                  {(() => {
+                    const c = (q.data.canonical_calibration?.[pop] as Record<string, Record<string, number>> | undefined)?.[calModel];
+                    return c ? ` · ECE ${num(c.ece, 4)} · slope ${num(c.slope, 2)} · log-loss ${num(c.log_loss, 4)} (T, canonical)` : "";
+                  })()}
+                </p>
+                <p className="text-[11px] text-ink-4 tnum">
+                  S6 ({q.data.s6_calibrator}): ECE {num(q.data.ladder[pop]?.models[calModel]?.calibration?.ece, 4)} · slope{" "}
+                  {num(q.data.ladder[pop]?.models[calModel]?.calibration?.slope, 2)}
                 </p>
               </Panel>
               <Panel title="Data quality gates">

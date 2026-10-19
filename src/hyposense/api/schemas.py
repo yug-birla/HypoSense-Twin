@@ -4,7 +4,7 @@ Responses carry the model status (DEVELOPMENT / CONFIRMATORY) wherever a probabi
 from __future__ import annotations
 
 from enum import StrEnum
-from typing import Annotated
+from typing import Annotated, Any
 
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -372,7 +372,9 @@ class Evidence(Loose):
     ladder: dict[str, LadderPopulation]
     comparisons: dict[str, Comparison]
     curves: Curves | None
-    calibration_decision: str | None
+    calibration_decision: str | None  # the served (canonical) calibrator
+    s6_calibrator: str | None = None  # calibrator of the S6 ladder numbers (superseded)
+    canonical_calibration: dict[str, Any] | None = None  # canonical calibrator metrics on T
     gates: list[GateView]
     engineering: Engineering | None
     model: ModelInfo

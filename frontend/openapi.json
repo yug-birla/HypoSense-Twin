@@ -655,6 +655,18 @@
       ],
       "title": "Calibration Decision"
      },
+     "canonical_calibration": {
+      "anyOf": [
+       {
+        "additionalProperties": true,
+        "type": "object"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Canonical Calibration"
+     },
      "caveat": {
       "title": "Caveat",
       "type": "string"
@@ -743,6 +755,17 @@
      "run_id": {
       "title": "Run Id",
       "type": "string"
+     },
+     "s6_calibrator": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "S6 Calibrator"
      },
      "safeguards": {
       "items": {

@@ -491,6 +491,10 @@ export interface components {
         Evidence: {
             /** Calibration Decision */
             calibration_decision: string | null;
+            /** Canonical Calibration */
+            canonical_calibration?: {
+                [key: string]: unknown;
+            } | null;
             /** Caveat */
             caveat: string;
             /** Commit */
@@ -520,6 +524,8 @@ export interface components {
             results_sha256: string;
             /** Run Id */
             run_id: string;
+            /** S6 Calibrator */
+            s6_calibrator?: string | null;
             /** Safeguards */
             safeguards: components["schemas"]["Safeguard"][];
             /** Status */

@@ -723,7 +723,9 @@ class Service:
                 if k.split(":")[1].startswith("level_")
             ],
             "curves": curves,
-            "calibration_decision": res.get("pb1_calibration", {}).get("decision"),
+            "calibration_decision": self.model.calibrator.method,  # served (canonical)
+            "s6_calibrator": res.get("pb1_calibration", {}).get("decision"),
+            "canonical_calibration": self._canonical_calibration(),
             "gates": gates,
             "engineering": engineering,
             "model": {
@@ -755,11 +757,39 @@ class Service:
                 "The target is a CGM-detected low; CGM and capillary glucose often disagree "
                 "(gate G3b TRIGGERED). The supported action is capillary confirmation.",
                 "Medication exposure is estimated from logged doses with fixed population-level "
-                "kernels.",
+                "kernels."
+                + (
+                    ""
+                    if self.pharma.get("reviewed_by")
+                    else " Kernel parameters: clinical-pharmacist review PENDING."
+                ),
                 "No dose or treatment recommendations are made.",
             ],
             "caveat": LABEL_CAVEAT,
         }
+
+    def _canonical_calibration(self) -> dict[str, Any] | None:
+        """ECE / slope / log-loss of the CANONICAL calibrator on T (latest clean freeze-candidate
+        run). The S6 ladder values above were computed with the superseded `isotonic_interp`."""
+        runs = REPO_ROOT / "experiments" / "runs"
+        for d in sorted(runs.glob("T-AGG-candidate-*"), reverse=True):
+            doc = json.loads((d / "results.json").read_text("utf-8"))
+            if doc["provenance"]["git"].get("dirty") is not False:
+                continue
+            ev = doc["results"]["evaluation"]
+            return {
+                "run_id": doc["run_id"],
+                "results_sha256": doc["results_sha256"],
+                "calibrator": doc["results"]["canonical"]["calibrator"],
+                **{
+                    pop: {
+                        m: {k: ev[pop][m]["candidate"][k] for k in ("ece", "slope", "log_loss")}
+                        for m in ("M1", "M2", "M3r", "M3")
+                    }
+                    for pop in ("treated", "all")
+                },
+            }
+        return None
 
     def _safeguards(self) -> list[dict[str, str]]:
         """Leakage and separation controls, quoted from their audit artefacts (no recomputation)."""
