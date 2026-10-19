@@ -257,3 +257,14 @@ Update this file whenever a requirement's status changes. Module paths are relat
 | D8-08 | Accessibility baseline (WCAG AA) | REQ | S8 brief | tokens, roles, skip link | axe audit, 0 violations | **PASS** |
 | D8-09 | Offline single-process demo | REQ | ADR-007 | static export served by FastAPI | walkthrough; E2E | **PASS** |
 | D8-10 | All six states visible on a T replay | Accept | IMPLEMENTATION_PLAN S8 | — | 5 of 6 occur naturally; SYSTEM ERROR only under injected faults (S7) | **PASS (qualified)** |
+
+## Pre-freeze Class B additions
+
+| ID | Requirement | Kind | Source | Implementation | Verification | Status |
+|---|---|---|---|---|---|---|
+| PF-01 | Decision rules written before results | Protocol | CLAUDE.md §35; brief | PROPOSALS (6b1ad05) | git order; review | **PASS** |
+| PF-02 | Calibrators compared on identical OOF/folds/models | REQ | brief | `prefreeze.task_fit` | review; R0 | **PASS** |
+| PF-03 | Canonical config reproduces S6 bitwise | REQ | CLAUDE.md §14 | integrity gate | `T-AGG-dev-prefreeze-20261019T032309Z` | **PASS** |
+| PF-04 | Fixed seed grid, no cherry-picking | REQ | brief | `FOLD_SEEDS`, `MODEL_SEEDS` | unit test; review | **PASS** |
+| PF-05 | LOW_CONFIDENCE evaluated out-of-fold, no leakage | REQ | CLAUDE.md §11 | `prefreeze._tags` | review | **PASS** |
+| PF-06 | E sealed | C | §12 | `load_dev` (TUNING_ONLY) | review | **PASS** |

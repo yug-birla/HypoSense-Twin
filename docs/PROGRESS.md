@@ -662,3 +662,28 @@ T only.
 
 ### Next Task
 Pre-freeze Class B runs on T (P-B10, P-B11, P-B12). Owner decisions are listed in CURRENT_STATE.
+
+## 2026-10-19 — Pre-freeze Class B (P-B10, P-B11, P-B12)
+
+### Objective
+Resolve three development uncertainties on T with rules written before the runs.
+
+### Work Completed
+- **Rules first**: rules and grid pre-specified and committed (6b1ad05).
+- **Runner**: `hyposense dev prefreeze`, with the floored calibrator challenger and the S6 integrity gate.
+- **Runs**: two official runs, identical. The superseded run is recorded.
+- **Review**: independent review (no CRITICAL); Class A fixes.
+
+### Results
+- **P-B10 INCONCLUSIVE.** The current calibrator stays. It outputs exactly 0/1 in 11/15 configurations; the floored one is never materially worse.
+- **P-B11.** M3 ≥ M2 on sens@1FA in 15/15 (12 better, 3 ties). Only M3−M2 partial area is "stable". M3_compact vs M3 is unstable on every metric.
+- **P-B12 REMOVE TAG.** No candidate separates reliability; the true OOF firing rate is ~57 %.
+
+### Problems Found and Fixed
+- **Wrong P-B10 evaluation set**: corrected toward the written protocol.
+- **Rounded hyperparameters**: the S7 artefact builder used rounded values; it now uses full precision.
+- **Memory and disk exhaustion on C:**.
+- **Review F1–F9.**
+
+### Next Task
+Owner decision resolution (CURRENT_STATE "Open Decisions"), then FREEZE.

@@ -304,7 +304,7 @@ Status values: **AWAITING APPROVAL** · **APPROVED** · **REJECTED** · **EXPERI
 ## Class B — experiments or a-priori decisions on development data (T) before freeze
 
 ### P-B12 · Operational definition of the LOW CONFIDENCE tag (S7 measurement)
-**Status: PROPOSED (T only; display tag, never changes a state)**
+**Status: DONE → REMOVE TAG by the pre-specified rule (DEC-2026-10-19-L). Implementation in the live runner/UI awaits owner confirmation.**
 - **Problem.** Table 14.1 says "any input outside the development 0.5th–99.5th percentile".
   Applied per feature, it tags 16.1% of forecasts in-sample on T. A tag that common
   carries little information.
@@ -318,7 +318,7 @@ Status values: **AWAITING APPROVAL** · **APPROVED** · **REJECTED** · **EXPERI
 
 
 ### P-B10 · Floored calibrator (S6 review F1)
-**Status: PROPOSED (T only; before freeze)**
+**Status: DONE → INCONCLUSIVE by the pre-specified rule (R3 4/15); current calibrator unchanged. The current one is inadmissible in 11/15 configurations; owner decision (DEC-2026-10-19-L).**
 - **Problem.** Isotonic and isotonic_interp output exactly 0 on thousands of T rows.
   - The P-B1 decision hinges on 3 positives at a calibrated 0.
   - A 0 % displayed risk is not defensible.
@@ -332,7 +332,7 @@ Status values: **AWAITING APPROVAL** · **APPROVED** · **REJECTED** · **EXPERI
 - **Decision.** EXPERIMENT (Class B), pre-specified before running.
 
 ### P-B11 · Fit-variance repeat for the development ladder (S6 review F3)
-**Status: PROPOSED (T only; optional before freeze)**
+**Status: DONE (descriptive, DEC-2026-10-19-L).**
 - **Problem.** Model-fit variance (seed, fold assignment) is comparable to the M2 / M3r / M3
   differences on T. The patient bootstrap does not include it.
 - **Alternative.** Repeat the ladder for 5 model seeds × 3 fold seeds and report the spread of

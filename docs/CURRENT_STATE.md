@@ -1,11 +1,11 @@
 # HypoSense Twin — Current Project State
 
-_Last updated: 2026-10-19 (end of S8). This is the canonical snapshot. Read it first, then
+_Last updated: 2026-10-19 (pre-freeze Class B complete). This is the canonical snapshot. Read it first, then
 [NEXT_STEPS.md](NEXT_STEPS.md) and [PROGRESS.md](PROGRESS.md)._
 
 ## Current Phase
-**S8 — complete and reviewed.** S9 has **not** been started. Freeze is NOT ready (owner decisions
-and Class B runs pending).
+**Pre-freeze Class B runs complete and reviewed** (P-B10 INCONCLUSIVE, P-B11 descriptive, P-B12
+REMOVE TAG; DEC-2026-10-19-L). Freeze is NOT done. S9 has NOT started. Owner decisions pending.
 
 ## Overall Status
 **IMPLEMENTATION / DEMO-READY (DEVELOPMENT).** End-to-end: replay → twin → policy → API → web UI,
@@ -64,7 +64,7 @@ None. S4 ended at a clean boundary.
 | Gates | **G4 PASS** (tests, pipeline on T, M1 curve) |
 | Ladder (DEVELOPMENT, treated T, sens@1FA) | M0 0.626 · M1 0.857 · M2 0.875 · M3r 0.929 · M3 0.911 (ceiling 0.946). C0 +0.231 (0.094–0.437). C1 / C2a / C2b / M3−M2 intervals include 0 |
 | DEVELOPMENT artefact (S7) | `M3-development-9590a582b0c1` (T only; τA 0.123, τW 0.025); rebuild bitwise identical |
-| Frozen candidates (S6) | shared LightGBM hyperparameters (trial #20), 113 rounds, calibrator isotonic_interp (rule-selected, FRAGILE → P-B10), quality codes categorical. P-B6 exclusion: rule met, PENDING implementation and owner decision |
+| Frozen candidates (S6) | shared LightGBM hyperparameters (trial #20), 113 rounds, calibrator isotonic_interp (rule-selected; P-B10 INCONCLUSIVE: outputs exactly 0/1 in 11/15 configurations, floored challenger never materially worse → owner decision), quality codes categorical. P-B6 exclusion: rule met, PENDING implementation and owner decision |
 | Sealed evaluation (E) | **SEALED.** S4 used TUNING_ONLY only. Feature generation refuses other scopes, and the adapter refuses E patients (`assert_not_sealed`). No E feature, prediction or per-patient analysis exists. |
 
 ## Performance
@@ -111,10 +111,10 @@ violations (axe). Desktop/laptop/tablet ≥ 1024 px. Design and contracts: docs/
 | Table A.2 θ = 45 all-patients residual (63/0.79 vs 62/0.77) | LOW | exact-tie bracket; partly demonstrated (DEC-2026-10-18-F) |
 | M1 is below a non-learned CGM-level rule on T (0.857 vs 0.911); M0 is a weak reference | MEDIUM (interpretation) | P-C9 |
 | Primary endpoint near the ceiling on T (M2 0.875, M3 0.911 vs 0.946); limited headroom for H1 | MEDIUM (scientific) | report honestly; secondary window log-loss |
-| Model-fit variance ≥ M2/M3r/M3 differences on T; ladder ordering uninformative (review F3) | MEDIUM (interpretation) | P-B11 |
+| Model-fit variance ≥ M2/M3r/M3 differences on T | MEDIUM (interpretation) | P-B11 done: M3 ≥ M2 sens@1FA in 15/15 (12 better, 3 ties); only M3−M2 area 'stable'; other contrasts leaning/unstable |
 | Hyperparameters weakly identified (30 trials within 0.004 log-loss) | LOW | shared set frozen; R4 retuning is a robustness analysis |
 | S6 evaluation / bootstrap runtime 11–14 min | LOW | acceptable offline |
-| LOW_CONFIDENCE tag on 16.1% of forecasts (per-feature 0.5–99.5 % rule) | LOW (display) | P-B12 |
+| LOW_CONFIDENCE fires on ~57 % of held-out forecasts (16.1 % was in-sample) and does not separate reliability | LOW (display) | P-B12 → REMOVE TAG (implementation awaits owner) |
 | Rejected non-CGM event shows SYSTEM ERROR until the next reading | LOW (display) | P-C10 |
 | C: drive nearly full on the development machine (tool temp files) | LOW (environment) | free space; S7 work used E: for temp files |
 | Kernel assumptions; pharmacist review | MEDIUM | review packet; SA6 |
@@ -125,20 +125,19 @@ violations (axe). Desktop/laptop/tablet ≥ 1024 px. Design and contracts: docs/
 |---|---|---|---|
 | P-C7 warm-up restart after gap > 120 min | Approve | Yes | Before freeze (S7 shipped without it) |
 | P-C10 display after a rejected non-CGM event | Option (b): keep state + INPUT REJECTED badge | Yes | Before S8 UI |
-| P-B12 LOW CONFIDENCE definition | Run (Class B, T) | No | Before freeze |
+| Implement P-B12 REMOVE TAG in runner/UI (deviates from Table 14.1, display only) | Confirm | Yes | Before freeze |
 | Optional LLM/API layer (owner idea) | Architectural opinion delivered after S7; no code | Yes | No |
 | P-B1, P-B2, P-B6, P-B7, P-B8, P-B9 | Run as planned S6 experiments | No (Class B) | — |
 | ANALYSIS_PLAN §5 draft | Approve | Yes | Before freeze |
 | P-C9 level-rule reference baseline | Approve (secondary) | Yes | Before freeze |
 | P-B6 training exclusion (implement for all models + rerun ladder, or drop) | Decide | Yes | Before freeze |
-| P-B10 floored calibrator / P-B11 fit-variance repeat (Class B, T only) | Run (recommended) | No | Before freeze |
+| Calibrator after P-B10 INCONCLUSIVE: keep isotonic_interp or adopt the floored version | Adopt floored (removes exact 0/1 outputs; no material cost) | Yes | Before freeze |
 | P-B8 M3_compact as canonical M3 | Keep M3_baseline (preserves the primary definition); compact as secondary | Yes | Before freeze |
 | Pharmacist review | Use the packet when a reviewer is available | — | No |
 
 ## Last Verified Commit
-- Code: `25c2d88` (S8 + review fixes). Audits ran on it, clean and identical.
+- Code: `eb5baae`. Official pre-freeze runs on `e0931cf` (clean, identical, `432869dc…`).
 - Documentation commit: see `git log -1`.
 
 ## Next Recommended Task
-**Pre-freeze Class B development runs on T: P-B10, P-B11, P-B12.** Owner decisions (P-C7, P-C9,
-P-C10, P-B6, P-B8, ANALYSIS_PLAN §5) are needed before freeze.
+**Owner decision resolution before freeze** (Open Decisions), then FREEZE. Do not start S9.

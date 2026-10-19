@@ -377,6 +377,59 @@ Log-loss differences are all within ±0.0012, and every CI includes 0.
 
 Deleted, not evidence: two runs on an uncommitted tree, and two audits against a stale server.
 
+## Pre-freeze Class B (P-B10/P-B11/P-B12) — T, DEVELOPMENT
+
+| Run | Commit (clean) | results_sha256 | Status |
+|---|---|---|---|
+| T-AGG-dev-prefreeze-20261019T023957Z | 913864e | f80c07eb… | SUPERSEDED: P-B10 metrics on treated rows instead of the P-B1 set (P-B10 NO MATERIAL DIFFERENCE, R3 11/15; P-B12 REMOVE TAG) |
+| **T-AGG-dev-prefreeze-20261019T032309Z** | **e0931cf** | **`432869dc…`** | **OFFICIAL** |
+| **T-AGG-dev-prefreeze-20261019T034056Z** | **e0931cf** | **`432869dc…` (identical)** | **OFFICIAL reproduction** |
+
+- **Runs**:
+  - **Official**: `T-AGG-dev-prefreeze-20261019T032309Z` and `T-AGG-dev-prefreeze-20261019T034056Z`, both on clean e0931cf. `results_sha256` `432869dc…` is identical across the two.
+  - **Integrity gate**: the canonical configuration reproduces the S6 `oof_sha256` bitwise, using the full-precision hyperparameters.
+  - **Superseded**: `T-AGG-dev-prefreeze-20261019T023957Z` (913864e) computed P-B10 LL_u/ECE on treated rows. The pre-specified set is the P-B1 set (all patients' pooled held-out rows, as in S6 P-B1). It was fixed in e0931cf; the protocol itself is ambiguous, since "primary population: treated" sits next to "(the P-B1 set)" (review F1).
+    - In the superseded run, P-B10 was NO MATERIAL DIFFERENCE with R3 11/15.
+    - With the corrected set, R3 is 4/15, so the outcome becomes INCONCLUSIVE.
+    - In both runs nothing is adopted.
+  - **No other runs**: no runs preceded the rule commit 6b1ad05.
+- **P-B10 → INCONCLUSIVE** (pre-specified rule; current `isotonic_interp` stays).
+  - **M1, canonical, P-B1 set:**
+    - LL_u: current 0.04017, floored 0.04019, Platt 0.04037, raw 0.04025.
+    - ECE: current 0.00060, floored 0.00060.
+    - Exact 0 outputs: current 6947, floored 0.
+    - sens@1FA and partial area are identical (R0 holds for all grid models).
+  - **Canonical outcome**: NO MATERIAL DIFFERENCE.
+  - **Across the 15 configurations**: {'NO MATERIAL DIFFERENCE': 4, 'ADOPT floored': 11}, so R3 is 4/15 → INCONCLUSIVE.
+  - **Why the configurations disagree**: in 11/15 configurations the current calibrator outputs **exactly 1.0** on some held-out rows (up to 27 on M1), negatives included, and in one configuration exactly 0 on 2 positives. Its unclipped log-loss is then infinite (R1), while the floored version never reaches 0 or 1 and costs at most ~0.05 % log-loss.
+  - **Weakness of R3** (review F2): R3 compares against the canonical *label*, and the canonical seed happens to be one of only 4 where the current calibrator is admissible.
+  - **Rule kept**: the rule is applied as written, and the floored-calibrator question is raised for the owner.
+  - **P-B6 SENSITIVITY** (M1_pb6, canonical): NO MATERIAL DIFFERENCE.
+- **P-B11 (descriptive; isotonic_interp; treated; 15 configurations; only 3 independent fold partitions)**:
+  - **sens@1FA, mean ± SD:**
+    - M1 0.864 ± 0.039
+    - M2 0.873 ± 0.034
+    - M3r 0.879 ± 0.042
+    - M3 0.907 ± 0.018
+    - M3_compact 0.907 ± 0.025
+  - **Contrasts** (first better / second better / ties):
+    - M3−M2: sens 12/0/3 (median +0.0357, leaning); area 13/2/0 (median +0.0127, stable); log-loss 10/5/0 (median -0.0004, unstable).
+    - M2−M1: sens 7/3/5 (median +0.0000, leaning).
+    - M3r−M2: sens 7/3/5 (median +0.0000, leaning).
+    - M3−M3r: sens 11/2/2 (median +0.0357, leaning).
+    - M3_compact−M3: sens 5/3/7 (median +0.0000, leaning); area 8/7/0 (median +0.0045, unstable); log-loss 9/6/0 (median -0.0001, unstable).
+  - **Ranking**: M3 ranked first on sens@1FA in 9/15 configurations. The calibrator choice changed the M1–M3 ranking in 0/15.
+  - **Reading**: 45 readings (5 contrasts × 3 metrics) under the current calibrator; only M3−M2 partial area reaches "stable" (13/2). M3 never ranked below M2 on sens@1FA (12 better, 3 ties), but the median gain is one episode-step (+0.036).
+- **P-B12 → REMOVE TAG** (pre-specified rule; M3, current calibrator, OOF ranges from training folds only):
+  - C0 current: 57.4% tagged; separation -0.097 [-0.198, +0.042], 0/15 configs positive.
+  - C1 key inputs: 26.6% tagged; separation -0.175 [-0.274, -0.079], 0/15 configs positive.
+  - C2 0.1–99.9 %: 45.1% tagged; separation -0.008 [-0.108, +0.145], 5/15 configs positive.
+  - **No candidate separates reliability**: tagged forecasts are, if anything, *more* informative (higher BSS).
+  - **The S7 figure was in-sample**: "16.1 %" was measured in-sample. On held-out patients the current tag fires on ~57 %, driven by per-patient static context (BMI/age/weight) and medication exposure falling outside other patients' ranges (review F3).
+
+Two earlier launches died without output (MemoryError, then disk full on C:); no artefacts.
+Decision tables: `experiments/runs/T-AGG-dev-prefreeze-20261019T032309Z/prefreeze.md`.
+
 ## Evidence inherited from the blueprint (not reproduced here)
 
 | Item | Source | Status in this repo |

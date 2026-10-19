@@ -1,6 +1,6 @@
 # Next Steps
 
-Ordered execution queue. Updated: 2026-10-19 (end of S8).
+Ordered execution queue. Updated: 2026-10-19 (pre-freeze Class B complete).
 Each item lists: objective · dependency · acceptance criteria · difficulty · parallel? ·
 approval needed?
 
@@ -17,13 +17,15 @@ approval needed?
      population, metric clip, raw vs calibrated scores for P-B6).
    - Recommended Class B runs on T before freeze: **P-B10** (floored calibrator) and
      **P-B11** (fit-variance repeat).
-2. **Pre-freeze Class B runs on T** ← *next engineering task*:
-   - P-B10 (floored calibrator);
-   - P-B11 (fit variance);
-   - P-B12 (LOW CONFIDENCE definition).
-3. Owner decisions (CURRENT_STATE "Open Decisions"): P-C7, P-C9, P-C10, P-B6, P-B8,
-   ANALYSIS_PLAN §5, pharmacist review.
-4. FREEZE (IMPLEMENTATION_PLAN), then S9.
+2. Pre-freeze Class B runs: DONE (DEC-2026-10-19-L).
+3. **Owner decision resolution** ← *next*:
+   - calibrator after P-B10;
+   - implementing the P-B12 tag removal;
+   - P-B8, P-B6, P-C7, P-C9, P-C10;
+   - ANALYSIS_PLAN §5;
+   - pharmacist review.
+4. Then FREEZE (rebuild the DEVELOPMENT artefact with full-precision hyperparameters and the
+   chosen calibrator; record hashes), then S9.
 
 ## P1 — Core
 
