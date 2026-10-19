@@ -76,7 +76,9 @@ class EngineConfig:
         ev, el, po = cfg["event"], cfg["eligibility"], cfg["policy"]
         if int(ev["min_run"]) != 2:
             raise ValueError("the causal episode tracker implements min_run = 2 (Table 5.1)")
-        restart = el.get("warmup_restart_after_gap_min")
+        # P-C7 (approved, DEC-2026-10-19-M): POLICY warm-up only; labels keep
+        # `eligibility.warmup_restart_after_gap_min` = null (ANALYSIS_PLAN §0 item 5, §5.4 item 16)
+        restart = po.get("warmup_restart_after_gap_min")
         return cls(
             episode=EpisodeRule(
                 float(ev["threshold_mgdl"]),

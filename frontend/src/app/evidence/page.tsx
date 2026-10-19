@@ -110,8 +110,8 @@ function Comparisons({ ev }: { ev: Evidence }) {
       </ul>
       <p className="mt-2 text-[11.5px] text-ink-3">
         Paired patient-cluster bootstrap (2,000 resamples), treated patients, development data. Grey = interval includes 0.
-        <br />* M0 is a weak reference: a post-hoc CGM-level rule matches the learned models on T (see Diagnostics;
-        P-C9 pending).
+        <br />* M0 (pre-specified trend baseline) is a weak reference: the post-hoc CGM-level reference matches the
+        learned models on T (see below).
       </p>
     </div>
   );
@@ -213,7 +213,10 @@ export default function EvidencePage() {
             </div>
 
             {q.data.diagnostics.length > 0 && (
-              <Panel title="Post-hoc diagnostics (development, T only)">
+              <Panel
+                title="CGM-level reference"
+                aside={<StatusTag tone="warn">Post-hoc development reference</StatusTag>}
+              >
                 <ul className="flex flex-col gap-1">
                   {q.data.diagnostics.map((d) => (
                     <li key={d.label} className="flex items-start justify-between gap-4 text-small">
@@ -223,7 +226,9 @@ export default function EvidencePage() {
                   ))}
                 </ul>
                 <p className="mt-2 text-[11.5px] text-ink-3">
-                  Not part of the pre-registered ladder. Shown so the C0 contrast is not over-read.
+                  This simple reference was added after development analysis and is not a pre-specified
+                  confirmatory comparator. M0 is the pre-specified trend baseline; M1/M2/M3r/M3 are the learned
+                  models. Values are quoted from the S6 run; the rule was not retuned.
                 </p>
               </Panel>
             )}

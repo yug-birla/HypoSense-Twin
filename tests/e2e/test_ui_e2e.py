@@ -31,11 +31,12 @@ def _free_port() -> int:
 
 @pytest.fixture(scope="module")
 def server(tmp_path_factory: pytest.TempPathFactory) -> Iterator[tuple[str, Any]]:
-    from hyposense.evaluation.s7_artifact import MODELS_DIR
+    from hyposense.evaluation.s7_artifact import latest_candidate
 
-    found = sorted(MODELS_DIR.glob("M3-dev-*"))
-    if not OUT.is_file() or not found:
+    cand = latest_candidate()
+    if not OUT.is_file() or cand is None:
         pytest.skip("needs `npm run build` and `hyposense dev artifact`")
+    found = [cand]
     import uvicorn
 
     from hyposense.api.app import create_app

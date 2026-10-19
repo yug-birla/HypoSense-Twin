@@ -112,7 +112,7 @@ class Bed(Strict):
     reason: str  # one line: policy reason or top associated factor groups
     # critical quality badges: SENSOR_FAULT_SUSPECTED, RUNNER_HALTED, INPUT_REJECTED
     badges: list[str]
-    info_tags: list[str]  # informational uncertainty tags (LOW_CONFIDENCE, MED_TIMING_UNKNOWN:*)
+    info_tags: list[str]  # informational tags (MED_TIMING_UNKNOWN:*, EVENT_REJECTED)
     unacknowledged_notifications: int
 
 
@@ -227,11 +227,6 @@ class Loose(BaseModel):
     model_config = ConfigDict(extra="ignore", frozen=True)
 
 
-class Pc10Mode(Loose):
-    value: str
-    status: str
-
-
 class Meta(Loose):
     api_version: str
     stream_version: int
@@ -245,7 +240,6 @@ class Meta(Loose):
     policy: dict[str, float]
     freeze_status: str
     data_utc_offset_s: int
-    pc10_mode: Pc10Mode
     source: str
     caveat: str
 

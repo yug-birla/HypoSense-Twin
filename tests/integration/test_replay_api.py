@@ -318,12 +318,12 @@ def test_s8_ward_and_patient_fields(client: Any, streams: list[RecordingStream])
 
 
 def test_evidence_view_from_real_artifacts(streams: list[RecordingStream], tmp_path: Path) -> None:
-    from hyposense.evaluation.s7_artifact import MODELS_DIR
+    from hyposense.evaluation.s7_artifact import latest_candidate
 
-    found = sorted(MODELS_DIR.glob("M3-dev-*"))
-    if not found:
-        pytest.skip("no DEVELOPMENT artefact built (hyposense dev artifact)")
-    svc = Service(found[-1], streams[:1], log_root=tmp_path)
+    cand = latest_candidate()
+    if cand is None:
+        pytest.skip("no freeze-candidate artefact built (hyposense dev artifact)")
+    svc = Service(cand, streams[:1], log_root=tmp_path)
     ev = TestClient(create_app(svc, clock=False)).get("/api/evidence").json()
     assert ev["status"] == "DEVELOPMENT" and ev["confirmatory"].startswith("PENDING")
     assert set(ev["ladder"]["treated"]["models"]) >= {"M0", "M1", "M2", "M3r", "M3"}
@@ -332,7 +332,8 @@ def test_evidence_view_from_real_artifacts(streams: list[RecordingStream], tmp_p
     for c in ev["comparisons"].values():
         if c.get("ci95"):
             assert c["excludes_zero"] == (not c["ci95"][0] <= 0.0 <= c["ci95"][1])
-    assert any("level rule" in d["label"] for d in ev["diagnostics"])
+    assert all("POST-HOC DEVELOPMENT REFERENCE" in d["label"] for d in ev["diagnostics"])
+    assert ev["diagnostics"]
     assert any("C0" in x for x in ev["limitations"])
     meta = TestClient(create_app(svc, clock=False)).get("/api/meta").json()
-    assert meta["pc10_mode"]["value"] == "system_error" and "PENDING" in meta["pc10_mode"]["status"]
+    assert "pc10_mode" not in meta  # P-C10 is final; no runtime switch

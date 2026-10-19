@@ -176,3 +176,13 @@ describe("prohibited wording (Blueprint §16.3)", () => {
     }
   });
 });
+
+describe("P-B12 removal (DEC-2026-10-19-M)", () => {
+  it("LOW_CONFIDENCE has no display mapping and is not a quality badge", async () => {
+    const { BADGE_TEXT, tagText } = await import("@/lib/states");
+    expect(Object.keys(BADGE_TEXT)).not.toContain("LOW_CONFIDENCE");
+    expect(tagText("MED_TIMING_UNKNOWN:insulin")).toBe("Timing unknown: insulin");
+    expect(tagText("EVENT_REJECTED")).toBe("Recent input rejected");
+    expect(tagText("LOW_CONFIDENCE")).toBe("LOW_CONFIDENCE"); // no display text (backend never emits it)
+  });
+});

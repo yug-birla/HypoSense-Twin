@@ -65,12 +65,6 @@ def test_spec_hash_of_snapshot_is_checked(bundle: Path) -> None:
         m.predict(forged)
 
 
-def test_out_of_range_inputs_are_named(bundle: Path) -> None:
-    m = load_artifact(bundle, CFG, PHARMA)
-    snap = BUILDER.snapshot(run(cgm(steady(0, 180, 400.0)))[-1], "M1")
-    assert "cgm" in m.out_of_range(snap)
-
-
 def test_tampered_file_is_refused(bundle: Path, tmp_path: Path) -> None:
     d = _copy(bundle, tmp_path)
     (d / "model.txt").write_bytes((d / "model.txt").read_bytes() + b"\n")

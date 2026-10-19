@@ -26,7 +26,7 @@ from tests.unit.state_helpers import CFG, cgm, run, steady
 RULES = PolicyRules.from_config(CFG)
 TH = Thresholds(0.5, 0.2)
 FORECAST = Gate(None)
-TAGS = ("LOW_CONFIDENCE", "MED_TIMING_UNKNOWN:insulin", "EVENT_REJECTED")
+TAGS = ("MED_TIMING_UNKNOWN:insulin", "MED_TIMING_UNKNOWN:sulfonylurea", "EVENT_REJECTED")
 
 
 def test_rules_come_from_configuration() -> None:

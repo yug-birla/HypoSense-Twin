@@ -47,7 +47,7 @@ def test_eligibility_matches_blueprint(cfg: dict[str, Any]) -> None:
         "min_readings_in_history": 7,
         "follow_up_min": 60,
         "min_time_since_start_min": 120,  # executable spec = policy warm-up (ANALYSIS_PLAN §0)
-        "warmup_restart_after_gap_min": None,  # P-C7 PENDING; must stay None until approved
+        "warmup_restart_after_gap_min": None,  # FINAL: P-C7 is policy-only; labels never re-anchor
     }
 
 
@@ -111,6 +111,12 @@ def test_policy_budgets(cfg: dict[str, Any]) -> None:
     assert pol["fa_budget_alert"] == 1.0
     assert pol["fa_budget_watch"] == 3.0
     assert pol["cooldown_min"] == 60
+    assert pol["warmup_restart_after_gap_min"] == 120  # P-C7 approved (policy sufficiency only)
+    assert "range_pct" not in pol  # P-B12: LOW_CONFIDENCE removed
+
+
+def test_canonical_calibrator_is_final(cfg: dict[str, Any]) -> None:
+    assert cfg["calibration"]["method"] == "isotonic_interp_floored"  # DEC-2026-10-19-M
 
 
 ALLOWED_STATUSES = {

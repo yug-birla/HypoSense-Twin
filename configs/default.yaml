@@ -29,7 +29,7 @@ eligibility:                        # [CLASS C] Table 5.1 "Prediction time t"
   min_readings_in_history: 7        # >= 7 of the last 8 readings
   follow_up_min: 60                 # evaluation-only (label side): >= 60 min follow-up or onset within it
   min_time_since_start_min: 120     # t >= recording start + 120 min (= policy warm-up; executable spec)
-  warmup_restart_after_gap_min: null  # P-C7 hook (PENDING approval); null = blueprint rule
+  warmup_restart_after_gap_min: null  # FINAL: labels are not re-anchored (P-C7 is policy-only; ANALYSIS_PLAN §0 item 5)
 
 population:                         # [CLASS C] Table 5.1 "Treated patient"
   primary: treated
@@ -96,7 +96,7 @@ model:                              # [CLASS B] Section 11.1 (learner choice and
   max_rounds: 2000
 
 calibration:                        # [CLASS B] Section 11.1 (method); band rule fixed before E is opened
-  method: isotonic
+  method: isotonic_interp_floored   # FINAL (DEC-2026-10-19-M; ANALYSIS_PLAN §5.4 item 12). P-B10 verdict INCONCLUSIVE preserved
   band_rule: {slope_min: 0.8, slope_max: 1.25}
 
 policy:                             # [CLASS C] budgets and cooldown (Table 5.1, Section 14)
@@ -108,7 +108,7 @@ policy:                             # [CLASS C] budgets and cooldown (Table 5.1,
   floor_mgdl: 40
   max_rate_mgdl_per_min: 4
   warmup_min: 120
-  range_pct: [0.5, 99.5]
+  warmup_restart_after_gap_min: 120 # P-C7 APPROVED: policy warm-up re-anchors after a CGM gap > 120 min (labels unchanged)
 
 exposure:                           # [CLASS B] Section 12; kernel parameters live in pharma.yaml
   pharma: configs/pharma.yaml

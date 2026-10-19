@@ -95,7 +95,6 @@ export const BADGE_TEXT: Record<string, string> = {
 
 export function tagText(tag: string): string {
   if (tag.startsWith("MED_TIMING_UNKNOWN:")) return `Timing unknown: ${tag.split(":")[1]}`;
-  if (tag === "LOW_CONFIDENCE") return "Low confidence";
   if (tag === "EVENT_REJECTED") return "Recent input rejected";
   return tag;
 }

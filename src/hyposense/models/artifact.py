@@ -5,7 +5,6 @@ A bundle directory holds:
     model.txt          LightGBM native text model
     calibrator.json    {method, params}                     (calibration.methods.Calibrator)
     policy.json        thresholds + policy rules             (policy.decide)
-    feature_range.json development 0.5th-99.5th percentiles  (LOW CONFIDENCE tag, Table 14.1)
     manifest.json      SHA-256 of every file + compatibility hashes + provenance + status
 
 `load_artifact` REFUSES (raises ArtifactError) unless every file exists and matches its hash,
@@ -13,8 +12,12 @@ and the compatibility hashes equal the running code/configuration:
 - feature-spec hash (features/spec.py + config `features`);
 - configuration hash (parsed configs/default.yaml);
 - pharma.yaml hash (kernels) and drug-dictionary hash;
-- model level and feature names equal the specification of that level.
+- model level and feature names equal the specification of that level;
+- the calibrator method equals the canonical `calibration.method` (ANALYSIS_PLAN §5.4 item 12).
 There is no fallback: the service does not start on a mismatch (§18 "API refuses to start").
+
+Format 2.0.0 (2026-10-19): `feature_range.json` was removed with the LOW_CONFIDENCE tag (P-B12,
+DEC-2026-10-19-M). Format-1 artefacts are refused, not silently reinterpreted.
 
 `status` is DEVELOPMENT (fitted on T, before freeze) or CONFIRMATORY. The service treats both
 identically; the status is shown wherever a prediction is shown.
@@ -35,15 +38,14 @@ from hyposense.calibration.methods import Calibrator
 from hyposense.common.config import config_hash
 from hyposense.common.hashing import sha256_bytes, sha256_file, sha256_json
 from hyposense.features.snapshot import FeatureSnapshot
-from hyposense.features.spec import BY_NAME, FeatureSpecMismatch, level_names, spec_sha256
+from hyposense.features.spec import FeatureSpecMismatch, level_names, spec_sha256
 from hyposense.medication.dictionary import DICTIONARY_PATH
 from hyposense.policy.decide import PolicyRules, Thresholds
 
-FILES = ("model.txt", "calibrator.json", "policy.json", "feature_range.json")
+FILES = ("model.txt", "calibrator.json", "policy.json")
 STATUSES = ("DEVELOPMENT", "CONFIRMATORY")
-FORMAT_VERSION = "1.0.0"
+FORMAT_VERSION = "2.0.0"
 POLICY_VERSION = "1.0.0"
-RANGE_DTYPES = ("float", "count")  # binary / categorical inputs have no "range"
 
 
 class ArtifactError(RuntimeError):
@@ -84,7 +86,6 @@ def write_artifact(
     calibrator: Calibrator,
     thresholds: Thresholds,
     rules: PolicyRules,
-    feature_range: dict[str, tuple[float, float]],
     status: str,
     cfg: dict[str, Any],
     pharma: dict[str, Any],
@@ -110,7 +111,6 @@ def write_artifact(
                 },
             }
         ),
-        "feature_range.json": _dump({k: list(v) for k, v in sorted(feature_range.items())}),
     }
     for name, data in contents.items():
         (out / name).write_bytes(data)
@@ -142,9 +142,6 @@ class RuntimeModel:
     calibrator: Calibrator
     thresholds: Thresholds
     rules: PolicyRules
-    range_index: npt.NDArray[np.intp]
-    range_lo: npt.NDArray[np.float64]
-    range_hi: npt.NDArray[np.float64]
 
     @property
     def model_version(self) -> str:
@@ -168,13 +165,6 @@ class RuntimeModel:
         if not (math.isfinite(raw) and math.isfinite(p) and 0.0 <= p <= 1.0):
             raise ArithmeticError(f"malformed inference output raw={raw} p={p}")
         return raw, p
-
-    def out_of_range(self, s: FeatureSnapshot) -> tuple[str, ...]:
-        """Inputs outside the development 0.5th-99.5th percentile range (Table 14.1 tag).
-        Missing values are not out of range (they carry their own quality flags)."""
-        v = s.values[self.range_index]
-        bad = ~np.isnan(v) & ((v < self.range_lo) | (v > self.range_hi))
-        return tuple(self.features[i] for i in self.range_index[bad])
 
     def contributions(self, s: FeatureSnapshot) -> dict[str, float]:
         """TreeSHAP contributions on the raw margin (pre-calibration; §4.9), per feature."""
@@ -241,9 +231,13 @@ def load_artifact(
         cal = json.loads(data["calibrator.json"])
         calibrator = Calibrator(str(cal["method"]), dict(cal["params"]))
         pol = json.loads(data["policy.json"])
-        ranges = json.loads(data["feature_range.json"])
     except Exception as exc:
         raise ArtifactIncompatible(f"corrupted artefact content: {exc}") from exc
+    canonical = str(cfg.get("calibration", {}).get("method"))
+    if calibrator.method != canonical:
+        raise ArtifactIncompatible(
+            f"calibrator {calibrator.method!r} is not the canonical method {canonical!r}"
+        )
     if tuple(booster.feature_name()) != names:
         raise ArtifactIncompatible("model.txt feature names differ from the specification")
     if pol.get("policy_version") != POLICY_VERSION:
@@ -265,7 +259,6 @@ def load_artifact(
         or probe.max() > 1.0
     ):
         raise ArtifactIncompatible("calibrator is not a monotone map into [0, 1]")
-    idx = [i for i, f in enumerate(names) if BY_NAME[f].dtype in RANGE_DTYPES and f in ranges]
     return RuntimeModel(
         directory=directory,
         manifest=manifest,
@@ -276,7 +269,4 @@ def load_artifact(
         calibrator=calibrator,
         thresholds=thresholds,
         rules=rules,
-        range_index=np.array(idx, dtype=np.intp),
-        range_lo=np.array([ranges[names[i]][0] for i in idx], dtype=np.float64),
-        range_hi=np.array([ranges[names[i]][1] for i in idx], dtype=np.float64),
     )

@@ -35,7 +35,6 @@ REASON_TEXT = {
     "CGM_LOW": "Current CGM reading below 70 mg/dL.",
 }
 TAG_TEXT = {
-    "LOW_CONFIDENCE": "Low confidence: an input is outside the development range.",
     "MED_TIMING_UNKNOWN": "Medication timing unknown.",
     "EVENT_REJECTED": (
         "A recent input event was rejected; medication information may be incomplete."
@@ -125,8 +124,6 @@ def summary(
     timing = sorted(t.split(":", 1)[1] for t in d.tags if t.startswith("MED_TIMING_UNKNOWN:"))
     if timing:
         parts.append("medication timing unknown (" + ", ".join(timing) + ")")
-    if "LOW_CONFIDENCE" in d.tags:
-        parts.append("some inputs outside the development range")
     if "EVENT_REJECTED" in d.tags:
         parts.append("a recent input was rejected")
     return " · ".join(parts)

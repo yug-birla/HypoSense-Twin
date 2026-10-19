@@ -661,7 +661,6 @@ export interface components {
             model_status: string;
             /** Model Version */
             model_version: string;
-            pc10_mode: components["schemas"]["Pc10Mode"];
             /** Policy */
             policy: {
                 [key: string]: number;
@@ -819,13 +818,6 @@ export interface components {
             /** Timeline */
             timeline: components["schemas"]["TimelinePoint"][];
             trend: components["schemas"]["Trend"];
-        };
-        /** Pc10Mode */
-        Pc10Mode: {
-            /** Status */
-            status: string;
-            /** Value */
-            value: string;
         };
         /** ReliabilityBin */
         ReliabilityBin: {

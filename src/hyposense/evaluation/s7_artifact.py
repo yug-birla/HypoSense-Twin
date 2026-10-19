@@ -1,18 +1,20 @@
-"""DEVELOPMENT model artefact for the S7 service (T only; E sealed).
+"""Canonical model artefact built on T (E sealed): the S7 DEVELOPMENT artefact procedure, and since
+2026-10-19 the FREEZE-CANDIDATE (`M3-candidate-*`, DEC-2026-10-19-M). Old `M3-dev-*` bundles
+(format 1, rounded hyperparameters) are kept untouched as history and are refused by the loader.
 
 It mirrors the confirmatory deployment procedure (Blueprint §11.1, §14.3; ANALYSIS_PLAN §3.5-3.6)
 on the tuning partition, with the frozen S6 choices (DEC-2026-10-18-H):
 1. hyperparameters and num_boost_round from the official S6 run (verified by its results hash);
 2. grouped out-of-fold raw predictions over T (the S6 outer folds, seed 2026);
-3. the P-B1 rule-selected calibrator fitted on the eligible OOF predictions;
+3. the canonical calibrator (`calibration.method`, ANALYSIS_PLAN §5.4 item 12: floored
+   interpolated isotonic) fitted on the eligible OOF predictions;
 4. τA (dev FA <= 1.0 / patient-day) and τW (notification rate <= 3.0, then min(τW, τA)) chosen
    on the calibrated OOF predictions of ALL T patients (the training patients) with the S5
    harness;
-5. the final model fitted on every eligible T row;
-6. development ranges (0.5th-99.5th percentile, eligible rows) for the LOW CONFIDENCE tag.
+5. the final model fitted on every eligible T row.
 
-Canonical training: P-B6 exclusion NOT applied (pending, DEC-2026-10-18-I F2); M3_baseline
-features (P-B8 pending). The result is labelled DEVELOPMENT and is never evidence.
+Canonical training: no P-B6 exclusion (sensitivity only); full M3 features (P-B8 final). The
+artefact is labelled DEVELOPMENT until the freeze record exists; it is never evidence.
 """
 
 from __future__ import annotations
@@ -34,8 +36,7 @@ from hyposense.evaluation.folds import grouped_folds
 from hyposense.evaluation.m0_run import provenance
 from hyposense.evaluation.metrics import EventRules, curve, patient_curves, select_threshold
 from hyposense.evaluation.s6_run import model_sets
-from hyposense.features.spec import BY_NAME
-from hyposense.models.artifact import RANGE_DTYPES, write_artifact
+from hyposense.models.artifact import write_artifact
 from hyposense.models.lgbm import base_params, train
 from hyposense.policy.decide import PolicyRules, Thresholds
 
@@ -68,12 +69,23 @@ def frozen_params(cfg: dict[str, Any]) -> tuple[dict[str, Any], int]:
     return {**base_params(cfg), **best}, int(tun["num_boost_round"])
 
 
-def build_dev_artifact(level: str = "M3", out_root: Path = MODELS_DIR) -> dict[str, Any]:
+CANDIDATE_PREFIX = "M3-candidate-"
+
+
+def latest_candidate(root: Path = MODELS_DIR) -> Path | None:
+    """The newest freeze-candidate bundle, or None (never falls back to old M3-dev bundles)."""
+    found = sorted(root.glob(f"{CANDIDATE_PREFIX}*"))
+    return found[-1] if found else None
+
+
+def build_dev_artifact(
+    level: str = "M3", out_root: Path = MODELS_DIR, name: str | None = None
+) -> dict[str, Any]:
     started = utc_now_iso()
     t0 = time.perf_counter()
     cfg, pharma = load_config(), load_config("pharma.yaml")
     s6 = frozen_s6()
-    method = s6["results"]["pb1_calibration"]["decision"]
+    method = str(cfg["calibration"]["method"])  # canonical (DEC-2026-10-19-M)
     dev = load_dev()
     t = dev.table
     spec = model_sets()[level]
@@ -110,14 +122,6 @@ def build_dev_artifact(level: str = "M3", out_root: Path = MODELS_DIR) -> dict[s
         raise RuntimeError("τA: the development budget is not reached; refusing to build")
     th = Thresholds(sel_a.tau_a, min(sel_w.tau_a, sel_a.tau_a))
     final = train(t.loc[elig, feats], y[elig], params, rounds, cat)
-    ranges: dict[str, tuple[float, float]] = {}
-    for f in feats:
-        if BY_NAME[f].dtype in RANGE_DTYPES:
-            v = t.loc[elig, f].to_numpy(np.float64)
-            v = v[~np.isnan(v)]
-            if len(v):
-                lo, hi = np.percentile(v, cfg["policy"]["range_pct"])
-                ranges[f] = (float(lo), float(hi))
     prov = provenance(
         {
             "partition": "T",
@@ -125,6 +129,10 @@ def build_dev_artifact(level: str = "M3", out_root: Path = MODELS_DIR) -> dict[s
             "s6_run": S6_RUN,
             "s6_results_sha256": s6["results_sha256"],
             "calibrator": method,
+            "calibrator_params_sha256": sha256_json(calibrator.params),
+            "hyperparameters": {k: params[k] for k in sorted(params)},
+            "num_boost_round": rounds,
+            "fold_seed": int(cfg["model"]["seed"]),
             "training_rows": int(elig.sum()),
             "training_patients": len(dev.strata),
             "pb6_applied": False,
@@ -136,7 +144,7 @@ def build_dev_artifact(level: str = "M3", out_root: Path = MODELS_DIR) -> dict[s
             "created_utc": started,
         }
     )
-    out = out_root / make_run_id(f"{level}-dev")
+    out = out_root / (name or make_run_id(f"{level}-candidate"))
     manifest = write_artifact(
         out,
         level=level,
@@ -144,7 +152,6 @@ def build_dev_artifact(level: str = "M3", out_root: Path = MODELS_DIR) -> dict[s
         calibrator=calibrator,
         thresholds=th,
         rules=PolicyRules.from_config(cfg),
-        feature_range=ranges,
         status="DEVELOPMENT",
         cfg=cfg,
         pharma=pharma,

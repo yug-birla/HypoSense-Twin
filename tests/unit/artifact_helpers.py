@@ -9,8 +9,8 @@ import numpy as np
 import pandas as pd
 
 from hyposense.calibration.methods import fit
-from hyposense.features.spec import BY_NAME, level_names
-from hyposense.models.artifact import RANGE_DTYPES, write_artifact
+from hyposense.features.spec import level_names
+from hyposense.models.artifact import write_artifact
 from hyposense.models.lgbm import base_params, train
 from hyposense.policy.decide import PolicyRules, Thresholds
 from tests.unit.state_helpers import CFG, PHARMA
@@ -26,12 +26,7 @@ def synthetic_artifact(
     y = (X["cgm"] + rng.normal(0, 20, 600) < 90).astype(np.int64).to_numpy()
     params = {**base_params(CFG), "num_leaves": 4, "min_data_in_leaf": 20, "learning_rate": 0.1}
     m = train(X, y, params, 20)
-    cal = fit("isotonic_interp", m.predict(X), y)
-    ranges = {
-        f: (float(np.percentile(X[f], 0.5)), float(np.percentile(X[f], 99.5)))
-        for f in names
-        if BY_NAME[f].dtype in RANGE_DTYPES
-    }
+    cal = fit("isotonic_interp_floored", m.predict(X), y)  # canonical (DEC-2026-10-19-M)
     write_artifact(
         out,
         level=level,
@@ -39,7 +34,6 @@ def synthetic_artifact(
         calibrator=cal,
         thresholds=Thresholds(tau_alert, tau_watch),
         rules=PolicyRules.from_config(CFG),
-        feature_range=ranges,
         status="DEVELOPMENT",
         cfg=CFG,
         pharma=PHARMA,

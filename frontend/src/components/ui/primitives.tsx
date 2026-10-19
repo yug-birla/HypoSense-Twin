@@ -44,8 +44,8 @@ export function QualityBadge({ code }: { code: string }) {
   );
 }
 
-/* TERTIARY tier: informational uncertainty tags. Quiet by design (P-B12: LOW_CONFIDENCE is
-   frequent on development data and must not dominate the hierarchy). */
+/* TERTIARY tier: informational tags (medication timing unknown, recent input rejected). Quiet by
+   design. LOW_CONFIDENCE was removed (P-B12, DEC-2026-10-19-M). */
 export function InfoTag({ tag }: { tag: string }) {
   return (
     <span title={tagText(tag)} className="inline-block h-5 max-w-full truncate whitespace-nowrap rounded-xs bg-sunken px-1.5 text-[11px] leading-5 text-ink-3">

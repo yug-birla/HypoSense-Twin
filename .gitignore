@@ -16,6 +16,11 @@ artifacts/*
 !artifacts/features/
 # the canonical metric registry (generated from evaluation/registry.py; S5)
 !artifacts/evaluation/
+# the freeze record and the freeze-candidate model bundles (aggregate model text, no patient rows)
+!artifacts/freeze/
+!artifacts/models/
+artifacts/models/*
+!artifacts/models/M3-candidate-*/
 experiments/runs/*
 !experiments/runs/.gitkeep
 # aggregate-only audit runs are committed as evidence (P-C5: no patient-level values inside)

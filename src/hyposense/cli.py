@@ -17,6 +17,8 @@ hyposense dev s6 [--workers N]          S6 development workflow on T (tuning, la
 hyposense dev artifact [--level M3]      S7 DEVELOPMENT model artefact (T only)
 hyposense dev s7 [--model DIR]           S7 engineering evidence (parity, determinism, latency)
 hyposense serve [--model DIR] [--port N] replay API (refuses to start on an artefact mismatch)
+hyposense dev candidate                  freeze-candidate workflow on T (run twice)
+hyposense freeze [--check]               protocol freeze; fails closed (ERROR — FREEZE ABORTED)
 hyposense gates show                  print the latest gate results
 """
 
@@ -183,14 +185,14 @@ def cmd_eval_registry(args: argparse.Namespace) -> int:
 
 
 def _latest_model(arg: str | None) -> Path:
-    from hyposense.evaluation.s7_artifact import MODELS_DIR
+    from hyposense.evaluation.s7_artifact import MODELS_DIR, latest_candidate
 
     if arg:
         return Path(arg)
-    found = sorted(MODELS_DIR.glob("M3-dev-*"))
-    if not found:
-        raise SystemExit("no development artefact: run `hyposense dev artifact` first")
-    return found[-1]
+    found = latest_candidate(MODELS_DIR)
+    if found is None:
+        raise SystemExit("no freeze-candidate artefact: run `hyposense dev artifact` first")
+    return found
 
 
 def cmd_dev_artifact(args: argparse.Namespace) -> int:
@@ -204,6 +206,13 @@ def cmd_dev_s7(args: argparse.Namespace) -> int:
     from hyposense.evaluation.s7_bench import run_s7_bench
 
     _print(run_s7_bench(_latest_model(args.model)))
+    return 0
+
+
+def cmd_dev_candidate(args: argparse.Namespace) -> int:
+    from hyposense.evaluation.candidate import run_candidate
+
+    _print(run_candidate(workers=args.workers))
     return 0
 
 
@@ -232,7 +241,6 @@ def cmd_serve(args: argparse.Namespace) -> int:
         svc = Service(
             _latest_model(args.model),
             expected_manifest_sha256=args.expect_sha,
-            pc10_mode=args.pc10,
         )
     except ArtifactError as exc:
         print(f"REFUSING TO START: {exc}")
@@ -246,6 +254,17 @@ def cmd_dev_s6(args: argparse.Namespace) -> int:
 
     _print(run_s6(workers=args.workers, resamples=args.resamples, trials=args.trials))
     return 0
+
+
+def cmd_freeze(args: argparse.Namespace) -> int:
+    from hyposense.freeze import freeze
+
+    if args.no_tests and not args.check:
+        print("ERROR — FREEZE ABORTED: the test suite is mandatory for a freeze", file=sys.stderr)
+        return 2
+    report = freeze(write=not args.check, run_tests=not args.no_tests)
+    _print(report)
+    return 0 if report["errors"] == 0 else 2
 
 
 def cmd_gates_show(args: argparse.Namespace) -> int:
@@ -353,6 +372,11 @@ def build_parser() -> argparse.ArgumentParser:
     d7 = dv.add_parser("s7", help="S7 engineering evidence on T")
     d7.add_argument("--model", default=None)
     d7.set_defaults(func=cmd_dev_s7)
+    dc = dv.add_parser(
+        "candidate", help="freeze-candidate workflow (T only): gate, eval, artefact, replay"
+    )
+    dc.add_argument("--workers", type=int, default=4)
+    dc.set_defaults(func=cmd_dev_candidate)
     dp = dv.add_parser("prefreeze", help="P-B10/P-B11/P-B12 pre-freeze Class B runs (T only)")
     dp.add_argument("--workers", type=int, default=6)
     dp.set_defaults(func=cmd_dev_prefreeze)
@@ -363,14 +387,12 @@ def build_parser() -> argparse.ArgumentParser:
     sv.add_argument("--host", default="127.0.0.1")
     sv.add_argument("--port", type=int, default=8000)
     sv.add_argument("--expect-sha", default=None, help="pin the artefact manifest SHA-256")
-    sv.add_argument(
-        "--pc10",
-        default="system_error",
-        choices=["system_error", "badge"],
-        help="P-C10 (PENDING): display of a rejected non-CGM event; badge = development setting",
-    )
     sv.set_defaults(func=cmd_serve)
 
+    fz = sub.add_parser("freeze", help="protocol freeze (fails closed; never touches E)")
+    fz.add_argument("--check", action="store_true", help="evaluate invariants; write nothing")
+    fz.add_argument("--no-tests", action="store_true", help="skip the test suite (check only)")
+    fz.set_defaults(func=cmd_freeze)
     gates = sub.add_parser("gates", help="gate results").add_subparsers(dest="cmd", required=True)
     gates.add_parser("show", help="print latest gate results").set_defaults(func=cmd_gates_show)
     return p

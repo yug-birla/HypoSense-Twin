@@ -7,9 +7,10 @@ The per-reading flags are not re-implemented here. They come from the authoritat
 - P-C8 sensor-fault suspicion: the last 8 readings (`sensor_fault_suspected`). The flag at
   reading k depends only on readings k-7 .. k, so the tail gives the identical value.
 
-Warm-up is measured from an anchor, which is the recording's first reading. The P-C7 hook
-(`warmup_restart_after_gap_s`, pending approval, currently None) re-anchors after a longer gap,
-mirroring `labels.eligibility.warmup_anchor` (a differential test ties the two together).
+Warm-up is measured from an anchor, which is the recording's first reading. P-C7 (approved,
+DEC-2026-10-19-M; `policy.warmup_restart_after_gap_min` = 120) re-anchors the POLICY warm-up at
+the first reading after a CGM gap > 120 min (strict). Labels are not re-anchored
+(ANALYSIS_PLAN §0 item 5), so the two anchors differ only after such a gap.
 
 Sufficiency means a forecast may be requested: no gap > 20 min before t, >= 7 readings in
 (t - 120 min, t], warm-up over, and the reading not flagged (floor, rapid change). It is a
@@ -38,7 +39,7 @@ class SufficiencyRule:
     history_s: int = 7200
     min_readings_in_history: int = 7
     warmup_s: int = 7200
-    warmup_restart_after_gap_s: int | None = None  # P-C7 hook (PENDING approval)
+    warmup_restart_after_gap_s: int | None = None  # P-C7 (approved; set from policy config)
     sensor_fault_max_step_s: int = 1200
 
 

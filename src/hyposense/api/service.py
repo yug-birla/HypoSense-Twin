@@ -52,8 +52,7 @@ STATE_ORDER = {
 TRACE_S = 24 * 3600
 SUBSCRIBER_QUEUE = 1000
 MAX_SUBSCRIBERS = 16
-PC10_MODES = ("system_error", "badge")  # P-C10 PENDING: system_error = current behaviour
-INFO_TAG_PREFIXES = ("LOW_CONFIDENCE", "MED_TIMING_UNKNOWN", "EVENT_REJECTED")
+INFO_TAG_PREFIXES = ("MED_TIMING_UNKNOWN", "EVENT_REJECTED")
 LEDGER_ROWS = 50
 S6_RUN_ID = re.compile(r"^T-AGG-dev-s6-\d{8}T\d{6}Z$")
 MAX_CONSECUTIVE_ERRORS = 5
@@ -107,11 +106,7 @@ class Service:
         streams: Sequence[RecordingStream] | None = None,
         log_root: Path = LOG_ROOT,
         expected_manifest_sha256: str | None = None,
-        pc10_mode: str = "system_error",
     ) -> None:
-        if pc10_mode not in PC10_MODES:
-            raise ValueError(f"pc10_mode must be one of {PC10_MODES}")
-        self.pc10_mode = pc10_mode
         self.cfg, self.pharma = load_config(), load_config("pharma.yaml")
         self.model: RuntimeModel = load_artifact(  # refuses on any mismatch
             model_dir, self.cfg, self.pharma, expected_manifest_sha256
@@ -121,7 +116,6 @@ class Service:
             FeatureBuilder(self.cfg),
             self.model,
             MAX_CONSECUTIVE_ERRORS,
-            reject_non_cgm_as_error=pc10_mode == "system_error",
         )
         self.cgm_cfg = CGMFeatureConfig.from_config(self.cfg)
         if streams is None:
@@ -604,10 +598,6 @@ class Service:
             },
             "freeze_status": "NOT FROZEN (development)",
             "data_utc_offset_s": self.cgm_cfg.utc_offset_s,
-            "pc10_mode": {
-                "value": self.pc10_mode,
-                "status": "PENDING owner decision (P-C10); system_error = current specification",
-            },
             "source": SOURCE_LABEL,
             "caveat": LABEL_CAVEAT,
         }
@@ -719,7 +709,10 @@ class Service:
             },
             "diagnostics": [
                 {
-                    "label": f"Post-hoc CGM level rule ({k.split(':')[0]} patients; P-C9 pending)",
+                    "label": (
+                        f"CGM-level reference, POST-HOC DEVELOPMENT REFERENCE "
+                        f"({k.split(':')[0]} patients)"
+                    ),
                     "value": (
                         f"sens@1FA {v['sens_at_1fa']:.3f} "
                         f"(alerts when CGM < {-v['tau_alert']:g} mg/dL)"
@@ -753,7 +746,9 @@ class Service:
             "safeguards": self._safeguards(),
             "limitations": [
                 "C0 (M1 vs the M0 trend rule) overstates the value of learning: a post-hoc "
-                "CGM-level rule matches the learned models on T (see diagnostics; P-C9 pending).",
+                "CGM-level reference (alert at CGM < 81 mg/dL) matches the learned models on T. "
+                "It was added after development analysis and is not a pre-specified confirmatory "
+                "comparator (P-C9).",
                 "Research prototype; not a medical device; not clinically validated.",
                 "Development evidence only: tuning partition, internal cross-validation. The "
                 "evaluation partition is sealed.",

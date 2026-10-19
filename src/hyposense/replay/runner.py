@@ -9,8 +9,10 @@ rule of its own (CLAUDE.md §26). Offline (`features.build`, `evaluation.data.re
 and live use the same state engine, feature builder and policy gate.
 
 Error handling and recovery (S7; CLAUDE.md §29; Table 14.1 priority 1):
-- A rejected event (malformed, out of order, duplicate, wrong recording, implausible value)
-  produces a SYSTEM_ERROR decision at the event time and is quarantined. The PatientState is
+- A rejected event (malformed, out of order, duplicate, wrong recording, implausible value) is
+  quarantined and logged. A rejected CGM reading produces a SYSTEM_ERROR decision at its time; a
+  rejected non-CGM event (dose, meal, CBG) keeps the current clinical state and is shown as an
+  INPUT REJECTED badge (P-C10, ANALYSIS_PLAN §5.4 item 17). The PatientState is
   immutable and `try_update` returns the PREVIOUS valid state, so the rejected event cannot
   corrupt later state. Processing resumes with the next event (recovery).
 - After a rejected dose, meal or CBG event, forecasts carry the tag EVENT_REJECTED for the
@@ -60,10 +62,10 @@ class Pipeline:
     builder: FeatureBuilder
     model: RuntimeModel
     max_consecutive_errors: int = 5
-    # P-C10 (PENDING owner decision): True = current behaviour, a rejected non-CGM event is a
-    # SYSTEM_ERROR record (option a). False = development setting for option (b): the clinical
-    # state is kept and the rejection is shown as a badge (the EVENT_REJECTED tag still applies).
-    reject_non_cgm_as_error: bool = True
+    # P-C10 FINAL (DEC-2026-10-19-M) is option (b): a rejected non-CGM event keeps the clinical
+    # state and is shown as an INPUT REJECTED badge (the EVENT_REJECTED tag applies). True =
+    # the superseded option (a), kept ONLY for regression tests; never user-configurable.
+    reject_non_cgm_as_error: bool = False
 
     @property
     def rejected_tag_s(self) -> int:
@@ -234,8 +236,6 @@ class TwinRunner:
                 self.last_snapshot = snap
                 digest = snap.digest
                 raw, p = m.predict(snap)
-                if m.out_of_range(snap):
-                    tags.append("LOW_CONFIDENCE")
                 med_q = s.medication.at(t).quality
                 tags += [
                     f"MED_TIMING_UNKNOWN:{c}"

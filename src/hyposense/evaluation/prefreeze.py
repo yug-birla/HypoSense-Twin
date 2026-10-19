@@ -45,10 +45,10 @@ from hyposense.evaluation.metrics import (
 from hyposense.evaluation.s7_artifact import S6_RUN, frozen_params, frozen_s6
 from hyposense.features.spec import BY_NAME, Group, level_names
 from hyposense.medication.exposure import QualityState
-from hyposense.models.artifact import RANGE_DTYPES
 from hyposense.models.lgbm import train
 
 F64 = npt.NDArray[np.float64]
+RANGE_DTYPES = ("float", "count")  # P-B12 history (the live tag was removed)
 
 # ---------------------------------------------------------------- pre-specified (6b1ad05)
 FOLD_SEEDS = (2026, 2028, 2029)

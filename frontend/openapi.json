@@ -1255,9 +1255,6 @@
       "title": "Model Version",
       "type": "string"
      },
-     "pc10_mode": {
-      "$ref": "#/components/schemas/Pc10Mode"
-     },
      "policy": {
       "additionalProperties": {
        "type": "number"
@@ -1306,7 +1303,6 @@
      "policy",
      "freeze_status",
      "data_utc_offset_s",
-     "pc10_mode",
      "source",
      "caveat"
     ],
@@ -1773,24 +1769,6 @@
      "caveat"
     ],
     "title": "PatientView",
-    "type": "object"
-   },
-   "Pc10Mode": {
-    "properties": {
-     "status": {
-      "title": "Status",
-      "type": "string"
-     },
-     "value": {
-      "title": "Value",
-      "type": "string"
-     }
-    },
-    "required": [
-     "value",
-     "status"
-    ],
-    "title": "Pc10Mode",
     "type": "object"
    },
    "ReliabilityBin": {
