@@ -38,7 +38,7 @@ Implementation: `src/hyposense/labels/`. Fixtures: `tests/unit/label_fixtures.py
      priority 2), so no label-eligible time can fall in a period where the policy cannot alert.
    - **≥ 7 readings in the half-open window (t − 120 min, t].**
    - **Labels are not re-anchored after long gaps** (`eligibility.warmup_restart_after_gap_min`
-     = `null`, final). P-C7 (approved 2026-10-19) re-anchors the **policy** warm-up only (§5.6
+     = `null`, final). P-C7 (approved 2026-10-19) re-anchors the **policy** warm-up only (§5.4
      item 16). Consequence: after a CGM gap > 120 min, a time can be label-eligible while the
      policy shows INSUFFICIENT DATA, so it cannot alert. This applies identically to every model.
      MEASURED on T: 0 gaps > 120 min (maximum gap 60 min), so no T time is affected. In E it
@@ -330,6 +330,16 @@ definitions: `artifacts/evaluation/metric_registry.json`, generated from `evalua
       edge probabilities on held-out rows in 11/15 configurations.
     - **Applies to** every learned model, in both the evaluation (fold-wise) and the deployed
       artefact.
+    - **Disclosed consequence (MEASURED on T, freeze-candidate runs; the rule is unchanged).**
+      - p_lo depends on the size of the lowest isotonic block. In outer fold 4 that block is
+        small (M2 106 rows, M3 194), so p_lo = 0.47 % (M2) / 0.26 % (M3), and ≈ 70 % of that
+        fold's held-out rows are clamped to the floor. In the other folds p_lo ≤ 0.03 %.
+      - Pooled T-treated effects: ECE M2 0.0013 → 0.0022 and M3 0.0013 → 0.0017; calibration
+        slope ≈ 0.97 → 1.08 / 1.07 (inside the band rule [0.8, 1.25]); log-loss M2 0.03128 →
+        0.03107 and M3 0.03095 → 0.03022.
+      - sens@1FA, partial area, τA/τW and every replayed T decision are unchanged. Every floor is
+        below the "<1%" display boundary.
+      - The deployed artefact (fitted on all T) has p_lo = 5.5e-5.
 13. **Canonical M3** = the full exposure representation (`features.spec` level M3, 100
     features). M3_compact is a DEVELOPMENT ablation only and is never deployed or confirmatory.
 14. **P-B6 / SA9 is SENSITIVITY ONLY.** Canonical training and evaluation use every
@@ -378,6 +388,13 @@ T results.
   - Otherwise deploy whichever of M2 and M3 has the higher point estimate of sens@1FA, but
     only if its log-loss is not worse; ties go to the simpler model (M2).
   - M0 is deployed only if no learned model beats it.
+- **Literal reading of the rule's wording** (stated before any E result; it adds no tolerance and
+  no criterion; owner confirmation requested, DEC-2026-10-19-M addendum):
+  - every quantity is computed on the primary population (E-treated) from the pooled
+    out-of-fold calibrated probabilities, as point estimates;
+  - "log-loss not worse" means log-loss ≤ that of the other model (§5.3 item 7 definition, no
+    tolerance);
+  - "beats" for M0 means a higher sens@1FA point estimate.
 - **Interpretation matrix:** Blueprint Table 20.4 (outcome → legitimate conclusion → selected
   architecture) applies unchanged.
 - **CGM-level reference (§5.4 item 15):** plays no role in model selection or interpretation of
