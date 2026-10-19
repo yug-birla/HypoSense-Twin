@@ -207,6 +207,13 @@ def cmd_dev_s7(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_dev_prefreeze(args: argparse.Namespace) -> int:
+    from hyposense.evaluation.prefreeze import run_prefreeze
+
+    _print(run_prefreeze(workers=args.workers))
+    return 0
+
+
 def cmd_dev_evidence(args: argparse.Namespace) -> int:
     from hyposense.evaluation.s8_evidence import build_evidence
 
@@ -346,6 +353,9 @@ def build_parser() -> argparse.ArgumentParser:
     d7 = dv.add_parser("s7", help="S7 engineering evidence on T")
     d7.add_argument("--model", default=None)
     d7.set_defaults(func=cmd_dev_s7)
+    dp = dv.add_parser("prefreeze", help="P-B10/P-B11/P-B12 pre-freeze Class B runs (T only)")
+    dp.add_argument("--workers", type=int, default=6)
+    dp.set_defaults(func=cmd_dev_prefreeze)
     d8 = dv.add_parser("evidence", help="aggregate Evidence View curves from the S6 OOF (T)")
     d8.set_defaults(func=cmd_dev_evidence)
     sv = sub.add_parser("serve", help="replay API (FastAPI + SSE), offline")
