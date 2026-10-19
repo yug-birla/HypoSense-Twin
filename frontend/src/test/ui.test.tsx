@@ -47,7 +47,7 @@ describe("policy state rendering", () => {
     );
     expect(screen.getByText("Sensor fault suspected")).toBeInTheDocument();
     expect(screen.getByText("Input rejected")).toBeInTheDocument();
-    expect(screen.getByText("Timing unknown: insulin")).toBeInTheDocument();
+    expect(screen.getByText("Insulin dose times not recorded")).toBeInTheDocument();
   });
 });
 
@@ -75,7 +75,7 @@ describe("ward board", () => {
     expect(within(rows[1]!).getByText("20%")).toBeInTheDocument();
     expect(within(rows[1]!).getByLabelText("2 unacknowledged notifications")).toBeInTheDocument();
     expect(within(rows[2]!).getByText("no forecast")).toBeInTheDocument();
-    expect(within(rows[2]!).getByText("30 min ago")).toHaveClass("text-alert-ink");
+    expect(within(rows[2]!).getByText("not current · 30 min ago")).toHaveClass("text-alert-ink");
     expect(within(rows[3]!).getByText("SYSTEM ERROR")).toBeInTheDocument();
     expect(within(rows[3]!).getAllByText("Input rejected").length).toBeGreaterThan(0);
   });
@@ -86,7 +86,8 @@ describe("patient review", () => {
     const v = patient({ current: { ...bed().decision, state: "LOW_NOW", p: null, p_text: null }, cgm_mgdl: 61.2, cgm_low: true });
     wrap(<PatientHeader v={v} offsetS={0} />);
     expect(screen.getByText("LOW NOW")).toBeInTheDocument();
-    expect(screen.getByText("no forecast in this state")).toBeInTheDocument();
+    expect(screen.getByText("No forecast")).toBeInTheDocument();
+    expect(screen.getByText(/Observed now: the latest CGM reading is below 70/)).toBeInTheDocument();
     expect(screen.getByText("61")).toHaveClass("text-low-ink");
   });
   it("acknowledgement offers exactly four reasons and needs an explicit choice", () => {
@@ -181,7 +182,7 @@ describe("P-B12 removal (DEC-2026-10-19-M)", () => {
   it("LOW_CONFIDENCE has no display mapping and is not a quality badge", async () => {
     const { BADGE_TEXT, tagText } = await import("@/lib/states");
     expect(Object.keys(BADGE_TEXT)).not.toContain("LOW_CONFIDENCE");
-    expect(tagText("MED_TIMING_UNKNOWN:insulin")).toBe("Timing unknown: insulin");
+    expect(tagText("MED_TIMING_UNKNOWN:insulin")).toBe("Insulin dose times not recorded");
     expect(tagText("EVENT_REJECTED")).toBe("Recent input rejected");
     expect(tagText("LOW_CONFIDENCE")).toBe("LOW_CONFIDENCE"); // no display text (backend never emits it)
   });

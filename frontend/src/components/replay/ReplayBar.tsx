@@ -46,6 +46,7 @@ export function ReplayBar({ compact = false }: { compact?: boolean }) {
       aria-label="Replay controls"
       className={clsx("flex flex-wrap items-center gap-3 rounded-lg border border-line bg-surface px-3 py-2", compact && "py-1.5")}
     >
+      <span className="label-caps hidden text-ink-3 lg:inline">Replay of recorded data</span>
       <div className="flex items-center gap-1">
         {s.playing ? (
           <Button size="sm" variant="primary" aria-label="Pause replay" disabled={busy} onClick={() => run.mutate(api.pause)}>
@@ -58,12 +59,12 @@ export function ReplayBar({ compact = false }: { compact?: boolean }) {
         )}
         <Tip content="Process the next recorded event">
           <Button size="sm" aria-label="Step one event" disabled={busy || s.playing || s.finished} onClick={() => run.mutate(() => api.step(1))}>
-            <StepForward aria-hidden className="size-3.5" />
+            <StepForward aria-hidden className="size-3.5" /> {compact ? "" : "Next event"}
           </Button>
         </Tip>
         <Tip content="Advance 1 hour of data time">
           <Button size="sm" aria-label="Advance one hour" disabled={busy || s.playing || s.finished} onClick={() => run.mutate(() => api.advance(3600))}>
-            +1 h
+            +1 hour
           </Button>
         </Tip>
         <Tip content="Restart from the beginning (deterministic rebuild)">
@@ -83,7 +84,7 @@ export function ReplayBar({ compact = false }: { compact?: boolean }) {
         >
           {SPEEDS.map((v) => (
             <option key={v} value={v}>
-              ×{v}
+              ×{v} ({v / 60} min of data per second)
             </option>
           ))}
           {!SPEEDS.includes(s.speed) && <option value={s.speed}>×{s.speed}</option>}
@@ -91,7 +92,7 @@ export function ReplayBar({ compact = false }: { compact?: boolean }) {
       </label>
 
       <div className="flex min-w-[220px] flex-1 items-center gap-2">
-        <span className="w-[86px] text-right text-small text-ink-2 tnum">{duration(offset)}</span>
+        <span className="w-[86px] text-right text-small text-ink-2 tnum" title="Time elapsed since the start of each recording">{duration(offset)}</span>
         <input
           type="range"
           aria-label="Replay position"
@@ -106,7 +107,7 @@ export function ReplayBar({ compact = false }: { compact?: boolean }) {
           className="h-1.5 flex-1 cursor-pointer accent-[var(--color-accent)]"
           style={{ background: `linear-gradient(to right, var(--color-accent) ${pctDone}%, var(--color-line) ${pctDone}%)` }}
         />
-        <span className="w-[64px] text-small text-ink-3 tnum">{duration(s.duration_s)}</span>
+        <span className="w-[64px] text-small text-ink-3 tnum" title="Length of the longest selected recording">{duration(s.duration_s)}</span>
       </div>
 
       <div className="flex items-center gap-2 text-small text-ink-3">

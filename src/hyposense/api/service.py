@@ -312,6 +312,32 @@ class Service:
         self._emit(s.advance_to(int(self._clock)))
         self.publish({"type": "tick", "offset_s": s.offset, "finished": s.finished})
 
+    def advance_until_notification(self, max_events: int = 500_000) -> S.DemoEvent:
+        """Guided demo: process the REAL replay event by event until the next ALERT notification
+        (the first one in the fixed replay order; nothing is searched, skipped or staged)."""
+        s = self._require()
+        self.playing = False
+        out: list[Emitted] = []
+        found: DecisionRecord | None = None
+        while not s.finished and len(out) < max_events:
+            step = s.step(1)
+            out += step
+            rec = step[0].record if step else None
+            if rec is not None and rec.decision.notify:
+                found = rec
+                break
+        self._clock = float(s.offset)
+        self._emit(out)
+        self.publish({"type": "tick", "offset_s": s.offset, "finished": s.finished})
+        return S.DemoEvent(
+            found=found is not None,
+            recording_key=None if found is None else found.recording_key,
+            ts=None if found is None else found.decision.ts,
+            p_text=None if found is None else probability_text(found.decision.p),
+            offset_s=s.offset,
+            finished=s.finished,
+        )
+
     def seek(self, offset: int) -> None:
         s = self._require()
         if offset > s.duration:
@@ -669,11 +695,14 @@ class Service:
 
     # ------------------------------------------------------------------ ask about this patient
     ASK_INTENTS: ClassVar[dict[str, str]] = {
-        "why_state": "Why is this patient showing this state?",
-        "missing": "What information is missing?",
+        "why_state": "Why is this patient showing this status?",
+        "no_forecast": "Why is there (or isn't there) a forecast?",
+        "current": "Are the glucose readings current?",
         "changed": "What changed since the previous reading?",
-        "medications": "Which medication entries were recorded (last 24 h)?",
-        "quality": "What do the data-quality notes mean?",
+        "after_alert": "What happened after the last alert?",
+        "medications": "Which medication entries are recorded (last 24 h)?",
+        "quality": "What do the data-quality warnings mean?",
+        "missing": "What information is missing?",
         "evidence": "What evidence supports this display?",
     }
 
@@ -704,6 +733,70 @@ class Service:
                     )
             else:
                 lines.append("No risk estimate is shown for this state.")
+        elif intent == "no_forecast":
+            if d.p is not None:
+                lines.append(
+                    f"A forecast is available: estimated risk {probability_text(d.p)} that a new "
+                    "CGM-detected low begins within 60 minutes."
+                )
+            else:
+                lines.append("No forecast is shown now, because:")
+                lines += list(texts(d)) or ["the current status does not allow one."]
+                lines.append(
+                    "Low risk and missing information are different: no forecast is never shown "
+                    "as low risk."
+                )
+        elif intent == "current":
+            if not st.cgm.n:
+                lines.append("There is no CGM reading yet.")
+            else:
+                last = int(st.cgm.series.ts[-1])
+                age_min = (now - last) / 60
+                limit = self.model.rules.max_gap_s / 60
+                ok = now - last <= self.model.rules.max_gap_s
+                lines.append(
+                    f"The latest CGM reading is {age_min:.0f} min old at the current clock "
+                    f"({clock_text(last, off)}); readings older than {limit:.0f} min are not "
+                    f"current. Status: {'current' if ok else 'NOT current'}."
+                )
+                recent = int((st.cgm.series.ts > now - 7200).sum())
+                lines.append(f"{recent} CGM reading(s) in the last 2 hours.")
+        elif intent == "after_alert":
+            notified = [x for x in r.decisions if x.decision.notify]
+            if not notified:
+                lines.append("There has been no alert notification for this patient yet.")
+            else:
+                last_n = notified[-1]
+                t0 = last_n.decision.ts
+                lines.append(
+                    f"Last alert notification: {clock_text(t0, off)}, estimated risk "
+                    f"{probability_text(last_n.decision.p)}."
+                )
+                res = [x for x in st.ledger.resolved.items() if x.forecast.ts == t0]
+                if res:
+                    x = res[0]
+                    what = (
+                        "a CGM-detected low followed"
+                        if x.outcome == 1
+                        else "no CGM-detected low followed"
+                    )
+                    lines.append(
+                        f"Within the next 60 minutes, {what} "
+                        f"(known at {clock_text(x.resolved_ts, off)})."
+                    )
+                elif any(f.ts == t0 for f in st.ledger.pending):
+                    lines.append(
+                        "The 60-minute window after it is not complete yet, so the outcome "
+                        "is not known."
+                    )
+                else:
+                    lines.append("The outcome of that alert is unknown (the recording ended).")
+                ack = self.acks.get(last_n.decision_id)
+                lines.append(
+                    "It was acknowledged (" + str(ack["reason"]).replace("_", " ") + ")."
+                    if ack
+                    else "It has not been acknowledged."
+                )
         elif intent == "missing":
             if not st.cgm.n:
                 lines.append("No CGM reading yet: a forecast needs recent CGM history.")
@@ -829,7 +922,9 @@ class Service:
             status=r.status,
             findings=[S.IntakeFinding(**vars(f)) for f in r.findings],
             questions=[
-                S.IntakeQuestion(**{**vars(q), "options": [tuple(o) for o in q.options]})
+                S.IntakeQuestion(
+                    **{**vars(q), "options": [tuple(o) for o in q.options], "impact": q.impact}
+                )
                 for q in r.questions
             ],
             mapping=r.mapping,

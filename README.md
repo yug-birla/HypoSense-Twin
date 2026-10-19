@@ -88,7 +88,9 @@ uv run hyposense serve --held-out         # after S9: E patients with their own 
 uv run pytest -q && (cd frontend && npx vitest run)
 ```
 
-Open http://127.0.0.1:8000 for the Ward board, Patient review, Evidence view and Add patient.
+Open http://127.0.0.1:8000. The **Overview** explains the system; the **Guided demo** (5 min) tours a real
+recorded case; the Ward board, Patient twin, Add patient and Evidence pages are in the side bar. A judge
+demonstration script is in [docs/UX_REVIEW.md](docs/UX_REVIEW.md) §5.
 
 ## Safeguards
 

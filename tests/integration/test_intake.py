@@ -367,7 +367,17 @@ def test_intake_never_touches_research_partitions() -> None:
 def test_ask_intents_are_fixed_and_answer_from_state(client: Any) -> None:
     c, _ = client
     key = _commit_frame(c, synthetic_frame(days=2))
-    for intent in ("why_state", "missing", "changed", "medications", "quality", "evidence"):
+    for intent in (
+        "why_state",
+        "no_forecast",
+        "current",
+        "changed",
+        "after_alert",
+        "medications",
+        "quality",
+        "missing",
+        "evidence",
+    ):
         r = c.get(f"/api/patients/{key}/ask", params={"intent": intent})
         assert r.status_code == 200, r.text
         lines = r.json()["lines"]

@@ -7,11 +7,11 @@ import { useEffect, useRef } from "react";
 import type { Bed } from "@/lib/api";
 import { age, bedLabel, clock, mgdl, rate } from "@/lib/format";
 import { stateStyle, TREND } from "@/lib/states";
-import { InfoTag, QualityBadge, StatePill, Tip } from "@/components/ui/primitives";
+import { Help, InfoTag, QualityBadge, StatePill, Tip } from "@/components/ui/primitives";
 
 // Wide (>= 1400 px): separate Quality column. Compact: quality shown under the reason.
 const COLS =
-  "grid grid-cols-[24px_minmax(84px,1fr)_140px_80px_80px_68px_minmax(150px,2fr)_76px_22px] items-center gap-x-2.5 min-[1400px]:grid-cols-[28px_minmax(96px,1fr)_148px_88px_92px_76px_minmax(170px,2fr)_minmax(150px,1.6fr)_84px_24px] min-[1400px]:gap-x-3";
+  "grid grid-cols-[22px_minmax(110px,1.1fr)_148px_150px_96px_minmax(170px,2fr)_84px_26px] items-center gap-x-3";
 
 function Reason({ bed }: { bed: Bed }) {
   const quiet = bed.decision.state === "NO_ALERT";
@@ -55,25 +55,19 @@ function Row({ bed, offsetS }: { bed: Bed; offsetS: number }) {
         )}
       </span>
       <span role="cell">
-        <StatePill state={bed.decision.state} />
+        <StatePill state={bed.decision.state} explain />
       </span>
-      <span role="cell" className="text-right tnum">
-        <span className={clsx("text-[15px] font-semibold", bed.cgm_low ? "text-low-ink" : "text-ink")}>
-          {mgdl(bed.cgm_mgdl)}
-        </span>
+      <span role="cell" className="tnum">
+        <span className={clsx("text-[15px] font-semibold", bed.cgm_low ? "text-low-ink" : "text-ink")}>{mgdl(bed.cgm_mgdl)}</span>
         <span className="ml-1 text-[10.5px] text-ink-4">mg/dL</span>
-      </span>
-      <span role="cell" className="text-small text-ink-2 tnum">
         {tr ? (
-          <Tip content={`Trend ${tr.text} (${rate(bed.trend.rate_mgdl_per_min)} mg/dL/min, 30-min slope)`}>
-            <span className="inline-flex items-center gap-1">
-              <span aria-hidden className="w-5 font-semibold text-ink">{tr.glyph}</span>
-              <span>{rate(bed.trend.rate_mgdl_per_min)}</span>
+          <Tip content={`Trend ${tr.text} (${rate(bed.trend.rate_mgdl_per_min)} mg/dL per min, 30-min slope)`}>
+            <span className="ml-2 inline-flex items-center gap-1 text-small text-ink-2">
+              <span aria-hidden className="font-semibold text-ink">{tr.glyph}</span>
+              {tr.text}
             </span>
           </Tip>
-        ) : (
-          <span className="text-ink-4">—</span>
-        )}
+        ) : null}
       </span>
       <span role="cell" className="text-right tnum">
         {bed.decision.p_text ? (
@@ -85,7 +79,7 @@ function Row({ bed, offsetS }: { bed: Bed; offsetS: number }) {
       <span role="cell" className="min-w-0">
         <Reason bed={bed} />
         {(bed.badges.length > 0 || bed.info_tags.length > 0) && (
-          <span className="mt-1 flex min-w-0 flex-wrap gap-1 min-[1400px]:hidden">
+          <span className="mt-1 flex min-w-0 flex-wrap gap-1">
             {bed.badges.map((b) => (
               <QualityBadge key={b} code={b} />
             ))}
@@ -95,22 +89,9 @@ function Row({ bed, offsetS }: { bed: Bed; offsetS: number }) {
           </span>
         )}
       </span>
-      <span role="cell" className="hidden min-w-0 flex-wrap gap-1 overflow-hidden min-[1400px]:flex [&>*]:max-w-full [&>*]:truncate">
-        {bed.badges.map((b) => (
-          <QualityBadge key={b} code={b} />
-        ))}
-        {bed.info_tags.slice(0, bed.badges.length ? 1 : 2).map((t) => (
-          <InfoTag key={t} tag={t} />
-        ))}
-        {bed.info_tags.length > (bed.badges.length ? 1 : 2) && (
-          <Tip content={bed.info_tags.join(", ")}>
-            <span className="text-[11px] text-ink-4">+{bed.info_tags.length - (bed.badges.length ? 1 : 2)}</span>
-          </Tip>
-        )}
-      </span>
       <span role="cell" className="text-small tnum">
         <span className={clsx(bed.stale ? "font-medium text-alert-ink" : "text-ink-2")}>
-          {age(bed.data_age_s)}
+          {bed.stale ? `not current · ${age(bed.data_age_s)}` : age(bed.data_age_s)}
         </span>
         {bed.last_reading_ts !== null && <span className="block text-[11px] text-ink-4">{clock(bed.last_reading_ts, offsetS)}</span>}
       </span>
@@ -132,14 +113,26 @@ function Row({ bed, offsetS }: { bed: Bed; offsetS: number }) {
   );
 }
 
+const HEADERS: [string, string | null][] = [
+  ["#", null],
+  ["Patient", null],
+  ["Status", "Decided by fixed rules on the server. LOW NOW is observed; ALERT / WATCH / NO ALERT are predictions for the next 60 min; INSUFFICIENT DATA means no forecast is possible. Hover a status for its meaning."],
+  ["Glucose now", "The latest observed CGM reading and its 30-minute trend."],
+  ["Risk 60 min", "Model-estimated chance that a new CGM-detected low (< 70 mg/dL) begins within 60 minutes. Development model, not clinically validated. Shown only when a forecast is possible."],
+  ["Why", "The main reason for the status, with any data-quality warning."],
+  ["Last reading", "Age of the latest CGM reading at the replay clock. Older than 20 min = not current, and no forecast is shown."],
+  ["", null],
+];
+
 export function WardTable({ beds, offsetS }: { beds: Bed[]; offsetS: number }) {
   return (
     <div role="table" aria-label="Ward board: beds ordered by policy state, then risk" className="overflow-x-auto rounded-lg border border-line bg-surface">
-      <div className="min-w-[820px]">
+      <div className="min-w-[900px]">
         <div role="row" className={clsx(COLS, "border-b border-line bg-[#fafbfc] px-4 py-2")}>
-          {["#", "Patient", "State", "CGM", "Trend", "Risk", "Reason", "Quality", "Updated", ""].map((h, i) => (
-            <span key={i} role="columnheader" className={clsx("label-caps", (i === 3 || i === 5) && "text-right", i === 7 && "hidden min-[1400px]:block")}>
+          {HEADERS.map(([h, help], i) => (
+            <span key={i} role="columnheader" className="label-caps flex items-center gap-1">
               {h}
+              {help && <Help label={`About ${h}`}>{help}</Help>}
             </span>
           ))}
         </div>

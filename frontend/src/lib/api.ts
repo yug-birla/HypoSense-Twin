@@ -27,6 +27,7 @@ export type Observation = Schemas["Observation"];
 export type ObservationResult = Schemas["ObservationResult"];
 export type LiveSessionInfo = Schemas["LiveSessionInfo"];
 export type AskAnswer = Schemas["AskAnswer"];
+export type DemoEvent = Schemas["DemoEvent"];
 export type { ConfirmatoryDoc } from "@/components/evidence/Confirmatory";
 import type { ConfirmatoryDoc } from "@/components/evidence/Confirmatory";
 
@@ -86,6 +87,7 @@ export const api = {
   speed: (speed: number) => request<ReplayStatus>("POST", "/api/replay/speed", { speed }),
   step: (n: number) => request<ReplayStatus>("POST", "/api/replay/step", { n }),
   advance: (seconds: number) => request<ReplayStatus>("POST", "/api/replay/advance", { seconds }),
+  advanceUntilNotification: () => request<DemoEvent>("POST", "/api/replay/advance-until-notification"),
   seek: (offset_s: number) => request<ReplayStatus>("POST", "/api/replay/seek", { offset_s }),
   ask: (key: string, intent: string) =>
     request<AskAnswer>("GET", `/api/patients/${encodeURIComponent(key)}/ask?intent=${encodeURIComponent(intent)}`),

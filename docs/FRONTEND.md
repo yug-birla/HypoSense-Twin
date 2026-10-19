@@ -107,6 +107,17 @@ never colour alone (text + icon + colour).
   `tests/e2e/test_ui_e2e.py::test_new_patient_upload_questions_twin_and_append`.
 - **Screenshots:** `docs/screenshots/intake/` (SYNTHETIC only, safe to commit).
 
+### Judge-readiness redesign (DEC-2026-10-19-Q; docs/UX_REVIEW.md)
+- **Routes:** `/` Overview, `/demo/` Guided demo, `/ward/` Ward board, `/patient/` Patient twin,
+  `/intake/` Add patient, `/evidence/` Evidence.
+- **`lib/states.ts`:** `STATE_MEANING` (observed / predicted / unavailable), `BADGE_HELP` and
+  `tagHelp`. `StatePill explain` shows the meaning on hover or focus; `Help` and `Details` are
+  the progressive-disclosure primitives.
+- **`lib/demo.tsx` + `components/demo/DemoDock.tsx`:** an 8-step guided tour driving the real
+  replay API. Its state lives in sessionStorage (a per-viewer convenience).
+- **`components/evidence/PlainEvidence.tsx`:** the plain-language evidence layer and metric
+  glossary.
+
 ## 5. Design research (principles extracted; nothing copied)
 
 | Reference | Pattern | Adopt? | HypoSense mapping |

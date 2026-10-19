@@ -1,24 +1,28 @@
 "use client";
 import * as RT from "@radix-ui/react-tooltip";
 import clsx from "clsx";
-import { AlertTriangle, Info, RefreshCw, TriangleAlert } from "lucide-react";
+import { AlertTriangle, CircleHelp, Info, RefreshCw, TriangleAlert } from "lucide-react";
 import type { ButtonHTMLAttributes, ReactNode } from "react";
-import { BADGE_TEXT, stateStyle, tagText } from "@/lib/states";
+import { BADGE_HELP, BADGE_TEXT, stateMeaning, stateStyle, tagHelp, tagText } from "@/lib/states";
 
 /* PRIMARY tier: the policy state. Text + icon + colour; never colour alone. */
 export function StatePill({
   state,
   size = "md",
   muted = false,
+  explain = false,
 }: {
   state: string;
   size?: "sm" | "md" | "lg";
   muted?: boolean; // e.g. a zero count: neutral styling, still readable (no opacity tricks)
+  explain?: boolean; // hover/focus shows the plain-language meaning of the state
 }) {
   const s = stateStyle(state);
   const Icon = s.icon;
-  return (
+  const pill = (
     <span
+      tabIndex={explain ? 0 : undefined}
+      aria-description={explain ? stateMeaning(state).text : undefined}
       data-state={state}
       className={clsx(
         "inline-flex items-center gap-1.5 whitespace-nowrap rounded-sm border font-semibold tracking-wide",
@@ -32,12 +36,34 @@ export function StatePill({
       {s.label}
     </span>
   );
+  return explain ? <Tip content={stateMeaning(state).text}>{pill}</Tip> : pill;
+}
+
+/* Small "?" help affordance with a plain-language explanation (hover or keyboard focus). */
+export function Help({ children, label = "What does this mean?" }: { children: ReactNode; label?: string }) {
+  return (
+    <Tip content={children}>
+      <button type="button" aria-label={label} className="inline-flex size-4 items-center justify-center rounded-full align-middle text-ink-4 hover:text-accent focus-visible:text-accent">
+        <CircleHelp aria-hidden className="size-3.5" />
+      </button>
+    </Tip>
+  );
+}
+
+/* Expandable technical detail (progressive disclosure). */
+export function Details({ summary, children }: { summary: ReactNode; children: ReactNode }) {
+  return (
+    <details className="group rounded-md border border-line bg-[#fafbfc] px-3 py-2 text-small">
+      <summary className="cursor-pointer select-none font-medium text-ink-2 marker:text-ink-4">{summary}</summary>
+      <div className="mt-2 text-ink-2">{children}</div>
+    </details>
+  );
 }
 
 /* SECONDARY tier: critical data-quality / processing issues. */
 export function QualityBadge({ code }: { code: string }) {
   return (
-    <span className="inline-flex h-5 items-center gap-1 whitespace-nowrap rounded-sm border border-fault-line bg-fault-tint px-1.5 text-[11px] font-medium text-fault">
+    <span title={BADGE_HELP[code]} className="inline-flex h-5 items-center gap-1 whitespace-nowrap rounded-sm border border-fault-line bg-fault-tint px-1.5 text-[11px] font-medium text-fault">
       <TriangleAlert aria-hidden className="size-3" strokeWidth={2.25} />
       {BADGE_TEXT[code] ?? code}
     </span>
@@ -48,7 +74,7 @@ export function QualityBadge({ code }: { code: string }) {
    design. LOW_CONFIDENCE was removed (P-B12, DEC-2026-10-19-M). */
 export function InfoTag({ tag }: { tag: string }) {
   return (
-    <span title={tagText(tag)} className="inline-block h-5 max-w-full truncate whitespace-nowrap rounded-xs bg-sunken px-1.5 text-[11px] leading-5 text-ink-3">
+    <span title={tagHelp(tag)} className="inline-block h-5 max-w-full truncate whitespace-nowrap rounded-xs bg-sunken px-1.5 text-[11px] leading-5 text-ink-3">
       {tagText(tag)}
     </span>
   );

@@ -36,11 +36,21 @@ def main() -> None:
     if not beds:
         raise SystemExit("select a replay first")
     key = beds[0]["recording_key"]
-    pages = {"ward": "/", "patient": f"/patient/?key={key}", "evidence": "/evidence/"}
+    pages = {
+        "overview": "/",
+        "demo": "/demo/",
+        "ward": "/ward/",
+        "patient": f"/patient/?key={key}",
+        "evidence": "/evidence/",
+        "intake": "/intake/",
+    }
     ready = {
+        "overview": "text=How the twin works",
+        "demo": "text=Start the guided demo",
         "ward": "[role=table]",
-        "patient": "section[aria-label='Current state']",
-        "evidence": "text=Model ladder",
+        "patient": "section[aria-label='What is happening now']",
+        "evidence": "text=Understand the evidence",
+        "intake": "text=Upload a file",
     }
     results: dict[str, Any] = {}
     with sync_playwright() as p:

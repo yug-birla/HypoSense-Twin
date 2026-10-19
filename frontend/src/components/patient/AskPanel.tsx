@@ -6,12 +6,15 @@ import { api, ApiError, type AskAnswer } from "@/lib/api";
 import { Panel } from "@/components/ui/primitives";
 
 const INTENTS: [string, string][] = [
-  ["why_state", "Why this state?"],
-  ["missing", "What is missing?"],
+  ["why_state", "Why this status?"],
+  ["no_forecast", "Why (no) forecast?"],
+  ["current", "Are readings current?"],
   ["changed", "What changed?"],
-  ["medications", "Medication entries"],
-  ["quality", "Data-quality notes"],
-  ["evidence", "Supporting evidence"],
+  ["after_alert", "After the last alert?"],
+  ["medications", "Which medicines are recorded?"],
+  ["quality", "What do warnings mean?"],
+  ["missing", "What is missing?"],
+  ["evidence", "What supports this?"],
 ];
 
 export function AskPanel({ k }: { k: string }) {
@@ -30,7 +33,7 @@ export function AskPanel({ k }: { k: string }) {
     }
   };
   return (
-    <Panel title="Ask about this patient">
+    <Panel title="Ask about this patient" aside={<span className="text-[11px] text-ink-4">answers from recorded data only</span>}>
       <div className="flex flex-wrap gap-1.5">
         {INTENTS.map(([id, label]) => (
           <button
@@ -60,7 +63,10 @@ export function AskPanel({ k }: { k: string }) {
           </ul>
         </div>
       )}
-      <p className="mt-2 text-[11px] text-ink-4">Answers come only from the twin’s recorded state; free-text questions are not supported.</p>
+      <p className="mt-2 text-[11px] text-ink-4">
+        Answers are assembled from what the twin has recorded — no chatbot, no free text, no medical advice. If something is not
+        known, the answer says so.
+      </p>
     </Panel>
   );
 }

@@ -2,18 +2,22 @@
 import * as RT from "@radix-ui/react-tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import clsx from "clsx";
-import { Activity, FlaskConical, LayoutList, UserPlus, UserRound } from "lucide-react";
+import { Activity, FlaskConical, House, LayoutList, PlayCircle, UserPlus, UserRound } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 import { Suspense, useState, type ReactNode } from "react";
 import { StreamProvider, useStream } from "@/lib/stream";
+import { DemoProvider, useDemo } from "@/lib/demo";
+import { DemoDock } from "@/components/demo/DemoDock";
 import { useConnectionLost, useHealth, useMeta } from "@/lib/queries";
 
 const NAV = [
-  { href: "/", label: "Ward board", icon: LayoutList },
-  { href: "/patient/", label: "Patient review", icon: UserRound },
-  { href: "/evidence/", label: "Evidence", icon: FlaskConical },
+  { href: "/", label: "Overview", icon: House },
+  { href: "/demo/", label: "Guided demo", icon: PlayCircle },
+  { href: "/ward/", label: "Ward board", icon: LayoutList },
+  { href: "/patient/", label: "Patient twin", icon: UserRound },
   { href: "/intake/", label: "Add patient", icon: UserPlus },
+  { href: "/evidence/", label: "Evidence", icon: FlaskConical },
 ];
 
 function Nav() {
@@ -81,7 +85,7 @@ function ResearchStatus() {
           {meta.data?.model_status ?? "DEVELOPMENT"} · Research prototype
         </p>
         <p className="mt-1 text-[11.5px] leading-4 text-watch-ink">
-          Not a medical device. Replay of tuning-partition records and separate new-data sessions; not clinically validated.
+          Not a medical device. Forecasts are not clinically validated and never suggest doses or treatment.
         </p>
       </div>
       <p
@@ -97,6 +101,7 @@ function ResearchStatus() {
 }
 
 function Shell({ children }: { children: ReactNode }) {
+  const demo = useDemo();
   return (
     <div className="flex min-h-screen">
       <aside className="w-16 shrink-0 border-r border-line bg-surface xl:w-[212px]">
@@ -123,7 +128,7 @@ function Shell({ children }: { children: ReactNode }) {
         </div>
         </div>
       </aside>
-      <main id="main" className="min-w-0 flex-1">
+      <main id="main" className={clsx("min-w-0 flex-1", demo.active && "pb-[340px]")}>
         <LostBanner />
         {children}
       </main>
@@ -145,7 +150,12 @@ export function AppShell({ children }: { children: ReactNode }) {
           <a href="#main" className="sr-only focus:not-sr-only focus:fixed focus:left-2 focus:top-2 focus:z-50 focus:rounded-md focus:bg-surface focus:px-3 focus:py-2">
             Skip to content
           </a>
-          <Shell>{children}</Shell>
+          <Suspense>
+            <DemoProvider>
+              <Shell>{children}</Shell>
+              <DemoDock />
+            </DemoProvider>
+          </Suspense>
         </StreamProvider>
       </RT.Provider>
     </QueryClientProvider>

@@ -103,6 +103,24 @@ class Question:
     answer: str | None = None
     error: str | None = None  # the last answer was not accepted (why)
 
+    @property
+    def impact(self) -> str:
+        """What happens if the user cannot answer (shown next to every question)."""
+        if self.id.startswith("column:"):
+            return "If unsure, choose “Ignore this column”: it is then not used."
+        if self.id.startswith("unit:"):
+            return "Required: without the unit these readings cannot be used."
+        if self.id in ("clock", "patient_utc_offset"):
+            return "Required: without it the times of day would be wrong."
+        if self.id == "pump_insulin":
+            return "If it is another insulin, the pump columns are ignored."
+        if self.id.startswith("med:"):
+            return (
+                "Optional: if kept as recorded, whatever cannot be read is treated as unknown — "
+                "never guessed."
+            )
+        return ""
+
 
 @dataclass(frozen=True)
 class Finding:
@@ -321,7 +339,7 @@ class Draft:
                         qid,
                         f"column[{h}]",
                         f"What does the column “{h}” contain?",
-                        "The column header is not part of the supported recording format.",
+                        "We don't recognise this column name, and we won't guess what it holds.",
                         "choice",
                         tuple(opts),
                         True,
@@ -352,7 +370,11 @@ class Draft:
         for req, lbl in (("ts_local", "date/time"), ("cgm", "CGM glucose")):
             if req not in mapped:
                 findings.append(
-                    Finding("blocking", "REQUIRED_COLUMN_MISSING", f"No {lbl} column is mapped.")
+                    Finding(
+                        "blocking",
+                        "REQUIRED_COLUMN_MISSING",
+                        f"No {lbl} column identified yet: answer the column questions.",
+                    )
                 )
 
         # ---- glucose units (never inferred from magnitudes)
@@ -365,8 +387,9 @@ class Draft:
                     Question(
                         qid,
                         f"{g}.unit",
-                        f"Which unit are the {CANONICAL[g][1].lower()} values in?",
-                        "The column header does not state the unit.",
+                        f"Which unit are the {CANONICAL[g][1]} values in?",
+                        "We need the unit to read the values correctly; it cannot safely be "
+                        "assumed from the size of the numbers.",
                         "choice",
                         (("mg/dL", "mg/dL"), ("mmol/L", "mmol/L")),
                         True,
@@ -391,7 +414,7 @@ class Draft:
                     qid,
                     "csii.insulin",
                     "Which insulin is delivered by the insulin pump?",
-                    "Pump columns are modelled as regular human insulin only.",
+                    "Pump data can only be modelled for regular human insulin.",
                     "choice",
                     opts,
                     True,
@@ -458,8 +481,8 @@ class Draft:
                         qid,
                         "ts_local.clock",
                         "Which clock were these date/time values recorded in?",
-                        "The timestamps carry no time zone. The model uses the patient's local "
-                        "time of day.",
+                        "Forecasts use the patient's local time of day, and the file does not "
+                        "say which clock was used.",
                         "choice",
                         (("local", "The patient's local clock time"), ("utc", "UTC")),
                         True,
@@ -477,7 +500,7 @@ class Draft:
                         qid,
                         "patient.utc_offset",
                         "What was the patient's local UTC offset during this recording?",
-                        "UTC timestamps must be converted to the patient's local clock.",
+                        "UTC times must be converted to the patient's local clock.",
                         "choice",
                         tuple((o, f"UTC{o}") for o in UTC_OFFSETS),
                         True,
@@ -643,7 +666,7 @@ class Draft:
                     f"{en.source_column}[{en.raw_text}]",
                     f"“{en.raw_text}” ({CANONICAL[en.source_column][1].lower()}): which drug "
                     "and dose was given?",
-                    f"The entry could not be fully interpreted ({why}).",
+                    f"We could not fully read this entry ({why.lower().replace('_', ' ')}).",
                     "text",
                     (("keep", "Keep as recorded (treated as unknown where not interpretable)"),),
                     False,

@@ -50,7 +50,7 @@ function Start({ onDraft }: { onDraft: (d: IntakeDraft) => void }) {
   };
   return (
     <div className="flex flex-col gap-4">
-      <Panel title="1 · Pseudonymous label (optional)">
+      <Panel title="Label (optional)">
         <label className="flex max-w-md flex-col gap-1 text-small text-ink-2">
           Display label for this patient
           <input
@@ -68,7 +68,7 @@ function Start({ onDraft }: { onDraft: (d: IntakeDraft) => void }) {
         </p>
       </Panel>
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-        <Panel title="2a · Upload a recording">
+        <Panel title="Upload a file">
           <p className="text-small text-ink-2">
             CSV (UTF-8) or XLSX with one worksheet and a header row: date/time, CGM glucose, and optionally capillary
             glucose, meals and medication entries. Up to 5 MB.
@@ -89,7 +89,7 @@ function Start({ onDraft }: { onDraft: (d: IntakeDraft) => void }) {
             <FileUp aria-hidden className="size-4" /> Choose file…
           </Button>
         </Panel>
-        <Panel title="2b · New patient without a file">
+        <Panel title="Or start without a file">
           <p className="text-small text-ink-2">
             Create an empty twin and add CGM readings, capillary glucose, meals and medication one at a time. A forecast
             appears only once enough recent CGM history exists.
@@ -150,7 +150,15 @@ function QuestionRow({ q, onAnswer, busy }: { q: IntakeQuestion; onAnswer: (v: s
               {q.required ? "required" : "optional"}
             </span>
           </label>
-          <p className="text-[11.5px] text-ink-3">{q.reason}</p>
+          <p className="text-[11.5px] text-ink-3">
+            <span className="font-medium text-ink-2">Why we ask:</span> {q.reason}
+            {q.impact && (
+              <>
+                {" "}
+                <span className="font-medium text-ink-2">If you can’t answer:</span> {q.impact}
+              </>
+            )}
+          </p>
         </div>
       </div>
       <div className="ml-6 flex flex-wrap items-center gap-2">
@@ -246,7 +254,7 @@ function ContextForm({ d, onSave, busy }: { d: IntakeDraft; onSave: (c: Record<s
 function Preview({ d }: { d: IntakeDraft }) {
   if (!d.preview_headers.length) return null;
   return (
-    <Panel title="File preview and column mapping" aside={<span className="text-[11px] text-ink-4">{d.file_name} · first rows</span>} bodyClass="p-0">
+    <Panel title="Your file, as we read it" aside={<span className="text-[11px] text-ink-4">{d.file_name} · first rows</span>} bodyClass="p-0">
       <div className="overflow-x-auto">
         <table className="w-full text-small">
           <thead>
@@ -349,9 +357,9 @@ function Review({ d, setD, onReset }: { d: IntakeDraft; setD: (d: IntakeDraft) =
       </div>
       {error && <ErrorBox title="Not accepted" detail={error} />}
       <div className="grid grid-cols-1 gap-4 xl:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)]">
-        <Panel title={`Questions${d.questions.length ? ` (${d.questions.filter((q) => q.answer).length}/${d.questions.length} answered)` : ""}`}>
+        <Panel title={`A few questions${d.questions.length ? ` (${d.questions.filter((q) => q.answer).length} of ${d.questions.length} answered)` : ""}`}>
           {!d.questions.length ? (
-            <p className="text-small text-ink-3">Nothing needs clarification.</p>
+            <p className="text-small text-ink-3">Nothing needs clarifying — everything in the file was recognised.</p>
           ) : (
             <ul>
               {[...required, ...optional].map((q) => (
@@ -360,12 +368,12 @@ function Review({ d, setD, onReset }: { d: IntakeDraft; setD: (d: IntakeDraft) =
             </ul>
           )}
           <p className="mt-2 text-[11.5px] text-ink-4">
-            Questions are generated from validation findings. Nothing is guessed: units, time zones and medication
-            details come only from the file or from your answers. Optional items left unanswered stay as recorded,
-            with unknown values treated as unknown.
+            We only ask about things we found in your data. Nothing is guessed: units, clocks and medicine details come from
+            the file or from your answers. Optional items left unanswered stay as recorded, and anything unknown is treated as
+            unknown.
           </p>
         </Panel>
-        <Panel title="Validation">
+        <Panel title="What we found">
           <Findings items={d.findings} />
         </Panel>
       </div>
@@ -376,7 +384,36 @@ function Review({ d, setD, onReset }: { d: IntakeDraft; setD: (d: IntakeDraft) =
   );
 }
 
+const STEPS = ["Add data", "Review what we found", "Answer a few questions", "Create the twin", "Explore the patient"];
+
+function Stepper({ current }: { current: number }) {
+  return (
+    <ol aria-label="Progress" className="mb-4 flex flex-wrap items-center gap-x-2 gap-y-1">
+      {STEPS.map((t, i) => (
+        <li key={t} className="flex items-center gap-2" aria-current={i === current ? "step" : undefined}>
+          <span
+            className={clsx(
+              "flex size-6 items-center justify-center rounded-full text-[12px] font-semibold",
+              i < current ? "bg-accent text-white" : i === current ? "bg-ink text-white" : "bg-sunken text-ink-3",
+            )}
+          >
+            {i < current ? "✓" : i + 1}
+          </span>
+          <span className={clsx("text-small", i === current ? "font-semibold text-ink" : "text-ink-3")}>{t}</span>
+          {i < STEPS.length - 1 && <span aria-hidden className="mx-1 h-px w-6 bg-line-strong" />}
+        </li>
+      ))}
+    </ol>
+  );
+}
+
 export function IntakeFlow() {
   const [draft, setDraft] = useState<IntakeDraft | null>(null);
-  return draft ? <Review d={draft} setD={setDraft} onReset={() => setDraft(null)} /> : <Start onDraft={setDraft} />;
+  const step = !draft ? 0 : draft.status === "READY" ? 3 : draft.questions.some((q) => q.required && !q.answer) ? 2 : 1;
+  return (
+    <>
+      <Stepper current={step} />
+      {draft ? <Review d={draft} setD={setDraft} onReset={() => setDraft(null)} /> : <Start onDraft={setDraft} />}
+    </>
+  );
 }

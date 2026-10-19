@@ -229,6 +229,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/replay/advance-until-notification": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Advance Until Notification */
+        post: operations["advance_until_notification_api_replay_advance_until_notification_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/replay/cases": {
         parameters: {
             query?: never;
@@ -635,6 +652,21 @@ export interface components {
             /** Ts */
             ts: number;
         };
+        /** DemoEvent */
+        DemoEvent: {
+            /** Finished */
+            finished: boolean;
+            /** Found */
+            found: boolean;
+            /** Offset S */
+            offset_s: number;
+            /** P Text */
+            p_text: string | null;
+            /** Recording Key */
+            recording_key: string | null;
+            /** Ts */
+            ts: number | null;
+        };
         /** Dose */
         Dose: {
             /** Canonical */
@@ -877,6 +909,11 @@ export interface components {
             field: string;
             /** Id */
             id: string;
+            /**
+             * Impact
+             * @default
+             */
+            impact: string;
             /** Kind */
             kind: string;
             /** Options */
@@ -1735,6 +1772,26 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    advance_until_notification_api_replay_advance_until_notification_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DemoEvent"];
                 };
             };
         };

@@ -8,6 +8,7 @@ artefact or the browser is unavailable. T only; no E data.
 from __future__ import annotations
 
 import json
+import re
 import socket
 import threading
 import time
@@ -87,8 +88,8 @@ def test_replay_dashboard_acknowledge_audit(server: tuple[str, Any]) -> None:
         page = br.new_page(viewport={"width": 1440, "height": 900})
         errors: list[str] = []
         page.on("pageerror", lambda e: errors.append(str(e)))
-        page.goto(base + "/")
-        page.get_by_role("button", name="Start replay").click()  # default T selection
+        page.goto(base + "/ward/")
+        page.get_by_role("button", name=re.compile("^Start replay")).click()  # default T selection
         page.wait_for_selector("[role=table]", timeout=30_000)
         rows = page.locator("[role=rowgroup] [role=row]")
         assert rows.count() == 8
@@ -108,7 +109,7 @@ def test_replay_dashboard_acknowledge_audit(server: tuple[str, Any]) -> None:
         page.wait_for_timeout(1500)
         assert page.get_by_text("NEED ATTENTION", exact=False).count() >= 1
         page.goto(f"{base}/patient/?key={target}")
-        page.wait_for_selector("section[aria-label='Current state']", timeout=30_000)
+        page.wait_for_selector("section[aria-label='What is happening now']", timeout=30_000)
         page.get_by_role("button", name="Acknowledge…").first.click()
         record = page.get_by_role("button", name="Record acknowledgement")
         assert record.is_disabled()
@@ -168,5 +169,54 @@ def test_new_patient_upload_questions_twin_and_append(
         expect(page.get_by_text("Added cgm")).to_be_visible()
         assert len(svc.live[key].runner.decisions) == n0 + 1
         assert svc.live[key].runner.stream.identity.patient_key.startswith("intake:")
+        assert not errors
+        br.close()
+
+
+def test_overview_and_guided_demo_drive_the_real_replay(server: tuple[str, Any]) -> None:
+    """Judge path: Overview → Guided demo (8 steps) on the REAL replay; the alert shown is the
+    first notification in replay order and its outcome comes from the backend ledger."""
+    from playwright.sync_api import expect, sync_playwright
+
+    base, svc = server
+    with sync_playwright() as p:
+        try:
+            br = p.chromium.launch(channel="msedge")
+        except Exception:
+            pytest.skip("Microsoft Edge not available to Playwright")
+        page = br.new_page(viewport={"width": 1440, "height": 900})
+        errors: list[str] = []
+        page.on("pageerror", lambda e: errors.append(str(e)))
+        page.goto(base + "/")
+        expect(page.get_by_role("heading", name="HypoSense Twin")).to_be_visible()
+        page.get_by_role("link", name=re.compile("Guided demo")).first.click()
+        page.get_by_role("button", name="Start the guided demo").click()
+        dock = page.get_by_role("complementary", name="Guided demo")
+        for i in range(8):
+            expect(dock.get_by_text(f"step {i + 1} of 8")).to_be_visible()
+            for label in (
+                "Start the replay",
+                "Advance 2 hours",
+                "Fast-forward to the first alert",
+                "Advance 75 minutes",
+            ):
+                btn = dock.get_by_role("button", name=label)
+                if btn.count() and btn.is_enabled():
+                    btn.click()
+                    expect(dock.get_by_role("status")).to_be_visible(timeout=120_000)
+            if i == 3:
+                msg = dock.get_by_role("status").inner_text()
+                s = svc.session
+                first = sorted(
+                    (x for r in s.runners for x in r.decisions if x.decision.notify),
+                    key=lambda x: x.decision.ts,
+                )
+                if first:
+                    assert first[0].recording_key.split("_")[0] in msg
+                    page.wait_for_url("**/patient/?key=*")
+            if i < 7:
+                dock.get_by_role("button", name="Next").click()
+        expect(page.get_by_text("Understand the evidence")).to_be_visible()
+        dock.get_by_role("button", name="Finish").click()
         assert not errors
         br.close()

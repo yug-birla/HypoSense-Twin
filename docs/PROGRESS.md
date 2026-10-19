@@ -790,3 +790,30 @@ merge → S9 once → S10 (NEXT_STEPS).
 
 ### Next Task
 Human gates: pharmacist review (or explicit owner waiver) and P-C11 decision (see the matrix).
+
+## 2026-10-19 — Judge-readiness UX redesign (DEC-2026-10-19-Q)
+
+### Work Completed
+- UX audit from real screenshots.
+- Overview page; guided demo on the real replay.
+- Ward, Patient, Add patient, Ask and Evidence made understandable, with technical detail on
+  demand.
+- docs/UX_REVIEW.md, including the expert-role heuristic review and the 5-minute demo script.
+
+### Results
+- axe: 0 violations on 6 pages.
+- Tests: Vitest 42, Python 572, E2E 3.
+- Edge walkthrough: 0 console errors.
+- In the default replay, the first alert (2012, 14:48, 15 %) was not followed by a CGM low. The
+  demo shows this false alert plainly.
+
+### Problems Found and Fixed
+- Demo step 7 referred to "the alert" while a later alert existed; it now names the alert time
+  and reads its real outcome.
+- The demo dock covered the history column; the page now gains bottom space and the dock can be
+  minimised.
+- Leftover jargon removed: "mapped", "τ", "Grouped TreeSHAP" (now behind a disclosure),
+  "ledger", "Timing unknown".
+
+### Next Task
+Human gates: pharmacist review, and the P-C11 decision (docs/protocol/P-C11_APPROVAL_MATRIX.md).

@@ -23,11 +23,11 @@ const draft = (status: string, answered: boolean): IntakeDraft => ({
   questions: [
     {
       id: "unit:cgm", field: "cgm.unit", prompt: "Which unit are the cgm glucose values in?", reason: "The column header does not state the unit.",
-      kind: "choice", options: [["mg/dL", "mg/dL"], ["mmol/L", "mmol/L"]], required: true, suggested: null, answer: answered ? "mg/dL" : null, error: null,
+      kind: "choice", options: [["mg/dL", "mg/dL"], ["mmol/L", "mmol/L"]], required: true, suggested: null, answer: answered ? "mg/dL" : null, error: null, impact: "Required: without the unit these readings cannot be used.",
     },
     {
       id: "med:insulin_sc:x", field: "insulin_sc[insulin 10u]", prompt: "“insulin 10u”: which drug and dose was given?", reason: "UNPARSEABLE",
-      kind: "text", options: [["keep", "Keep as recorded"]], required: false, suggested: null, answer: null, error: "still not interpretable",
+      kind: "text", options: [["keep", "Keep as recorded"]], required: false, suggested: null, answer: null, error: "still not interpretable", impact: "Optional.",
     },
   ],
   mapping: [], preview_headers: [], preview: [], summary: { cgm_readings: 288 }, context: [{ name: "age_y", label: "Age (years)", value: "" }],

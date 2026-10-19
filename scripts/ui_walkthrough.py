@@ -9,6 +9,7 @@ artifacts/screenshots/walkthrough/.
 from __future__ import annotations
 
 import json
+import re
 import urllib.request
 from pathlib import Path
 
@@ -39,9 +40,9 @@ def main() -> None:
         page.wait_for_timeout(1200)
         if page.get_by_role("button", name="Change cases").count():  # a replay is loaded
             page.get_by_role("button", name="Change cases").click()
-        page.get_by_role("button", name="Start replay").wait_for()
+        page.get_by_role("button", name=re.compile("^Start replay")).wait_for()
         page.screenshot(path=str(OUT / "01_select_cases.png"))
-        page.get_by_role("button", name="Start replay").click()
+        page.get_by_role("button", name=re.compile("^Start replay")).click()
         page.wait_for_selector("[role=table]")
         page.get_by_role("button", name="Play replay").click()  # visible live updates
         page.wait_for_timeout(4000)
@@ -64,7 +65,7 @@ def main() -> None:
                         page.wait_for_timeout(1000)
                         page.screenshot(path=str(OUT / f"03_ward_first_{want}.png"))
                         page.goto(f"{BASE}/patient/?key={hit['recording_key']}")
-                        page.wait_for_selector("section[aria-label='Current state']")
+                        page.wait_for_selector("section[aria-label='What is happening now']")
                         page.wait_for_timeout(1500)
                         shot = OUT / f"04_patient_first_{want}.png"
                         page.screenshot(path=str(shot), full_page=True)
@@ -73,7 +74,7 @@ def main() -> None:
         key = got.get("ALERT")
         if key:
             page.goto(f"{BASE}/patient/?key={key}")
-            page.wait_for_selector("section[aria-label='Current state']")
+            page.wait_for_selector("section[aria-label='What is happening now']")
             btn = page.get_by_role("button", name="Acknowledge…")
             if btn.count():
                 btn.first.click()

@@ -49,7 +49,7 @@ def main() -> None:
         page.on("pageerror", lambda e: errors.append(str(e)))
         page.on("console", lambda m: errors.append(m.text) if m.type == "error" else None)
         # empty state (no replay selected yet, or the picker)
-        page.goto(a.base + "/")
+        page.goto(a.base + "/ward/")
         page.wait_for_timeout(1500)
         page.screenshot(path=str(OUT / f"{a.tag}01_ward_picker.png"), full_page=True)
         cases = get(a.base, "/api/replay/cases")
@@ -64,7 +64,7 @@ def main() -> None:
             left -= 6 * 3600
         for w in (1440, 1280, 1024):
             page.set_viewport_size({"width": w, "height": 900})
-            page.goto(a.base + "/")
+            page.goto(a.base + "/ward/")
             page.wait_for_selector("[role=table]", timeout=30000)
             page.wait_for_timeout(800)
             page.screenshot(path=str(OUT / f"{a.tag}02_ward_{w}.png"), full_page=True)
@@ -83,7 +83,7 @@ def main() -> None:
             for w in (1440, 1280, 1024):
                 page.set_viewport_size({"width": w, "height": 900})
                 page.goto(f"{a.base}/patient/?key={key}")
-                page.wait_for_selector("section[aria-label='Current state']", timeout=30000)
+                page.wait_for_selector("section[aria-label='What is happening now']", timeout=30000)
                 page.wait_for_timeout(1200)
                 page.screenshot(path=str(OUT / f"{a.tag}03_patient_{name}_{w}.png"), full_page=True)
         for w in (1440, 1024):

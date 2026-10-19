@@ -412,6 +412,7 @@ class IntakeQuestion(Strict):
     suggested: str | None = None
     answer: str | None = None
     error: str | None = None
+    impact: str = ""
 
 
 class IntakeFinding(Strict):
@@ -496,3 +497,12 @@ class AskAnswer(Strict):
     intent: str
     question: str
     lines: list[str]
+
+
+class DemoEvent(Strict):
+    found: bool
+    recording_key: str | None
+    ts: int | None
+    p_text: str | None
+    offset_s: int
+    finished: bool

@@ -541,6 +541,66 @@
     "title": "DecisionView",
     "type": "object"
    },
+   "DemoEvent": {
+    "additionalProperties": false,
+    "properties": {
+     "finished": {
+      "title": "Finished",
+      "type": "boolean"
+     },
+     "found": {
+      "title": "Found",
+      "type": "boolean"
+     },
+     "offset_s": {
+      "title": "Offset S",
+      "type": "integer"
+     },
+     "p_text": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "P Text"
+     },
+     "recording_key": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Recording Key"
+     },
+     "ts": {
+      "anyOf": [
+       {
+        "type": "integer"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Ts"
+     }
+    },
+    "required": [
+     "found",
+     "recording_key",
+     "ts",
+     "p_text",
+     "offset_s",
+     "finished"
+    ],
+    "title": "DemoEvent",
+    "type": "object"
+   },
    "Dose": {
     "additionalProperties": false,
     "properties": {
@@ -1302,6 +1362,11 @@
      },
      "id": {
       "title": "Id",
+      "type": "string"
+     },
+     "impact": {
+      "default": "",
+      "title": "Impact",
       "type": "string"
      },
      "kind": {
@@ -3257,6 +3322,24 @@
      }
     },
     "summary": "Advance"
+   }
+  },
+  "/api/replay/advance-until-notification": {
+   "post": {
+    "operationId": "advance_until_notification_api_replay_advance_until_notification_post",
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/DemoEvent"
+        }
+       }
+      },
+      "description": "Successful Response"
+     }
+    },
+    "summary": "Advance Until Notification"
    }
   },
   "/api/replay/cases": {

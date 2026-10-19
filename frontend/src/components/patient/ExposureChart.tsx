@@ -27,11 +27,11 @@ export function ExposureChart({ view, offsetS }: { view: PatientView; offsetS: n
     });
     const series: object[] = [];
     if (anyInsulin) {
-      series.push(line("act_insulin_total", "Insulin activity (IU/h)", "#2f6fd6", 0, false, true));
-      series.push(line("iob_insulin", "Insulin on board (IU)", "#93b4ea", 1, true));
+      series.push(line("act_insulin_total", "Estimated insulin activity (IU/h)", "#2f6fd6", 0, false, true));
+      series.push(line("iob_insulin", "Estimated insulin on board (IU)", "#93b4ea", 1, true));
     }
     if (anySu) {
-      series.push(line("act_su", "Sulfonylurea exposure", "#8b5cc7", anyInsulin ? 1 : 0));
+      series.push(line("act_su", "Estimated sulfonylurea activity (relative)", "#8b5cc7", anyInsulin ? 1 : 0));
     }
     series.push({
       name: "Recorded dose",

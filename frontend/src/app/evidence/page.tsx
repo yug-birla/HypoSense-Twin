@@ -7,6 +7,7 @@ import { useEvidence } from "@/lib/queries";
 import { PageHeader } from "@/components/shell/AppShell";
 import { Banner } from "@/components/evidence/Banner";
 import { ConfirmatoryPanel } from "@/components/evidence/Confirmatory";
+import { PlainEvidence } from "@/components/evidence/PlainEvidence";
 import { FrocChart, IntervalBar, MODEL_COLOR, MODEL_DESC, MODEL_ORDER, ReliabilityChart } from "@/components/evidence/EvidenceCharts";
 import { ErrorBox, KV, Panel, Skeleton, StatusTag } from "@/components/ui/primitives";
 
@@ -144,7 +145,7 @@ export default function EvidencePage() {
     <div>
       <PageHeader
         title="Evidence"
-        sub="Why trust this system — and where not to. Every number is read from versioned run artefacts."
+        sub="How HypoSense was tested, what the results suggest, and what is still unknown. Every number comes from versioned run records."
         aside={q.data && <PopSwitch pop={pop} setPop={setPop} />}
       />
       <div className="flex flex-col gap-4 p-6">
@@ -153,7 +154,10 @@ export default function EvidencePage() {
         {q.data && (
           <>
             <Banner ev={q.data} />
+            <PlainEvidence ev={q.data} confirmatory={q.data.confirmatory} />
             <ConfirmatoryPanel />
+            <h2 className="mt-2 text-[17px] font-semibold text-ink">Technical evidence</h2>
+            <p className="-mt-3 text-small text-ink-3">Every number, interval and provenance hash behind the summary above.</p>
             <div className="grid grid-cols-1 gap-4 xl:grid-cols-[minmax(0,1fr)_360px]">
               <Panel title="Prediction task">
                 <dl className="grid grid-cols-1 gap-x-8 md:grid-cols-2">

@@ -162,7 +162,7 @@ export function RemoveSession({ k }: { k: string }) {
               try {
                 await api.deleteSession(k);
                 await qc.invalidateQueries({ queryKey: ["ward"] });
-                router.push("/");
+                router.push("/ward/");
               } catch (e) {
                 setError(e instanceof ApiError ? e.message : "Unexpected error");
               }

@@ -1209,3 +1209,27 @@ Owner approval 2026-10-19. Canonical text: ANALYSIS_PLAN §5 and §6 (FINAL). Br
   be rebuilt on the final commit. The loader refactor must leave the candidate results hash
   unchanged (`c0cbe721…`).
 - **Class:** A/B · **Date:** 2026-10-19
+
+## DEC-2026-10-19-Q · Judge-readiness UX: progressive disclosure, guided demo on the real replay
+
+- **Context:** the UI was technically complete but hard to understand for judges and clinicians
+  (audit in docs/UX_REVIEW.md §1).
+- **Decision (Class A, presentation):**
+  - New routes: an Overview at `/` and the Ward board at `/ward/`.
+  - Plain state meanings, faithful to `policy/decide.py`.
+  - The patient page is organised as four questions, with observed and predicted values
+    visually separated and technical detail on demand.
+  - A guided demo drives the real replay through the normal API, plus one display-only endpoint
+    (`advance-until-notification`: the first notification in fixed replay order, nothing
+    searched or staged).
+  - Add patient gets a stepper with "why we ask / if you can't answer".
+  - Ask gets 9 fixed intents.
+  - Evidence gets a plain-language layer above the unchanged technical evidence.
+- **No scientific change:** endpoint, partitions, H1, labels, features, calibration, thresholds,
+  policy, bootstrap, kernels and E access are untouched. The freeze candidate is re-verified
+  after the change.
+- **Evidence (MEASURED):**
+  - axe 0 violations on 6 pages;
+  - Vitest 42; Python 572; E2E 3;
+  - demo walkthrough in Edge with 0 console errors.
+- **Class:** A · **Date:** 2026-10-19

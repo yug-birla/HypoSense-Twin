@@ -94,8 +94,56 @@ export const BADGE_TEXT: Record<string, string> = {
 };
 
 export function tagText(tag: string): string {
-  if (tag.startsWith("MED_TIMING_UNKNOWN:")) return `Timing unknown: ${tag.split(":")[1]}`;
+  if (tag.startsWith("MED_TIMING_UNKNOWN:")) return `${MED_CLASS[tag.split(":")[1] ?? ""] ?? tag.split(":")[1]} dose times not recorded`;
   if (tag === "EVENT_REJECTED") return "Recent input rejected";
+  return tag;
+}
+
+const MED_CLASS: Record<string, string> = { insulin: "Insulin", sulfonylurea: "Sulfonylurea", glinide: "Glinide" };
+
+/** Plain-language meaning of each BACKEND policy state (policy/decide.py, Table 14.1). These
+ *  explain the state; they never decide it and never advise treatment. */
+export const STATE_MEANING: Record<PolicyState, { kind: "observed" | "predicted" | "unavailable"; text: string }> = {
+  LOW_NOW: {
+    kind: "observed",
+    text: "Observed now: the latest CGM reading is below 70 mg/dL, or the patient is in (or less than 60 min after) a CGM-detected low episode.",
+  },
+  ALERT: {
+    kind: "predicted",
+    text: "Prediction: the estimated risk of a new CGM-detected low within 60 min has reached the alert threshold. Glucose is not necessarily low now.",
+  },
+  WATCH: {
+    kind: "predicted",
+    text: "Prediction: the estimated risk is elevated (at or above the watch threshold) but below the alert threshold.",
+  },
+  NO_ALERT: {
+    kind: "predicted",
+    text: "Prediction: the estimated risk is below the watch threshold. This is not a guarantee that no low will occur.",
+  },
+  INSUFFICIENT_DATA: {
+    kind: "unavailable",
+    text: "No forecast: there is not enough valid recent CGM data (no reading for > 20 min, too few readings in the last 2 h, sensor warm-up or a rapid change).",
+  },
+  SYSTEM_ERROR: {
+    kind: "unavailable",
+    text: "No forecast: the system could not process the latest data reliably. No earlier prediction is shown as current.",
+  },
+};
+
+export function stateMeaning(s: string) {
+  return STATE_MEANING[(s in STATE_MEANING ? s : "SYSTEM_ERROR") as PolicyState];
+}
+
+export const BADGE_HELP: Record<string, string> = {
+  SENSOR_FAULT_SUSPECTED: "Some recent CGM readings look physiologically implausible; interpret them with care and confirm with a capillary measurement per local protocol.",
+  RUNNER_HALTED: "Processing stopped after repeated input errors; no current state is shown.",
+  INPUT_REJECTED: "A recent non-glucose entry (meal or medication) could not be used; medication information may be incomplete.",
+};
+
+export function tagHelp(tag: string): string {
+  if (tag.startsWith("MED_TIMING_UNKNOWN:"))
+    return "This medicine is prescribed for the patient, but no timed administration is recorded, so its activity cannot be estimated.";
+  if (tag === "EVENT_REJECTED") return BADGE_HELP.INPUT_REJECTED!;
   return tag;
 }
 

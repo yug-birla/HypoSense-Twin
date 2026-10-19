@@ -196,8 +196,8 @@ export function GlucoseChart({
           symbol: "none",
           label: { fontSize: 10, color: "#555e6e", position: "insideEndTop" },
           data: [
-            ...(tauAlert !== null ? [{ yAxis: tauAlert, lineStyle: { color: "#c2410c", type: "dashed", width: 1 }, label: { formatter: "ALERT τ" } }] : []),
-            ...(tauWatch !== null ? [{ yAxis: tauWatch, lineStyle: { color: "#a16207", type: "dotted", width: 1 }, label: { formatter: "WATCH τ", position: "insideEndBottom" } }] : []),
+            ...(tauAlert !== null ? [{ yAxis: tauAlert, lineStyle: { color: "#c2410c", type: "dashed", width: 1 }, label: { formatter: "alert threshold" } }] : []),
+            ...(tauWatch !== null ? [{ yAxis: tauWatch, lineStyle: { color: "#a16207", type: "dotted", width: 1 }, label: { formatter: "watch threshold", position: "insideEndBottom" } }] : []),
           ],
         },
       });

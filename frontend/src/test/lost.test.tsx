@@ -3,7 +3,7 @@
 import * as RT from "@radix-ui/react-tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { render, screen } from "@testing-library/react";
-import WardPage from "@/app/page";
+import WardPage from "@/app/ward/page";
 import { bed } from "./fixtures";
 
 const state = { lost: false };

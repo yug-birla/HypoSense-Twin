@@ -183,6 +183,10 @@ def create_app(svc: Service, clock: bool = True) -> FastAPI:
         await g.mutate(svc.seek, req.offset_s)
         return await g.read(svc.status)
 
+    @app.post("/api/replay/advance-until-notification", response_model=S.DemoEvent)
+    async def advance_until_notification() -> S.DemoEvent:
+        return await g.mutate(svc.advance_until_notification)
+
     @app.post("/api/replay/reset", response_model=S.ReplayStatus)
     async def reset() -> S.ReplayStatus:
         await g.mutate(svc.reset)

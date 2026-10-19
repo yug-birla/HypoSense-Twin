@@ -33,11 +33,23 @@ export function CasePicker({ onDone }: { onDone?: () => void }) {
       title="Start a ward replay"
       aside={<span className="text-small text-ink-3 tnum">{chosen.length} / {MAX} selected</span>}
     >
-      <p className="mb-3 max-w-3xl text-small text-ink-3">
-        Recordings from the tuning partition (T). The evaluation partition is sealed and never offered. The default
-        selection is the first {DEFAULT_N} recordings in catalogue order; it is not chosen by model performance.
+      <p className="max-w-3xl text-body text-ink-2">
+        Replay recorded patients as if their CGM readings were arriving live. The board shows who needs attention at each
+        moment; open any patient to see their twin.
       </p>
-      <fieldset className="grid grid-cols-[repeat(auto-fill,minmax(168px,1fr))] gap-1.5">
+      <p className="mb-3 mt-1 max-w-3xl text-small text-ink-3">
+        Recordings come from the development data (tuning partition). The sealed evaluation data are never offered. The default
+        is the first {DEFAULT_N} recordings in catalogue order — not chosen for good results.
+      </p>
+      <div className="mb-3 flex items-center gap-3">
+        <Button variant="primary" disabled={chosen.length === 0 || start.isPending} onClick={() => start.mutate(chosen)}>
+          {start.isPending ? "Loading…" : `Start replay of ${chosen.length} recorded patients`}
+        </Button>
+        {start.isError && <span className="text-small text-low-ink">{start.error instanceof ApiError ? start.error.message : "Could not start."}</span>}
+      </div>
+      <details>
+        <summary className="cursor-pointer text-small font-medium text-ink-2">Choose different recordings</summary>
+      <fieldset className="mt-2 grid grid-cols-[repeat(auto-fill,minmax(168px,1fr))] gap-1.5">
         <legend className="sr-only">Recordings</legend>
         {list.map((c) => (
           <label
@@ -50,12 +62,7 @@ export function CasePicker({ onDone }: { onDone?: () => void }) {
           </label>
         ))}
       </fieldset>
-      <div className="mt-4 flex items-center gap-3">
-        <Button variant="primary" disabled={chosen.length === 0 || start.isPending} onClick={() => start.mutate(chosen)}>
-          {start.isPending ? "Loading…" : "Start replay"}
-        </Button>
-        {start.isError && <span className="text-small text-low-ink">{start.error instanceof ApiError ? start.error.message : "Could not start."}</span>}
-      </div>
+      </details>
     </Panel>
   );
 }

@@ -337,3 +337,28 @@ def test_evidence_view_from_real_artifacts(streams: list[RecordingStream], tmp_p
     assert any("C0" in x for x in ev["limitations"])
     meta = TestClient(create_app(svc, clock=False)).get("/api/meta").json()
     assert "pc10_mode" not in meta  # P-C10 is final; no runtime switch
+
+
+def test_advance_until_notification_stops_at_the_first_real_notification(
+    art: Path, streams: list[RecordingStream], tmp_path: Path
+) -> None:
+    """Guided demo: the replay is processed in its fixed order and stops at the FIRST notification
+    (none skipped, none staged); the same call on a fresh identical session gives the same event."""
+    out = []
+    for _ in range(2):
+        svc = Service(art, streams, log_root=tmp_path / str(len(out)))
+        c = TestClient(create_app(svc, clock=False))
+        keys = [x["recording_key"] for x in c.get("/api/replay/cases").json()[:4]]
+        c.post("/api/replay/select", json={"recording_keys": keys})
+        r = c.post("/api/replay/advance-until-notification").json()
+        s = svc.session
+        assert s is not None
+        notes = [x for run in s.runners for x in run.decisions if x.decision.notify]
+        if r["found"]:
+            assert len(notes) == 1 and notes[0].recording_key == r["recording_key"]
+            assert notes[0].decision.ts == r["ts"] and notes[0].decision.state.value == "ALERT"
+        else:
+            assert not notes and r["finished"]
+        out.append((r["found"], r["recording_key"], r["ts"], r["offset_s"]))
+        s.log.close() if s.log is not None else None
+    assert out[0] == out[1]  # deterministic
