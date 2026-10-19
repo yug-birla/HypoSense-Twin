@@ -100,10 +100,9 @@ def _rows(
     return out
 
 
-def task_tune_fold(
-    args: tuple[dict[str, Any], set[str], set[str], tuple[str, ...], int, int],
-) -> dict[str, Any]:
-    params, train_p, valid_p, feats, max_rounds, es = args
+def task_tune_fold(args: tuple[Any, ...]) -> dict[str, Any]:
+    params, train_p, valid_p, feats, max_rounds, es = args[:6]
+    cat: tuple[str, ...] = tuple(args[6]) if len(args) > 6 else ()  # R4 levels with categoricals
     assert not train_p & valid_p, "tuning fold overlap"  # nested isolation, fail fast
     t = _W["t"]
     a = time.perf_counter()
@@ -113,6 +112,7 @@ def task_tune_fold(
         t.loc[tr, "y"].to_numpy(np.int64),
         params,
         max_rounds,
+        cat,
         valid=(t.loc[va, list(feats)], t.loc[va, "y"].to_numpy(np.int64)),
         early_stopping_rounds=es,
     )
@@ -173,8 +173,14 @@ def task_outer(
 
 # ---------------------------------------------------------------- main side
 def tune_m1(
-    pool: ProcessPoolExecutor, dev: DevData, cfg: dict[str, Any], n_trials: int | None = None
+    pool: ProcessPoolExecutor,
+    dev: DevData,
+    cfg: dict[str, Any],
+    n_trials: int | None = None,
+    level: str = "M1",
 ) -> dict[str, Any]:
+    """The S6 tuning procedure. `level` != M1 is used only by R4 (per-model tuning, §5.7 item
+    27); M1 behaviour is unchanged."""
     import optuna
 
     optuna.logging.set_verbosity(optuna.logging.WARNING)
@@ -182,7 +188,8 @@ def tune_m1(
     seed = int(m["seed"])
     space = m["search_space"]
     folds = grouped_folds(sorted(dev.strata), dev.strata, int(cfg["cv"]["inner_folds"]), seed)
-    feats = level_names("M1")
+    spec = model_sets()[level]
+    feats, cat = tuple(spec["features"]), tuple(spec["categorical"])
     base = base_params(cfg)
     trials: list[dict[str, Any]] = []
 
@@ -204,6 +211,7 @@ def tune_m1(
                 feats,
                 int(m["max_rounds"]),
                 100,
+                cat,
             )
             for k in sorted(set(folds.values()))
         ]

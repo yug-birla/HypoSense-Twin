@@ -209,6 +209,13 @@ def cmd_dev_s7(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_dev_r4(args: argparse.Namespace) -> int:
+    from hyposense.evaluation.r4_tuning import run_r4
+
+    _print(run_r4(workers=args.workers))
+    return 0
+
+
 def cmd_dev_candidate(args: argparse.Namespace) -> int:
     from hyposense.evaluation.candidate import run_candidate
 
@@ -372,6 +379,9 @@ def build_parser() -> argparse.ArgumentParser:
     d7 = dv.add_parser("s7", help="S7 engineering evidence on T")
     d7.add_argument("--model", default=None)
     d7.set_defaults(func=cmd_dev_s7)
+    dr = dv.add_parser("r4", help="R4 per-model tuning on T (frozen before E; ANALYSIS_PLAN §5.7)")
+    dr.add_argument("--workers", type=int, default=4)
+    dr.set_defaults(func=cmd_dev_r4)
     dc = dv.add_parser(
         "candidate", help="freeze-candidate workflow (T only): gate, eval, artefact, replay"
     )

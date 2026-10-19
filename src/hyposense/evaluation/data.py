@@ -52,6 +52,13 @@ class EvalRecording:
     first_ts: int
     last_ts: int
     scores: dict[str, npt.NDArray[np.float64]] = field(default_factory=dict)
+    # S9 sensitivity variants only (ANALYSIS_PLAN §5.7 items 18-19); None = canonical behaviour.
+    # notif_onsets: onsets used to classify notifications when `onsets` holds a subset
+    # (excluded episodes leave the sensitivity denominator but still make a notification TRUE).
+    notif_onsets: npt.NDArray[np.int64] | None = None
+    # notif_exclude: (start, end) windows; notifications whose (t, t + H] overlaps one are removed
+    # from all notification classes (SA9-ii).
+    notif_exclude: tuple[tuple[int, int], ...] | None = None
 
     @property
     def queried(self) -> npt.NDArray[np.bool_]:

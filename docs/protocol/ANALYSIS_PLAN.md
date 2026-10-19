@@ -379,6 +379,114 @@ definitions: `artifacts/evaluation/metric_registry.json`, generated from `evalua
 The decisions above are recorded in DEC-2026-10-19-M. Item numbers 1–17 are the resolution
 checklist of the pre-freeze stage.
 
+### 5.7 Operational definitions of the confirmatory run (P-C11; written before freeze)
+
+Status: **PROPOSED, awaiting owner approval (P-C11).** These make the blueprint's S9 wording
+(§15, Tables 20.2–20.3, §23.1) executable. They add no analysis, change no primary definition,
+and were written before E was opened. Implementation: `src/hyposense/evaluation/confirm.py`.
+
+**Folds and fitting (Blueprint §15).**
+1. E patients are split into 5 grouped folds by `grouped_folds` (strata = treated × has-L1
+   episode, seed `cv.seed` = 2026), exactly as T was in S6.
+2. For each fold k and each learned model, training rows are the label-eligible rows of all
+   T patients plus the E patients not in k, using the frozen hyperparameters and 113 rounds,
+   with no P-B6 exclusion.
+3. Inner OOF:
+   - The training patients get 4 grouped inner folds (seed 2026).
+   - Inner models predict **all** readings of their held-out inner patients.
+   - The canonical calibrator is fitted on the inner OOF **eligible** rows.
+   - τA (FA ≤ 1.0/day) and τW (notification rate ≤ 3.0/day, then min(τW, τA)) are chosen by
+     §3.4–3.6 on the calibrated inner OOF predictions of all training patients.
+4. The fold-k model (trained on all training rows) predicts the held-out E patients. Its raw
+   scores pass through the fold calibrator.
+5. Pooled E OOF probabilities define the curves (§3), with no threshold carried between folds.
+6. Deployed operating point: each E patient is scored against its own fold's τA. FA/day and
+   sensitivity are computed exactly (score − τA_fold ≥ 0).
+
+**Population and primary.**
+7. The primary analysis is the §5.1 rule on E-treated patients; H1 is supported iff the
+   lower 95 % bound of Δ > 0. G5 holds iff no bootstrap resample is undefined for M2 or M3. If
+   G5 fails, H1 is reported as inconclusive (Table 21.1).
+
+**Secondary analyses (Table 20.3). Each uses the primary harness unless stated.**
+8. **S1:** hits require lead ≥ 30 min (warning window [onset − 60, onset − 30]). Δ is computed
+   with the bootstrap.
+9. **S2:**
+   - s* = M2's sens@1FA.
+   - FA_M(s*) is the FA/day where the model's first-crossing path first reaches sensitivity
+     ≥ s*, linearly interpolated between the bracketing grid points.
+   - Δ = FA_M3(s*) − FA_M2(s*), with s* recomputed in every bootstrap resample.
+10. **S3:** Δ window log-loss M3 − M2 (patient-weighted ratio estimator), with the bootstrap.
+11. **S4:** C0 = M1 − M0, C1 = M2 − M1, C2a = M3r − M2, C2b = M3 − M3r, on sens@1FA, area and
+    log-loss (log-loss not for M0).
+12. **S5:** episodes are L2 episodes (< 54 mg/dL, same run rules). Prediction times,
+    eligibility, policy and models are unchanged. Notifications are classified against L2
+    onsets.
+13. **S6:** all E patients (treated and untreated).
+14. **S7:** per-patient sensitivity and FA/day at τA (forest data) and patient-weighted
+    sensitivity, for M2 and M3.
+
+**Sensitivity analyses.**
+15. **SA1:** single-reading episode rule (`min_run` = 1). Only the episode set changes;
+    eligibility, policy and models are unchanged.
+16. **SA2:** readings, onsets and notifications with t < recording start + 24 h are removed;
+    monitored days start at start + 24 h.
+17. **SA3:** recordings with any CSII or i.v. insulin event are removed.
+18. **SA4, SA5 and SA9-i (episode exclusions):**
+    - Excluded episodes leave the sensitivity denominator (and the hits).
+    - Notifications are still classified against all onsets.
+    - SA4 excludes compression-artefact candidates (`labels.annotations`).
+    - SA5 excludes episodes contradicted by capillary glucose (a CBG during the episode, none
+      < 70).
+19. **SA9-ii:** notifications whose window (t, t + 60] overlaps a sensor-floor run are removed
+    from FA accounting and counted separately.
+20. **SA6:**
+    - Insulin `t_dur_min` and secretagogue `t_half_min` are multiplied by 0.75 and by 1.5;
+      lags, peaks and t_max are unchanged.
+    - Features are rebuilt for every patient, and M3 is refitted with the full fold procedure.
+    - M2 is unchanged, and Δ M3 − M2 is reported.
+21. **SA7:** the full fold procedure with fold seeds 2028–2032 (outer and inner), for M2 and
+    M3. Δ and its CI are reported per seed.
+22. **SA8:** M2 and M3 refitted without `hba1c_mmol_mol`, `c_peptide_fasting_nmol_l` and
+    `egfr` (and their `_missing` indicators). No lipid features exist.
+23. **P-B6 training-exclusion sensitivity:** M2 and M3 refitted with the P-B6 training mask.
+    The evaluation is unchanged.
+
+**Robustness analyses.**
+24. **R1:**
+    - In held-out folds only, every medication event time is shifted by U(−30, +30) min, and
+      separately by U(−60, +60) min (seed 2026 + recording index).
+    - Features are rebuilt for those recordings and scored by the fold models and calibrators;
+      labels are unchanged.
+25. **R2:**
+    - In held-out folds only, CGM readings are removed: (a) 10 % or 20 % at random; (b)
+      contiguous blocks of U(60, 120) min at random positions until ≥ 10 % or ≥ 20 % are
+      removed (seed 2026 + recording index).
+    - The policy and features are replayed on the reduced stream, and decisions exist only at
+      remaining readings.
+    - Onsets, eligibility and monitored days come from the full record.
+26. **R3:** M2 and M3 as L2-penalised logistic regression (C = 1.0, lbfgs, max_iter 2000),
+    using training-row median imputation, standardisation and one-hot categorical codes. The
+    same calibration and thresholds apply.
+27. **R4:** M2, M3r and M3 with their own hyperparameters.
+    - The parameters are tuned on T **before freeze**, with the S6 M1 procedure (Optuna TPE,
+      seed 2026, the same space and trial count).
+    - They are frozen in `experiments/runs/T-AGG-dev-r4-*`.
+
+**After the primary analysis.**
+28. **Model selection:** §6, applied mechanically to the frozen point estimates.
+29. **Final model:** the selected level is retrained on all patients with the S7 artefact
+    procedure (5-fold grouped OOF over all patients, seed 2026, canonical calibrator, τ from
+    all-patient OOF).
+30. **Demo cases (§23.1):**
+    - Use M3's pooled E-treated OOF at fold-frozen τA.
+    - Categories: TP (warned episode), FN (missed episode), FP (FALSE notification).
+    - Eligible if ≥ 24 h of record precede the event, and in [event − 3 h, event + 3 h] every
+      CGM step is ≤ 20 min with no reading ≤ 40 mg/dL. The event time is the onset (TP/FN) or
+      the notification time (FP).
+    - Each category is shuffled with seed 2026 and the first eligible case is taken.
+    - If a category is empty, that is recorded and no substitute is taken.
+
 ## 6. Interpretation matrix and model-selection rule
 
 Status: **FINAL (2026-10-19).** Adopted verbatim from the blueprint; nothing added after seeing
@@ -389,7 +497,8 @@ T results.
     only if its log-loss is not worse; ties go to the simpler model (M2).
   - M0 is deployed only if no learned model beats it.
 - **Literal reading of the rule's wording** (stated before any E result; it adds no tolerance and
-  no criterion; owner confirmation requested, DEC-2026-10-19-M addendum):
+  no criterion; **APPROVED by the owner 2026-10-19 as the final Class C interpretation**,
+  DEC-2026-10-19-N):
   - every quantity is computed on the primary population (E-treated) from the pooled
     out-of-fold calibrated probabilities, as point estimates;
   - "log-loss not worse" means log-loss ≤ that of the other model (§5.3 item 7 definition, no

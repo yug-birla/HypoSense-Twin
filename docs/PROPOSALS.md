@@ -301,6 +301,21 @@ Status values: **AWAITING APPROVAL** · **APPROVED** · **REJECTED** · **EXPERI
 8. **Recommendation.** Option (b): it never hides an observed low, and the rejection stays
    visible. Option (a) remains until a decision is made.
 
+### P-C11 · Operational definitions of the confirmatory run (S9) and demo selection
+**Status: AWAITING APPROVAL (required before freeze).** Raised 2026-10-19, before E was opened.
+1. **Current specification.** Blueprint §15, Tables 20.2–20.3 and §23.1 name the analyses but
+   leave operational details open, such as how S2 interpolates, how R2 aligns labels, which
+   SA6 parameters scale, R3 preprocessing, when R4 is tuned, and the demo eligibility windows.
+2. **Problem.** Without written definitions, the S9 code would make undocumented choices.
+3. **Evidence.** Each item is listed in ANALYSIS_PLAN §5.7.
+4. **Proposed modification.** Adopt §5.7 items 1–30 verbatim.
+5. **Scientific consequences.** The primary analysis is unaffected. Every secondary,
+   sensitivity and robustness analysis becomes reproducible.
+6. **Comparability.** The same definitions apply to every model.
+7. **Bias / leakage.** None: the definitions are written before E is opened, and R4 is tuned on
+   T only.
+8. **Recommendation.** Approve.
+
 ## Class B — experiments or a-priori decisions on development data (T) before freeze
 
 ### P-B12 · Operational definition of the LOW CONFIDENCE tag (S7 measurement)

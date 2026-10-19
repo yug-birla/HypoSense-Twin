@@ -1123,3 +1123,23 @@ Owner approval 2026-10-19. Canonical text: ANALYSIS_PLAN §5 and §6 (FINAL). Br
   - **F4:** handled as the literal reading above.
 - **Freeze attempt:** `hyposense freeze` → **ERROR — FREEZE ABORTED**. The only failing invariant
   is `pharmacist_review`; see PROGRESS.
+
+## DEC-2026-10-19-N · §6 selection-rule reading approved; P-C11 raised; S9 pre-built (pre-freeze)
+
+- **§6 literal reading APPROVED** by the owner as the final Class C interpretation:
+  - population E-treated;
+  - pooled out-of-fold calibrated probabilities;
+  - frozen point estimates;
+  - "log-loss not worse" = ≤;
+  - no tolerance.
+- **Pharmacist review:** still not received, and no waiver is approved. Freeze stays blocked;
+  nothing is fabricated.
+- **P-C11 raised** (AWAITING APPROVAL, required before freeze). ANALYSIS_PLAN §5.7 sets out the
+  operational definitions of every S9 step and of the S/SA/R analyses and demo selection. It
+  was written before E was opened and before the S9 code.
+- **S9 code is built before freeze** so that it is part of the frozen code tree. A confirmatory
+  runner added after freeze would fail the freeze verification.
+  - **Unlock:** E is unlocked only by `unlock_sealed_partition(verify_freeze_record())`.
+  - **Rehearsal:** a T-only rehearsal mode exercises the identical code. Its results are
+    REHEARSAL (development) and are never evidence.
+- **Class**: C (approved §6) / C (P-C11 pending) · **Date**: 2026-10-19

@@ -32,6 +32,7 @@ import numpy.typing as npt
 from hyposense.evaluation.data import EvalRecording
 
 TRUE, FALSE, UNKNOWN = 0, 1, 2
+EXCLUDED = 3  # SA9-ii only: removed from every notification class
 F64 = npt.NDArray[np.float64]
 I64 = npt.NDArray[np.int64]
 
@@ -90,6 +91,21 @@ def classify_notifications(t_n: I64, onsets: I64, last_ts: int, horizon_s: int) 
     return out
 
 
+def _classify(r: EvalRecording, n: I64, rules: EventRules) -> I64:
+    """Notification classes for a recording. Canonical unless a §5.7 variant field is set:
+    `notif_onsets` replaces the onsets used for classification; `notif_exclude` removes
+    notifications whose (t, t + H] window overlaps an excluded interval."""
+    onsets = r.notif_onsets if r.notif_onsets is not None else r.onsets
+    t_n = r.ts[n]
+    c = classify_notifications(t_n, onsets, r.last_ts, rules.horizon_s)
+    if r.notif_exclude:
+        keep = np.ones(len(t_n), dtype=bool)
+        for a, b in r.notif_exclude:
+            keep &= ~((a < t_n + rules.horizon_s) & (b > t_n))
+        c = np.where(keep, c, EXCLUDED)
+    return c
+
+
 def episode_window_readings(r: EvalRecording, onset: int, rules: EventRules) -> I64:
     """Indices of label-eligible, queried readings in [onset - H, onset - min_lead] (closed)."""
     lo = int(np.searchsorted(r.ts, onset - rules.horizon_s, side="left"))
@@ -136,7 +152,7 @@ def recording_steps(r: EvalRecording, model: str, rules: EventRules) -> Recordin
     for j in range(1, m + 1):
         alert = q & (s >= d[j - 1])  # level j = alert set {score >= d_j} (no NaN by q)
         n = notification_indices(r.ts, alert, rules.cooldown_s)
-        c = classify_notifications(r.ts[n], r.onsets, r.last_ts, rules.horizon_s)
+        c = _classify(r, n, rules)
         t_arr[j] = int(np.sum(c == TRUE))
         f_arr[j] = int(np.sum(c == FALSE))
         u_arr[j] = int(np.sum(c == UNKNOWN))
@@ -346,7 +362,7 @@ def operating_point(
         s = r.scores[model]
         alert = r.queried & passes(s, tau, strict)
         n = notification_indices(r.ts, alert, rules.cooldown_s)
-        c = classify_notifications(r.ts[n], r.onsets, r.last_ts, rules.horizon_s)
+        c = _classify(r, n, rules)
         rt, rf, ru = int(np.sum(c == TRUE)), int(np.sum(c == FALSE)), int(np.sum(c == UNKNOWN))
         rh = 0
         for k, o in enumerate(r.onsets.tolist()):

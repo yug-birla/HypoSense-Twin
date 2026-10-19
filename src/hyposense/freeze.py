@@ -70,8 +70,8 @@ def plan_is_final(text: str) -> tuple[bool, str]:
     for name, sec in (("§5", s5), ("§6", s6)):
         if "Status: **FINAL" not in sec:
             problems.append(f"{name} not FINAL")
-        if "DRAFT" in sec or "PENDING (S5)" in sec:
-            problems.append(f"{name} contains DRAFT/PENDING text")
+        if "DRAFT" in sec or "PENDING (S5)" in sec or "awaiting owner approval" in sec.lower():
+            problems.append(f"{name} contains DRAFT/PENDING/awaiting-approval text")
     return not problems, "; ".join(problems) or "§5 and §6 FINAL"
 
 
@@ -327,3 +327,93 @@ def freeze(write: bool, run_tests: bool = True) -> dict[str, Any]:
     report["result"] = f"FROZEN: {FREEZE_JSON.relative_to(REPO_ROOT).as_posix()}"
     report["record_sha256"] = record["record_sha256"]
     return report
+
+
+# ---------------------------------------------------------------- confirmatory-side verification
+class FreezeVerificationError(PermissionError):
+    """The freeze record does not match the running repository: E stays sealed."""
+
+
+class VerifiedFreeze:
+    """Proof object: only `verify_freeze_record` creates it (the dataset unlock checks the type
+    and the private token, and re-reads the record hash)."""
+
+    __slots__ = ("_token", "record", "record_sha256")
+
+    def __init__(self, token: object, record: dict[str, Any]) -> None:
+        if token is not _TOKEN:
+            raise FreezeVerificationError("VerifiedFreeze can only be created by verification")
+        self._token = token
+        self.record = record
+        self.record_sha256 = str(record["record_sha256"])
+
+
+_TOKEN = object()
+
+
+def verify_freeze_record(path: Path = FREEZE_JSON) -> VerifiedFreeze:
+    """Everything that must hold before ANY E access (ANALYSIS_PLAN §4; S9 rule 1-7). Raises
+    FreezeVerificationError on the first mismatch; never warns and continues."""
+    if not path.is_file():
+        raise FreezeVerificationError(f"no freeze record at {path}")
+    record = json.loads(path.read_text("utf-8"))
+    body = {k: v for k, v in record.items() if k != "record_sha256"}
+    if sha256_json(body) != record.get("record_sha256"):
+        raise FreezeVerificationError("freeze record hash mismatch (edited record)")
+    if any(c.get("status") != "PASS" for c in record.get("checks", [])):
+        raise FreezeVerificationError("freeze record contains a failed check")
+    status = _git("status", "--porcelain", "--untracked-files=all")
+    if status != "":
+        raise FreezeVerificationError(f"working tree not clean: {(status or '').splitlines()[:5]}")
+    for p, tree in record["code_tree"].items():
+        now = (_git("rev-parse", f"HEAD:{p}") or "").strip()
+        if now != tree:
+            raise FreezeVerificationError(f"{p} differs from the frozen tree")
+    cfg, pharma = load_config(), load_config("pharma.yaml")
+    from hyposense.features.spec import spec_sha256
+    from hyposense.medication.dictionary import DICTIONARY_PATH
+
+    current = {
+        "config_sha256": config_hash(cfg),
+        "pharma_sha256": sha256_json(pharma),
+        "dictionary_sha256": sha256_file(DICTIONARY_PATH),
+        "feature_spec_sha256": spec_sha256(cfg["features"]),
+        "analysis_plan_sha256": sha256_file(PLAN),
+        "uv_lock_sha256": sha256_file(REPO_ROOT / "uv.lock"),
+        "npm_lock_sha256": sha256_file(REPO_ROOT / "frontend" / "package-lock.json"),
+    }
+    for k, v in current.items():
+        if record.get(k) != v:
+            raise FreezeVerificationError(f"{k} differs from the freeze record")
+    seeds = {
+        "model": cfg["model"]["seed"],
+        "cv": cfg["cv"]["seed"],
+        "bootstrap": cfg["bootstrap"]["seed"],
+        "sa7_fold_seeds": cfg["sensitivity"]["fold_seeds_sa7"],
+    }
+    if record.get("seeds") != seeds:
+        raise FreezeVerificationError("seeds differ from the freeze record")
+    from hyposense.audit.partition_check import verify_partition
+    from hyposense.data.dataset import extracted_root
+    from hyposense.data.manifest import read_manifest, verify_manifest
+    from hyposense.data.partition import partition_path
+    from hyposense.data.source import dataset_config
+
+    dcfg = dataset_config()
+    man = REPO_ROOT / dcfg["paths"]["manifest_json"]
+    verify_manifest(extracted_root(), read_manifest(man))
+    if sha256_file(man) != record.get("data_manifest_sha256"):
+        raise FreezeVerificationError("data manifest differs from the freeze record")
+    if verify_partition()["status"] != "PASS" or sha256_file(partition_path(cfg)) != record.get(
+        "partition_sha256"
+    ):
+        raise FreezeVerificationError("partition differs from the freeze record")
+    from hyposense.models.artifact import load_artifact
+
+    cand = record["candidate"]
+    m = load_artifact(
+        REPO_ROOT / cand["artifact_directory"], cfg, pharma, cand.get("manifest_sha256")
+    )
+    if m.manifest["files"] != cand["files"]:
+        raise FreezeVerificationError("candidate artefact files differ from the freeze record")
+    return VerifiedFreeze(_TOKEN, record)

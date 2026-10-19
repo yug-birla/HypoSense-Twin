@@ -5,8 +5,10 @@ Every caller states why it needs the data:
   E files are never opened.
 - AGGREGATE_AUDIT: outcome-blind integrity checks that emit aggregate reports only (approved
   P-C5). Reserved for `hyposense.audit`; a static test forbids its use elsewhere.
-- ALL_AFTER_FREEZE: the confirmatory run. It refuses until the freeze machinery exists and a
-  valid freeze record matches (Freeze stage).
+- ALL_AFTER_FREEZE: the confirmatory run (S9). It refuses unless `unlock_sealed_partition` was
+  called with a `VerifiedFreeze` produced by `hyposense.freeze.verify_freeze_record` (hashes of
+  code tree, configs, data, partition, analysis plan, locks and the candidate artefact all match
+  the freeze record). Nothing else can unlock E.
 """
 
 from __future__ import annotations
@@ -44,6 +46,26 @@ class Dataset:
     summary: SummaryTable
 
 
+_UNLOCKED: dict[str, str] = {}
+
+
+def unlock_sealed_partition(verified: object) -> str:
+    """Unlock E for this process. Accepts ONLY a VerifiedFreeze (re-verified here)."""
+    from hyposense.freeze import FREEZE_JSON, VerifiedFreeze, verify_freeze_record
+
+    if not isinstance(verified, VerifiedFreeze):
+        raise SealedPartitionError("E can only be unlocked by a verified freeze record")
+    again = verify_freeze_record(FREEZE_JSON)
+    if again.record_sha256 != verified.record_sha256:
+        raise SealedPartitionError("freeze record changed since verification")
+    _UNLOCKED["record_sha256"] = again.record_sha256
+    return again.record_sha256
+
+
+def sealed_unlocked() -> bool:
+    return "record_sha256" in _UNLOCKED
+
+
 @lru_cache(maxsize=1)
 def _sealed_patient_ids() -> frozenset[str]:
     return frozenset(pid for pid, part in load_partition().items() if part == "E")
@@ -54,7 +76,7 @@ def assert_not_sealed(patient_id: str) -> None:
     freeze, refuse any record of a sealed-evaluation (E) patient, whatever the caller's
     scope. The confirmatory stage will authorise E through the freeze record (ALL_AFTER_FREEZE),
     which does not exist yet."""
-    if patient_id in _sealed_patient_ids():
+    if patient_id in _sealed_patient_ids() and not sealed_unlocked():
         raise SealedPartitionError(
             f"patient {patient_id} belongs to the sealed evaluation partition (no freeze record)"
         )
@@ -65,10 +87,9 @@ def extracted_root() -> Path:
 
 
 def load_dataset(scope: AccessScope) -> Dataset:
-    if scope is AccessScope.ALL_AFTER_FREEZE:
+    if scope is AccessScope.ALL_AFTER_FREEZE and not sealed_unlocked():
         raise SealedPartitionError(
-            "E is sealed: no freeze record exists (freeze machinery is implemented at the "
-            "Freeze stage)"
+            "E is sealed: ALL_AFTER_FREEZE requires unlock_sealed_partition(verify_freeze_record())"
         )
     dcfg = dataset_config()
     cfg = load_config()
