@@ -289,8 +289,9 @@ Details: [docs/INTAKE.md](docs/INTAKE.md).
 ### Runtime: one path for replay and new data
 
 ```mermaid
-flowchart LR
+flowchart TB
   subgraph IN["Input"]
+    direction LR
     R["Historical replay<br/>recorded T files"]
     U["New data session<br/>CSV/XLSX upload or manual entry"]
   end
