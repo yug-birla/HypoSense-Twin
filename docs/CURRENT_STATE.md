@@ -5,7 +5,12 @@ This is the canonical snapshot. Read it first, then [NEXT_STEPS.md](NEXT_STEPS.m
 [PROGRESS.md](PROGRESS.md)._
 
 ## Current Phase
-**PRODUCT COMPLETE FOR DEMO; FREEZE BLOCKED BY HUMAN GATES.**
+**JUDGE-READY PRODUCT (UX redesign DEC-2026-10-19-Q); FREEZE BLOCKED BY HUMAN GATES.**
+- **UX:**
+  - Overview at `/` and a guided demo on the real replay.
+  - Observed vs predicted made explicit; plain evidence layer.
+  - axe: 0 violations on 6 pages. Tests: Vitest 42, Python 572, E2E 3.
+  - See docs/UX_REVIEW.md.
 - **Branch:** `prefreeze-finalization`. It is not merged to main; the merge happens after the
   freeze record exists.
 - **Product:** the following are all verified in Microsoft Edge:
@@ -16,10 +21,10 @@ This is the canonical snapshot. Read it first, then [NEXT_STEPS.md](NEXT_STEPS.m
   - Details: DEC-2026-10-19-P and docs/INTAKE.md.
 - **S9 confirmatory runner:** built and fully rehearsed on T (`T-AGG-rehearsal-20261019T070224Z`).
   Its numbers equal S6 exactly; held-out parity is 0 / 31,416.
-- **Freeze candidate:** rebuilt twice on the intake code `28ac72f`, identical (`c0cbe721…`,
-  unchanged since `a7efa25`).
-- **`hyposense freeze`** (2026-10-19, on `f8f1731`): **ERROR — FREEZE ABORTED**. Every technical
-  check passes, including 570 Python tests and the frontend suite. The 3 failing checks are
+- **Freeze candidate:** rebuilt twice on the UX code `38d7aca`, identical (`c0cbe721…`, unchanged
+  since `a7efa25`).
+- **`hyposense freeze`** (2026-10-19, on `7f31b71`): **ERROR — FREEZE ABORTED**. Every technical
+  check passes, including 572 Python tests and the frontend suite. The 3 failing checks are
   human gates:
   - `pharmacist_review`;
   - `class_c_resolved` (P-C11);
@@ -94,8 +99,8 @@ None. Work stopped at the freeze boundary (human gates).
 ## Testing Status
 | Suite | Result |
 |---|---|
-| Python (unit, leakage, regression, integration, E2E) | **570 passed** (inside `hyposense freeze`, 2026-10-19, on `f8f1731`) |
-| Frontend (Vitest) | **37 passed** |
+| Python (unit, leakage, regression, integration, E2E) | **572 passed** (inside `hyposense freeze`, 2026-10-19, on `7f31b71`) |
+| Frontend (Vitest) | **42 passed** |
 | Lint / format / types | ruff clean; mypy --strict clean (108 files); tsc strict clean |
 
 ## Engineering (S7, T)
@@ -133,7 +138,7 @@ All earlier decisions are resolved: §6 reading (DEC-2026-10-19-N); P-B6, P-B8, 
 P-C9 and P-C10 (DEC-2026-10-19-M). The LLM layer was dropped.
 
 ## Last Verified Commit
-- Code: `28ac72f` (intake). The candidate pair ran on it; the freeze attempt ran on `f8f1731`.
+- Code: `38d7aca` (UX). The candidate pair ran on it; the freeze attempt ran on `7f31b71`.
 - Documentation commit: see `git log -1`.
 
 ## Next Recommended Task
