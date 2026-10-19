@@ -406,7 +406,8 @@ and were written before E was opened. Implementation: `src/hyposense/evaluation/
 **Population and primary.**
 7. The primary analysis is the §5.1 rule on E-treated patients; H1 is supported iff the
    lower 95 % bound of Δ > 0. G5 holds iff no bootstrap resample is undefined for M2 or M3. If
-   G5 fails, H1 is reported as inconclusive (Table 21.1).
+   G5 fails, H1 is reported as inconclusive (Table 21.1): `h1_status` = INCONCLUSIVE, and no
+   H1 row of Table 20.4 is applied.
 
 **Secondary analyses (Table 20.3). Each uses the primary harness unless stated.**
 8. **S1:** hits require lead ≥ 30 min (warning window [onset − 60, onset − 30]). Δ is computed
@@ -424,22 +425,28 @@ and were written before E was opened. Implementation: `src/hyposense/evaluation/
     onsets.
 13. **S6:** all E patients (treated and untreated).
 14. **S7:** per-patient sensitivity and FA/day at τA (forest data) and patient-weighted
-    sensitivity, for M2 and M3.
+    sensitivity, for M2 and M3. Both are computed at each patient's own fold τA (item 6). The
+    patient-weighted sensitivity is the mean of the per-patient sensitivities over patients with
+    ≥ 1 episode.
 
 **Sensitivity analyses.**
 15. **SA1:** single-reading episode rule (`min_run` = 1). Only the episode set changes;
     eligibility, policy and models are unchanged.
 16. **SA2:** readings, onsets and notifications with t < recording start + 24 h are removed;
     monitored days start at start + 24 h.
-17. **SA3:** recordings with any CSII or i.v. insulin event are removed.
+17. **SA3:** recordings with any CSII or i.v. insulin event are removed. Non-insulin i.v.
+    fluids (saline, glucose, KCl) do not remove a recording.
 18. **SA4, SA5 and SA9-i (episode exclusions):**
     - Excluded episodes leave the sensitivity denominator (and the hits).
     - Notifications are still classified against all onsets.
     - SA4 excludes compression-artefact candidates (`labels.annotations`).
     - SA5 excludes episodes contradicted by capillary glucose (a CBG during the episode, none
       < 70).
-19. **SA9-ii:** notifications whose window (t, t + 60] overlaps a sensor-floor run are removed
-    from FA accounting and counted separately.
+19. **SA9-ii:**
+    - FALSE notifications whose window (t, t + 60] overlaps a sensor-floor run [a, b]
+      (a ≤ t + 60 min and b > t) are removed from FA accounting.
+    - They are counted separately (`excluded_sensor_floor`).
+    - TRUE and OUTCOME-UNKNOWN notifications are unchanged.
 20. **SA6:**
     - Insulin `t_dur_min` and secretagogue `t_half_min` are multiplied by 0.75 and by 1.5;
       lags, peaks and t_max are unchanged.
@@ -491,15 +498,25 @@ and were written before E was opened. Implementation: `src/hyposense/evaluation/
     - Eligible if ≥ 24 h of record precede the event, and in [event − 3 h, event + 3 h] every
       CGM step is ≤ 20 min with no reading ≤ 40 mg/dL. The event time is the onset (TP/FN) or
       the notification time (FP).
-    - Each category is shuffled with seed 2026 and the first eligible case is taken.
+    - Each category is shuffled with its own seed-2026 generator, and the first eligible case
+      is taken. Recordings are listed in sorted (recording, event time) order before the
+      shuffle.
     - If a category is empty, that is recorded and no substitute is taken.
 31. **Reading of "≈" in Table 20.4:** the paired 95 % CI of the contrast includes 0. "S3
-    favours M3" means the log-loss difference M3 − M2 has a point estimate < 0. The applicable
-    rows are reported mechanically and do not change §6.
+    favours M3" means the log-loss difference M3 − M2 has a point estimate < 0. "S2/S3 agree"
+    means both the S2 difference (FA/day at matched sensitivity, M3 − M2) and the S3
+    difference have a point estimate < 0. Every row whose condition holds is reported (rows are
+    evaluated independently and may co-occur). The rows do not change §6.
 32. **Run once:**
     - The official run executes once. A second execution of the identical frozen code and
       record is allowed only as a REPRODUCTION VERIFICATION.
     - It must give a bitwise-identical `results_sha256`.
+      - The hash covers every scientific result and artefact file hash.
+      - Run-specific locations and wall-clock times are recorded under `outputs` and `timing`
+        and are excluded.
+    - Command: `hyposense confirm --freeze artifacts/freeze/FREEZE.json --reproduce`.
+      - It writes `E-AGG-reproduce-*`, with private artefacts only.
+      - It records whether the hashes are identical.
     - It never replaces the official run, and any difference is reported as a defect, not as a
       new result.
 33. **E access after the confirmatory run (presentation only):**

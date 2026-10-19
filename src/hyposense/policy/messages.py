@@ -68,16 +68,16 @@ STATE_LABEL = {
     PolicyState.WATCH: "WATCH",
     PolicyState.NO_ALERT: "NO ALERT",
 }
-GROUP_LABEL = {  # features.spec.Group values -> display names (associations, not causes)
-    "G1_cgm_level": "CGM level",
-    "G2_cgm_trend": "CGM trend",
-    "G3_cgm_history": "CGM history",
+GROUP_LABEL = {  # features.spec.Group values -> plain display names (associations, not causes)
+    "G1_cgm_level": "glucose level",
+    "G2_cgm_trend": "recent glucose trend",
+    "G3_cgm_history": "recent glucose history",
     "G4_time": "time of day",
     "G5_static_context": "patient context",
-    "G6_meal_timing": "meal timing",
-    "G7_raw_medication_timing": "medication timing",
-    "G78_csii_iv_flags": "pump / i.v. insulin",
-    "G8_medication_exposure": "medication exposure",
+    "G6_meal_timing": "recorded meal times",
+    "G7_raw_medication_timing": "recorded medicine times",
+    "G78_csii_iv_flags": "pump / IV insulin",
+    "G8_medication_exposure": "estimated medicine activity",
 }
 # Display convention for the trend arrow (mg/dL/min of the canonical 30-min slope, cgm_slope30):
 # |rate| < 1 steady, 1-2 rising/falling, >= 2 rapidly. A presentation constant, never a model input.
@@ -135,9 +135,11 @@ def reason_line(d: PolicyDecision, groups: list[str]) -> str:
     policy reason text. Deterministic; empty pieces are omitted."""
     if d.state in (PolicyState.ALERT, PolicyState.WATCH, PolicyState.NO_ALERT):
         if d.state is PolicyState.NO_ALERT:
-            return "Below the WATCH threshold"
+            return "Estimated risk below the watch threshold"
         if groups:
-            return "Associated: " + ", ".join(GROUP_LABEL.get(g, g) for g in groups[:2])
+            level = "High" if d.state is PolicyState.ALERT else "Elevated"
+            names = [GROUP_LABEL.get(g, g) for g in groups[:2]]
+            return f"{level} risk; most associated with " + " and ".join(names)
         return (
             "At or above the "
             + ("ALERT" if d.state is PolicyState.ALERT else "WATCH")

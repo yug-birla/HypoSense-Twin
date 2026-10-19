@@ -239,6 +239,7 @@ def model_card_md(v: dict[str, Any], doc: dict[str, Any]) -> str:
     cfg = load_config()
     fm = doc["results"]["final_model"]
     final = fm.get("final") or {}
+    final_dir = (doc.get("outputs") or {}).get("final_directory") or final.get("directory", "—")
     ev = cfg["event"]
     p = v["primary"]
     return "\n".join(
@@ -261,7 +262,7 @@ def model_card_md(v: dict[str, Any], doc: dict[str, Any]) -> str:
             "## Model",
             "",
             f"- Selected by the pre-specified rule: **{fm['selected']}**.",
-            f"- Final artefact: `{final.get('directory', '—')}` "
+            f"- Final artefact: `{final_dir}` "
             f"(version `{final.get('model_version', '—')}`), retrained on all patients with the "
             "S7 procedure. Its thresholds are τA "
             f"{_num(final.get('tau_alert'))} and τW {_num(final.get('tau_watch'))}.",

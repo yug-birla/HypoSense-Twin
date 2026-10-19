@@ -284,7 +284,14 @@ def cmd_confirm(args: argparse.Namespace) -> int:
     if args.rehearsal:
         _print(run_confirm("rehearsal", workers=args.workers))
     else:
-        _print(run_confirm("official", workers=args.workers, freeze_path=Path(args.freeze)))
+        _print(
+            run_confirm(
+                "official",
+                workers=args.workers,
+                freeze_path=Path(args.freeze),
+                reproduce=args.reproduce,
+            )
+        )
     return 0
 
 
@@ -444,6 +451,11 @@ def build_parser() -> argparse.ArgumentParser:
     g = cf.add_mutually_exclusive_group(required=True)
     g.add_argument("--freeze", help="official run: path to artifacts/freeze/FREEZE.json")
     g.add_argument("--rehearsal", action="store_true", help="T-only rehearsal (never evidence)")
+    cf.add_argument(
+        "--reproduce",
+        action="store_true",
+        help="after S9 only: bitwise reproduction check of the official run (never a new result)",
+    )
     cf.add_argument("--workers", type=int, default=None)
     cf.set_defaults(func=cmd_confirm)
     fz = sub.add_parser("freeze", help="protocol freeze (fails closed; never touches E)")

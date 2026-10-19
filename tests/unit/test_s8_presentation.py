@@ -35,8 +35,8 @@ def test_summary_is_deterministic_and_omits_unavailable_values() -> None:
     )
     s = summary(alert, 6 * 3600 + 15 * 60, ["G1_cgm_level", "G8_medication_exposure"], OFF)
     assert s == (
-        "ALERT since 14:15 · estimated risk 18% · main associated factors: CGM level and "
-        "medication exposure · medication timing unknown (sulfonylurea)"
+        "ALERT since 14:15 · estimated risk 18% · main associated factors: glucose level and "
+        "estimated medicine activity · medication timing unknown (sulfonylurea)"
     )
     assert summary(alert, 0, [], OFF) == summary(alert, 0, [], OFF)  # deterministic
     low = summary(d(PolicyState.LOW_NOW, None, ("CGM_LOW",)), None, [], OFF)
@@ -53,10 +53,13 @@ def test_reason_line_names_associations_never_causes() -> None:
     w = d(PolicyState.WATCH, 0.05, ("P_AT_OR_ABOVE_TAU_WATCH",))
     assert (
         reason_line(w, ["G1_cgm_level", "G3_cgm_history", "G4_time"])
-        == "Associated: CGM level, CGM history"
+        == "Elevated risk; most associated with glucose level and recent glucose history"
     )
     assert reason_line(w, []) == "At or above the WATCH threshold"
-    assert reason_line(d(PolicyState.NO_ALERT, 0.001), []) == "Below the WATCH threshold"
+    assert (
+        reason_line(d(PolicyState.NO_ALERT, 0.001), [])
+        == "Estimated risk below the watch threshold"
+    )
     assert "Sensor fault" in reason_line(
         d(PolicyState.LOW_NOW, None, ("CGM_LOW", "SENSOR_FAULT_SUSPECTED")), []
     )

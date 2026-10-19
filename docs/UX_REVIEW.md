@@ -60,8 +60,9 @@ three personas. No independent testers were available.
 | | Development vs confirmatory? | Evidence plain card "Is the final evaluation complete? No — PENDING" + Confirmatory panel | 1 |
 
 Residual weaknesses, found and not fixed:
-- The ward "Why" column still uses backend reason text ("Associated: CGM level, CGM history").
-  It is shorter than ideal but faithful.
+- Fixed after review: the ward "Why" column now reads, for example, "Elevated risk; most
+  associated with glucose level and recent glucose history" (plain group names live in the
+  backend, `policy/messages.py`).
 - The guided-demo dock covers part of the right column. It can be minimised, and the page gains
   bottom space while the demo runs.
 - The patient page is long; sections are ordered by the four questions.

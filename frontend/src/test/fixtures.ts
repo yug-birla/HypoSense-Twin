@@ -28,7 +28,7 @@ export function bed(over: Partial<Bed> = {}): Bed {
       model_status: "DEVELOPMENT",
     },
     summary: "NO ALERT since 10:00 · estimated risk <1%",
-    reason: "Below the WATCH threshold",
+    reason: "Estimated risk below the watch threshold",
     badges: [],
     info_tags: [],
     unacknowledged_notifications: 0,

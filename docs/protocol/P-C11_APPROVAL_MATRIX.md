@@ -1,6 +1,6 @@
 # P-C11 approval matrix (ANALYSIS_PLAN §5.7, items 1–33)
 
-Status: **AWAITING OWNER DECISION.** This matrix is a review aid. It approves nothing.
+Status: **AWAITING OWNER DECISION.** This matrix is a review aid. It approves nothing. An independent implementation audit (DEC-2026-10-19-R) found 6 code defects, all fixed before freeze; the open §6 ambiguities are listed there.
 
 Every item was written before E was opened. None changes the target event, horizon, warning
 window, primary endpoint, population, H1, bootstrap method or false-alert budget; each makes

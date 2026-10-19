@@ -33,6 +33,18 @@ def _bundle(results: dict[str, Any]) -> tuple[str, dict[str, Any]]:
     return level, bundles[level]
 
 
+def _directories(doc: dict[str, Any]) -> dict[str, Any]:
+    """Artefact locations: `outputs` (runs after the §5.7 item 32 fix) or, for older runs, the
+    directory fields inside `results.final_model`."""
+    out = doc.get("outputs") or {}
+    fm = doc["results"]["final_model"]
+    bundles = out.get("fold_bundle_directories") or {
+        m: v.get("directory") for m, v in (fm.get("fold_bundles") or {}).items()
+    }
+    final = out.get("final_directory") or (fm.get("final") or {}).get("directory")
+    return {"bundles": bundles, "final": final}
+
+
 def _streams(ds: Any, patients: set[str]) -> list[RecordingStream]:
     """Live-path stream construction (same modules as `api.service.load_tuning_streams`)."""
     from hyposense.medication.dictionary import load_dictionary
@@ -64,19 +76,22 @@ def held_out_setup(
 
         verified = verify_confirmation()  # BEFORE any E access
         unlock_for_presentation(verified)
-        results, run_id, partition = verified.results, verified.confirm_run, "E"
+        run_id, partition = verified.confirm_run, "E"
+        doc = json.loads((RUNS / run_id / "results.json").read_text("utf-8"))
         ds = load_dataset(AccessScope.ALL_AFTER_FREEZE)
     else:
         doc = json.loads((RUNS / rehearsal_run / "results.json").read_text("utf-8"))
         if not str(doc["status"]).startswith("REHEARSAL"):
             raise ValueError(f"{rehearsal_run} is not a rehearsal run")
-        results, run_id, partition = doc["results"], rehearsal_run, "T"
+        run_id, partition = rehearsal_run, "T"
         ds = load_dataset(AccessScope.TUNING_ONLY)
+    results = doc["results"]
     level, b = _bundle(results)
-    bundle_dir = REPO_ROOT / b["directory"]
+    dirs = _directories(doc)
+    bundle_dir = REPO_ROOT / dirs["bundles"][level]
     fold_of = json.loads((bundle_dir / "fold_map.json").read_text("utf-8"))
-    final = results["final_model"].get("final")
-    model_dir = REPO_ROOT / (final["directory"] if final else f"{b['directory']}/fold-0")
+    final_dir = dirs["final"] or f"{dirs['bundles'][level]}/fold-0"
+    model_dir = REPO_ROOT / final_dir
     held = HeldOut(
         bundle_dir, run_id, partition, b["fold_files"], results["final_model"]["selected"]
     )

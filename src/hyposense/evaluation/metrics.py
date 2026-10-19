@@ -93,16 +93,18 @@ def classify_notifications(t_n: I64, onsets: I64, last_ts: int, horizon_s: int) 
 
 def _classify(r: EvalRecording, n: I64, rules: EventRules) -> I64:
     """Notification classes for a recording. Canonical unless a §5.7 variant field is set:
-    `notif_onsets` replaces the onsets used for classification; `notif_exclude` removes
-    notifications whose (t, t + H] window overlaps an excluded interval."""
+    `notif_onsets` replaces the onsets used for classification; `notif_exclude` (SA9-ii, §5.7
+    item 19) removes from FA accounting the FALSE notifications whose window (t, t + H] overlaps
+    an excluded interval [a, b] (a <= t + H and b > t); they are counted separately as EXCLUDED.
+    TRUE and OUTCOME-UNKNOWN notifications are never excluded."""
     onsets = r.notif_onsets if r.notif_onsets is not None else r.onsets
     t_n = r.ts[n]
     c = classify_notifications(t_n, onsets, r.last_ts, rules.horizon_s)
     if r.notif_exclude:
-        keep = np.ones(len(t_n), dtype=bool)
+        hit = np.zeros(len(t_n), dtype=bool)
         for a, b in r.notif_exclude:
-            keep &= ~((a < t_n + rules.horizon_s) & (b > t_n))
-        c = np.where(keep, c, EXCLUDED)
+            hit |= (a <= t_n + rules.horizon_s) & (b > t_n)
+        c = np.where(hit & (c == FALSE), EXCLUDED, c)
     return c
 
 
@@ -358,12 +360,15 @@ def operating_point(
     readings = insufficient = 0
     abstained = 0
     per_patient: dict[str, dict[str, float]] = {}
+    n_excluded = 0
+    variant = any(r.notif_exclude for r in recs)
     for r in recs:
         s = r.scores[model]
         alert = r.queried & passes(s, tau, strict)
         n = notification_indices(r.ts, alert, rules.cooldown_s)
         c = _classify(r, n, rules)
         rt, rf, ru = int(np.sum(c == TRUE)), int(np.sum(c == FALSE)), int(np.sum(c == UNKNOWN))
+        n_excluded += int(np.sum(c == EXCLUDED))
         rh = 0
         for k, o in enumerate(r.onsets.tolist()):
             w = episode_window_readings(r, o, rules)
@@ -401,7 +406,8 @@ def operating_point(
         "missed_episode_rate": 1 - hits / n_ep if n_ep else math.nan,
         "warnable_episodes": n_warn,
         "warnable_ceiling": n_warn / n_ep if n_ep else math.nan,
-        "notifications": {"true": n_true, "false": n_false, "outcome_unknown": n_unknown},
+        "notifications": {"true": n_true, "false": n_false, "outcome_unknown": n_unknown}
+        | ({"excluded_sensor_floor": n_excluded} if variant else {}),
         "monitored_days": days,
         "fa_per_day": n_false / days if days else math.nan,
         "alert_precision": n_true / (n_true + n_false) if (n_true + n_false) else math.nan,

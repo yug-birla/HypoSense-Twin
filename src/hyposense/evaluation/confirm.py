@@ -66,6 +66,7 @@ LAB_FEATURES = (
     "egfr_missing",
 )
 OFFICIAL_PREFIX = "E-AGG-confirm"
+REPRODUCE_PREFIX = "E-AGG-reproduce"  # §5.7 item 32: verification only, never a new result
 REHEARSAL_PREFIX = "T-AGG-rehearsal"
 PRIVATE = REPO_ROOT / "data" / "processed" / "confirm"
 
@@ -115,21 +116,36 @@ def contrast_reading(ci95: Sequence[float], point: float) -> str:
     return "≈ (CI includes 0; point " + ("> 0" if point > 0 else "<= 0") + ")"
 
 
-def interpretation_rows(c: dict[str, Any], learned_vs_m0: bool) -> list[str]:
-    """Blueprint Table 20.4 rows whose conditions hold (≈ per §5.7 item 31)."""
+def interpretation_rows(
+    c: dict[str, Any],
+    learned_vs_m0: bool,
+    s2_point: float | None = None,
+    g5: bool = True,
+) -> list[str]:
+    """Blueprint Table 20.4: EVERY row whose condition holds, evaluated independently (§5.7
+    item 31: '≈' = the paired 95 % CI includes 0; 'S3 favours M3' = log-loss Δ M3 - M2 point
+    < 0; 'S2 agrees' = FA/day at matched sensitivity Δ M3 - M2 point < 0). If G5 fails, H1 is
+    inconclusive (Table 21.1) and no H1 row is applied."""
     d, s3 = c["preview_M3-M2:sens1"], c.get("preview_M3-M2:logloss")
     rows: list[str] = []
 
     def incl(x: dict[str, Any]) -> bool:
         return bool(x["ci95"][0] <= 0 <= x["ci95"][1])
 
-    if d["ci95"][0] > 0:
+    if not g5:
+        rows.append("G5 failed: H1 not interpretable (inconclusive, Table 21.1)")
+    else:
+        s3_fav = s3 is not None and s3["point"] < 0
+        s2_fav = s2_point is not None and s2_point < 0
+        if d["ci95"][0] > 0 and s2_fav and s3_fav:
+            rows.append("Δ CI > 0; S2/S3 agree")
         m3r = c.get("C2b_M3-M3r:sens1")
-        rows.append("Δ CI > 0; M3 ≈ M3r" if m3r and incl(m3r) else "Δ CI > 0")
-    elif d["point"] > 0 and s3 and s3["point"] < 0:
-        rows.append("Δ point estimate > 0, CI includes 0; S3 favours M3")
-    elif incl(d) and (s3 is None or incl(s3)):
-        rows.append("Δ ≈ 0; S3 ≈ 0")
+        if d["ci95"][0] > 0 and m3r is not None and incl(m3r):
+            rows.append("Δ CI > 0, but M3 ≈ M3r")
+        if d["point"] > 0 and incl(d) and s3_fav:
+            rows.append("Δ point estimate > 0, CI includes 0; S3 favours M3")
+        if incl(d) and (s3 is None or incl(s3)):
+            rows.append("Δ ≈ 0; S3 ≈ 0")
     m21 = c.get("C1_M2-M1:sens1")
     if m21 and incl(m21):
         rows.append("M2 ≈ M1")
@@ -295,7 +311,10 @@ def _utc_offset_s(cfg: dict[str, Any]) -> int:
 def _has_pump_or_iv(stream: Any) -> bool:
     from hyposense.medication.events import MedicationEvent
 
-    return any(isinstance(e, MedicationEvent) and e.route in ("csii", "iv") for e in stream.events)
+    return any(
+        isinstance(e, MedicationEvent) and e.drug_class == "insulin" and e.route in ("csii", "iv")
+        for e in stream.events
+    )
 
 
 # ---------------------------------------------------------------- main
@@ -304,9 +323,14 @@ def run_confirm(
     workers: int | None = None,
     freeze_path: Path | None = None,
     smoke_resamples: int | None = None,
+    reproduce: bool = False,
 ) -> dict[str, Any]:
     """`smoke_resamples` (rehearsal ONLY) shortens the bootstrap for debugging; the official run
-    always uses the frozen B."""
+    always uses the frozen B. `reproduce` (official mode, §5.7 item 32) re-executes the identical
+    frozen run as a REPRODUCTION VERIFICATION: same code path and content, private outputs only,
+    and its results_sha256 must equal the official run's (any difference is a defect)."""
+    if reproduce and mode != "official":
+        raise ConfirmRefused("reproduction applies to the official run only")
     if smoke_resamples is not None and mode != "rehearsal":
         raise ConfirmRefused("bootstrap overrides are refused outside the rehearsal")
     started = utc_now_iso()
@@ -328,13 +352,16 @@ def run_confirm(
     if mode == "official":
         from hyposense.freeze import FREEZE_JSON, verify_freeze_record
 
-        if any(runs_dir.glob(f"{OFFICIAL_PREFIX}-*")):
+        existing = sorted(runs_dir.glob(f"{OFFICIAL_PREFIX}-*"))
+        if reproduce and len(existing) != 1:
+            raise ConfirmRefused("reproduction needs exactly one official run to verify")
+        if not reproduce and existing:
             raise ConfirmRefused("an official confirmatory run already exists: S9 runs once")
         verified = verify_freeze_record(freeze_path or FREEZE_JSON)  # BEFORE any E access
         unlock_sealed_partition(verified)
         freeze_record = verified.record
         ds = load_dataset(AccessScope.ALL_AFTER_FREEZE)
-        prefix = OFFICIAL_PREFIX
+        prefix = REPRODUCE_PREFIX if reproduce else OFFICIAL_PREFIX
     elif mode == "rehearsal":
         ds = load_dataset(AccessScope.TUNING_ONLY)
         prefix = REHEARSAL_PREFIX
@@ -653,7 +680,11 @@ def run_confirm(
             for r in recs_t
         ]
         op = operating_point(rs, m, 0.0, False, er)
-        per_patient_private[m] = op.pop("per_patient")
+        pp = op.pop("per_patient")
+        per_patient_private[m] = pp
+        sens_pp = [v["hits"] / v["episodes"] for v in pp.values() if v["episodes"]]
+        # S7 (§5.7 item 14): patient-weighted sensitivity at each patient's fold τA
+        op["patient_weighted_sensitivity"] = float(np.mean(sens_pp)) if sens_pp else math.nan
         deployed[m] = op
 
     # ---- primary decision, G5, selection, interpretation
@@ -667,14 +698,31 @@ def run_confirm(
     m0_sens = prim["models"]["M0"]["sens_at_1fa"]
     selection = select_model(h1, sens, ll, m0_sens)
     learned_beat_m0 = any(sens[m] > m0_sens for m in LADDER)
-    interp = interpretation_rows(comp, learned_beat_m0)
+    h1_status = (
+        "INCONCLUSIVE (G5 failed: undefined bootstrap resamples)"
+        if not g5
+        else ("SUPPORTED" if h1 else "NOT SUPPORTED")
+    )
+    interp = interpretation_rows(comp, learned_beat_m0, s2.point["S2"], g5)
 
     # ---- final model (all patients) and fold bundles for the replay demo
     a = time.perf_counter()
-    final = _final_artifacts(
-        mode, run_id, pop, selection["selected"], by_fold, thresholds, fold_of, freeze_record
-    )
+    try:  # item 29; a failure here must never lose the confirmatory results
+        final = _final_artifacts(
+            mode,
+            run_id,
+            pop,
+            selection["selected"],
+            by_fold,
+            thresholds,
+            fold_of,
+            freeze_record,
+            private_only=reproduce,
+        )
+    except Exception as exc:
+        final = {"selected": selection["selected"], "error": f"{type(exc).__name__}: {exc}"}
     timing["final_model_s"] = round(time.perf_counter() - a, 1)
+    outputs, final = _split_outputs(final)
     cases = _demo_cases(pop, scores, thresholds, fold_of, treated_eval, er, seed)
 
     # ---- private outputs (row-level; never committed)
@@ -743,6 +791,7 @@ def run_confirm(
             "delta_ci95": delta["ci95"],
             "undefined_resamples": delta["undefined_resamples"],
             "g5_pass": g5,
+            "h1_status": h1_status,
             "h1_supported": h1,
         },
         "evaluations": {k: strip(v) for k, v in evaluated.items()},
@@ -774,12 +823,23 @@ def run_confirm(
             }
         ),
         "results": det,
+        "outputs": outputs,  # run-specific locations; excluded from results_sha256 (item 32)
         "timing": timing,
     }
+    if reproduce:
+        official = sorted(runs_dir.glob(f"{OFFICIAL_PREFIX}-*"))[0]
+        ref = json.loads((official / "results.json").read_text("utf-8"))["results_sha256"]
+        doc["status"] = "REPRODUCTION VERIFICATION (not a new result)"
+        doc["reproduction"] = {
+            "of": official.name,
+            "official_results_sha256": ref,
+            "identical": ref == doc["results_sha256"],
+        }
     (out / "results.json").write_text(
         json.dumps(doc, indent=1, default=float) + "\n", "utf-8", newline="\n"
     )
     return {
+        **({"reproduction": doc["reproduction"]} if reproduce else {}),
         "run_id": run_id,
         "results_sha256": doc["results_sha256"],
         "status": det["status"],
@@ -790,6 +850,22 @@ def run_confirm(
 
 
 # ---------------------------------------------------------------- pieces
+def _split_outputs(final: dict[str, Any]) -> tuple[dict[str, Any], dict[str, Any]]:
+    """§5.7 item 32: `results_sha256` covers only content that a reproduction must match.
+    Directory names (they carry the run timestamp) and wall-clock seconds move to `outputs`."""
+    import copy
+
+    det = copy.deepcopy(final)
+    out: dict[str, Any] = {}
+    f = det.get("final")
+    if isinstance(f, dict):
+        out["final_directory"] = f.pop("directory", None)
+        f.pop("seconds", None)
+    for m, b in (det.get("fold_bundles") or {}).items():
+        out.setdefault("fold_bundle_directories", {})[m] = b.pop("directory", None)
+    return out, det
+
+
 def _check_t_features(pop: CD.Population) -> dict[str, Any]:
     """T rows of the S9 table must equal the S4 tuning feature table (same modules, same data)."""
     from hyposense.evaluation.devdata import load_dev
@@ -821,6 +897,10 @@ def _frozen_r4(freeze_record: dict[str, Any] | None) -> dict[str, Any]:
     doc = json.loads((runs[-1] / "results.json").read_text("utf-8"))
     if sha256_json(doc["results"]) != doc["results_sha256"] or doc["provenance"]["git"]["dirty"]:
         raise ConfirmRefused("R4 run fails its integrity check")
+    if freeze_record is not None and doc["results_sha256"] != freeze_record.get(
+        "r4_results_sha256"
+    ):
+        raise ConfirmRefused("R4 run differs from the one pinned in the freeze record")
     from hyposense.models.lgbm import base_params
 
     cfg = load_config()
@@ -872,9 +952,11 @@ def _final_artifacts(
     thresholds: dict[str, dict[int, dict[str, Any]]],
     fold_of: dict[str, int],
     freeze_record: dict[str, Any] | None,
+    private_only: bool = False,
 ) -> dict[str, Any]:
     """§5.7 item 29 (final model on all patients) and fold bundles (replay of held-out patients
-    with their own fold model, Blueprint §15). Rehearsal writes only to the private directory."""
+    with their own fold model, Blueprint §15). Rehearsal and reproduction write only to the
+    private directory."""
     from hyposense.calibration.methods import Calibrator
     from hyposense.evaluation.s7_artifact import build_artifact_from
     from hyposense.models.artifact import write_artifact
@@ -884,7 +966,7 @@ def _final_artifacts(
     status = "CONFIRMATORY" if mode == "official" else "DEVELOPMENT"
     root = (
         (REPO_ROOT / "artifacts" / "models")
-        if mode == "official"
+        if mode == "official" and not private_only
         else (PRIVATE / run_id / "models")
     )
     root.mkdir(parents=True, exist_ok=True)
@@ -983,10 +1065,10 @@ def _demo_cases(
         g = pop.dev.table["cgm"].to_numpy()[a:b][(r.ts >= lo) & (r.ts <= hi)]
         return bool(np.all(g > 40))
 
-    rng = np.random.default_rng(seed)
     chosen: dict[str, Any] = {}
     for cat in ("TP", "FN", "FP"):
         items = sorted(cands[cat])
+        rng = np.random.default_rng(seed)  # §5.7 item 30: each category shuffled with seed 2026
         order = rng.permutation(len(items)).tolist() if items else []
         pick = next((items[i] for i in order if eligible(*items[i])), None)
         chosen[cat] = (

@@ -60,15 +60,107 @@ def _c(lo: float, hi: float, point: float) -> dict[str, object]:
 
 
 def test_interpretation_rows_are_mechanical() -> None:
+    """Blueprint Table 20.4: every applicable row, evaluated independently (§5.7 item 31)."""
     c = {"preview_M3-M2:sens1": _c(0.01, 0.2, 0.1), "C2b_M3-M3r:sens1": _c(-0.1, 0.1, 0.0)}
-    assert interpretation_rows(c, True) == ["Δ CI > 0; M3 ≈ M3r"]
+    assert interpretation_rows(c, True) == ["Δ CI > 0, but M3 ≈ M3r"]  # S2/S3 unknown
+    c3 = {**c, "preview_M3-M2:logloss": _c(-0.002, -0.001, -0.0015)}
+    assert interpretation_rows(c3, True, s2_point=-0.1) == [
+        "Δ CI > 0; S2/S3 agree",
+        "Δ CI > 0, but M3 ≈ M3r",
+    ]
+    assert interpretation_rows(c3, True, s2_point=0.1) == ["Δ CI > 0, but M3 ≈ M3r"]
     c = {
         "preview_M3-M2:sens1": _c(-0.05, 0.2, 0.05),
         "preview_M3-M2:logloss": _c(-0.002, 0.001, -0.0005),
     }
-    assert interpretation_rows(c, True) == ["Δ point estimate > 0, CI includes 0; S3 favours M3"]
+    assert interpretation_rows(c, True) == [  # both rows hold: both are reported
+        "Δ point estimate > 0, CI includes 0; S3 favours M3",
+        "Δ ≈ 0; S3 ≈ 0",
+    ]
     c = {"preview_M3-M2:sens1": _c(-0.1, 0.1, -0.01), "C1_M2-M1:sens1": _c(-0.1, 0.1, 0.0)}
     assert interpretation_rows(c, False) == ["Δ ≈ 0; S3 ≈ 0", "M2 ≈ M1", "Learned models ≤ M0"]
+
+
+def test_g5_failure_makes_h1_inconclusive() -> None:
+    c = {"preview_M3-M2:sens1": _c(0.01, 0.2, 0.1)}
+    rows = interpretation_rows(c, True, s2_point=-0.1, g5=False)
+    assert rows == ["G5 failed: H1 not interpretable (inconclusive, Table 21.1)"]
+
+
+def test_sa3_removes_only_csii_or_iv_insulin() -> None:
+    from types import SimpleNamespace
+
+    from hyposense.evaluation.confirm import _has_pump_or_iv
+    from hyposense.medication.events import MedicationEvent
+
+    def ev(cls: str, route: str) -> MedicationEvent:
+        return MedicationEvent(
+            "p",
+            "r",
+            0,
+            "insulin_iv",
+            2,
+            "x",
+            "x",
+            "administration",
+            "PARSED",  # type: ignore[arg-type]
+            drug_class=cls,
+            route=route,
+        )
+
+    assert _has_pump_or_iv(SimpleNamespace(events=[ev("insulin", "iv")]))
+    assert _has_pump_or_iv(SimpleNamespace(events=[ev("insulin", "csii")]))
+    assert not _has_pump_or_iv(SimpleNamespace(events=[ev("iv_fluid", "iv")]))  # saline, glucose
+    assert not _has_pump_or_iv(SimpleNamespace(events=[ev("insulin", "sc")]))
+
+
+def test_sa9_excludes_only_false_notifications_and_counts_them() -> None:
+    from hyposense.evaluation.metrics import EXCLUDED, FALSE, TRUE, EventRules, _classify
+
+    rules = EventRules(horizon_s=3600, min_lead_s=900, cooldown_s=3600)
+    ts = np.array([0, 4000, 10_000], dtype=np.int64)
+    r = SimpleRec(ts=ts, onsets=np.array([5000]), last_ts=20_000, notif_exclude=((7600, 7700),))
+    c = _classify(r, np.array([0, 1, 2]), rules)  # type: ignore[arg-type]
+    # n@0: window (0, 3600] no onset, no overlap -> FALSE; n@4000: onset 5000 -> TRUE (never
+    # excluded even though (4000, 7600] touches the floor run at its boundary a = t + H);
+    assert c[0] == FALSE and c[1] == TRUE
+    r2 = SimpleRec(
+        ts=ts, onsets=np.array([], dtype=np.int64), last_ts=20_000, notif_exclude=((7600, 7700),)
+    )
+    c2 = _classify(r2, np.array([0, 1, 2]), rules)  # type: ignore[arg-type]
+    assert c2[1] == EXCLUDED  # boundary inclusive: a == t + H overlaps (t, t + H]
+    assert c2[0] == FALSE
+
+
+class SimpleRec:
+    def __init__(self, ts, onsets, last_ts, notif_exclude):  # type: ignore[no-untyped-def]
+        self.ts, self.onsets, self.last_ts = ts, onsets, last_ts
+        self.notif_onsets, self.notif_exclude = None, notif_exclude
+
+
+def test_results_hash_excludes_run_specific_outputs() -> None:
+    from hyposense.evaluation.confirm import _split_outputs
+
+    a = {
+        "selected": "M3",
+        "final": {"directory": "x/M3-final-1", "seconds": 1.2, "files": {"m": "h"}},
+        "fold_bundles": {"M3": {"directory": "x/M3-folds-1", "fold_files": {"0": {}}}},
+    }
+    b = {
+        "selected": "M3",
+        "final": {"directory": "y/M3-final-2", "seconds": 9.9, "files": {"m": "h"}},
+        "fold_bundles": {"M3": {"directory": "y/M3-folds-2", "fold_files": {"0": {}}}},
+    }
+    (oa, da), (ob, db) = _split_outputs(a), _split_outputs(b)
+    assert da == db and oa != ob
+    assert oa["final_directory"] == "x/M3-final-1"
+
+
+def test_reproduction_refused_without_an_official_run() -> None:
+    from hyposense.evaluation.confirm import ConfirmRefused, run_confirm
+
+    with pytest.raises(ConfirmRefused):
+        run_confirm("rehearsal", reproduce=True)
 
 
 def test_fa_at_sensitivity_interpolates_first_crossing() -> None:

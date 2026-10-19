@@ -1233,3 +1233,32 @@ Owner approval 2026-10-19. Canonical text: ANALYSIS_PLAN §5 and §6 (FINAL). Br
   - Vitest 42; Python 572; E2E 3;
   - demo walkthrough in Edge with 0 console errors.
 - **Class:** A · **Date:** 2026-10-19
+
+## DEC-2026-10-19-R · Pre-freeze P-C11 implementation audit: 6 code defects fixed, §5.7 text clarified (still PROPOSED)
+
+- **Audit:** an independent read-only audit of §5.7 items 1–33 against `evaluation/confirm*.py`.
+  - 26 items consistent.
+  - Partial inconsistencies: items 7, 14, 16, 19 and 31.
+  - Code differing from the text: items 17 and 32.
+- **Fixed** so that the code does what the proposed text says. All changes are pre-freeze and
+  no E access was involved:
+  - **SA3:** only CSII / i.v. *insulin* removes a recording, not i.v. fluids.
+  - **SA9-ii:** only FALSE notifications are excluded; the boundary is inclusive; excluded
+    notifications are counted separately.
+  - **S7:** patient-weighted sensitivity is computed at each patient's fold τA.
+  - **Table 20.4:** rows are evaluated independently ("S2/S3 agree" implemented); G5 failure
+    gives `h1_status` = INCONCLUSIVE.
+  - **Item 32:** `results_sha256` excludes run-specific paths and wall-clock time, and a
+    `--reproduce` mode exists.
+  - **Item 29:** a failure while building the final artefact can no longer lose the results.
+  - **R4:** the run is pinned by the hash recorded in the freeze record.
+  - **Item 30:** each category is shuffled with its own seed-2026 generator.
+- **§5.7 text:** clarified for these items (status still **PROPOSED, awaiting owner approval**).
+- **Open Class C ambiguities in §6, for the owner (not changed):**
+  1. The M0 fallback is applied after the H1 branch, so M0 could override an H1-supported M3 if
+     M0's sens@1FA point estimate is ≥ every learned model's.
+  2. The "learned model" set for the M0 check includes M1 and M3r.
+  3. When M2 has the higher sensitivity but the worse log-loss, M2 is selected.
+- **Re-verification:** the full rehearsal on T and the candidate pair are re-run after these
+  fixes.
+- **Class:** A (implementation) / C pending (text) · **Date:** 2026-10-19
