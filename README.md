@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="frontend/src/app/icon.svg" alt="" width="72" />
+<img src="docs/assets/mascot.svg" alt="HypoSense droplet mascot" width="96" />
 
 # HypoSense Twin
 
@@ -614,7 +614,7 @@ scripts/         UI audits, screenshot and walkthrough scripts, OpenAPI export
 (the owner decision on the copyright holder is pending). **Until that file exists, no licence
 grant should be assumed.**
 
-**Artwork.** The droplet mascot and icons are the project's own inline SVG; the UI icons come
+**Artwork.** The droplet mascot ([docs/assets/mascot.svg](docs/assets/mascot.svg)) is the project's own SVG drawing; the UI icons come
 from lucide (ISC licence).
 
 ## Documentation map
