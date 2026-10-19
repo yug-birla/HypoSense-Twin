@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="560" height="230" viewBox="0 0 560 230" font-family="sans-serif" font-size="11">
+<rect width="560" height="230" fill="#ffffff"/>
+<text x="12" y="18" font-size="13" font-weight="bold">Sensitivity @ 1 FA/day by model, treated patients (95 % CI) — REHEARSAL (development; never evidence)</text>
+<text x="12" y="53">M0</text>
+<rect x="70" y="40" width="269.2" height="18" fill="#9aa5b1"/>
+<text x="343.2" y="53">62.6 %</text>
+<line x1="281.1" y1="62" x2="429.8" y2="62" stroke="#333" stroke-width="1.5"/>
+<text x="12" y="87">M1</text>
+<rect x="70" y="74" width="368.6" height="18" fill="#9aa5b1"/>
+<text x="442.6" y="87">85.7 %</text>
+<line x1="379.4" y1="96" x2="500.0" y2="96" stroke="#333" stroke-width="1.5"/>
+<text x="12" y="121">M2</text>
+<rect x="70" y="108" width="376.2" height="18" fill="#9aa5b1"/>
+<text x="450.2" y="121">87.5 %</text>
+<line x1="405.9" y1="130" x2="500.0" y2="130" stroke="#333" stroke-width="1.5"/>
+<text x="12" y="155">M3r</text>
+<rect x="70" y="142" width="399.3" height="18" fill="#9aa5b1"/>
+<text x="473.3" y="155">92.9 %</text>
+<line x1="415.9" y1="164" x2="500.0" y2="164" stroke="#333" stroke-width="1.5"/>
+<text x="12" y="189">M3</text>
+<rect x="70" y="176" width="391.6" height="18" fill="#0e6e6a"/>
+<text x="465.6" y="189">91.1 %</text>
+<line x1="408.8" y1="198" x2="500.0" y2="198" stroke="#333" stroke-width="1.5"/>
+</svg>

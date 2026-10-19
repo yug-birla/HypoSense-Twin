@@ -512,6 +512,20 @@ Decision tables: `experiments/runs/T-AGG-dev-prefreeze-20261019T032309Z/prefreez
 - Results `c0cbe721…` in both runs, identical to every earlier pair. The refactor changed no
   feature, model or threshold.
 
+## T-AGG-rehearsal-20261019T172643Z — S9 rehearsal after the P-C11 audit fixes (REHEARSAL)
+- Commit 1c53abd (clean), B = 2000, 1,482 s.
+- Primary result identical to the earlier rehearsal and to S6: M2 0.875, M3 0.911, Δ CI
+  −0.042 to 0.088.
+- Fixed items behave as specified (DEC-2026-10-19-R):
+  - Table 20.4 now reports both applicable rows ("Δ point > 0, CI includes 0; S3 favours M3"
+    and "Δ ≈ 0; S3 ≈ 0") plus "M2 ≈ M1".
+  - `h1_status` = NOT SUPPORTED.
+  - Patient-weighted sensitivity at fold τA: M2 0.877, M3 0.927.
+  - SA9-ii: 0 FALSE notifications excluded on T.
+  - Run-specific paths are in `outputs`.
+  - The FN demo case changed because each category now has its own seed (expected).
+- Held-out replay parity: 0 / 31,416 mismatches.
+
 ## Evidence inherited from the blueprint (not reproduced here)
 
 | Item | Source | Status in this repo |
