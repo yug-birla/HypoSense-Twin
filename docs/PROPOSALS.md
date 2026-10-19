@@ -339,6 +339,70 @@ Status values: **AWAITING APPROVAL** · **APPROVED** · **REJECTED** · **EXPERI
   sens@1FA and log-loss per model and per comparison. Descriptive only; no selection.
 - **Decision.** EXPERIMENT (Class B). It informs interpretation, not the frozen protocol.
 
+#### Pre-specified protocol for P-B10 / P-B11 / P-B12 (written 2026-10-19, BEFORE any run; DEC-2026-10-19-L)
+
+Common to all three:
+- **Data:** T only. The harness is the S5/S6 one: `patient_curves`, `curve`, `sens_at_budget(1.0)`, `partial_area(0.5, 2.0)`, `window_metrics`, `calibration` (10 equal-count bins).
+- **Fixed inputs:** the frozen S6 hyperparameters and 113 rounds (no re-tuning). Folds come from `grouped_folds`, outer 5 and inner 4, stratified exactly as in S6. The canonical configuration is fold seed 2026 / model seed 2026, i.e. S6 itself.
+- **Integrity gate:** the canonical configuration must reproduce the S6 `oof_sha256` bitwise before any result is read. Otherwise STOP.
+- **P-B11 grid (fixed now, never extended):**
+  - fold seeds {2026, 2028, 2029};
+  - model seeds {2026, 2028, 2029, 2030, 2031}, i.e. the canonical seed plus the first entries of the pre-existing `sensitivity.fold_seeds_sa7` list, so they are not chosen;
+  - 15 configurations;
+  - models M1, M2, M3r, M3, M3_compact; M1_pb6 in the canonical configuration only (SENSITIVITY).
+- **Primary population:** treated patients. All-patient results are secondary.
+
+**P-B10: decision rule.**
+- **Candidates:** `isotonic_interp` (current), `isotonic_interp_floored` (challenger), `platt` (fallback); `isotonic` and raw are reported for reference.
+- **Floor:** for each outer fold, on that fold's inner OOF only: p_lo = (positives in the lowest isotonic block + 0.5) / (block size + 1). The "lowest block" is all inner rows whose isotonic fit equals the minimum fitted value. The interpolated output is then clamped to [p_lo, 1 − p_lo], with no renormalisation.
+- **Metrics:** on M1, pooled outer held-out eligible rows, canonical configuration (the P-B1 set):
+  - LL_u = log-loss **without clipping** (= +inf if any positive receives 0 or any negative receives 1);
+  - ECE;
+  - sens@1FA and partial area (treated).
+- **R0 (integrity):**
+  - |Δ sens@1FA| ≤ 0.01 and |Δ area| ≤ 0.01 between floored and current;
+  - and M2/M3r/M3/M3_compact must satisfy the same.
+  - If violated → INCONCLUSIVE.
+- **R1 (current inadmissible):** if LL_u(current) = inf:
+  - ADOPT floored iff LL_u(floored) is finite and ECE(floored) ≤ 1.10 × ECE(current);
+  - otherwise ADOPT platt under the same condition;
+  - otherwise INCONCLUSIVE.
+- **R2 (current admissible):** if LL_u(current) is finite:
+  - ADOPT floored iff LL_u(floored) ≤ 0.99 × LL_u(current) and ECE(floored) ≤ ECE(current) (the P-B1 rule restated on LL_u);
+  - KEEP CURRENT iff LL_u(floored) ≥ 1.01 × LL_u(current) or ECE(floored) > 1.10 × ECE(current);
+  - otherwise NO MATERIAL DIFFERENCE.
+- **R3 (stability):** the R1/R2 outcome is recomputed on M1 in all 15 P-B11 configurations. If the canonical outcome holds in fewer than 10/15, the decision becomes INCONCLUSIVE.
+- **Not a criterion:** display (exact-0 counts are reported). The UI already shows "<1%" (S8).
+
+**P-B11: descriptive; no selection.**
+- **Per configuration × model × calibrator:** LL_u, LL (S6 clip), Brier, AUPRC, ECE, slope, intercept, exact-0/1 counts, sens@1FA, partial area, τA.
+- **Summaries:** mean, SD, min/max; rank frequency of sens@1FA; and, for M2−M1, M3r−M2, M3−M3r, M3−M2 and M3_compact−M3, the sign counts of Δ, median Δ and range.
+- **Calibrator check:** whether the ranking changes under the P-B10 choice.
+- **Pre-stated reading:**
+  - a contrast is called "**stable**" only if its sign is the same in ≥ 13/15 configurations (≈ 87 %);
+  - "**unstable**" if the minority sign occurs in ≥ 4/15;
+  - otherwise "**leaning**".
+- **No seed or fold is ever chosen from these results.**
+
+**P-B12: decision rule.**
+- **Tag computation (OOF):** for each outer fold, ranges are computed on that fold's training eligible rows only and applied to the held-out rows. Model M3 with the P-B10-decided calibrator (current if not ADOPT), range features of the M3 level only.
+- **Candidates:**
+  - **C0 current:** any range feature outside [0.5, 99.5] %;
+  - **C1 (i):** key inputs only: features of groups G1 (CGM level), G2 (CGM trend) and G8 (medication exposure), [0.5, 99.5] %;
+  - **C2 (ii):** all range features, [0.1, 99.9] %.
+- **Reliability measure:** Brier skill score within each subset, BSS = 1 − Brier / (π(1 − π)) with π the subset's observed rate. Lower BSS means less reliable/informative.
+  - Separation = BSS(untagged) − BSS(tagged), with a patient-cluster bootstrap 95 % CI (1,000 resamples, seed 2027) on the canonical configuration.
+- **A candidate is USEFUL iff all three hold:**
+  - (a) tag rate on eligible forecasts in [1 %, 10 %];
+  - (b) separation > 0 with the CI excluding 0;
+  - (c) separation > 0 in ≥ 12/15 P-B11 configurations.
+- **Decision:**
+  - ADOPT REVISED RULE: C1 or C2 is useful. If both are, the one with the larger canonical separation; tie → C1.
+  - KEEP CURRENT: neither is useful, but C0 satisfies (b) and (c).
+  - REMOVE TAG: no candidate satisfies (b).
+  - INCONCLUSIVE: otherwise.
+- **Also reported, no decision role:** the tag rate per patient, reading-level sensitivity at τA, log-loss, ECE, the overlap with MED_TIMING_UNKNOWN (quality code 2) and with the P-B6 sensor-artefact mask, and separation within rows without MED_TIMING_UNKNOWN.
+
 ### P-B1 · Calibration method benchmark (isotonic vs Platt vs smoothed isotonic)
 **Status: ADOPTED isotonic_interp by the pre-registered rule (S6, DEC-2026-10-18-H). FRAGILE:
 the margin comes from 3 positives at a calibrated 0 (DEC-2026-10-18-I F1) → challenger P-B10.**
