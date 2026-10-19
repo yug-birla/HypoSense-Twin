@@ -13,6 +13,7 @@ export const useStatus = () => useQuery({ queryKey: ["status"], queryFn: api.sta
 export const useWard = () => useQuery({ queryKey: ["ward"], queryFn: api.ward, refetchInterval: SAFETY_MS });
 export const useCases = () => useQuery({ queryKey: ["cases"], queryFn: api.cases, staleTime: Infinity });
 export const useEvidence = () => useQuery({ queryKey: ["evidence"], queryFn: api.evidence, staleTime: Infinity });
+export const useConfirmatory = () => useQuery({ queryKey: ["confirmatory"], queryFn: api.confirmatory, staleTime: Infinity });
 export const usePatient = (key: string | null) =>
   useQuery({
     queryKey: ["patient", key],

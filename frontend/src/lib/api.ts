@@ -19,6 +19,8 @@ export type LadderModel = Schemas["LadderModel"];
 export type AckRequest = Schemas["AckRequest"];
 export type AckRecord = Schemas["AckRecord"];
 export type Health = Schemas["Health"];
+export type { ConfirmatoryDoc } from "@/components/evidence/Confirmatory";
+import type { ConfirmatoryDoc } from "@/components/evidence/Confirmatory";
 
 export const API_BASE = process.env.NEXT_PUBLIC_API_BASE ?? "";
 
@@ -63,6 +65,7 @@ export const api = {
   health: () => request<Health>("GET", "/api/health"),
   meta: () => request<Meta>("GET", "/api/meta"),
   evidence: () => request<Evidence>("GET", "/api/evidence"),
+  confirmatory: () => request<ConfirmatoryDoc>("GET", "/api/confirmatory"),
   cases: () => request<Case[]>("GET", "/api/replay/cases"),
   status: () => request<ReplayStatus>("GET", "/api/replay/status"),
   ward: () => request<Ward>("GET", "/api/ward"),

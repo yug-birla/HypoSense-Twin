@@ -219,6 +219,22 @@ def evaluate(run_tests: bool = True) -> tuple[list[dict[str, Any]], dict[str, An
             "canonical": a["results"]["canonical"],
         }
     _check(checks, "candidate_reproducible", cand_ok, cand_detail)
+    r4 = sorted((REPO_ROOT / "experiments" / "runs").glob("T-AGG-dev-r4-*/results.json"))
+    r4_ok = False
+    if r4:
+        d = json.loads(r4[-1].read_text("utf-8"))
+        r4_ok = (
+            d["provenance"]["git"]["dirty"] is False
+            and sha256_json(d["results"]) == d["results_sha256"]
+        )
+        facts["r4_run"] = d["run_id"]
+        facts["r4_results_sha256"] = d["results_sha256"]
+    _check(
+        checks,
+        "r4_parameters_frozen",
+        r4_ok,
+        f"R4 run {facts.get('r4_run')}" if r4_ok else "no clean R4 tuning run (§5.7 item 27)",
+    )
     if cand_ok:
         try:
             from hyposense.models.artifact import load_artifact
@@ -417,3 +433,64 @@ def verify_freeze_record(path: Path = FREEZE_JSON) -> VerifiedFreeze:
     if m.manifest["files"] != cand["files"]:
         raise FreezeVerificationError("candidate artefact files differ from the freeze record")
     return VerifiedFreeze(_TOKEN, record)
+
+
+# ---------------------------------------------------------------- post-confirmation presentation
+CONFIRM_PREFIX = "E-AGG-confirm"
+
+
+class VerifiedConfirmation:
+    """Proof object for READ-ONLY presentation access to E after the official confirmatory run
+    (ANALYSIS_PLAN §5.7 item 33). Only `verify_confirmation` creates it; it never authorises
+    modelling (the confirmatory runner refuses once an official run exists)."""
+
+    __slots__ = ("_token", "confirm_run", "record_sha256", "results")
+
+    def __init__(
+        self, token: object, record_sha256: str, run: str, results: dict[str, Any]
+    ) -> None:
+        if token is not _TOKEN:
+            raise FreezeVerificationError("only verify_confirmation creates this object")
+        self._token = token
+        self.record_sha256 = record_sha256
+        self.confirm_run = run
+        self.results = results
+
+
+def official_confirm_runs() -> list[Path]:
+    return sorted((REPO_ROOT / "experiments" / "runs").glob(f"{CONFIRM_PREFIX}-*"))
+
+
+def verify_confirmation(path: Path = FREEZE_JSON) -> VerifiedConfirmation:
+    """The freeze record is intact, exactly one official run exists, it is bound to this record
+    and passes its integrity hash, and the data manifest and partition still match the record.
+    The code tree is NOT required to match (presentation code may change after S9)."""
+    if not path.is_file():
+        raise FreezeVerificationError(f"no freeze record at {path}")
+    record = json.loads(path.read_text("utf-8"))
+    body = {k: v for k, v in record.items() if k != "record_sha256"}
+    if sha256_json(body) != record.get("record_sha256"):
+        raise FreezeVerificationError("freeze record hash mismatch (edited record)")
+    runs = official_confirm_runs()
+    if len(runs) != 1:
+        raise FreezeVerificationError(f"expected exactly one official run, found {len(runs)}")
+    doc = json.loads((runs[0] / "results.json").read_text("utf-8"))
+    if sha256_json(doc["results"]) != doc["results_sha256"]:
+        raise FreezeVerificationError("official results fail their integrity hash")
+    if (doc["results"].get("freeze") or {}).get("record_sha256") != record["record_sha256"]:
+        raise FreezeVerificationError("official run is not bound to this freeze record")
+    from hyposense.audit.partition_check import verify_partition
+    from hyposense.data.dataset import extracted_root
+    from hyposense.data.manifest import read_manifest, verify_manifest
+    from hyposense.data.partition import partition_path
+    from hyposense.data.source import dataset_config
+
+    man = REPO_ROOT / dataset_config()["paths"]["manifest_json"]
+    verify_manifest(extracted_root(), read_manifest(man))
+    if sha256_file(man) != record.get("data_manifest_sha256"):
+        raise FreezeVerificationError("data manifest differs from the freeze record")
+    if verify_partition()["status"] != "PASS" or sha256_file(
+        partition_path(load_config())
+    ) != record.get("partition_sha256"):
+        raise FreezeVerificationError("partition differs from the freeze record")
+    return VerifiedConfirmation(_TOKEN, record["record_sha256"], runs[0].name, doc["results"])

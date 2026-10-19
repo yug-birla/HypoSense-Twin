@@ -111,6 +111,11 @@ def create_app(svc: Service, clock: bool = True) -> FastAPI:
     async def evidence() -> dict[str, Any]:
         return await g.read(svc.evidence)
 
+    @app.get("/api/confirmatory")
+    async def confirmatory() -> dict[str, Any]:
+        """S9 result (PENDING until the single official run exists and verifies)."""
+        return await g.read(svc.confirmatory)
+
     @app.get("/api/replay/cases", response_model=list[S.Case])
     async def cases() -> list[S.Case]:
         return await g.read(svc.cases)

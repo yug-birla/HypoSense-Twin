@@ -17,6 +17,8 @@ hyposense dev s6 [--workers N]          S6 development workflow on T (tuning, la
 hyposense dev artifact [--level M3]      S7 DEVELOPMENT model artefact (T only)
 hyposense dev s7 [--model DIR]           S7 engineering evidence (parity, determinism, latency)
 hyposense serve [--model DIR] [--port N] replay API (refuses to start on an artefact mismatch)
+hyposense serve --held-out               after S9: E patients replayed with their own fold models
+hyposense report [--rehearsal RUN]       S10 results tables, model card, figures (from S9 only)
 hyposense dev candidate                  freeze-candidate workflow on T (run twice)
 hyposense freeze [--check]               protocol freeze; fails closed (ERROR — FREEZE ABORTED)
 hyposense gates show                  print the latest gate results
@@ -245,10 +247,16 @@ def cmd_serve(args: argparse.Namespace) -> int:
     from hyposense.models.artifact import ArtifactError
 
     try:
-        svc = Service(
-            _latest_model(args.model),
-            expected_manifest_sha256=args.expect_sha,
-        )
+        if args.held_out or args.held_out_rehearsal:
+            from hyposense.api.held_out import held_out_setup
+
+            model_dir, streams, held, _ = held_out_setup(args.held_out_rehearsal)
+            svc = Service(model_dir, streams, held_out=held)
+        else:
+            svc = Service(
+                _latest_model(args.model),
+                expected_manifest_sha256=args.expect_sha,
+            )
     except ArtifactError as exc:
         print(f"REFUSING TO START: {exc}")
         return 3
@@ -260,6 +268,23 @@ def cmd_dev_s6(args: argparse.Namespace) -> int:
     from hyposense.evaluation.s6_run import run_s6
 
     _print(run_s6(workers=args.workers, resamples=args.resamples, trials=args.trials))
+    return 0
+
+
+def cmd_report(args: argparse.Namespace) -> int:
+    from hyposense.reporting.confirm_report import run_report
+
+    _print(run_report(args.rehearsal))
+    return 0
+
+
+def cmd_confirm(args: argparse.Namespace) -> int:
+    from hyposense.evaluation.confirm import run_confirm
+
+    if args.rehearsal:
+        _print(run_confirm("rehearsal", workers=args.workers))
+    else:
+        _print(run_confirm("official", workers=args.workers, freeze_path=Path(args.freeze)))
     return 0
 
 
@@ -397,8 +422,30 @@ def build_parser() -> argparse.ArgumentParser:
     sv.add_argument("--host", default="127.0.0.1")
     sv.add_argument("--port", type=int, default=8000)
     sv.add_argument("--expect-sha", default=None, help="pin the artefact manifest SHA-256")
+    ho = sv.add_mutually_exclusive_group()
+    ho.add_argument(
+        "--held-out",
+        action="store_true",
+        help="after S9 only: replay E patients with their own fold models (read-only E access)",
+    )
+    ho.add_argument(
+        "--held-out-rehearsal",
+        metavar="RUN",
+        default=None,
+        help="the same on T from a T-AGG-rehearsal-* run (development; never evidence)",
+    )
     sv.set_defaults(func=cmd_serve)
 
+    rp = sub.add_parser("report", help="S10 results, model card and figures from the S9 run")
+    rp.add_argument("--rehearsal", metavar="RUN", default=None, help="a T-AGG-rehearsal-* run")
+    rp.set_defaults(func=cmd_report)
+
+    cf = sub.add_parser("confirm", help="S9 confirmatory run (official: once, after freeze)")
+    g = cf.add_mutually_exclusive_group(required=True)
+    g.add_argument("--freeze", help="official run: path to artifacts/freeze/FREEZE.json")
+    g.add_argument("--rehearsal", action="store_true", help="T-only rehearsal (never evidence)")
+    cf.add_argument("--workers", type=int, default=None)
+    cf.set_defaults(func=cmd_confirm)
     fz = sub.add_parser("freeze", help="protocol freeze (fails closed; never touches E)")
     fz.add_argument("--check", action="store_true", help="evaluate invariants; write nothing")
     fz.add_argument("--no-tests", action="store_true", help="skip the test suite (check only)")

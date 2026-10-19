@@ -62,6 +62,23 @@ def unlock_sealed_partition(verified: object) -> str:
     return again.record_sha256
 
 
+def unlock_for_presentation(verified: object) -> str:
+    """READ-ONLY presentation access to E after the official confirmatory run (ANALYSIS_PLAN
+    §5.7 item 33: replay of held-out patients with their own fold models, reports). Accepts ONLY
+    a VerifiedConfirmation (re-verified here). Modelling stays impossible: the confirmatory
+    runner refuses once an official run exists."""
+    from hyposense.freeze import FREEZE_JSON, VerifiedConfirmation, verify_confirmation
+
+    if not isinstance(verified, VerifiedConfirmation):
+        raise SealedPartitionError("presentation access needs a verified confirmation")
+    again = verify_confirmation(FREEZE_JSON)
+    if again.record_sha256 != verified.record_sha256:
+        raise SealedPartitionError("freeze record changed since verification")
+    _UNLOCKED["record_sha256"] = again.record_sha256
+    _UNLOCKED["purpose"] = f"presentation after {again.confirm_run}"
+    return again.record_sha256
+
+
 def sealed_unlocked() -> bool:
     return "record_sha256" in _UNLOCKED
 
@@ -80,6 +97,14 @@ def assert_not_sealed(patient_id: str) -> None:
         raise SealedPartitionError(
             f"patient {patient_id} belongs to the sealed evaluation partition (no freeze record)"
         )
+
+
+def partition_labels(ds: Dataset) -> dict[str, str]:
+    """patient_key -> 'T' | 'E' for the patients of a loaded dataset only. The scope check
+    already ran when `ds` was loaded, so this never reveals labels of patients outside it."""
+    part = load_partition()
+    keys = {r.identity.patient_key: r.identity.patient_id for r in ds.recordings}
+    return {k: part[pid] for k, pid in sorted(keys.items())}
 
 
 def extracted_root() -> Path:

@@ -6,6 +6,7 @@ import { num, pct, shortHash } from "@/lib/format";
 import { useEvidence } from "@/lib/queries";
 import { PageHeader } from "@/components/shell/AppShell";
 import { Banner } from "@/components/evidence/Banner";
+import { ConfirmatoryPanel } from "@/components/evidence/Confirmatory";
 import { FrocChart, IntervalBar, MODEL_COLOR, MODEL_DESC, MODEL_ORDER, ReliabilityChart } from "@/components/evidence/EvidenceCharts";
 import { ErrorBox, KV, Panel, Skeleton, StatusTag } from "@/components/ui/primitives";
 
@@ -152,6 +153,7 @@ export default function EvidencePage() {
         {q.data && (
           <>
             <Banner ev={q.data} />
+            <ConfirmatoryPanel />
             <div className="grid grid-cols-1 gap-4 xl:grid-cols-[minmax(0,1fr)_360px]">
               <Panel title="Prediction task">
                 <dl className="grid grid-cols-1 gap-x-8 md:grid-cols-2">

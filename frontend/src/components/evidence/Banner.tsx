@@ -9,7 +9,10 @@ export function Banner({ ev }: { ev: Evidence }) {
         <FlaskConical aria-hidden className="size-4" /> {ev.status} evidence
       </span>
       <span className="inline-flex items-center gap-1.5 text-body">
-        <Lock aria-hidden className="size-3.5" /> Evaluation partition remains sealed · confirmatory result {ev.confirmatory.split(" ")[0]}
+        <Lock aria-hidden className="size-3.5" />{" "}
+        {ev.confirmatory.startsWith("PENDING")
+          ? `Evaluation partition remains sealed · confirmatory result ${ev.confirmatory.split(" ")[0]}`
+          : `Confirmatory run complete (${ev.confirmatory}) · panels below the confirmatory result are development evidence`}
       </span>
       <span className="inline-flex items-center gap-1.5 text-body">
         <ShieldAlert aria-hidden className="size-3.5" /> Not clinically validated

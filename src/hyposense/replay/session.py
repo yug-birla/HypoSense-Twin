@@ -20,7 +20,7 @@ decision, deterministic content, Blueprint §14.3), acks.jsonl, rejected.jsonl a
 from __future__ import annotations
 
 import json
-from collections.abc import Sequence
+from collections.abc import Callable, Sequence
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
@@ -74,8 +74,14 @@ class DecisionLog:
 
 class ReplaySession:
     def __init__(
-        self, streams: Sequence[RecordingStream], pipe: Pipeline, log: DecisionLog | None = None
+        self,
+        streams: Sequence[RecordingStream],
+        pipe: Pipeline,
+        log: DecisionLog | None = None,
+        pipe_for: Callable[[RecordingStream], Pipeline] | None = None,
     ) -> None:
+        """`pipe_for` (held-out replay) gives each recording its own pipeline, i.e. its patient's
+        out-of-fold model; `pipe` is used for every recording otherwise."""
         if not 1 <= len(streams) <= MAX_RECORDINGS:
             raise InvalidSelection(f"select 1..{MAX_RECORDINGS} recordings")
         keys = [s.identity.recording_key for s in streams]
@@ -83,6 +89,7 @@ class ReplaySession:
             raise InvalidSelection("a recording may be selected once")
         self.streams = tuple(sorted(streams, key=lambda s: s.identity.recording_key))
         self.pipe = pipe
+        self.pipe_for = pipe_for
         self.log = log
         self.start_ts = [s.first_ts if s.first_ts is not None else 0 for s in self.streams]
         order = []
@@ -97,7 +104,10 @@ class ReplaySession:
         self._reset_runners()
 
     def _reset_runners(self) -> None:
-        self.runners = [TwinRunner(s, self.pipe) for s in self.streams]
+        self.runners = [
+            TwinRunner(s, self.pipe if self.pipe_for is None else self.pipe_for(s))
+            for s in self.streams
+        ]
         self.pos = 0
         self.offset = 0
 
@@ -119,7 +129,7 @@ class ReplaySession:
         rec = r.feed(j, r.stream.events[j])
         if self.log is not None:
             if rec is not None:
-                self.log.write("decisions", rec.log(self.pipe.model))
+                self.log.write("decisions", rec.log(r.pipe.model))
             for x in r.rejected[before:]:
                 self.log.write("rejected", {"recording_key": r.recording_key, **x})
         if self.finished:

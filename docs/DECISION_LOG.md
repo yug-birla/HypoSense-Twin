@@ -1143,3 +1143,32 @@ Owner approval 2026-10-19. Canonical text: ANALYSIS_PLAN §5 and §6 (FINAL). Br
   - **Rehearsal:** a T-only rehearsal mode exercises the identical code. Its results are
     REHEARSAL (development) and are never evidence.
 - **Class**: C (approved §6) / C (P-C11 pending) · **Date**: 2026-10-19
+
+## DEC-2026-10-19-O · S10 presentation path built before freeze; R3 learner property disclosed
+
+- **Context:** `CODE_PATHS` (src, configs, locks, frontend/src) is frozen. Any S10 code written
+  after freeze would break `verify_freeze_record`, so the presentation path is built now and is
+  frozen with the confirmatory runner.
+- **Held-out replay** (`hyposense serve --held-out`; ANALYSIS_PLAN §5.7 item 33, part of P-C11):
+  - Each E patient is replayed with the fold model that never saw that patient.
+  - E access is read-only and only after the run: `freeze.verify_confirmation` →
+    `data.dataset.unlock_for_presentation`.
+  - **MEASURED** on the T rehearsal: the replay reproduces the runner's pooled OOF
+    probabilities bitwise (31,416 decisions, 0 mismatches).
+  - Alternative rejected: replaying E with the all-patient final model. Those are in-sample
+    scores and would mislead.
+- **Confirmatory Evidence panel / `GET /api/confirmatory`:**
+  - It shows PENDING until exactly one official run verifies, and INTEGRITY FAILURE if
+    verification fails.
+  - It never shows a rehearsal.
+  - Numbers are copied from the results document by `reporting.confirm_view`.
+- **Report generator** (`hyposense report`): RESULTS.md, MODEL_CARD.md and SVG figures, copied
+  from the frozen document. A rehearsal output is stamped REHEARSAL in every file.
+- **R3 (logistic regression) diagnosis, MEASURED on T:**
+  - Implementation equals §5.7 item 26.
+  - The low sens@1FA (0.30 in the smoke rehearsal) comes from the linear learner overfitting
+    the patient-level `rx_*` flags: CGM-only test AUROC 0.973, full M2 0.872 (train 0.976),
+    M2 without `rx_*` 0.965.
+  - Disclosed in item 26. The learner is **not** changed, since changing a pre-specified
+    robustness learner after seeing its rehearsal output would be result-driven.
+- **Class:** A (presentation engineering) / C-pending (item 33 is in P-C11) · **Date:** 2026-10-19

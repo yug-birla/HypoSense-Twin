@@ -31,7 +31,7 @@ from hyposense.calibration.methods import fit
 from hyposense.common.config import REPO_ROOT, load_config
 from hyposense.common.hashing import sha256_json
 from hyposense.common.provenance import make_run_id, utc_now_iso
-from hyposense.evaluation.devdata import load_dev
+from hyposense.evaluation.devdata import DevData, load_dev
 from hyposense.evaluation.folds import grouped_folds
 from hyposense.evaluation.m0_run import provenance
 from hyposense.evaluation.metrics import EventRules, curve, patient_curves, select_threshold
@@ -81,12 +81,35 @@ def latest_candidate(root: Path = MODELS_DIR) -> Path | None:
 def build_dev_artifact(
     level: str = "M3", out_root: Path = MODELS_DIR, name: str | None = None
 ) -> dict[str, Any]:
+    """Freeze-candidate artefact on T (the S7 procedure)."""
+    dev = load_dev()
+    return build_artifact_from(
+        dev,
+        level,
+        out_root,
+        name or make_run_id(f"{level}-candidate"),
+        "DEVELOPMENT",
+        {"partition": "T", "feature_table_sha256": dev.provenance["table_sha256"]},
+    )
+
+
+def build_artifact_from(
+    dev: DevData,
+    level: str,
+    out_root: Path,
+    name: str,
+    status: str,
+    extra_provenance: dict[str, Any],
+) -> dict[str, Any]:
+    """The S7 artefact procedure on any population table (T for the candidate; all patients for
+    the S9 final model, ANALYSIS_PLAN §5.7 item 29): 5-fold grouped OOF (seed model.seed),
+    canonical calibrator on the eligible OOF rows, τA/τW from all OOF predictions, final fit on
+    every eligible row."""
     started = utc_now_iso()
     t0 = time.perf_counter()
     cfg, pharma = load_config(), load_config("pharma.yaml")
     s6 = frozen_s6()
     method = str(cfg["calibration"]["method"])  # canonical (DEC-2026-10-19-M)
-    dev = load_dev()
     t = dev.table
     spec = model_sets()[level]
     feats, cat = list(spec["features"]), spec["categorical"]
@@ -124,8 +147,7 @@ def build_dev_artifact(
     final = train(t.loc[elig, feats], y[elig], params, rounds, cat)
     prov = provenance(
         {
-            "partition": "T",
-            "feature_table_sha256": dev.provenance["table_sha256"],
+            **extra_provenance,
             "s6_run": S6_RUN,
             "s6_results_sha256": s6["results_sha256"],
             "calibrator": method,
@@ -144,7 +166,7 @@ def build_dev_artifact(
             "created_utc": started,
         }
     )
-    out = out_root / (name or make_run_id(f"{level}-candidate"))
+    out = out_root / name
     manifest = write_artifact(
         out,
         level=level,
@@ -152,7 +174,7 @@ def build_dev_artifact(
         calibrator=calibrator,
         thresholds=th,
         rules=PolicyRules.from_config(cfg),
-        status="DEVELOPMENT",
+        status=status,
         cfg=cfg,
         pharma=pharma,
         provenance=prov,

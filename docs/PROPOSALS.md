@@ -308,7 +308,13 @@ Status values: **AWAITING APPROVAL** · **APPROVED** · **REJECTED** · **EXPERI
    SA6 parameters scale, R3 preprocessing, when R4 is tuned, and the demo eligibility windows.
 2. **Problem.** Without written definitions, the S9 code would make undocumented choices.
 3. **Evidence.** Each item is listed in ANALYSIS_PLAN §5.7.
-4. **Proposed modification.** Adopt §5.7 items 1–30 verbatim.
+4. **Proposed modification.** Adopt §5.7 items 1–33 verbatim. Items 31–33 were added
+   2026-10-19, still before freeze:
+   - 31: how "≈" is read in Table 20.4;
+   - 32: run once, plus reproduction verification;
+   - 33: read-only E access after the run, for held-out replay and the report only.
+   Item 26 also carries a disclosed T-rehearsal property of the R3 learner. The learner was
+   not changed in response.
 5. **Scientific consequences.** The primary analysis is unaffected. Every secondary,
    sensitivity and robustness analysis becomes reproducible.
 6. **Comparability.** The same definitions apply to every model.

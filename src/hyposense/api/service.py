@@ -9,11 +9,13 @@ with the model status.
 from __future__ import annotations
 
 import asyncio
+import dataclasses
 import json
 import math
 import re
 import threading
 from collections.abc import Sequence
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
@@ -41,6 +43,10 @@ from hyposense.state.stream import RecordingStream
 
 LOG_ROOT = REPO_ROOT / "logs" / "replay"
 SOURCE_LABEL = "Replay of TUNING-partition (T) records; DEVELOPMENT model; not held-out evidence"
+HELD_OUT_LABEL = (
+    "Held-out replay: each patient is scored by the fold model that never saw that patient "
+    "(run {run}); {status}"
+)
 STATE_ORDER = {
     PolicyState.SYSTEM_ERROR: 0,
     PolicyState.LOW_NOW: 1,
@@ -99,6 +105,18 @@ def decision_view(rec: DecisionRecord | None, d: PolicyDecision, status: str) ->
     )
 
 
+@dataclass(frozen=True)
+class HeldOut:
+    """Held-out replay (Blueprint §15; ANALYSIS_PLAN §5.7 item 33): the fold bundle of a
+    confirmatory run (or its T-only rehearsal) and the partition its patients belong to."""
+
+    bundle_dir: Path  # <level>-folds-<ts>/ with fold-<k>/ artefacts and fold_map.json
+    run_id: str
+    partition: str  # "E" (official) or "T" (rehearsal)
+    fold_files: dict[str, Any] | None = None  # from results.json; verified when given
+    selected: str = ""  # §6 selected model; "" if unknown
+
+
 class Service:
     def __init__(
         self,
@@ -106,6 +124,7 @@ class Service:
         streams: Sequence[RecordingStream] | None = None,
         log_root: Path = LOG_ROOT,
         expected_manifest_sha256: str | None = None,
+        held_out: HeldOut | None = None,
     ) -> None:
         self.cfg, self.pharma = load_config(), load_config("pharma.yaml")
         self.model: RuntimeModel = load_artifact(  # refuses on any mismatch
@@ -119,7 +138,19 @@ class Service:
         )
         self.cgm_cfg = CGMFeatureConfig.from_config(self.cfg)
         if streams is None:
+            if held_out is not None:
+                raise ValueError("held-out replay needs explicitly loaded streams")
             streams = load_tuning_streams(self.cfg, self.pharma)
+        self.held_out = held_out
+        self.source = SOURCE_LABEL
+        self.partition = "T"
+        self.fold_of: dict[str, int] = {}
+        self.fold_pipes: dict[int, Pipeline] = {}
+        if held_out is not None:
+            self._load_folds(held_out)
+            streams = [s for s in streams if s.identity.patient_key in self.fold_of]
+            if not streams:
+                raise ValueError("no recording belongs to a held-out patient of the bundle")
         self.catalog = {s.identity.recording_key: s for s in streams}
         self._streams: list[RecordingStream] = []
         self.log_root = log_root
@@ -133,6 +164,31 @@ class Service:
         self.decisions_logged = 0
         self.subscribers: set[asyncio.Queue[dict[str, Any] | None]] = set()
         self._shown_last: dict[str, tuple[str, float | None, str | None]] = {}
+        self._confirm_view: dict[str, Any] | None = None
+
+    def _load_folds(self, h: HeldOut) -> None:
+        self.fold_of = {
+            str(p): int(k)
+            for p, k in json.loads((h.bundle_dir / "fold_map.json").read_text("utf-8")).items()
+        }
+        for k in sorted(set(self.fold_of.values())):
+            m = load_artifact(h.bundle_dir / f"fold-{k}", self.cfg, self.pharma)
+            if h.fold_files is not None and m.manifest["files"] != h.fold_files[str(k)]:
+                raise ValueError(f"fold-{k} artefact differs from the confirmatory record")
+            self.fold_pipes[k] = dataclasses.replace(self.pipe, model=m)
+        self.partition = h.partition
+        status = (
+            "CONFIRMATORY held-out scores"
+            if h.partition == "E"
+            else "REHEARSAL on T (development; never evidence)"
+        )
+        self.source = HELD_OUT_LABEL.format(run=h.run_id, status=status)
+        lvl = next(iter(self.fold_pipes.values())).model.level
+        if h.selected and h.selected != lvl:
+            self.source += f"; replayed level {lvl} is NOT the selected model ({h.selected})"
+
+    def _pipe_for(self, s: RecordingStream) -> Pipeline:
+        return self.fold_pipes[self.fold_of[s.identity.patient_key]]
 
     # ------------------------------------------------------------------ session lifecycle
     def _new_log(self) -> DecisionLog:
@@ -146,7 +202,13 @@ class Service:
             "model_version": self.model.model_version,
             "model_status": self.model.status,
             "artifact_manifest_sha256": self.model.manifest_sha256,
-            "source": SOURCE_LABEL,
+            "source": self.source,
+            "fold_of": {
+                s.identity.recording_key: self.fold_of[s.identity.patient_key]
+                for s in self._streams
+            }
+            if self.held_out is not None
+            else None,
         }
         return DecisionLog(self.log_root / self.session_id, header)
 
@@ -162,7 +224,9 @@ class Service:
         if self.session is not None and self.session.log is not None:
             self.session.log.close()
         log = self._new_log()
-        self.session = ReplaySession(self._streams, self.pipe, log)
+        self.session = ReplaySession(
+            self._streams, self.pipe, log, None if self.held_out is None else self._pipe_for
+        )
         self.playing = False
         self._clock = 0.0
         self.publish({"type": "session", **self.status().model_dump()})
@@ -256,7 +320,7 @@ class Service:
             duration_s=0 if s is None else s.duration,
             finished=False if s is None else s.finished,
             decisions_logged=self.decisions_logged,
-            source=SOURCE_LABEL,
+            source=self.source,
         )
 
     def cases(self) -> list[S.Case]:
@@ -270,7 +334,7 @@ class Service:
                     patient_key=st.identity.patient_key,
                     days=round((max(ts) - min(ts)) / 86400, 2) if ts else 0.0,
                     cgm_readings=n,
-                    partition="T",
+                    partition=self.partition,
                 )
             )
         return out
@@ -390,11 +454,13 @@ class Service:
             return []
         if snap is None or snap.digest != lf.input_digest:
             return []
-        return self._groups(snap)
+        return self._groups(snap, r.pipe.model)
 
-    def _groups(self, snap: Any) -> list[S.FactorGroup]:
+    def _groups(self, snap: Any, model: RuntimeModel) -> list[S.FactorGroup]:
+        """Contributions of the model that actually scored the recording (its fold model in
+        held-out replay)."""
         sums: dict[str, float] = {}
-        for f, c in self.model.contributions(snap).items():
+        for f, c in model.contributions(snap).items():
             g = BY_NAME[f].group.value
             sums[g] = sums.get(g, 0.0) + c
         top = sorted(sums.items(), key=lambda kv: (-abs(kv[1]), kv[0]))[:3]
@@ -596,11 +662,55 @@ class Service:
                 "post_episode_s": m.rules.post_episode_s,
                 "max_gap_s": m.rules.max_gap_s,
             },
-            "freeze_status": "NOT FROZEN (development)",
+            "freeze_status": "NOT FROZEN (development)"
+            if self.held_out is None or self.held_out.partition != "E"
+            else "FROZEN; confirmatory run executed",
             "data_utc_offset_s": self.cgm_cfg.utc_offset_s,
-            "source": SOURCE_LABEL,
+            "source": self.source,
+            "held_out": None
+            if self.held_out is None
+            else {
+                "run_id": self.held_out.run_id,
+                "partition": self.held_out.partition,
+                "bundle": self.held_out.bundle_dir.name,
+                "folds": {
+                    str(k): p.model.manifest_sha256 for k, p in sorted(self.fold_pipes.items())
+                },
+            },
             "caveat": LABEL_CAVEAT,
         }
+
+    def confirmatory(self) -> dict[str, Any]:
+        """The confirmatory (S9) result for the Evidence View: PENDING until exactly one official
+        run exists and passes `freeze.verify_confirmation`; then its frozen numbers, unchanged.
+        A rehearsal run is never shown here."""
+        from hyposense.freeze import (
+            FreezeVerificationError,
+            official_confirm_runs,
+            verify_confirmation,
+        )
+        from hyposense.reporting.confirm_view import confirmatory_view, pending_view
+
+        if not official_confirm_runs():
+            return pending_view()
+        if self._confirm_view is None:
+            try:
+                v = verify_confirmation()  # refuses a tampered record or results document
+            except FreezeVerificationError as exc:  # shown, never hidden or replaced
+                return {"status": "INTEGRITY FAILURE", "note": str(exc)}
+            doc = json.loads(
+                (REPO_ROOT / "experiments" / "runs" / v.confirm_run / "results.json").read_text(
+                    "utf-8"
+                )
+            )
+            self._confirm_view = confirmatory_view(doc)
+        return self._confirm_view
+
+    def _confirm_label(self) -> str:
+        c = self.confirmatory()
+        if c["status"] == "PENDING":
+            return "PENDING (sealed evaluation partition not opened)"
+        return f"{c['status']} {c.get('run_id', '')}".strip()
 
     def evidence(self) -> dict[str, Any]:
         """Evidence View content, assembled from canonical artefacts only (no computation):
@@ -685,7 +795,7 @@ class Service:
         m = self.model
         return {
             "status": "DEVELOPMENT",
-            "confirmatory": "PENDING (sealed evaluation partition not opened)",
+            "confirmatory": self._confirm_label(),
             "task": {
                 "target": f"CGM-detected L1 episode (CGM < {ev_cfg['threshold_mgdl']:g} mg/dL)",
                 "horizon_min": ev_cfg["horizon_min"],

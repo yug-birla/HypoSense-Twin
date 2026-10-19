@@ -27,6 +27,8 @@ experiments/runs/*
 !experiments/runs/ALL-AGG-*/
 # aggregate-only TUNING-partition audits (no row-level values inside)
 !experiments/runs/T-AGG-*/
+# aggregate-only confirmatory results (S9; row-level outputs stay in data/processed/confirm/)
+!experiments/runs/E-AGG-*/
 logs/
 
 # --- Python ---

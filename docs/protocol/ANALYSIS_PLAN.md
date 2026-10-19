@@ -468,6 +468,13 @@ and were written before E was opened. Implementation: `src/hyposense/evaluation/
 26. **R3:** M2 and M3 as L2-penalised logistic regression (C = 1.0, lbfgs, max_iter 2000),
     using training-row median imputation, standardisation and one-hot categorical codes. The
     same calibration and thresholds apply.
+    - *Disclosed T-rehearsal property (MEASURED 2026-10-19, not a code defect; the learner is
+      not changed in response):* on T, the linear learner overfits the patient-level `rx_*`
+      prescription flags. On one held-out split of 8 T patients, CGM-only LR has a test AUROC
+      of 0.973; full M2 LR has 0.872 (train 0.976); M2 LR without `rx_*` has 0.965. In the
+      smoke rehearsal, R3 sens@1FA was 0.30 for both M2 and M3. R3 therefore tests learner
+      dependence under a deliberately simple learner. A low R3 value is read as a property of
+      that learner, not as evidence about medication exposure.
 27. **R4:** M2, M3r and M3 with their own hyperparameters.
     - The parameters are tuned on T **before freeze**, with the S6 M1 procedure (Optuna TPE,
       seed 2026, the same space and trial count).
@@ -486,6 +493,27 @@ and were written before E was opened. Implementation: `src/hyposense/evaluation/
       the notification time (FP).
     - Each category is shuffled with seed 2026 and the first eligible case is taken.
     - If a category is empty, that is recorded and no substitute is taken.
+31. **Reading of "≈" in Table 20.4:** the paired 95 % CI of the contrast includes 0. "S3
+    favours M3" means the log-loss difference M3 − M2 has a point estimate < 0. The applicable
+    rows are reported mechanically and do not change §6.
+32. **Run once:**
+    - The official run executes once. A second execution of the identical frozen code and
+      record is allowed only as a REPRODUCTION VERIFICATION.
+    - It must give a bitwise-identical `results_sha256`.
+    - It never replaces the official run, and any difference is reported as a defect, not as a
+      new result.
+33. **E access after the confirmatory run (presentation only):**
+    - Once exactly one official run exists, E may be read again for presentation only:
+      held-out replay (`hyposense serve --held-out`), the S10 report (`hyposense report`) and
+      the demo cases of item 30.
+    - The run must be bound to the freeze record, pass its results hash, and the data
+      manifest and partition must still match (`freeze.verify_confirmation`).
+    - In held-out replay, every E patient is scored by the fold model that never saw that
+      patient. This reproduces the pooled OOF probabilities bitwise (rehearsal check:
+      31,416 decisions, 0 mismatches).
+    - The all-patient final model is never used to score E patients in a display.
+    - No fitting, tuning, threshold, calibration or selection step can run. The confirmatory
+      runner refuses once an official run exists.
 
 ## 6. Interpretation matrix and model-selection rule
 
