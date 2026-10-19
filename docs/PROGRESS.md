@@ -687,3 +687,36 @@ Resolve three development uncertainties on T with rules written before the runs.
 
 ### Next Task
 Owner decision resolution (CURRENT_STATE "Open Decisions"), then FREEZE.
+
+## 2026-10-19 — Pre-freeze finalization (branch `prefreeze-finalization`)
+
+### Work Completed
+- **Owner decisions applied** (DEC-2026-10-19-M):
+  - floored calibrator canonical (P-B10 verdict INCONCLUSIVE preserved);
+  - LOW_CONFIDENCE removed;
+  - full M3 canonical;
+  - P-B6 sensitivity only;
+  - P-C7 policy-only;
+  - P-C9 post-hoc reference;
+  - P-C10 option (b).
+- **Analysis plan:** ANALYSIS_PLAN §5/§6 FINAL (17 items).
+- **Pharmacist packet:** completed and marked PENDING.
+- **Freeze candidate:** rebuilt with full-precision hyperparameters (artefact format 2). The
+  candidate workflow ran twice, identical (`c0cbe721…`); the S7 bench ran on the candidate.
+- **Freeze tooling:** `hyposense freeze` (fails closed).
+- **Reviews and visual check:** final five-perspective review, with fixes; focused visual
+  check of the Evidence and Ward pages.
+
+### Results
+- **T results:** sens@1FA and partial area identical to S6 for every model.
+- **Calibration:** log-loss improves; ECE and slope shift (disclosed).
+- **Replay:** identical.
+- **P-C7:** no T effect (no gap > 120 min).
+
+### Problems Found and Fixed
+- **Stale Evidence calibration numbers:** the frontend build had not been rebuilt.
+- **Candidate runs launched on a dirty tree:** stopped and relaunched.
+- **Review F1–F8.**
+
+### Next Task
+COMPLETE PHARMACIST REVIEW (human), then `hyposense freeze`. S9 not started.

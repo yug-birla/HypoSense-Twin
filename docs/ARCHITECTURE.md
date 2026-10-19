@@ -273,8 +273,9 @@ PatientState(patient_key, ts)
 ### 4.7 Decision Policy (`policy/`)
 - `decide(p, state, policy_cfg) → PolicyDecision` is a pure function. It never raises: an
   exception maps to SYSTEM ERROR. Table 14.1 applies, with the priority question in P-C1.
-- Cooldown is 60 min. The ALERT state persists during cooldown. Tags (LOW CONFIDENCE, timing
-  unknown) never downgrade an ALERT.
+- Cooldown is 60 min. The ALERT state persists during cooldown. Tags (timing unknown,
+  recent input rejected) never downgrade an ALERT. LOW CONFIDENCE was removed (P-B12,
+  DEC-2026-10-19-M).
 - Logging appends to `logs/decisions.jsonl` (timestamp, patient key, model version, config
   hash, p, τA, τW, state, flags, input digest). Acknowledgements append to `logs/acks.jsonl`.
   Raw diet free text is never logged.

@@ -1098,3 +1098,28 @@ Owner approval 2026-10-19. Canonical text: ANALYSIS_PLAN §5 and §6 (FINAL). Br
   received, and no owner waiver ("no pharmacist available") is recorded, so **freeze is blocked
   on this item only**. Nothing about the review is fabricated.
 - **Class**: C (owner-approved) · **Date**: 2026-10-19
+
+### DEC-2026-10-19-M · addendum: freeze-candidate verification and final review
+
+- **Freeze candidate:** `T-AGG-candidate-20261019T045108Z` / `T-AGG-candidate-20261019T045338Z` on a7efa25, identical (`c0cbe721…`). Artefact
+  `M3-development-3271a3206765` (format 2, floored calibrator, full precision).
+- **Floor consequence (disclosed, rule unchanged):** in fold 4, p_lo = 0.47 % (M2) / 0.26 % (M3)
+  and ≈ 70 % of that fold's rows are clamped. Pooled ECE M2 0.0013 → 0.0022 and M3 0.0013 →
+  0.0017; slope ≈ 1.07–1.08 (inside the band rule). sens@1FA, area, thresholds and decisions are
+  unchanged.
+- **§6 selection rule:** its literal reading is written out (E-treated, pooled OOF calibrated
+  probabilities, point estimates, "not worse" = ≤, no tolerance). No criterion was added. **Owner
+  confirmation requested.** If the owner reads the rule differently, that is a Class C change
+  before freeze.
+- **Final review** (five perspectives): no CRITICAL or HIGH findings. Fixed:
+  - **F1:** the Evidence page showed the S6 calibrator's ECE next to the served calibrator.
+  - **F2:** the freeze tool now ties the committed artefact to the candidate run record.
+  - **F3:** stale docs.
+  - **F5:** the floor consequence was undisclosed.
+  - **F6:** a cross-reference.
+  - **F7:** the freeze tool now fails on unreadable runs, refuses to overwrite and runs the
+    frontend tests.
+  - **F8:** the limitations now say the pharmacist review is PENDING.
+  - **F4:** handled as the literal reading above.
+- **Freeze attempt:** `hyposense freeze` → **ERROR — FREEZE ABORTED**. The only failing invariant
+  is `pharmacist_review`; see PROGRESS.

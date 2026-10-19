@@ -10,8 +10,8 @@ cd frontend && npm ci && npm run build      # static export -> frontend/out/
 uv run hyposense serve                       # API + UI on http://127.0.0.1:8000 (offline)
 ```
 
-`hyposense serve --pc10 badge` switches the PENDING P-C10 display option (development setting
-only; the default `system_error` is the current specification).
+P-C10 is final (DEC-2026-10-19-M): a rejected non-CGM input keeps the clinical state and shows an
+INPUT REJECTED badge. There is no runtime switch.
 
 Regenerate the contract types after a backend schema change:
 `uv run python scripts/export_openapi.py && cd frontend && npm run gen:types`.
@@ -60,7 +60,7 @@ never colour alone (text + icon + colour).
 | Text | ink / ink-2 / ink-3 / ink-4; ink-3 and ink-4 meet WCAG AA on every surface |
 | Accent | teal `#0e6e6a`: navigation, links, focus. Never a state |
 | States | LOW NOW solid red; ALERT orange tint; WATCH amber tint; SYSTEM ERROR violet tint; INSUFFICIENT dashed grey; NO ALERT neutral |
-| Badges | Tier 1 = state pill; tier 2 = critical quality (sensor fault, input rejected, halted); tier 3 = quiet grey info tags (LOW_CONFIDENCE, timing unknown). P-B12: LOW_CONFIDENCE fires on ~57 % of held-out forecasts and does not separate reliability → REMOVE TAG decided (DEC-2026-10-19-L); removal from the UI awaits owner confirmation |
+| Badges | Tier 1 = state pill; tier 2 = critical quality (sensor fault, input rejected, halted); tier 3 = quiet grey info tags (timing unknown, recent input rejected). LOW_CONFIDENCE was removed (P-B12: ~57 % firing on held-out forecasts, no reliability separation; DEC-2026-10-19-M) |
 | Charts | ECharts (SVG renderer, tree-shaken): CGM ink line, 70–180 range band, 70/54 reference lines, risk on its own panel with τ lines (a forecast never shares the glucose axis), doses/meals on an event lane, episodes and sensor-fault regions as shaded areas, gaps > 20 min never joined; exposure on a separate "ESTIMATED" chart |
 | Motion | one 1.2 s background fade on a state change; disabled under `prefers-reduced-motion` |
 

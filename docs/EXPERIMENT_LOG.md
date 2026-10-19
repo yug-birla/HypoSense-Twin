@@ -430,6 +430,55 @@ Deleted, not evidence: two runs on an uncommitted tree, and two audits against a
 Two earlier launches died without output (MemoryError, then disk full on C:); no artefacts.
 Decision tables: `experiments/runs/T-AGG-dev-prefreeze-20261019T032309Z/prefreeze.md`.
 
+## Freeze candidate (DEC-2026-10-19-M) — T, DEVELOPMENT
+
+| Run | Commit (clean) | results_sha256 | Status |
+|---|---|---|---|
+| T-AGG-candidate-20261019T043127Z / 20261019T043435Z | a35085f | `c0cbe721…` (identical) | superseded only because code changed after the final review (fixes F1/F2/F7/F8); same results |
+| **T-AGG-candidate-20261019T045108Z** | **a7efa25** | **`c0cbe721…`** | **OFFICIAL freeze candidate** |
+| **T-AGG-candidate-20261019T045338Z** | **a7efa25** | **`c0cbe721…` (identical)** | **OFFICIAL reproduction** |
+| **T-AGG-s7-engineering-20261019T050448Z** | **a7efa25** | `3a1de768…` | S7 bench on the candidate |
+
+- **Integrity gate:** the canonical S6 configuration reproduces S6's `oof_sha256` bitwise with the
+  full-precision hyperparameters.
+- **Canonical model:** M3 (full; 100 features), calibrator `isotonic_interp_floored`,
+  113 rounds, seed 2026.
+- **Candidate artefact:** `M3-development-3271a3206765`, format 2.0.0.
+  - τA 0.1230; τW 0.0251; p_lo 5.46e-05.
+  - Model, calibrator and policy files are byte-identical across the four runs; the manifests
+    differ only in `created_utc`.
+- **Canonical T evaluation vs S6** (same fits; only the calibrator differs):
+
+| Population | Model | sens@1FA S6 → candidate | partial area | log-loss | ECE | slope (cand.) |
+|---|---|---|---|---|---|---|
+| treated | M1 | 0.8571 → 0.8571 | 0.8921 → 0.8921 | 0.03073 → 0.03074 | 0.00248 → 0.00250 | 0.959 |
+| treated | M2 | 0.8750 → 0.8750 | 0.8983 → 0.8983 | 0.03128 → 0.03107 | 0.00129 → 0.00222 | 1.081 |
+| treated | M3r | 0.9286 → 0.9286 | 0.9109 → 0.9109 | 0.03005 → 0.03008 | 0.00155 → 0.00154 | 1.005 |
+| treated | M3 | 0.9107 → 0.9107 | 0.9072 → 0.9072 | 0.03095 → 0.03022 | 0.00125 → 0.00167 | 1.071 |
+| all | M1 | 0.8291 → 0.8291 | 0.8424 → 0.8424 | 0.04017 → 0.04019 | 0.00060 → 0.00060 | 0.974 |
+| all | M2 | 0.8376 → 0.8376 | 0.8521 → 0.8521 | 0.04065 → 0.04046 | 0.00085 → 0.00154 | 1.043 |
+| all | M3r | 0.8632 → 0.8632 | 0.8567 → 0.8567 | 0.04048 → 0.04050 | 0.00100 → 0.00100 | 0.975 |
+| all | M3 | 0.8547 → 0.8547 | 0.8546 → 0.8546 | 0.04392 → 0.04087 | 0.00064 → 0.00087 | 0.979 |
+
+- **Explained differences.**
+  - **sens@1FA and partial area:** identical (monotone calibrator).
+  - **Log-loss improves:** S6's unfloored calibrator gave exactly 0 to one positive for M2 and M3
+    (penalised through the 1e-15 clip).
+  - **ECE and slope:** the floor in outer fold 4 is 0.47 % (M2) / 0.26 % (M3), because that
+    fold's lowest isotonic block is small, and it clamps ≈ 70 % of that fold's held-out rows
+    (ANALYSIS_PLAN §5.4 item 12 disclosure).
+  - **Δ M3−M2 (T-treated):** +0.0357 (S6 +0.0357).
+- **Replay of all T** through the candidate:
+  - states {'ALERT': 1006, 'INSUFFICIENT_DATA': 263, 'LOW_NOW': 1785, 'NO_ALERT': 28684, 'WATCH': 1726}, identical to S7;
+  - tags {'MED_TIMING_UNKNOWN': 1197}, with no LOW_CONFIDENCE.
+  - **P-C7:** 0 T gaps > 120 min, so no T decision changed.
+- **S7 bench** (T-AGG-s7-engineering-20261019T050448Z):
+  - offline/live parity 33,464 readings, 0 mismatches;
+  - decision logs identical;
+  - artefact rebuild identical and equal to the deployed bundle;
+  - 30 injected bad inputs, 0 later decisions changed;
+  - latency p99 4.8 ms.
+
 ## Evidence inherited from the blueprint (not reproduced here)
 
 | Item | Source | Status in this repo |

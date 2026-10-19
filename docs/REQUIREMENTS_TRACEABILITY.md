@@ -93,7 +93,7 @@ Update this file whenever a requirement's status changes. Module paths are relat
 | P-01 | Table 14.1 states and priority (+ approved P-C1) | C | Table 14.1, ANALYSIS_PLAN §1 | `policy/decide.py` | `test_policy_table` | **PASS** (S7: `decide`; P-C1, P-C8b; `test_policy_decide`, S5 gate tests) |
 | P-02 | τA rule (dev FA ≤1.0), τW rule (≤3.0) | C | §14.3, ANALYSIS_PLAN §3.5–3.6 | `evaluation/thresholds.py` | unit tests | PENDING (S5; rules approved) |
 | P-03 | 60-min cooldown; ALERT persists | C | Table 5.1 | `policy/` | `test_cooldown` | **PASS** (S7: `test_cooldown_and_alert_persistence`) |
-| P-04 | LOW CONFIDENCE / timing tags never downgrade ALERT | REQ | §14.3 | `policy/` | `test_uncertainty_never_silences` | **PASS** (S7: property test `test_tags_never_change_state_or_notification`) |
+| P-04 | Uncertainty / timing tags never downgrade ALERT (LOW CONFIDENCE removed, P-B12) | REQ | §14.3 | `policy/` | `test_uncertainty_never_silences` | **PASS** (S7: property test `test_tags_never_change_state_or_notification`) |
 | P-05 | Gap → INSUFFICIENT DATA, no probability | REQ | §10.4 | `policy/` | `test_missing_abstains` | **PASS** (S7: gate + `current()` staleness; API stale-bed test) |
 | P-06 | SYSTEM ERROR on exception/hash mismatch; never stale | REQ | §14.2, §18 | `policy/`, `api/` | unit + API tests | **PASS** (S7: artefact refusal tests; inference / malformed → SYSTEM_ERROR; no stale reuse) |
 | P-07 | JSONL decision and ack logs with listed fields | REQ | §14.3 | `policy/`, `api/` | log schema test | **PASS** (S7: decisions.jsonl / acks.jsonl; deterministic log hash) |
@@ -193,7 +193,7 @@ Update this file whenever a requirement's status changes. Module paths are relat
 |---|---|---|---|---|---|---|
 | S-06 | Recording boundaries: state never crosses recordings; order by time, not number | REQ | ANALYSIS_PLAN §0.10; owner S4.4 | `state/patient.py` RecordingBoundaryError; `stream.order_recordings` | `test_recording_boundary_is_enforced`, `test_meal_unknown_markers_and_recording_order` | **PASS** |
 | S-07 | Causal episode tracker = label rule with confirmation lag | REQ | ARCHITECTURE §4.4 | `state/cgm.EpisodeTracker` | differential tests (400 Hypothesis + 22 fixtures); real T 33,464 readings, 0 mismatches | **PASS** |
-| S-08 | P-C8a flag and sufficiency in state; P-C7 hook preserved | C (approved) / pending | ANALYSIS_PLAN §0c; P-C7 | `state/quality.py` (authoritative `data.quality` functions) | `test_quality_state_equals_authoritative_flag_functions` | **PASS** (P-C7 pending) |
+| S-08 | P-C8a flag and sufficiency in state; P-C7 policy-only warm-up restart (> 120 min) | C (approved) | ANALYSIS_PLAN §0c; P-C7 | `state/quality.py` (authoritative `data.quality` functions) | `test_quality_state_equals_authoritative_flag_functions` | **PASS** (P-C7 approved: `test_prefreeze_final` boundary/restart/LOW NOW/parity tests) |
 | F-06 | Future perturbation leaves features at t unchanged | REQ | owner S4.15 | — | `test_future_perturbation_never_changes_the_present`; real T 1,200 checks, 0 mismatches | **PASS** |
 | F-07 | Offline vs replay parity (one implementation) | REQ | ADR-004; owner S4.16 | `features/build.py` = replay of `PatientState.update` + `FeatureBuilder.union` | `test_offline_table_equals_event_by_event_replay_snapshots`; real T 133,856, 0 mismatches | **PASS** |
 | F-08 | Features ignore forecast state and ledger | REQ | Table H.2 | `features/snapshot.FeatureInputs` | `test_features_ignore_forecast_state_and_ledger`, `test_feature_package_cannot_reach_the_ledger_or_labels` | **PASS** |
@@ -268,3 +268,16 @@ Update this file whenever a requirement's status changes. Module paths are relat
 | PF-04 | Fixed seed grid, no cherry-picking | REQ | brief | `FOLD_SEEDS`, `MODEL_SEEDS` | unit test; review | **PASS** |
 | PF-05 | LOW_CONFIDENCE evaluated out-of-fold, no leakage | REQ | CLAUDE.md §11 | `prefreeze._tags` | review | **PASS** |
 | PF-06 | E sealed | C | §12 | `load_dev` (TUNING_ONLY) | review | **PASS** |
+
+## Pre-freeze resolution and freeze
+
+| ID | Requirement | Kind | Source | Implementation | Verification | Status |
+|---|---|---|---|---|---|---|
+| FZ-01 | Canonical floored calibrator enforced | C (approved) | ANALYSIS_PLAN §5.4 item 12 | `models/artifact.py` loader check | `test_non_canonical_calibrator_is_refused` | **PASS** |
+| FZ-02 | Full-precision hyperparameters | REQ | CLAUDE.md §13 | `s7_artifact.frozen_params` | integrity gate (S6 OOF bitwise) | **PASS** |
+| FZ-03 | P-C7 policy-only warm-up restart | C (approved) | §5.4 item 16 | `state/patient.py`, `state/quality.py` | 6 tests incl. offline/live parity | **PASS** |
+| FZ-04 | P-C10 keep state + INPUT REJECTED | C (approved) | §5.4 item 17 | `replay/runner.py`, `api/service.py` | 7 tests incl. circuit breaker | **PASS** |
+| FZ-05 | LOW_CONFIDENCE removed from the live product | B (approved) | DEC-2026-10-19-M | runner, API, UI | API/UI checks; tests | **PASS** |
+| FZ-06 | Reproducible freeze candidate | REQ | CLAUDE.md §14 | `hyposense dev candidate` | `T-AGG-candidate-20261019T045108Z` = `T-AGG-candidate-20261019T045338Z` | **PASS** |
+| FZ-07 | Freeze fails closed | REQ | brief | `hyposense freeze` | `test_freeze_guard` | **PASS** |
+| FZ-08 | Pharmacist review before freeze | C | Blueprint §12.3 | packet | human review | **BLOCKED (PENDING)** |

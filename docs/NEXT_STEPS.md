@@ -1,6 +1,6 @@
 # Next Steps
 
-Ordered execution queue. Updated: 2026-10-19 (pre-freeze Class B complete).
+Ordered execution queue. Updated: 2026-10-19 (pre-freeze finalization complete; freeze blocked by pharmacist review).
 Each item lists: objective · dependency · acceptance criteria · difficulty · parallel? ·
 approval needed?
 
@@ -17,15 +17,15 @@ approval needed?
      population, metric clip, raw vs calibrated scores for P-B6).
    - Recommended Class B runs on T before freeze: **P-B10** (floored calibrator) and
      **P-B11** (fit-variance repeat).
-2. Pre-freeze Class B runs: DONE (DEC-2026-10-19-L).
-3. **Owner decision resolution** ← *next*:
-   - calibrator after P-B10;
-   - implementing the P-B12 tag removal;
-   - P-B8, P-B6, P-C7, P-C9, P-C10;
-   - ANALYSIS_PLAN §5;
-   - pharmacist review.
-4. Then FREEZE (rebuild the DEVELOPMENT artefact with full-precision hyperparameters and the
-   chosen calibrator; record hashes), then S9.
+2. Pre-freeze Class B runs: DONE (DEC-2026-10-19-L). Owner decisions: DONE (DEC-2026-10-19-M).
+3. **COMPLETE PHARMACIST REVIEW** ← *next* (human).
+   - **No change or wording only:** set `configs/pharma.yaml reviewed_by`, then run
+     `hyposense freeze`.
+   - **Material change:** apply it on T only, then rerun the affected medication, exposure,
+     causality and feature-audit checks, the ladder if feature values change, and
+     `hyposense dev candidate` twice. Then freeze.
+4. Owner confirmation of the §6 literal reading (non-blocking unless the owner disagrees).
+5. After the freeze record exists: merge `prefreeze-finalization`, then S9 (never before).
 
 ## P1 — Core
 
