@@ -1,0 +1,12 @@
+{
+ "policy_version": "1.0.0",
+ "rules": {
+  "cooldown_s": 3600,
+  "low_mgdl": 70.0,
+  "max_gap_s": 1200,
+  "post_episode_s": 3600
+ },
+ "strict": false,
+ "tau_alert": 0.12300868930668356,
+ "tau_watch": 0.025060908811244995
+}
