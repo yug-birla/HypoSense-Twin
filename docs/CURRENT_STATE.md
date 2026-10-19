@@ -1,18 +1,32 @@
 # HypoSense Twin — Current Project State
 
-_Last updated: 2026-10-19 (pre-freeze finalization; freeze blocked by pharmacist review). This is the canonical snapshot. Read it first, then
-[NEXT_STEPS.md](NEXT_STEPS.md) and [PROGRESS.md](PROGRESS.md)._
+_Last updated: 2026-10-19 (S9/S10 built and rehearsed on T; freeze blocked by two human gates).
+This is the canonical snapshot. Read it first, then [NEXT_STEPS.md](NEXT_STEPS.md) and
+[PROGRESS.md](PROGRESS.md)._
 
 ## Current Phase
-**PRE-FREEZE FINALIZATION COMPLETE.**
-- **Branch:** `prefreeze-finalization`.
-- **Owner decisions applied:** DEC-2026-10-19-M; ANALYSIS_PLAN §5/§6 FINAL.
-- **Freeze candidate:** built and verified twice, identical (`c0cbe721…`).
-- **Freeze:** `hyposense freeze` aborts on **one** invariant: clinical-pharmacist review PENDING.
-- **Not started:** S9. E is still sealed.
+**PRE-FREEZE: EVERYTHING TECHNICAL DONE; FREEZE BLOCKED BY HUMAN GATES.**
+- **Branch:** `prefreeze-finalization`. It is not merged to main; the merge happens after the
+  freeze record exists.
+- **S9 confirmatory runner:** built and fully rehearsed on T (`T-AGG-rehearsal-20261019T070224Z`,
+  clean `94a7246`, B = 2000).
+  - Its numbers equal the independent S6 run exactly.
+  - Held-out replay parity: 0 / 31,416 mismatches.
+- **S10 presentation path:** built and frozen with the code.
+  - Held-out replay (`serve --held-out`).
+  - `GET /api/confirmatory` and the Evidence Confirmatory panel (PENDING).
+  - `hyposense report` (results, model card, figures).
+- **Freeze candidate:** rebuilt twice on final code `57292dc`, identical (`c0cbe721…`, the same as
+  on `a7efa25`).
+- **`hyposense freeze`** (2026-10-19, on `7babc4f`): **ERROR — FREEZE ABORTED**. 11 checks pass,
+  including 546 Python tests and the frontend suite. The 3 failing checks are all human gates:
+  - `pharmacist_review`: no review, no waiver;
+  - `class_c_resolved`: P-C11 awaiting;
+  - `analysis_plan_final`: §5.7 is marked awaiting approval (P-C11).
+- **E is SEALED.** No E feature, prediction or result exists. No `FREEZE.json` exists.
 
 ## Overall Status
-**TECHNICALLY READY — FREEZE BLOCKED BY HUMAN REVIEW.**
+**FREEZE BLOCKED — PHARMACIST REVIEW REQUIRED (and P-C11 approval).**
 
 ## Completed Components
 | Component | Status | Key files | Evidence |
@@ -40,18 +54,17 @@ _Last updated: 2026-10-19 (pre-freeze finalization; freeze blocked by pharmacist
 M3 − M2 is exactly G8 ∪ G78, and M3r − M2 is exactly G7 ∪ G78 (`test_level_membership`).
 
 ## In Progress
-None. S4 ended at a clean boundary.
+None. Work stopped at the freeze boundary (human gates).
 
 ## Pending Components (dependency order)
-1. **S5**:
-   - the evaluation harness (ANALYSIS_PLAN §2–3, §0c SA9);
-   - paired cluster bootstrap;
-   - M0 on T using `features.cgm` (ANALYSIS_PLAN §0d). Table A.2 should reproduce.
-2. S6:
-   - M1 tuning and the ladder on T;
-   - P-B1, P-B2, P-B6, P-B7, P-B8, P-B9;
-   - G4.
-3. Pharmacist review → `hyposense freeze` → S9 → S10.
+1. Pharmacist review or explicit owner waiver (human). Owner approval of P-C11.
+2. `hyposense freeze` → merge `prefreeze-finalization` to main.
+3. S9: `hyposense confirm --freeze artifacts/freeze/FREEZE.json`, exactly once.
+4. S10:
+   - `hyposense report` → docs/results/;
+   - held-out demo (`serve --held-out`) with the demo cases of ANALYSIS_PLAN §5.7 item 30;
+   - screenshots;
+   - final honesty review.
 
 ## Scientific Status
 | Item | Status |
@@ -78,18 +91,11 @@ None. S4 ended at a clean boundary.
 | Runtime incident | runs 2–3 took 16–19 min: Windows E-core throttling. Fixed by the throttling opt-out (ADR-035). No scientific effect (identical hashes) |
 
 ## Testing Status
-| Category | Status |
+| Suite | Result |
 |---|---|
-| Unit | 432/432 |
-| Leakage / static guards | 18/18 |
-| Regression | 10/10 |
-| Integration (real data, T / aggregate) | 34/34 |
-| E2E (browser, Edge) | 1/1 |
-| Frontend (Vitest) | 28/28 |
-| Lint / format / types | ruff clean; mypy --strict clean (93 files); tsc strict clean |
-
-Last full run: `uv run pytest -q` → **495 passed**; `npx vitest run` → **28 passed** (2026-10-19,
-after the S8 review fixes).
+| Python (unit, leakage, regression, integration, E2E) | **546 passed** (inside `hyposense freeze`, 2026-10-19, on `7babc4f`) |
+| Frontend (Vitest) | **33 passed** |
+| Lint / format / types | ruff clean; mypy --strict clean (104 files); tsc strict clean |
 
 ## Engineering (S7, T)
 - **Latency:** per reading p50 1.5 ms / p99 4.5 ms; API ward p50
@@ -104,43 +110,41 @@ after the S8 review fixes).
 violations (axe). Desktop/laptop/tablet ≥ 1024 px. Design and contracts: docs/FRONTEND.md.
 
 ## Open Issues
-| Issue | Severity | Proposed solution |
+| Issue | Severity | Status / mitigation |
 |---|---|---|
-| Sensor artefacts in T (2075, 2077) distort development metrics | HIGH for S6 | P-B6 (rule written first); 1 eligible T row has a label window overlapping a sensor-floor run |
-| Redundancy: projections ≈ current exposure (ρ 0.987–0.999); M3 ≈ M3r for basal / SU | MEDIUM | P-B8 compact M3 (keep Δ60); C2b |
-| 21 columns constant on eligible T rows (glinide channel, some static indicators, `su_last_dose`) | MEDIUM for S6 tuning | P-B9 (keep the canonical spec; report inert columns) |
-| Quality codes categorical but stored as floats | LOW | P-B9 (declare categorical identically for all models) |
-| ANALYSIS_PLAN §5 (bootstrap + §2–3 implementation clarifications) DRAFT | MEDIUM | owner approval before freeze |
-| Table A.2 θ = 45 all-patients residual (63/0.79 vs 62/0.77) | LOW | exact-tie bracket; partly demonstrated (DEC-2026-10-18-F) |
-| M1 is below a non-learned CGM-level rule on T (0.857 vs 0.911); M0 is a weak reference | MEDIUM (interpretation) | P-C9 |
-| Primary endpoint near the ceiling on T (M2 0.875, M3 0.911 vs 0.946); limited headroom for H1 | MEDIUM (scientific) | report honestly; secondary window log-loss |
-| Model-fit variance ≥ M2/M3r/M3 differences on T | MEDIUM (interpretation) | P-B11 done: M3 ≥ M2 sens@1FA in 15/15 (12 better, 3 ties); only M3−M2 area 'stable'; other contrasts leaning/unstable |
-| Hyperparameters weakly identified (30 trials within 0.004 log-loss) | LOW | shared set frozen; R4 retuning is a robustness analysis |
-| S6 evaluation / bootstrap runtime 11–14 min | LOW | acceptable offline |
-| Floored calibrator: fold-4 floor 0.47 %/0.26 % compresses the low tail (ECE M2 0.0013→0.0022) | LOW (disclosed; no operational effect) | ANALYSIS_PLAN §5.4 item 12 |
-| Rejected non-CGM event shows SYSTEM ERROR until the next reading | LOW (display) | P-C10 |
-| C: drive nearly full on the development machine (tool temp files) | LOW (environment) | free space; S7 work used E: for temp files |
-| Kernel assumptions; pharmacist review | MEDIUM | review packet; SA6 |
-| P-C7 warm-up after sensor change | LOW | not implemented in S7 (blueprint rule active); decide before freeze |
+| Freeze blocked: pharmacist review absent; P-C11 awaiting | **BLOCKING** | Human action; nothing is bypassed or fabricated |
+| Primary endpoint near the ceiling on T (M2 0.875, M3 0.911 vs 0.946); limited headroom for H1 | MEDIUM (scientific) | Report honestly; S2/S3 secondary |
+| Model-fit variance ≥ the M2/M3 differences on T | MEDIUM (interpretation) | P-B11: M3 ≥ M2 in 15/15 configurations; SA7 seeds reported |
+| R3 logistic regression overfits the patient-level `rx_*` flags (T rehearsal sens 0.30) | LOW (disclosed) | ANALYSIS_PLAN §5.7 item 26; learner unchanged |
+| R2 CGM removal lowers sensitivity strongly (random 20 %: ~0.5 on T) | LOW (expected: sufficiency abstention) | Reported as robustness, not tuned |
+| M1 below a non-learned CGM-level rule on T (0.857 vs 0.911) | MEDIUM (interpretation) | P-C9: post-hoc reference only |
+| Floored calibrator compresses the low tail (fold-4 floor) | LOW (disclosed) | ANALYSIS_PLAN §5.4 item 12 |
+| Stale placeholder test names in traceability rows P-01–P-05 and FZ-07 | LOW (docs) | The real tests are named in those rows' notes |
+| No Dockerfile; no LICENSE file | LOW | Not required for the demo path |
 
 ## Open Decisions
 | Decision | Recommendation | Approval required? | Blocking? |
 |---|---|---|---|
-| P-C7 warm-up restart after gap > 120 min | Approve | Yes | Before freeze (S7 shipped without it) |
-| P-C10 display after a rejected non-CGM event | Option (b): keep state + INPUT REJECTED badge | Yes | Before S8 UI |
-| Optional LLM/API layer (owner idea) | Architectural opinion delivered after S7; no code | Yes | No |
-| P-B1, P-B2, P-B6, P-B7, P-B8, P-B9 | Run as planned S6 experiments | No (Class B) | — |
-| ANALYSIS_PLAN §5 draft | Approve | Yes | Before freeze |
-| P-C9 level-rule reference baseline | Approve (secondary) | Yes | Before freeze |
-| P-B6 training exclusion (implement for all models + rerun ladder, or drop) | Decide | Yes | Before freeze |
-| P-B8 M3_compact as canonical M3 | Keep M3_baseline (preserves the primary definition); compact as secondary | Yes | Before freeze |
-| Pharmacist review | Use the packet when a reviewer is available | — | No |
+| Pharmacist review of kernels | Use the packet (docs/medication/PHARMACIST_REVIEW.md) | Human reviewer, or explicit owner waiver | **Yes (freeze)** |
+| P-C11 operational definitions of S9 (ANALYSIS_PLAN §5.7 items 1–33) | Approve | Yes (Class C) | **Yes (freeze)** |
+
+All earlier decisions are resolved: §6 reading (DEC-2026-10-19-N); P-B6, P-B8, P-B10, P-B12, P-C7,
+P-C9 and P-C10 (DEC-2026-10-19-M). The LLM layer was dropped.
 
 ## Last Verified Commit
-- Code: `a7efa25` (branch `prefreeze-finalization`). The freeze-candidate pair and the S7 bench
-  ran on it, clean.
+- Code: `94a7246` (S9/S10). The candidate pair ran on `57292dc`, which has no code change since
+  `94a7246`. The freeze attempt ran on `7babc4f`.
 - Documentation commit: see `git log -1`.
 
 ## Next Recommended Task
-**COMPLETE PHARMACIST REVIEW** (docs/medication/PHARMACIST_REVIEW.md), then `hyposense freeze`.
-Do not start S9 before a freeze record exists.
+1. **Human:** complete the pharmacist review (docs/medication/PHARMACIST_REVIEW.md), or have the
+   owner explicitly approve a waiver.
+2. **Owner:** approve P-C11 (ANALYSIS_PLAN §5.7 items 1–33).
+3. Then:
+   - `uv run hyposense freeze`
+   - merge to main
+   - `uv run hyposense confirm --freeze artifacts/freeze/FREEZE.json` (once)
+   - `uv run hyposense report`
+   - `uv run hyposense serve --held-out`
+
+Do not run S9 before a freeze record exists.

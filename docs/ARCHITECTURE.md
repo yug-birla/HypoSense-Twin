@@ -356,6 +356,26 @@ from the state, never from the model.
 network calls. A Docker image is the RECOMMENDED backup. A recorded replay video and static
 Evidence exports serve as the G7 fallback (ADR-013).
 
+### 4.12 Confirmatory run (S9) and presentation path (S10)
+
+- **`evaluation/confirm.py`** (with `confirm_data.py` and `confirm_fit.py`) implements Blueprint
+  §15 and ANALYSIS_PLAN §5.7.
+  - Official mode: `verify_freeze_record` → `unlock_sealed_partition` →
+    `load_dataset(ALL_AFTER_FREEZE)`.
+  - Population assembly reuses the canonical feature, label and policy modules.
+  - Five grouped folds over E; training is T ∪ (E∖k).
+  - Pooled OOF; the primary analysis and S/SA/R; §6 selection; the final model; fold bundles;
+    demo cases.
+  - It refuses once an official run exists. Rehearsal mode runs the same code on T.
+- **`api/held_out.py`** and **`ReplaySession(pipe_for=…)`**: every replayed patient is scored by
+  the fold model that never saw that patient.
+  - E access is presentation-only, after the official run: `freeze.verify_confirmation` →
+    `data.dataset.unlock_for_presentation`.
+- **`reporting/`** (`confirm_view`, `confirm_report`): selects and formats the frozen numbers
+  for `GET /api/confirmatory`, the Evidence panel and `hyposense report`. It computes nothing.
+  - It sits outside `evaluation/`, so the live API keeps its import boundary
+    (`test_live_path_does_not_import_offline_modules`).
+
 ## 5. Leakage controls (Blueprint Fig. 10.1, CLAUDE.md §11)
 
 | Risk | Control | Test |

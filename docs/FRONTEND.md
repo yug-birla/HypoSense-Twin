@@ -79,6 +79,15 @@ never colour alone (text + icon + colour).
   ladder with CIs; operating curves; paired Δ with CIs; calibration; gates (G3b TRIGGERED shown);
   leakage safeguards; reproducibility/provenance.
 
+### Confirmatory panel (S10, built before freeze)
+`components/evidence/Confirmatory.tsx` reads `GET /api/confirmatory`.
+- **PENDING:** shown while E is sealed. No numbers appear.
+- **CONFIRMATORY:** shown for the single verified official run, with the primary Δ and CI, the
+  H1 verdict, §6 selection, Table 20.4 rows, the ladder, the deployed operating point and all
+  S/SA/R analyses.
+- **INTEGRITY FAILURE:** shown if verification fails.
+- A rehearsal is never served. Tests: `src/test/confirmatory.test.tsx`.
+
 ## 5. Design research (principles extracted; nothing copied)
 
 | Reference | Pattern | Adopt? | HypoSense mapping |

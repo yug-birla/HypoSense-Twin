@@ -720,3 +720,39 @@ Owner decision resolution (CURRENT_STATE "Open Decisions"), then FREEZE.
 
 ### Next Task
 COMPLETE PHARMACIST REVIEW (human), then `hyposense freeze`. S9 not started.
+
+## 2026-10-19 — S9 runner + S10 presentation path built and rehearsed; freeze attempted
+
+### Work Completed
+- S9 confirmatory runner (`evaluation/confirm*.py`, `hyposense confirm`). Official mode only after
+  `verify_freeze_record` and the E unlock; it runs once. A T-only rehearsal mode uses the same
+  code.
+- R4 tuning on T, frozen (`T-AGG-dev-r4-20261019T055800Z`).
+- Held-out replay (`api/held_out.py`, `serve --held-out`). Read-only E access after the single
+  official run (`freeze.verify_confirmation`, `data.dataset.unlock_for_presentation`).
+- Confirmatory API and Evidence panel. `hyposense report`: RESULTS.md, MODEL_CARD.md and SVG
+  figures.
+- ANALYSIS_PLAN §5.7 items 31–33 and the R3 disclosure. P-C11 still awaiting.
+- README rewrite. Traceability refresh: 44 rows, each test name verified to exist.
+
+### Results
+- Full rehearsal `T-AGG-rehearsal-20261019T070224Z` (clean `94a7246`, B 2000, 34 min):
+  - equals S6 exactly;
+  - held-out parity 0 / 31,416.
+- Candidate pair on `57292dc`: identical (`c0cbe721…`).
+- `hyposense freeze` on `7babc4f`: **ERROR — FREEZE ABORTED** on `pharmacist_review`,
+  `class_c_resolved` (P-C11) and `analysis_plan_final` (P-C11). All 11 technical checks pass,
+  including 546 Python tests and the frontend suite.
+
+### Problems Found and Fixed
+- Smoke rehearsal: a wrong config path for the SA5 tail parameter (fixed before the full run).
+- Import-boundary guard:
+  - the live API imported evaluation modules. `confirm_view` moved to `reporting/`, and
+    held-out streams are now built with `state.stream`.
+  - the partition was read outside `data/`. `data.dataset.partition_labels` was added.
+- R3 low score diagnosed as a learner property, not a bug. It is disclosed, and the learner is
+  unchanged.
+
+### Next Task
+Human gates: pharmacist review (or an explicit owner waiver) and P-C11 approval. Then freeze →
+merge → S9 once → S10 (NEXT_STEPS).
