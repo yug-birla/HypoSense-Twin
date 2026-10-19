@@ -756,3 +756,37 @@ COMPLETE PHARMACIST REVIEW (human), then `hyposense freeze`. S9 not started.
 ### Next Task
 Human gates: pharmacist review (or an explicit owner waiver) and P-C11 approval. Then freeze →
 merge → S9 once → S10 (NEXT_STEPS).
+
+## 2026-10-19 — Product-first: frontend inspection, new-data intake, Ask panel
+
+### Work Completed
+- Checkpoint A: the existing app was launched and inspected in Edge (0 console errors).
+- The gap analysis found that no new patient or new data could be accepted.
+- New-data intake:
+  - `intake/`;
+  - loader split into read + `parse_recording_frame`;
+  - API endpoints;
+  - Add patient page, session banner, Add observation, Remove session, NEW DATA ward tag;
+  - "Ask about this patient" (fixed intents).
+- P-C11 approval matrix: docs/protocol/P-C11_APPROVAL_MATRIX.md.
+
+### Results
+- Parity: a real T recording uploaded as CSV gives events, decisions and probabilities identical
+  to the historical adapter. The incremental twin equals the full-file twin.
+- Replay is unchanged (same ward states as before).
+- Candidate pair on `28ac72f`: identical, `c0cbe721` (no number changed).
+- `hyposense freeze`: aborted on the 3 human gates only. 570 Python and 37 Vitest tests pass.
+
+### Problems Found and Fixed
+- Questions were asked for empty pump and glucose columns; they are now asked only for fields
+  with data.
+- pandas silently renamed duplicate headers (`x` → `x.1`); these are now detected and refused.
+- An out-of-order observation gave a misleading message; there is now an explicit append-only
+  check.
+- The live-path import guard now covers `intake`.
+- "What is missing" showed raw codes; it now uses plain wording.
+- The M1 interval "discrepancy" at Checkpoint A was a comparison against the discarded B=20
+  smoke run. With B=2000, the rehearsal equals S6 exactly. No defect.
+
+### Next Task
+Human gates: pharmacist review (or explicit owner waiver) and P-C11 decision (see the matrix).

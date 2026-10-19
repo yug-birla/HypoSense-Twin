@@ -5,24 +5,25 @@ This is the canonical snapshot. Read it first, then [NEXT_STEPS.md](NEXT_STEPS.m
 [PROGRESS.md](PROGRESS.md)._
 
 ## Current Phase
-**PRE-FREEZE: EVERYTHING TECHNICAL DONE; FREEZE BLOCKED BY HUMAN GATES.**
+**PRODUCT COMPLETE FOR DEMO; FREEZE BLOCKED BY HUMAN GATES.**
 - **Branch:** `prefreeze-finalization`. It is not merged to main; the merge happens after the
   freeze record exists.
-- **S9 confirmatory runner:** built and fully rehearsed on T (`T-AGG-rehearsal-20261019T070224Z`,
-  clean `94a7246`, B = 2000).
-  - Its numbers equal the independent S6 run exactly.
-  - Held-out replay parity: 0 / 31,416 mismatches.
-- **S10 presentation path:** built and frozen with the code.
-  - Held-out replay (`serve --held-out`).
-  - `GET /api/confirmatory` and the Evidence Confirmatory panel (PENDING).
-  - `hyposense report` (results, model card, figures).
-- **Freeze candidate:** rebuilt twice on final code `57292dc`, identical (`c0cbe721…`, the same as
-  on `a7efa25`).
-- **`hyposense freeze`** (2026-10-19, on `7babc4f`): **ERROR — FREEZE ABORTED**. 11 checks pass,
-  including 546 Python tests and the frontend suite. The 3 failing checks are all human gates:
-  - `pharmacist_review`: no review, no waiver;
-  - `class_c_resolved`: P-C11 awaiting;
-  - `analysis_plan_final`: §5.7 is marked awaiting approval (P-C11).
+- **Product:** the following are all verified in Microsoft Edge:
+  - T replay;
+  - new-data intake: upload or manual entry, deterministic questions, a live append-only twin,
+    Ask panel;
+  - Evidence with the Confirmatory panel (PENDING).
+  - Details: DEC-2026-10-19-P and docs/INTAKE.md.
+- **S9 confirmatory runner:** built and fully rehearsed on T (`T-AGG-rehearsal-20261019T070224Z`).
+  Its numbers equal S6 exactly; held-out parity is 0 / 31,416.
+- **Freeze candidate:** rebuilt twice on the intake code `28ac72f`, identical (`c0cbe721…`,
+  unchanged since `a7efa25`).
+- **`hyposense freeze`** (2026-10-19, on `f8f1731`): **ERROR — FREEZE ABORTED**. Every technical
+  check passes, including 570 Python tests and the frontend suite. The 3 failing checks are
+  human gates:
+  - `pharmacist_review`;
+  - `class_c_resolved` (P-C11);
+  - `analysis_plan_final` (P-C11).
 - **E is SEALED.** No E feature, prediction or result exists. No `FREEZE.json` exists.
 
 ## Overall Status
@@ -93,9 +94,9 @@ None. Work stopped at the freeze boundary (human gates).
 ## Testing Status
 | Suite | Result |
 |---|---|
-| Python (unit, leakage, regression, integration, E2E) | **546 passed** (inside `hyposense freeze`, 2026-10-19, on `7babc4f`) |
-| Frontend (Vitest) | **33 passed** |
-| Lint / format / types | ruff clean; mypy --strict clean (104 files); tsc strict clean |
+| Python (unit, leakage, regression, integration, E2E) | **570 passed** (inside `hyposense freeze`, 2026-10-19, on `f8f1731`) |
+| Frontend (Vitest) | **37 passed** |
+| Lint / format / types | ruff clean; mypy --strict clean (108 files); tsc strict clean |
 
 ## Engineering (S7, T)
 - **Latency:** per reading p50 1.5 ms / p99 4.5 ms; API ward p50
@@ -132,8 +133,7 @@ All earlier decisions are resolved: §6 reading (DEC-2026-10-19-N); P-B6, P-B8, 
 P-C9 and P-C10 (DEC-2026-10-19-M). The LLM layer was dropped.
 
 ## Last Verified Commit
-- Code: `94a7246` (S9/S10). The candidate pair ran on `57292dc`, which has no code change since
-  `94a7246`. The freeze attempt ran on `7babc4f`.
+- Code: `28ac72f` (intake). The candidate pair ran on it; the freeze attempt ran on `f8f1731`.
 - Documentation commit: see `git log -1`.
 
 ## Next Recommended Task

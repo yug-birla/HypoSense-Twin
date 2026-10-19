@@ -42,6 +42,9 @@ needed.
 
 ## P2 — Product / Demo
 
+0. DONE (2026-10-19): the new-data intake, Ask panel and live sessions are verified in Edge
+   (DEC-2026-10-19-P). The demo runs now: `uv run hyposense serve`.
+
 1. The demo story uses held-out replay of the pre-selected TP/FN/FP cases (§5.7 item 30). No
    cherry-picking.
 2. Remote repository and CI.

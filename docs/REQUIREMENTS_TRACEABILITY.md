@@ -283,3 +283,17 @@ Update this file whenever a requirement's status changes. Module paths are relat
 | FZ-06 | Reproducible freeze candidate | REQ | CLAUDE.md §14 | `hyposense dev candidate` | `T-AGG-candidate-20261019T045108Z` = `T-AGG-candidate-20261019T045338Z` | **PASS** |
 | FZ-07 | Freeze fails closed | REQ | brief | `hyposense freeze` | `test_freeze_guard` | **PASS** |
 | FZ-08 | Pharmacist review before freeze | C | Blueprint §12.3 | packet | human review | **BLOCKED (PENDING)** |
+
+## New-data intake (product extension, DEC-2026-10-19-P)
+
+| ID | Requirement | Kind | Source | Implementation | Verification | Status |
+|---|---|---|---|---|---|---|
+| N-01 | Upload CSV/XLSX safely (type, signature, size, rows, duplicate headers; memory only) | REQ | owner brief §4, §10 | `intake/upload.py` | `test_unsafe_or_malformed_files_are_rejected`, `test_path_traversal_name_is_sanitised` | **PASS** |
+| N-02 | Same canonical pipeline as historical data (no second pipeline) | REQ | brief §4 | `data.loader.parse_recording_frame`, `intake/draft.py` | `test_upload_adapter_equals_historical_adapter` | **PASS** |
+| N-03 | Deterministic questions from findings; nothing guessed (units, clock, columns, pump, medication) | REQ | brief §5 | `intake/draft.py` | `test_upload_questions_session_and_append`, `test_units_are_asked_not_guessed_and_implausible_units_refused`, `test_explicit_unit_header_and_utc_clock`, `test_mixed_time_zones_block` | **PASS** |
+| N-04 | New patient without data abstains (INSUFFICIENT DATA, no invented risk) | REQ | brief §5 ex. 5 | policy gates (unchanged) | `test_new_patient_without_data_abstains` | **PASS** |
+| N-05 | Append observations chronologically; out-of-order refused; same validation path | REQ | brief §4 Mode C | `intake/session.py` | `test_out_of_order_and_invalid_observations_are_refused`, `test_session_built_incrementally_equals_full_upload` | **PASS** |
+| N-06 | New data never training data; never in T/E; no retraining | REQ | brief §7 | `intake:` keys, memory only | `test_intake_never_touches_research_partitions`; live-path import guard | **PASS** |
+| N-07 | Session deletion removes data and log | REQ | brief §10 | `Service.delete_session` | `test_delete_session_removes_memory_and_log` | **PASS** |
+| N-08 | Fixed-intent questions about displayed state; no advice | REQ | brief §6 | `Service.ask` | `test_ask_intents_are_fixed_and_answer_from_state` | **PASS** |
+| N-09 | UI: Add patient, NEW DATA SESSION labelling, observation entry | REQ | brief §9 | `frontend/src/components/intake/` | `src/test/intake.test.tsx`; E2E `test_new_patient_upload_questions_twin_and_append` | **PASS** |

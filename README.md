@@ -15,6 +15,7 @@ human to perform a capillary check.
 |---|---|
 | S1–S8 data, labels, medication exposure, state engine, features, evaluation harness, models, policy, replay, API, frontend | **DONE** (development on the tuning partition T only) |
 | S9 confirmatory runner and S10 presentation path (held-out replay, Evidence panel, report generator) | **BUILT and rehearsed on T**; not run on E |
+| New patient / new data: upload (CSV/XLSX) or manual entry, deterministic clarification questions, live append-only twin, "Ask about this patient" | **DONE** (DEVELOPMENT sessions; never research data). See [docs/INTAKE.md](docs/INTAKE.md) |
 | Protocol freeze | **BLOCKED.** It needs (1) a clinical-pharmacist review of the medication kernels and (2) owner approval of P-C11 (ANALYSIS_PLAN §5.7) |
 | Confirmatory result (sealed partition E) | **PENDING.** E has never been opened |
 
@@ -82,12 +83,12 @@ uv run hyposense confirm --freeze artifacts/freeze/FREEZE.json
 uv run hyposense report                   # docs/results/: RESULTS.md, MODEL_CARD.md, figures
 # 8. demo
 cd frontend && npm ci && npm run build && cd ..
-uv run hyposense serve                    # T replay with the development model
+uv run hyposense serve                    # T replay + "Add patient" (new-data sessions)
 uv run hyposense serve --held-out         # after S9: E patients with their own fold models
 uv run pytest -q && (cd frontend && npx vitest run)
 ```
 
-Open http://127.0.0.1:8000 for the Ward board, Patient review and Evidence view.
+Open http://127.0.0.1:8000 for the Ward board, Patient review, Evidence view and Add patient.
 
 ## Safeguards
 

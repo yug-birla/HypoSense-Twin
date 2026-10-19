@@ -507,6 +507,11 @@ Decision tables: `experiments/runs/T-AGG-dev-prefreeze-20261019T032309Z/prefreez
 - Report: experiments/runs/T-AGG-rehearsal-20261019T070224Z/report/ (stamped REHEARSAL).
   Row-level outputs are private in data/processed/confirm/.
 
+## T-AGG-candidate-20261019T085805Z / T090035Z — candidate pair on intake code (T, DEVELOPMENT)
+- Commit 28ac72f (clean; includes the `parse_recording_frame` loader split).
+- Results `c0cbe721…` in both runs, identical to every earlier pair. The refactor changed no
+  feature, model or threshold.
+
 ## Evidence inherited from the blueprint (not reproduced here)
 
 | Item | Source | Status in this repo |
