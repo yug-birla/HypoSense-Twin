@@ -37,6 +37,31 @@ ward team can review.
 >   confirmatory evaluation on the sealed patient partition has **not been run yet** (see
 >   [Project status](#project-status)).
 
+## Digital Twin Challenge 2026 - Team Information
+
+**Project Title:** HypoSense Twin  
+**Registered Team Name:** 2006yugb  
+**Competition:** Digital Twin Challenge 2026  
+**Organizer:** Happiest Health  
+**Institution:** Indian Institute of Technology Kharagpur (IIT Kharagpur), India
+
+### Team Members
+
+| Name | Role |
+|---|---|
+| Yug Birla | Team Leader |
+| Smriti Tubid | Team Member |
+
+### About Our Project
+
+HypoSense Twin is an exposure-aware digital twin designed to predict CGM-detected hypoglycaemic episodes in adults with Type 2 Diabetes.
+
+It integrates historical patient context, continuous glucose monitoring (CGM) readings, meals, and recorded medication information into a continuously updated patient state. Using LightGBM and time-resolved medication exposure features, the system estimates the risk of a new low-glucose episode within the next 60 minutes.
+
+The prototype also includes a clinician-facing dashboard for reviewing patient states, predictions, medication exposure estimates, explanations, and recorded alert outcomes.
+
+**Project Status:** Working research prototype. Confirmatory evaluation pending. Not clinically validated or intended for autonomous medical decision-making.
+
 <p align="center">
   <img src="docs/screenshots/readme/welcome.png" alt="HypoSense Twin welcome page: the four worlds of the twin, the Observe, Forecast and Review steps, and the research-prototype notices" width="100%" />
 </p>
