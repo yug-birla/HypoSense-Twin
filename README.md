@@ -623,6 +623,11 @@ scripts/         UI audits, screenshot and walkthrough scripts, OpenAPI export
   only. Uploads stay in memory and are deleted with their session.
 
 ## Data, licence and citation
+### Open-Source License
+
+HypoSense Twin's original source code is released under the MIT License. See the [LICENSE](LICENSE) file for the full license terms.
+
+Third-party dependencies and datasets remain subject to their respective licenses. The ShanghaiT2DM dataset is distributed separately under CC BY 4.0 and is not included in this repository. Users must comply with the dataset's original licensing and attribution requirements.
 
 **Dataset.** Zhao Q, Zhu J, Shen X, Lin C, Zhang Y, Liang Y, Cao B, Li J, Liu X, Rao W, Wang C.
 *Chinese diabetes datasets for data-driven machine learning.* **Scientific Data** 10, 35 (2023).
