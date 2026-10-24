@@ -65,7 +65,44 @@ The prototype also includes a clinician-facing dashboard for reviewing patient s
 <p align="center">
   <img src="docs/screenshots/readme/welcome.png" alt="HypoSense Twin welcome page: the four worlds of the twin, the Observe, Forecast and Review steps, and the research-prototype notices" width="100%" />
 </p>
+## Digital Twin Challenge 2026 | Submission Materials
 
+**Project:** HypoSense Twin  
+**Team Name:** 2006yugb  
+**Institution:** Indian Institute of Technology Kharagpur (IIT Kharagpur)  
+**Organized by:** Happiest Health
+
+### Complete Project Presentation and Prototype Demonstration
+
+[**Watch the Full HypoSense Twin Demonstration on YouTube**](https://youtu.be/bJMCvcQqVW0)
+
+The video presents our complete project, including:
+
+- Healthcare problem statement and proposed solution
+- Historical patient data and dynamic CGM data fusion
+- Digital twin architecture and patient state engine
+- AI/ML methodology and medication exposure modelling
+- Model comparisons and development evaluation results
+- Working prototype demonstration and clinician dashboard
+- Explainability, alert history and patient monitoring
+- Safety, limitations and future development
+
+### Architecture and Presentation
+
+- [Architecture Diagram (PDF)](2006yugb_IIT%20Kharagpur/HypoSense_Architecture.pdf)
+- [Project Presentation (PDF)](2006yugb_IIT%20Kharagpur/HypoSense_Twin_Digital_Twin_Challenge_2026.pdf)
+- [Project Presentation (PPTX)](2006yugb_IIT%20Kharagpur/HypoSense_Twin_Digital_Twin_Challenge_2026.pptx)
+- [Open-Source License (MIT)](LICENSE)
+
+### Submission and Research Status
+
+HypoSense Twin is a working research prototype for predicting CGM-detected hypoglycaemic episodes within the next 60 minutes.
+
+The system combines historical patient context, time-series glucose observations, and estimated medication exposure to maintain a continuously updated digital twin.
+
+**Evaluation Status:** Development evaluation completed. Sealed confirmatory evaluation pending.
+
+**Clinical Disclaimer:** This project is not a clinically validated medical device. It does not recommend medication doses or autonomous treatment decisions.
 ---
 
 ## Contents
