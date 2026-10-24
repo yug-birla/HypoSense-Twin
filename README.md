@@ -677,9 +677,6 @@ Third-party dependencies and datasets remain subject to their respective license
 **Medication kernel sources.** Product labels and literature, quoted per parameter in
 [docs/medication/PARAMETER_SOURCES.md](docs/medication/PARAMETER_SOURCES.md).
 
-**Software licence.** `pyproject.toml` declares MIT, but no `LICENSE` file has been added yet
-(the owner decision on the copyright holder is pending). **Until that file exists, no licence
-grant should be assumed.**
 
 **Artwork.** The droplet mascot ([docs/assets/mascot.svg](docs/assets/mascot.svg)) is the project's own SVG drawing; the UI icons come
 from lucide (ISC licence).
